@@ -157,6 +157,9 @@ class turnitinplugin_view {
         $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
         $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
 
+        $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
+        $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
+
         $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
                             1 => get_string('standardrepository', 'turnitintooltwo'));
         if ($config->userepository == "1") {

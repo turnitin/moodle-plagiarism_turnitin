@@ -10,3 +10,5 @@ $plugin->requires =  2012062500.00;
 $plugin->cron     = 300;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_BETA;
+
+$plugin->dependencies = array('mod_turnitintooltwo' => 2014012401);

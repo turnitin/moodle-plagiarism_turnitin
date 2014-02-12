@@ -35,19 +35,6 @@ require_once("turnitinplugin_view.class.php");
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
-     * Check to see if the Moodle Direct plugin is installed, this plugin requires
-     * functionality from Moodle Direct to work.
-     *
-     * @return boolean
-     */
-    public function check_turnitintool_exists() {
-        global $DB;
-
-        $modules = $DB->get_record('modules', array('name' => 'turnitintooltwo'));
-        return ($modules) ? true : false;
-    }
-
-    /**
      * Get the fields to be used in the form to configure each activities Turnitin settings.
      *
      * @return array of settings fields
@@ -159,7 +146,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return;
         }
 
-        if (has_capability('plagiarism/turnitin:enable', $context) && $this->check_turnitintool_exists()) {
+        if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
             $cmid = optional_param('update', 0, PARAM_INT);
 
@@ -273,11 +260,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
         }
 
-        static $turnitintoolexists;
-        if (!isset($turnitintoolexists)) {
-            $turnitintoolexists = $this->check_turnitintool_exists();
-        }
-
         // exit if Turnitin is not being used.
         if (empty($plagiarismsettings['use_turnitin'])) {
             return;
@@ -310,8 +292,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $output = "";
 
-        if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) &&
-                        !empty($linkarray["cmid"]) && $turnitintoolexists) {
+        if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && !empty($linkarray["cmid"])) {
 
             // Include Javascript.
             $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery-1.8.2.min.js');
@@ -1047,7 +1028,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        if (count($submissionids) > 0 && $this->check_turnitintool_exists()) {
+        if (count($submissionids) > 0) {
             // Initialise Comms Object.
             $turnitincomms = new turnitintooltwo_comms();
             $turnitincall = $turnitincomms->initialise_api();
@@ -1192,10 +1173,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        if (!$this->check_turnitintool_exists()) {
-            echo get_string('turnitintooltwonotexist', 'turnitintooltwo');
-            return false;
-        } else if ($cm) {
+        if ($cm) {
             // Create the course/class in Turnitin if it doesn't already exist.
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             if (empty($coursedata->turnitin_cid)) {

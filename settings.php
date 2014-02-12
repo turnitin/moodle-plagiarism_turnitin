@@ -109,34 +109,26 @@ echo $OUTPUT->header();
 
 echo html_writer::tag('link', '', array("rel" => "stylesheet", "type" => "text/css",
                                                             "href" => $CFG->wwwroot."/mod/turnitintooltwo/css/styles_pp.css"));
-if (!$plagiarismpluginturnitin->check_turnitintool_exists()) {
-    echo html_writer::tag('div', get_string('turnitintooltwonotexist', 'turnitintooltwo'), array("class" => "warning"));
-}
 
 switch ($do) {
     case "config":
         $turnitinpluginview->draw_settings_tab_menu('turnitinsettings', $notice);
-        if ($plagiarismpluginturnitin->check_turnitintool_exists()) {
-            echo $turnitinpluginview->show_config_form($pluginconfig);
-        }
+
+        echo $turnitinpluginview->show_config_form($pluginconfig);
         break;
 
     case "defaults":
         $turnitinpluginview->draw_settings_tab_menu('turnitindefaults', $notice);
-        if ($plagiarismpluginturnitin->check_turnitintool_exists()) {
-            $mform = new turnitin_plagiarism_plugin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
 
-            $mform->set_data($plugindefaults);
-            $mform->display();
-        }
+        $mform = new turnitin_plagiarism_plugin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
+        $mform->set_data($plugindefaults);
+        $mform->display();
         break;
 
     case "errors":
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
-        if ($plagiarismpluginturnitin->check_turnitintool_exists()) {
-            echo html_writer::tag("p", get_string('errorsdesc', 'turnitintooltwo'));
-            echo $turnitinpluginview->show_file_errors_table();
-        }
+        echo html_writer::tag("p", get_string('errorsdesc', 'turnitintooltwo'));
+        echo $turnitinpluginview->show_file_errors_table();
         break;
 }
 

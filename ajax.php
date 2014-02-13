@@ -185,6 +185,10 @@ switch ($action) {
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
+            
+            $user = new turnitintooltwo_user($USER->id, "Learner");
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('rubric_view',
                                                         'Learner', $tiiassignment->value),

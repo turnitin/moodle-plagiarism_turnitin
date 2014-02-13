@@ -157,6 +157,14 @@ class turnitinplugin_view {
         $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
         $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
 
+        if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
+            $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"), 
+                                     1 => get_string("submitonfinal", "turnitintooltwo"));
+
+            $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
+            $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
+        }
+
         $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
         $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
 

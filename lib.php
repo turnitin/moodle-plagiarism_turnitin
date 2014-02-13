@@ -40,13 +40,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return array of settings fields
      */
     public function get_settings_fields() {
-        return array('use_turnitin', 'plagiarism_show_student_report', 'plagiarism_allow_non_or_submissions', 'plagiarism_submitpapersto',
-                        'plagiarism_compare_student_papers', 'plagiarism_compare_internet', 'plagiarism_compare_journals',
-                        'plagiarism_report_gen', 'plagiarism_compare_institution', 'plagiarism_exclude_biblio',
-                        'plagiarism_exclude_quoted', 'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value',
-                        'plagiarism_rubric', 'plagiarism_erater', 'plagiarism_erater_handbook', 'plagiarism_erater_dictionary',
-                        'plagiarism_erater_spelling', 'plagiarism_erater_grammar', 'plagiarism_erater_usage',
-                        'plagiarism_erater_mechanics', 'plagiarism_erater_style', 'plagiarism_anonymity', 'plagiarism_transmatch');
+        return array('use_turnitin', 'plagiarism_show_student_report', 'plagiarism_draft_submit', 
+                        'plagiarism_allow_non_or_submissions', 'plagiarism_submitpapersto', 'plagiarism_compare_student_papers', 
+                        'plagiarism_compare_internet', 'plagiarism_compare_journals', 'plagiarism_report_gen', 
+                        'plagiarism_compare_institution', 'plagiarism_exclude_biblio', 'plagiarism_exclude_quoted', 
+                        'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value', 'plagiarism_rubric', 'plagiarism_erater', 
+                        'plagiarism_erater_handbook', 'plagiarism_erater_dictionary', 'plagiarism_erater_spelling', 
+                        'plagiarism_erater_grammar', 'plagiarism_erater_usage', 'plagiarism_erater_mechanics', 
+                        'plagiarism_erater_style', 'plagiarism_anonymity', 'plagiarism_transmatch');
     }
 
     /**
@@ -315,7 +316,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($cm->modname == 'assign') {
                 if ($submission = $DB->get_record('assign_submission',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id))) {
-                    $submission_status = ($submission->status == "submitted") ? true : false;
+                    $submission_status = ($submission->status == "submitted" || 
+                                        ($moduledata->submissiondrafts == 1 && $plagiarismsettings->plagiarism_draft_submit == 0)) 
+                                        ? true : false;
                 }
             }
 
@@ -1204,9 +1207,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                        $moduledata->submissiondrafts = 0;
                     }
 
-                    // If draft submissions are turned on then do not submit to Turnitin if using newer than 2.3.
-                    if ($moduledata->submissiondrafts && $CFG->branch > 23 &&
-                     ($eventdata->event_type == 'file_uploaded' || $eventdata->event_type == 'content_uploaded')) {
+                    // If draft submissions are turned on then only submit to Turnitin if using newer than 2.3 and
+                    // the Turnitin draft submit setting is set.
+                    if ($moduledata->submissiondrafts && $CFG->branch > 23 && 
+                        $plagiarismsettings->plagiarism_draft_submit == 1 &&
+                        ($eventdata->event_type == 'file_uploaded' || $eventdata->event_type == 'content_uploaded')) {
                         return true;
                     }
 

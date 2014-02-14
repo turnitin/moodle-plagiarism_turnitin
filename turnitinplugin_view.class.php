@@ -292,7 +292,7 @@ class turnitinplugin_view {
         $cells["module"] = new html_table_cell(get_string('module', 'turnitintooltwo'));
         $cells["file"] = new html_table_cell(get_string('file'));
         $cells["delete"] = new html_table_cell('&nbsp;');
-        $cells["delete"]->attributes['class'] = 'center';
+        $cells["delete"]->attributes['class'] = 'centered_cell';
 
         $table = new html_table();
         $table->id = "ppErrors";
@@ -305,7 +305,7 @@ class turnitinplugin_view {
             $cells = array();
             $cells["id"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
             $cells["id"]->colspan = 7;
-            $cells["id"]->attributes['class'] = 'center';
+            $cells["id"]->attributes['class'] = 'centered_cell';
             $rows[0] = new html_table_row($cells);
         } else {
             foreach ($files as $k => $v) {
@@ -345,7 +345,7 @@ class turnitinplugin_view {
                                             '/plagiarism/turnitin/settings.php?do=errors&action=deletefile&id='.$k,
                                             $OUTPUT->pix_icon('delete', get_string('deletesubmission', 'turnitintooltwo'),
                                                 'mod_turnitintooltwo'), $attributes));
-                    $cells["delete"]->attributes['class'] = 'center';
+                    $cells["delete"]->attributes['class'] = 'centered_cell';
 
                     $rows[$i] = new html_table_row($cells);
                     $i++;
@@ -356,7 +356,7 @@ class turnitinplugin_view {
                 $cells = array();
                 $cells["id"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
                 $cells["id"]->colspan = 7;
-                $cells["id"]->attributes['class'] = 'center';
+                $cells["id"]->attributes['class'] = 'centered_cell';
                 $rows[0] = new html_table_row($cells);
             }
         }

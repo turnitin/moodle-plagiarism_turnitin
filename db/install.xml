@@ -20,7 +20,8 @@
         <FIELD NAME="transmatch" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="legacyteacher" NEXT="lastmodified"/>
         <FIELD NAME="lastmodified" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="transmatch" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="lastmodified" NEXT="submissiontype"/>
-        <FIELD NAME="submissiontype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade"/>
+        <FIELD NAME="submissiontype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="orcapable" />
+        <FIELD NAME="orcapable" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="submissiontype"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

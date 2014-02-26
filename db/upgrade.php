@@ -60,5 +60,16 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2013081202, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2014012401) {
+        $dbman = $DB->get_manager();
+
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('orcapable', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'submissiontype');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2014012401, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }

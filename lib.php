@@ -476,7 +476,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
                         // Show Originality Report score and link.
-                        if (($istutor || $plagiarismsettings["plagiarism_show_student_report"]) && $submission->orcapable == 1) {
+                        if (($istutor || $plagiarismsettings["plagiarism_show_student_report"]) && $plagiarismfile->orcapable == 1) {
                             $output .= $OUTPUT->box_start('row_score origreport_open origreport_'.
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
                             // Show score.
@@ -590,7 +590,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $submissionid),
-                                                 'id, cm, userid, similarityscore, grade')) {
+                                                 'id, cm, userid, similarityscore, grade, orcapable')) {
             $updaterequired = false;
 
             // Initialise Comms Object.
@@ -621,7 +621,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Identify if an update is required for the similarity score and grade.
                 if (!is_null($plagiarismfile->similarityscore) || !is_null($plagiarismfile->grade)) {
                     if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
-                            $submissiondata->grade != $plagiarismfile->grade) {
+                            $submissiondata->grade != $plagiarismfile->grade || 
+                            $submissiondata->orcapable != $plagiarismfile->orcapable) {
                         $updaterequired = true;
                     }
                 }
@@ -877,20 +878,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $assignment->setSmallMatchExclusionThreshold($modulepluginsettings["plagiarism_exclude_matches_value"]);
         $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
-        $assignment->setAllowNonOrSubmissions($modulepluginsettings["plagiarism_allow_non_or_submissions"]);
+        $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
         $assignment->setTranslatedMatching(!empty($modulepluginsettings["plagiarism_transmatch"]) ? 1 : 0);
 
         // In Moodle 2.4 the preventlatesubmissions setting was removed and replaced by a cut off date
         if (isset($moduledata->preventlatesubmissions)) {
-            $latesubmissionsallowed = ($moduledata->preventlatesubmissions = 1) ? 0 : 1;
+            $latesubmissionsallowed = ($moduledata->preventlatesubmissions == 1) ? 0 : 1;
         } else if (isset($moduledata->cutoffdate)) {
-            if ($moduledata->cutoffdate == 0) {
+            if ($moduledata->cutoffdate > time()) {
                 $latesubmissionsallowed = 1;
-            } else if ($moduledata->cutoffdate == $moduledata->duedate) {
+            } else {
                 $latesubmissionsallowed = 0;
             }
         } else {
-            $latesubmissionsallowed = 1;
+            $latesubmissionsallowed = 0;
         }
 
         $assignment->setLateSubmissionsAllowed($latesubmissionsallowed);
@@ -913,8 +914,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (!empty($moduledata->duedate)) {
             $dtdue = $moduledata->duedate;
-            if (isset($dtdue->cutoffdate)) {
-                if ($dtdue->cutoffdate > 0) {
+            if (isset($moduledata->cutoffdate)) {
+                if ($moduledata->cutoffdate > 0) {
                     $dtdue = $moduledata->cutoffdate;
                 }
             }

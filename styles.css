@@ -116,11 +116,11 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
     width:100%;
 }
 
-.left {
+#page-admin-plagiarism-turnitin-settings .left {
     text-align: left;
 }
 
-.centered_cell {
+#page-admin-plagiarism-turnitin-settings .centered_cell {
     text-align: center;
 }
 

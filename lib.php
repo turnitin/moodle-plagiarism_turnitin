@@ -256,6 +256,24 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $context = context_course::instance($cm->course);
         }
 
+        static $coursedata;
+        if (empty($coursedata)) {
+            // Create the course/class in Turnitin if it doesn't already exist.
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            if (empty($coursedata->turnitin_cid)) {
+                // Course may existed in a previous incarnation of this plugin.
+                // Get this and save it in courses table if so.
+                if ($turnitincid = $this->get_previous_course_id($cm)) {
+                    $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
+                } else {
+                    // Otherwise create new course in Turnitin.
+                    $tiicoursedata = $this->create_tii_course($cm, $coursedata);
+                    $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
+                    $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
+                }
+            }
+        }
+
         static $plagiarismsettings;
         if (empty($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
@@ -371,6 +389,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                     if ($userid != $linkarray["userid"]) {
                         $user = new turnitintooltwo_user($USER->id, "Learner");
+                        $user->join_user_to_class($coursedata->turnitin_cid);
                         $userid = $linkarray["userid"];
 
                         if (!$user->get_accepted_user_agreement()) {

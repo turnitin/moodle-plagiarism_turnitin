@@ -945,10 +945,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($cm->modname == "forum") {
                 $dtdue = strtotime('+1 year');
             } else {
-                // If the assignment has no submission from date we take the due date
-                // to be 1 year from when it was created.
-                $dtdue = (!empty($moduledata->allowsubmissionsfromdate)) ? 
-                                $moduledata->allowsubmissionsfromdate : ($cm->added + (365 * 24 * 60 * 60));
+                // If the assignment has no due date we make it a month from now.
+                $dtdue = strtotime('+1 month');
             }
         }
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
@@ -1009,11 +1007,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
             $lastsubmissiondate = $moduledata->duedate;
             if (empty($moduledata->duedate)) {
-                if (empty($moduledata->allowsubmissionsfromdate)) {
-                    $lastsubmissiondate = $cm->added + (365 * 24 * 60 * 60);
-                } else {
-                    $lastsubmissiondate = $moduledata->allowsubmissionsfromdate + (365 * 24 * 60 * 60);
-                }
+                $lastsubmissiondate = strtotime('+1 month');
             }
 
             if (isset($moduledata->cutoffdate)) {

@@ -927,7 +927,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } else if (!empty($moduledata->timeavailable)) {
             $dtstart = $moduledata->timeavailable;
         } else {
-            $dtstart = $cm->added;
+            $dtstart = ($cm->added <= strtotime('-1 year')) ? strtotime('-364 days') : $cm->added;
         }
         $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
 

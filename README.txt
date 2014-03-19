@@ -14,8 +14,3 @@ The Plagiarism Plugin will inherit connection settings from the turnitintooltwo 
 To create/update assignments, process submissions and update grades your moodle environment will need to have cron job running regularly. For information on how to do this please consult http://docs.moodle.org/26/en/Cron.
 
 Note that this plugin inherits it's Turnitin connection from the turnitintooltwo module.
-
-Troubleshooting
----------------
-
-Pop-ups will need to be enabled on the browser being used if access to the Turnitin Document Viewer is required.

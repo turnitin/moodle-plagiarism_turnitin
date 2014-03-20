@@ -495,7 +495,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
                         // Show Originality Report score and link.
-                        if (($istutor || $plagiarismsettings["plagiarism_show_student_report"]) && $plagiarismfile->orcapable == 1) {
+                        if (($istutor || $plagiarismsettings["plagiarism_show_student_report"]) && 
+                            (is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1)) {
                             $output .= $OUTPUT->box_start('row_score origreport_open origreport_'.
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
                             // Show score.
@@ -927,8 +928,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } else if (!empty($moduledata->timeavailable)) {
             $dtstart = $moduledata->timeavailable;
         } else {
-            $dtstart = ($cm->added <= strtotime('-1 year')) ? strtotime('-364 days') : $cm->added;
+            $dtstart = $cm->added;
         }
+        $dtstart = ($dtstart <= strtotime('-1 year')) ? strtotime('-11 months') : $dtstart;
         $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
 
         if (!empty($moduledata->duedate)) {
@@ -949,8 +951,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $dtdue = strtotime('+1 month');
             }
         }
+        $dtpost = ($dtdue <= $dtstart) ? time() : $dtdue;
+        $dtdue = ($dtdue <= $dtstart) ? strtotime('+1 month') : $dtdue;
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
-        $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
+        $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         // Erater settings.
         $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ?

@@ -264,6 +264,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Course may existed in a previous incarnation of this plugin.
                 // Get this and save it in courses table if so.
                 if ($turnitincid = $this->get_previous_course_id($cm)) {
+                    $coursedata->turnitin_cid = $turnitincid;
                     $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
                 } else {
                     // Otherwise create new course in Turnitin.

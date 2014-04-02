@@ -57,7 +57,7 @@ class turnitinplugin_view {
         $elements[] = array('html', get_string('tiiexplain', 'turnitintooltwo'));
 
         $elements[] = array('checkbox', 'turnitin_use', get_string('useturnitin', 'turnitintooltwo'));
-        $elements[] = array('html', get_string('pp_configuredesc', 'turnitintooltwo'));
+        $elements[] = array('html', get_string('pp_configuredesc', 'turnitintooltwo', $CFG->wwwroot));
 
         $elements[] = array('hidden', 'action', 'config');
         $customdata["elements"] = $elements;

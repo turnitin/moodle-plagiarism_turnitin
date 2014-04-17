@@ -496,7 +496,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
                         // Show Originality Report score and link.
-                        if (($istutor || $plagiarismsettings["plagiarism_show_student_report"]) && 
+                        if (($istutor || ($linkarray["userid"] == $USER->id && $plagiarismsettings["plagiarism_show_student_report"])) && 
                             (is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1)) {
                             $output .= $OUTPUT->box_start('row_score origreport_open origreport_'.
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
@@ -527,7 +527,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Show link to open grademark.
-                        if (($istutor || ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time())))) 
+                        if ((($istutor || ($linkarray["userid"] == $USER->id)) || ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time())))) 
                             && $config->usegrademark) {
 
                             // Output grademark icon.

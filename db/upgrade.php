@@ -60,7 +60,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2013081202, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion <= 2014012402) {
+    if ($oldversion < 2014012403) {
         $dbman = $DB->get_manager();
 
         $table = new xmldb_table('plagiarism_turnitin_files');
@@ -70,7 +70,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         } else {
             $dbman->change_field_default($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2014012402, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012403, 'plagiarism', 'turnitin');
     }
 
     return $result;

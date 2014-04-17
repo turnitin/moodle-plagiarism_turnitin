@@ -763,10 +763,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Get 1st teacher and make them the owner.
         switch ($cm->modname) {
             case "forum":
-                $capability = 'mod/'.$cm->modname.':rate';
-                break;
             case "workshop":
-                $capability = 'mod/'.$cm->modname.':switchphase';
+                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
                 break;
             default:
                 $capability = 'mod/'.$cm->modname.':grade';

@@ -944,15 +944,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } else if (!empty($moduledata->timedue)) {
             $dtdue = $moduledata->timedue;
         } else {
-            // Forums do not have a due date.
-            if ($cm->modname == "forum") {
-                $dtdue = strtotime('+1 year');
-            } else {
-                // If the assignment has no due date we make it a month from now.
-                $dtdue = strtotime('+1 month');
-            }
+            // If the assignment has no due date of is a forum we make it due date month from now.
+            $dtdue = strtotime('+1 month');
         }
-        $dtpost = ($dtdue <= $dtstart) ? time() : $dtdue;
+        if ($cm->modname == "forum") {
+            $dtpost = $dtstart;
+        } else {
+            $dtpost = ($dtdue <= $dtstart) ? time() : $dtdue;
+        }
         $dtdue = ($dtdue <= $dtstart) ? strtotime('+1 month') : $dtdue;
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));

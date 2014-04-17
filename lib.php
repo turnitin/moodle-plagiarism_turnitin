@@ -289,13 +289,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         static $istutor;
         switch ($cm->modname) {
             case "forum":
-                if (empty($istutor)) {
-                    $istutor = has_capability('mod/'.$cm->modname.':rate', $context);
-                }
-                break;
             case "workshop":
                 if (empty($istutor)) {
-                    $istutor = has_capability('mod/'.$cm->modname.':switchphase', $context);
+                    $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
                 }
                 break;
             default:

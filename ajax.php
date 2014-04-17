@@ -85,10 +85,8 @@ switch ($action) {
 
         switch ($cm->modname) {
             case "forum":
-                $istutor = has_capability('mod/'.$cm->modname.':rate', $context);
-                break;
             case "workshop":
-                $istutor = has_capability('mod/'.$cm->modname.':switchphase', $context);
+                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
                 break;
             default:
                 $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
@@ -138,10 +136,8 @@ switch ($action) {
     case "peermarkmanager":
         switch ($cm->modname) {
             case "forum":
-                $istutor = has_capability('mod/'.$cm->modname.':rate', $context);
-                break;
             case "workshop":
-                $istutor = has_capability('mod/'.$cm->modname.':switchphase', $context);
+                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
                 break;
             default:
                 $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
@@ -202,10 +198,8 @@ switch ($action) {
     case "peermarkreviews":
         switch ($cm->modname) {
             case "forum":
-                $istutor = has_capability('mod/'.$cm->modname.':rate', $context);
-                break;
             case "workshop":
-                $istutor = has_capability('mod/'.$cm->modname.':switchphase', $context);
+                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
                 break;
             default:
                 $istutor = has_capability('mod/'.$cm->modname.':grade', $context);

@@ -527,8 +527,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Show link to open grademark.
-                        if ((($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade))) || 
-                                ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time())))) 
+                        if ((($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade) && (!empty($duedate) && $duedate <= time()))) || 
+                                ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time()) && !is_null($plagiarismfile->grade)))) 
                                     && $config->usegrademark) {
 
                             // Output grademark icon.

@@ -764,7 +764,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         switch ($cm->modname) {
             case "forum":
             case "workshop":
-                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
+                $capability = 'plagiarism/turnitin:viewfullreport';
                 break;
             default:
                 $capability = 'mod/'.$cm->modname.':grade';

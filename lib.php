@@ -498,14 +498,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
                             // Show score.
                             if ($plagiarismfile->statuscode == "pending") {
-                                $output .= html_writer::tag('div', '', array('title' => get_string('pending', 'turnitintooltwo'),
-                                                                        'class' => 'tooltip origreport_score score_colour score_colour_'));
+                                $output .= html_writer::tag('div', '&nbsp;', array('title' => get_string('pending', 'turnitintooltwo'),
+                                                                        'class' => 'tii_tooltip origreport_score score_colour score_colour_'));
                             } else {
                                 // Put EN flag if translated matching is on and that is the score used.
                                 $transmatch = ($plagiarismfile->transmatch == 1) ? ' EN' : '';
 
                                 if (is_null($plagiarismfile->similarityscore)) {
-                                    $score = '';
+                                    $score = '&nbsp;';
                                     $titlescore = get_string('pending', 'turnitintooltwo');
                                     $class = 'score_colour_';
                                 } else {
@@ -515,7 +515,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 }
 
                                 $output .= html_writer::tag('div', $score.$transmatch,
-                                                array('title' => $titlescore, 'class' => 'tooltip origreport_score score_colour '.$class));
+                                                array('title' => $titlescore, 'class' => 'tii_tooltip origreport_score score_colour '.$class));
                             }
                             // Put in div placeholder for DV launch form.
                             $output .= $OUTPUT->box('', 'launch_form origreport_form_'.$plagiarismfile->externalid);
@@ -532,7 +532,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-edit',
                                                                 get_string('grademark', 'turnitintooltwo'), 'mod_turnitintooltwo'),
                                                     array('title' => get_string('grademark', 'turnitintooltwo'),
-                                                        'class' => 'grademark_open tooltip grademark_'.$plagiarismfile->externalid.
+                                                        'class' => 'grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
                                                                         '_'.$linkarray["cmid"]));
 
                             // Put in div placeholder for DV launch form.
@@ -544,7 +544,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                             $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box', '&nbsp;',
-                                                            array('class' => 'tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
+                                                            array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                                     'title' => get_string('launchrubricview', 'turnitintooltwo'))).
                                                                         html_writer::tag('span', '',
                                                                         array('class' => 'launch_form', 'id' => 'rubric_view_form')),
@@ -582,7 +582,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $peermarkreviewslink .= html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                 '&action=peermarkreviews&view_context=box', '',
                                                                 array('title' => get_string('launchpeermarkreviews', 'turnitintooltwo'),
-                                                                    'class' => 'peermark_reviews_pp_launch tooltip'));
+                                                                    'class' => 'peermark_reviews_pp_launch tii_tooltip'));
                                     $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',
                                                                                                 'id' => 'peermark_reviews_form'));
                                     $peermarkreviewslink .= $OUTPUT->box_end(true);

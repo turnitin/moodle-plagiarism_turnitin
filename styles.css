@@ -22,6 +22,10 @@
     float: left;
 }
 
+.grade_icon {
+	font-size: 8px;
+}
+
 .row_rubric_view {
     position: relative;
     top:4px;
@@ -76,13 +80,12 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
 
 .tii_links_container .score_colour {
     background-image:url(../../../../mod/turnitintooltwo/pix/gradback.jpg);
-    width:32px;
+    width:36px;
     font-size:12px;
     display:inline-block;
     text-align: right;
     margin-right:8px;
-    padding: 3px 2px 0 2px;
-    height: 18px;
+    padding: 2px 2px;
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }

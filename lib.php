@@ -1488,7 +1488,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $settings = $this->get_settings($cm->id);
         $nooffilesallowed = $this->get_max_files_allowed($cm->instance, $cm->modname);
 
-        // Update user's details on Turnitin
+        // Do not submit if 5 attempts have been made previously.
+        $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
+                                        " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? AND statuscode != ? ",
+                                    array($cm->id, $user->id, $submissiontype, $identifier, 'success'), 'id');
+
+        if (count($previoussubmissions) >= 5) {
+            $return["success"] = false;
+            $return["message"] = get_string('pp_submission_error', 'turnitintooltwo');
+            return $return;
+        }
+
+        // Update user's details on Turnitin.
         $user->edit_tii_user();
 
         // Clean up old Turnitin submission files. This will only run on cron execution or for ajax file submissions.
@@ -1680,6 +1691,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $return["success"] = false;
             $return["message"] = get_string('pp_submission_error', 'turnitintooltwo').' '.$e->getMessage();
+
+            $plagiarismfile = new object();
+            if ($submissionid != 0) {
+                $plagiarismfile->id = $submissionid;
+            }
+            $plagiarismfile->cm = $cm->id;
+            $plagiarismfile->userid = $user->id;
+            $plagiarismfile->identifier = $identifier;
+            $plagiarismfile->statuscode = 'error';
+            $plagiarismfile->attempt = 1;
+            $plagiarismfile->lastmodified = time();
+            $plagiarismfile->submissiontype = $submissiontype;
+
+            if ($submissionid != 0) {
+                if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                    turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
+                }
+            } else {
+                if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                    turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
+                }
+            }
 
             $turnitincomms->handle_exceptions($e, $errorstring, false);
         }

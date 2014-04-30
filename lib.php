@@ -458,7 +458,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && ($istutor || $submission_status)) {
                 // Get turnitin details - have to do this again as submission may have been made above.
                 $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
-                                                        'cm' => $linkarray["cmid"], 'identifier' => $identifier));
+                                                        'cm' => $linkarray["cmid"], 'identifier' => $identifier,
+                                                        'statuscode' => 'success'));
 
                 // Get user's grades.
                 $duedate = 0;

@@ -457,9 +457,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Display Links for files and contents.
             if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && ($istutor || $submission_status)) {
                 // Get turnitin details - have to do this again as submission may have been made above.
-                $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
+                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
                                                         'cm' => $linkarray["cmid"], 'identifier' => $identifier,
-                                                        'statuscode' => 'success'));
+                                                        'statuscode' => 'success'), 'lastmodified DESC', '*', 0, 1);
+                $plagiarismfile = current($plagiarismfiles);
 
                 // Get user's grades.
                 $duedate = 0;
@@ -494,7 +495,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($plagiarismfile->statuscode == 'success') {
                         // Show Originality Report score and link.
                         if (($istutor || ($linkarray["userid"] == $USER->id && $plagiarismsettings["plagiarism_show_student_report"])) && 
-                            (is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1)) {
+                            ((is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1) && !is_null($plagiarismfile->similarityscore))) {
                             $output .= $OUTPUT->box_start('row_score origreport_open origreport_'.
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
                             // Show score.

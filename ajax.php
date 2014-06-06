@@ -25,8 +25,10 @@ require_login();
 $action = required_param('action', PARAM_ALPHAEXT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);
-$cm = get_coursemodule_from_id('', $cmid);
-$context = context_course::instance($cm->course);
+if( !empty( $cmid ) ){
+    $cm = get_coursemodule_from_id('', $cmid);
+    $context = context_course::instance($cm->course);
+}
 $pathnamehash = optional_param('pathnamehash', "", PARAM_ALPHANUM);
 $submissiontype = optional_param('submission_type', "", PARAM_ALPHAEXT);
 $return = array();
@@ -221,6 +223,22 @@ switch ($action) {
                                     window.document.forms[0].submit();
                                     //-->");
         }
+        break;
+
+    case "acceptuseragreement":
+        $eula_user_id = required_param('user_id', PARAM_INT);
+
+        // Get the id from the turnitintooltwo_users table so we can update
+        $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $eula_user_id));
+
+        // Build user object for update
+        $eula_user = new object();
+        $eula_user->id += $turnitin_user->id;
+        $eula_user->userid = $eula_user_id;
+        $eula_user->user_agreement_accepted = 1;
+
+        // Update the user using the above object
+        $DB->update_record('turnitintooltwo_users', $eula_user, $bulk=false);
         break;
 }
 

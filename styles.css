@@ -14,7 +14,7 @@
     padding-right: 8px;
 }
 
-.launch_form, .useragreement_form, .turnitin_eula_link, #useragreement_form form, .cmid {
+.launch_form, .useragreement_form, .turnitin_eula_link, #useragreement_form form, .cmid, .userid {
     display:none;
 }
 

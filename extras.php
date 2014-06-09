@@ -1,8 +1,4 @@
 <?php
-@error_reporting(1023);  // NOT FOR PRODUCTION SERVERS!
-@ini_set('display_errors', '1'); // NOT FOR PRODUCTION SERVERS!
-$CFG->debug = 38911;  // DEBUG_DEVELOPER // NOT FOR PRODUCTION SERVERS!
-$CFG->debugdisplay = true;   // NOT FOR PRODUCTION SERVERS!
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

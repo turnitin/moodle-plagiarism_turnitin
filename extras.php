@@ -86,5 +86,3 @@ if ($cmd == 'courses') {
 echo $output;
 
 echo $OUTPUT->footer();
-
-?>

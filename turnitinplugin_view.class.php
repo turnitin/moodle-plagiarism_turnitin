@@ -103,18 +103,24 @@ class turnitinplugin_view {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'turnitintooltwo'));
 
             // Add in custom Javascript and CSS.
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery-1.8.2.min.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/turnitintooltwo.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/plagiarism_plugin.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery.dataTables.min.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery-ui-1.10.2.custom.min.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery.colorbox-min.js');
-            $PAGE->requires->js($jsurl, true);
+            if ($CFG->branch <= 25) {
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+                $PAGE->requires->js($jsurl, true);
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+                $PAGE->requires->js($jsurl, true);
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+                $PAGE->requires->js($jsurl, true);
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.2.custom.min.js');
+                $PAGE->requires->js($jsurl, true);
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+                $PAGE->requires->js($jsurl, true);
+            } else {
+                $PAGE->requires->jquery();
+                $PAGE->requires->jquery_plugin('ui');
+                $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
+                $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
+                $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
+            }
 
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/styles.css');
             $PAGE->requires->css($cssurl);
@@ -271,12 +277,14 @@ class turnitinplugin_view {
         } else {
             $mform->addElement('hidden', 'plagiarism_anonymity', 0);
         }
+        $mform->setType('plagiarism_anonymity', PARAM_INT);
 
         if ($config->transmatch) {
             $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
         } else {
             $mform->addElement('hidden', 'plagiarism_transmatch', 0);
         }
+        $mform->setType('plagiarism_transmatch', PARAM_INT);
 
         $mform->addElement('hidden', 'action', "defaults");
         $mform->setType('action', PARAM_RAW);

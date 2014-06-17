@@ -311,17 +311,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && !empty($linkarray["cmid"])) {
 
             // Include Javascript.
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery-1.8.2.min.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
             $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/turnitintooltwo.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
             $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/plagiarism_plugin.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
             $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery.colorbox-min.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
             $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/jquery.tooltipster.min.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
             $PAGE->requires->js($jsurl);
-
+            
             // Initialise vars for working out whether we are submitting.
             $submitting = false;
             $submission_status = true;
@@ -384,6 +384,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if (empty($userid)) {
                         $userid = 0;
                     }
+
                     if ($userid != $linkarray["userid"]) {
                         $user = new turnitintooltwo_user($USER->id, "Learner");
                         $user->join_user_to_class($coursedata->turnitin_cid);
@@ -436,7 +437,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // If a user has just submitted then send to Turnitin via Ajax (not forums).
                 if ($submitting && $submission_status) {
                     // Include Javascript for Submitting.
-                    $jsurl = new moodle_url('/mod/turnitintooltwo/scripts/plagiarism_submission.js');
+                    $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_submission.js');
                     $PAGE->requires->js($jsurl);
 
                     $submissiontype = (!empty($linkarray["file"])) ? 'file' : 'text_content';

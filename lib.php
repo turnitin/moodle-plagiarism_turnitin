@@ -939,6 +939,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $dtstart = ($dtstart <= strtotime('-1 year')) ? strtotime('-11 months') : $dtstart;
         $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
 
+        $dtdue = 0;
         if (!empty($moduledata->duedate)) {
             $dtdue = $moduledata->duedate;
             if (isset($moduledata->cutoffdate)) {
@@ -948,10 +949,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         } else if (!empty($moduledata->timedue)) {
             $dtdue = $moduledata->timedue;
-        } else {
-            // If the assignment has no due date of is a forum we make it due date month from now.
-            $dtdue = strtotime('+1 month');
         }
+
+        // If the module has no due date or is a forum, or the due date has passed 
+        // we make the due date one month from now in Turnitin so that we can submit past the due date.
+        $dtdue = ($dtdue <= time()) ? strtotime('+1 month') : 0;
+
         if ($cm->modname == "forum") {
             $dtpost = $dtstart;
         } else {
@@ -1010,25 +1013,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function check_if_submitting($cm, $userid, $pathnamehash, $submissiontype) {
         global $DB;
-
-        // We are not submitting to Turnitin after the due/cut off date. Which ever is latest.
-        if ($cm->modname == "assign") {
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-            $lastsubmissiondate = $moduledata->duedate;
-            if (empty($moduledata->duedate)) {
-                $lastsubmissiondate = strtotime('+1 month');
-            }
-
-            if (isset($moduledata->cutoffdate)) {
-                if ($moduledata->cutoffdate > 0) {
-                    $lastsubmissiondate = $moduledata->cutoffdate;
-                }
-            }
-
-            if ($lastsubmissiondate < time()) {
-                return false;
-            }
-        }
 
         if ($submissiontype == 'text_content' || $submissiontype == 'forum_post') {
             return true;

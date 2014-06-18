@@ -168,6 +168,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
                 $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
                 $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
+            }
+
+            if ($DB->record_exists('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'submitted'))) {
                 $mform->disabledIf('plagiarism_anonymity', 'use_turnitin');
             }
 
@@ -321,7 +324,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $PAGE->requires->js($jsurl);
             $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
             $PAGE->requires->js($jsurl);
-            
+
             // Initialise vars for working out whether we are submitting.
             $submitting = false;
             $submission_status = true;
@@ -1686,6 +1689,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             } else {
                 if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
                     turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.")", "PP_INSERT_SUB");
+                }
+            }
+
+            // Add config field to show submissions have been made which we use to lock anonymous marking setting
+            $configfield = new object();
+            $configfield->cm = $cm->id;
+            $configfield->name = 'submitted';
+            $configfield->value = 1;
+
+            if (!$currentconfigfield = $DB->get_field('plagiarism_turnitin_config', 'id',
+                                                 (array('cm' => $data->coursemodule, 'name' => 'submitted')))) {
+                if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
+                    turnitintooltwo_print_error('defaultupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
                 }
             }
 

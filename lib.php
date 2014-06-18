@@ -1245,7 +1245,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 case "files_done":
                     $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                     if ($cm->modname != 'assign') {
-                       $moduledata->submissiondrafts = 0;
+                        $moduledata->submissiondrafts = 0;
                     }
 
                     // If draft submissions are turned on then only submit to Turnitin if using newer than 2.3 and
@@ -1296,9 +1296,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $eventdata->event_type == "assessable_submitted")
                             && !empty($eventdata->content)) {
 
-                        // Remove event and do not submit if content is less than 20 words or 100 characters.
+                        // Remove event and do not submit if we're not accepting anything and
+                        // content is less than 20 words or 100 characters.
                         $content = explode(' ', $eventdata->content);
-                        if (strlen($eventdata->content) < 100 || count($content) < 20) {
+                        if ($plagiarismsettings['plagiarism_allow_non_or_submissions'] != 1 && 
+                                (strlen($eventdata->content) < 100 || count($content) < 20)) {
                             $result = true;
                         }
 
@@ -1630,6 +1632,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $filename = $title;
                 break;
+        }
+
+        // Remove event and do not submit if we're not accepting anything and
+        // content is less than 20 words or 100 characters.
+        $content = explode(' ', $textcontent);
+        if ($settings['plagiarism_allow_non_or_submissions'] != 1 && 
+                (strlen($textcontent) < 100 || count($textcontent) < 20)) {
+            $return["success"] = false;
         }
 
         // Read the stored file/content into a temp file for submitting.

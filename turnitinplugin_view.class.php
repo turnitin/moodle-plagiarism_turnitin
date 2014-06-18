@@ -104,7 +104,9 @@ class turnitinplugin_view {
         if ($location == "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'turnitintooltwo'));
             $mform->addElement('html', get_string("defaultsdesc", "turnitintooltwo"));
-        } else {
+        } 
+
+        if ($location != "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'turnitintooltwo'));
 
             // Add in custom Javascript and CSS.
@@ -161,138 +163,154 @@ class turnitinplugin_view {
                 $peermarkmanagerlink .= $OUTPUT->box_end(true);
             }
 
-            $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
-
-        }
-        $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
-        $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
-        $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
-
-        if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
-            $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"), 
-                                     1 => get_string("submitonfinal", "turnitintooltwo"));
-
-            $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
-            $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
-        }
-
-        $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
-        $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
-
-        $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
-                            1 => get_string('standardrepository', 'turnitintooltwo'));
-        if ($config->userepository == "1") {
-            $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
-        }
-        $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
-
-        $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
-        $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);
-        $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
-
-        if ($config->userepository) {
-            $mform->addElement('select', 'plagiarism_compare_institution',
-                                            get_string('compareinstitution', 'turnitintooltwo'), $options);
-        }
-
-        $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions);
-        $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
-        $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);
-
-        $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "turnitintooltwo"),
-                                                                            $excludetypeoptions);
-        $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
-        $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
-        $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
-        $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
-
-        if ($location == "activity") {
-            // Populate Rubric options.
-            $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
-            if (!empty($this->turnitintooltwo->rubric)) {
-                $rubricoptions[$this->turnitintooltwo->rubric] = (isset($rubricoptions[$this->turnitintooltwo->rubric])) ?
-                                $rubricoptions[$this->turnitintooltwo->rubric] : get_string('otherrubric', 'turnitintooltwo');
+            $config_warning = '';
+            if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
+                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
+                                                    array('class' => 'library_not_present_warning'));
             }
 
-            $rubricline = array();
-            $rubricline[] = $mform->createElement('select', 'plagiarism_rubric', '', $rubricoptions);
-            $rubricline[] = $mform->createElement('static', 'rubric_link', '',
-                                    html_writer::link($CFG->wwwroot.
-                                                '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
-                                                get_string('launchrubricmanager', 'turnitintooltwo'),
-                                                array('class' => 'rubric_manager_launch',
-                                                    'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).
-                                                html_writer::tag('span', '', array('class' => 'launch_form',
-                                                                                'id' => 'rubric_manager_form')));
-            $mform->setDefault('rubric', '');
-            $mform->addGroup($rubricline, 'rubricline', get_string('attachrubric', 'turnitintooltwo'), array(' '), false);
-            $mform->addElement('hidden', 'rubric_warning_seen', '');
-            $mform->setType('rubric_warning_seen', PARAM_RAW);
+            if ($config_warning != '') {
+                $mform->addElement('html', $config_warning);
+            }
 
-            $mform->addElement('static', 'rubric_note', '', get_string('attachrubricnote', 'turnitintooltwo'));
+            $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
         }
 
-        if (!empty($config->useerater)) {
-            $handbookoptions = array(
-                                        1 => get_string('erater_handbook_advanced', 'turnitintooltwo'),
-                                        2 => get_string('erater_handbook_highschool', 'turnitintooltwo'),
-                                        3 => get_string('erater_handbook_middleschool', 'turnitintooltwo'),
-                                        4 => get_string('erater_handbook_elementary', 'turnitintooltwo'),
-                                        5 => get_string('erater_handbook_learners', 'turnitintooltwo')
-                                    );
+        if ($location != "defaults" && empty($config_warning)) {
+            $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
 
-            $dictionaryoptions = array(
-                                        'en_US' => get_string('erater_dictionary_enus', 'turnitintooltwo'),
-                                        'en_GB' => get_string('erater_dictionary_engb', 'turnitintooltwo'),
-                                        'en'    => get_string('erater_dictionary_en', 'turnitintooltwo')
-                                    );
-            $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'turnitintooltwo'), $options);
-            $mform->setDefault('plagiarism_erater', 0);
+            $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
+            $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
 
-            $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook', 'turnitintooltwo'),
-                                            $handbookoptions);
-            $mform->setDefault('plagiarism_erater_handbook', 2);
-            $mform->disabledIf('plagiarism_erater_handbook', 'plagiarism_erater', 'eq', 0);
+            if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
+                $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"), 
+                                         1 => get_string("submitonfinal", "turnitintooltwo"));
 
-            $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary', 'turnitintooltwo'),
-                                            $dictionaryoptions);
-            $mform->setDefault('plagiarism_erater_dictionary', 'en_US');
-            $mform->disabledIf('plagiarism_erater_dictionary', 'plagiarism_erater', 'eq', 0);
+                $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
+                $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
+            }
 
-            $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories', 'turnitintooltwo'),
-                                            " ".get_string('erater_spelling', 'turnitintooltwo'));
-            $mform->disabledIf('plagiarism_erater_spelling', 'plagiarism_erater', 'eq', 0);
+            $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
+            $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
 
-            $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar', 'turnitintooltwo'));
-            $mform->disabledIf('plagiarism_erater_grammar', 'plagiarism_erater', 'eq', 0);
+            $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
+                                1 => get_string('standardrepository', 'turnitintooltwo'));
+            if ($config->userepository == "1") {
+                $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
+            }
+            $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
 
-            $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage', 'turnitintooltwo'));
-            $mform->disabledIf('plagiarism_erater_usage', 'plagiarism_erater', 'eq', 0);
+            $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
 
-            $mform->addElement('checkbox', 'plagiarism_erater_mechanics', '', " ".
-                                            get_string('erater_mechanics', 'turnitintooltwo'));
-            $mform->disabledIf('plagiarism_erater_mechanics', 'plagiarism_erater', 'eq', 0);
+            if ($config->userepository) {
+                $mform->addElement('select', 'plagiarism_compare_institution',
+                                                get_string('compareinstitution', 'turnitintooltwo'), $options);
+            }
 
-            $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'turnitintooltwo'));
-            $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
-        }
+            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions);
+            $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);
 
-        if ($config->useanon) {
-            $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "turnitintooltwo"),
+                                                                                $excludetypeoptions);
+            $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
+            $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
+            $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
+            $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
+
+            if ($location == "activity") {
+                // Populate Rubric options.
+                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
+                if (!empty($this->turnitintooltwo->rubric)) {
+                    $rubricoptions[$this->turnitintooltwo->rubric] = (isset($rubricoptions[$this->turnitintooltwo->rubric])) ?
+                                    $rubricoptions[$this->turnitintooltwo->rubric] : get_string('otherrubric', 'turnitintooltwo');
+                }
+
+                $rubricline = array();
+                $rubricline[] = $mform->createElement('select', 'plagiarism_rubric', '', $rubricoptions);
+                $rubricline[] = $mform->createElement('static', 'rubric_link', '',
+                                        html_writer::link($CFG->wwwroot.
+                                                    '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
+                                                    get_string('launchrubricmanager', 'turnitintooltwo'),
+                                                    array('class' => 'rubric_manager_launch',
+                                                        'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).
+                                                    html_writer::tag('span', '', array('class' => 'launch_form',
+                                                                                    'id' => 'rubric_manager_form')));
+                $mform->setDefault('rubric', '');
+                $mform->addGroup($rubricline, 'rubricline', get_string('attachrubric', 'turnitintooltwo'), array(' '), false);
+                $mform->addElement('hidden', 'rubric_warning_seen', '');
+                $mform->setType('rubric_warning_seen', PARAM_RAW);
+
+                $mform->addElement('static', 'rubric_note', '', get_string('attachrubricnote', 'turnitintooltwo'));
+            }
+
+            if (!empty($config->useerater)) {
+                $handbookoptions = array(
+                                            1 => get_string('erater_handbook_advanced', 'turnitintooltwo'),
+                                            2 => get_string('erater_handbook_highschool', 'turnitintooltwo'),
+                                            3 => get_string('erater_handbook_middleschool', 'turnitintooltwo'),
+                                            4 => get_string('erater_handbook_elementary', 'turnitintooltwo'),
+                                            5 => get_string('erater_handbook_learners', 'turnitintooltwo')
+                                        );
+
+                $dictionaryoptions = array(
+                                            'en_US' => get_string('erater_dictionary_enus', 'turnitintooltwo'),
+                                            'en_GB' => get_string('erater_dictionary_engb', 'turnitintooltwo'),
+                                            'en'    => get_string('erater_dictionary_en', 'turnitintooltwo')
+                                        );
+                $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'turnitintooltwo'), $options);
+                $mform->setDefault('plagiarism_erater', 0);
+
+                $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook', 'turnitintooltwo'),
+                                                $handbookoptions);
+                $mform->setDefault('plagiarism_erater_handbook', 2);
+                $mform->disabledIf('plagiarism_erater_handbook', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary', 'turnitintooltwo'),
+                                                $dictionaryoptions);
+                $mform->setDefault('plagiarism_erater_dictionary', 'en_US');
+                $mform->disabledIf('plagiarism_erater_dictionary', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories', 'turnitintooltwo'),
+                                                " ".get_string('erater_spelling', 'turnitintooltwo'));
+                $mform->disabledIf('plagiarism_erater_spelling', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar', 'turnitintooltwo'));
+                $mform->disabledIf('plagiarism_erater_grammar', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage', 'turnitintooltwo'));
+                $mform->disabledIf('plagiarism_erater_usage', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('checkbox', 'plagiarism_erater_mechanics', '', " ".
+                                                get_string('erater_mechanics', 'turnitintooltwo'));
+                $mform->disabledIf('plagiarism_erater_mechanics', 'plagiarism_erater', 'eq', 0);
+
+                $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'turnitintooltwo'));
+                $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
+            }
+
+            if ($config->useanon) {
+                $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
+            } else {
+                $mform->addElement('hidden', 'plagiarism_anonymity', 0);
+            }
+            $mform->setType('plagiarism_anonymity', PARAM_INT);
+
+            if ($config->transmatch) {
+                $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
+            } else {
+                $mform->addElement('hidden', 'plagiarism_transmatch', 0);
+            }
+            $mform->setType('plagiarism_transmatch', PARAM_INT);
+
+            $mform->addElement('hidden', 'action', "defaults");
+            $mform->setType('action', PARAM_RAW);
         } else {
-            $mform->addElement('hidden', 'plagiarism_anonymity', 0);
+            $mform->addElement('hidden', 'use_turnitin', 0);
+            $mform->setType('use_turnitin', PARAM_INT);
         }
-        $mform->setType('plagiarism_anonymity', PARAM_INT);
-
-        if ($config->transmatch) {
-            $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
-        } else {
-            $mform->addElement('hidden', 'plagiarism_transmatch', 0);
-        }
-        $mform->setType('plagiarism_transmatch', PARAM_INT);
-
-        $mform->addElement('hidden', 'action', "defaults");
-        $mform->setType('action', PARAM_RAW);
 
         // Disable the form change checker - added in 2.3.2.
         if (is_callable(array($mform, 'disable_form_change_checker'))) {

@@ -56,7 +56,12 @@ class turnitinplugin_view {
         $elements[] = array('header', 'config', get_string('turnitinconfig', 'turnitintooltwo'));
         $elements[] = array('html', get_string('tiiexplain', 'turnitintooltwo'));
 
-        $elements[] = array('checkbox', 'turnitin_use', get_string('useturnitin', 'turnitintooltwo'));
+        // Enable Turnitin for specific modules
+        $supported_mods = array('assign', 'forum', 'workshop');
+        foreach ($supported_mods as $mod) {
+            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod));
+        }
+
         $elements[] = array('html', get_string('pp_configuredesc', 'turnitintooltwo', $CFG->wwwroot));
 
         $elements[] = array('hidden', 'action', 'config');

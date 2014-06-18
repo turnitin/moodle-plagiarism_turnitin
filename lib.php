@@ -55,12 +55,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      *
      * @return mixed if plugin is enabled then an array of config settings is returned or false if not
      */
-    public static function get_config_settings() {
+    public static function get_config_settings($modulename) {
         global $DB;
-        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
-            $configsettings['turnitin_use'] = $turnitinsetting->value;
+        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use_'.$modulename, 'plugin' => 'plagiarism'))) {
+            $configsettings['turnitin_use_'.$modulename] = $turnitinsetting->value;
         } else {
-            $configsettings['turnitin_use'] = 0;
+            $configsettings['turnitin_use_'.$modulename] = 0;
         }
 
         return $configsettings;
@@ -102,8 +102,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function save_form_elements($data) {
         global $DB;
-        $configsettings = $this->get_config_settings();
-        if (empty($configsettings['turnitin_use'])) {
+
+        $configsettings = $this->get_config_settings('mod_'.$data->modulename);
+        if (empty($configsettings['turnitin_use_mod_'.$data->modulename])) {
             return;
         }
 
@@ -142,8 +143,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
         global $DB;
-        $configsettings = $this->get_config_settings();
-        if (empty($configsettings['turnitin_use'])) {
+
+        $configsettings = $this->get_config_settings($modulename);
+        if (empty($configsettings['turnitin_use_'.$modulename])) {
             return;
         }
 

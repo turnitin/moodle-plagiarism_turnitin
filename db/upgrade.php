@@ -69,5 +69,22 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014012403, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2014012405) {
+        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
+            if ($turnitinsetting->value == 1) {
+                $supported_mods = array('assign', 'forum', 'workshop');
+                foreach ($supported_mods as $mod) {
+                    $configfield = new object();
+                    $configfield->value = 1;
+                    $configfield->plugin = 'plagiarism';
+                    $configfield->name = 'turnitin_use_mod_'.$mod;
+                    $DB->insert_record('config_plugins', $configfield);
+                }
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2014012405, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }

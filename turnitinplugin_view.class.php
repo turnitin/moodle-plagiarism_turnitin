@@ -90,6 +90,7 @@ class turnitinplugin_view {
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $config = turnitintooltwo_admin_config();
+        $config_warning = '';
 
         $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
         $instructorrubrics = $instructor->get_instructor_rubrics();
@@ -136,6 +137,15 @@ class turnitinplugin_view {
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
+            if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
+                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
+                                                    array('class' => 'library_not_present_warning'));
+            }
+
+            if ($config_warning != '') {
+                $mform->addElement('html', $config_warning);
+            }
+
             // Quickmark Manager.
             $quickmarkmanagerlink = $OUTPUT->box_start('row_quickmark_manager', '');
             $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
@@ -163,20 +173,10 @@ class turnitinplugin_view {
                 $peermarkmanagerlink .= $OUTPUT->box_end(true);
             }
 
-            $config_warning = '';
-            if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
-                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
-                                                    array('class' => 'library_not_present_warning'));
-            }
-
-            if ($config_warning != '') {
-                $mform->addElement('html', $config_warning);
-            }
-
             $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
         }
 
-        if ($location != "defaults" && empty($config_warning)) {
+        if (empty($config_warning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
 
             $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);

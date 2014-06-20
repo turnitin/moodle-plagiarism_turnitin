@@ -186,6 +186,61 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Remove Turnitin class and assignment links from database 
+     * so that new classes and assignments will be created.
+     *
+     * @param type $eventdata
+     * @return boolean
+     */
+    public static function course_reset(\core\event\course_reset_ended $event) {
+        global $DB;
+        $eventdata = $event->get_data();
+        $courseid = (int)$eventdata['courseid'];
+        $resetcourse = true;
+
+        $resetassign = ($eventdata['other']['reset_options']['reset_assign_submissions']) ? 
+                            $eventdata['other']['reset_options']['reset_assign_submissions'] : 0;
+        $resetforum = (isset($eventdata['other']['reset_options']['reset_forum_all'])) ? 
+                            $eventdata['other']['reset_options']['reset_forum_all'] : 0;
+
+        $supportedmods = array('assign', 'forum', 'workshop');
+        foreach ($supportedmods as $supportedmod) {
+            $module = $DB->get_record('modules', array('name' => $supportedmod));
+
+            // Get all the course modules that have Turnitin enabled
+            $sql = 'SELECT cm.id
+                    FROM {course_modules} cm
+                    RIGHT JOIN {plagiarism_turnitin_config} ptc ON cm.id = ptc.cm
+                    WHERE cm.module = :moduleid
+                    AND cm.course = :courseid
+                    AND ptc.name = "turnitin_assignid"';
+            $params = array('courseid' => $courseid, 'moduleid' => $module->id);
+            $modules = $DB->get_records_sql($sql, $params);
+
+            if (count($modules) > 0) {
+                $reset = "reset".$supportedmod;
+                if ($$reset) {
+                    // Remove Plagiarism plugin submissions and assignment id from DB for this module.
+                    foreach ($modules as $mod) {
+                        $DB->delete_records('plagiarism_turnitin_files', array('cm' => $mod->id));
+                        $DB->delete_records('plagiarism_turnitin_config', array('cm' => $mod->id, 'name' => 'turnitin_assignid'));
+                    }
+                } else {
+                    $resetcourse = false;
+                }
+            }
+        }
+
+        // If all turnitin enabled modules for this course have been reset
+        // then remove the Turnitin course id from the database
+        if ($resetcourse) {
+            $DB->delete_records('turnitintooltwo_courses', array('courseid' => $courseid, 'course_type' => 'PP'));
+        }
+
+        return true;
+    }
+
+    /**
      * Print the Turnitin student disclosure inside the submission page for students to see
      *
      * @global type $DB
@@ -1825,13 +1880,17 @@ function event_mod_updated($eventdata) {
 }
 
 /**
- * We don't want to delete an assignment on Turnitin so we return true to
- * continue the cron processing
+ * Remove submission data and config settins for module.
  *
  * @param type $eventdata
  * @return boolean true
  */
 function event_mod_deleted($eventdata) {
+    global $DB;
+
+    $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata->cmid));
+    $DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata->cmid));
+    
     return true;
 }
 

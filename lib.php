@@ -1255,7 +1255,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user = new turnitintooltwo_user($eventdata->userid, 'Learner');
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
-                    $local_user = $DB->get_record('turnitintooltwo_users', array('userid' => $userid));
+                    $local_user = $DB->get_record('turnitintooltwo_users', array('userid' => $eventdata->userid));
 
                     // Don't submit if a user has not accepted the eula.
                     if (!$local_user->user_agreement_accepted) {

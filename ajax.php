@@ -95,13 +95,18 @@ switch ($action) {
                 break;
         }
 
-        $role = ($istutor) ? "Instructor" : "Learner";
-        $user = new turnitintooltwo_user($USER->id, $role);
-        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
+                                                has_capability('mod/'.$cm->modname.':submit', $context);
 
-        $user->join_user_to_class($coursedata->turnitin_cid);
+        if ($istutor || $isstudent) {
+            $role = ($istutor) ? "Instructor" : "Learner";
+            $user = new turnitintooltwo_user($USER->id, $role);
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
 
-        echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
+            $user->join_user_to_class($coursedata->turnitin_cid);
+
+            echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
+        }
         break;
 
     case "update_grade":

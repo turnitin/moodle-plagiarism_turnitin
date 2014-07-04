@@ -46,6 +46,8 @@ switch ($action) {
                                             (has_capability('mod/'.$cm->modname.':submit', $context) ||
                                                     has_capability('mod/'.$cm->modname.':grade', $context));
 
+        $textcontent = ($cm->modname == "forum") ? optional_param('textcontent', "", PARAM_ALPHAEXT) : '';
+
         if ($cansubmit) {
             // Create the course/class in Turnitin if it doesn't already exist.
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
@@ -72,8 +74,15 @@ switch ($action) {
                 // Create/Edit the module as an assignment in Turnitin.
                 $assignmentid = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
+                $title = '';
+                if ($cm->modname == "forum") {
+                    $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                    $title = 'forumpost_'.$user->id."_".$cm->id."_".$moduledata->id."_".$itemid.'.txt';
+                }
+
                 // Submit or resubmit file to Turnitin.
-                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, $itemid);
+                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, 
+                                                            $itemid, $title, $textcontent);
 
             } else {
                 $return = array("success" => true);

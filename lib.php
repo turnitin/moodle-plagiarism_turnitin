@@ -404,12 +404,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $file = $linkarray["file"];
                 $identifier = $file->get_pathnamehash();
                 $itemid = $file->get_itemid();
+                $submissiontype = 'file';
                 $submitting = ($submission_status) ? true : false;
-            } else if (!empty($linkarray["content"]) && $cm->modname != "forum") {
+            } else if (!empty($linkarray["content"])) {
 
                 // Get turnitin text content details.
+                $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
                 $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
-                                            " userid = ? AND cm = ? AND submissiontype = 'text_content' ",
+                                            " userid = ? AND cm = ? AND submissiontype = '".$submissiontype."' ",
                                                 array($linkarray["userid"], $linkarray["cmid"]));
                 $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
 
@@ -424,14 +426,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                 array('authorid' => $linkarray["userid"], 'workshopid' => $moduledata->id));
                         $content = $linkarray["content"];
                         break;
+                    case 'forum':
+                        static $discussionid;
+                        if (empty($discussionid)) {
+                            $discussionid = required_param('d', PARAM_INT);
+                        }
+                        $submission = $DB->get_record('forum_posts',
+                                                array('userid' => $linkarray["userid"], 'discussion' => $discussionid));
+                        $itemid = $submission->id;
+                        $submission->timemodified = $submission->modified;
+                        $content = $linkarray["content"];
+                        break;
                 }
 
                 $identifier = sha1($content);
-
                 $submitting = ($submission->timemodified > $tiimodifieddate ||
                                         $plagiarismfile->identifier != $identifier) ? true : false;
-            } else if ($cm->modname == "forum") {
-                $identifier = sha1($linkarray["content"]);
             }
 
             // Show the EULA for a student if necessary.
@@ -492,26 +502,40 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                // If a user has just submitted then send to Turnitin via Ajax (not forums).
+                // If a user has just submitted then send to Turnitin via Ajax.
                 if ($submitting && $submission_status) {
                     // Include Javascript for Submitting.
                     $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_submission.js');
                     $PAGE->requires->js($jsurl);
 
-                    $submissiontype = (!empty($linkarray["file"])) ? 'file' : 'text_content';
-                    $output .= html_writer::tag('div', '',
+                    // Forum posts have a lot of html stripped out so we have to get data to ajax differently
+                    if ($submissiontype == 'forum_post') {
+                        $output .= html_writer::start_tag('div', array('class' => 'plagiarism_submission'));
+                        $output .= html_writer::tag('div', $identifier.'-'.$submissiontype, 
+                                                                array('class' => 'plagiarism_submission_id'));
+                        $output .= html_writer::tag('div', $linkarray["cmid"], 
+                                                                array('class' => 'plagiarism_submission_cmid'));
+                        $output .= html_writer::tag('div', $linkarray["content"], 
+                                                                array('class' => 'plagiarism_submission_content'));
+                        $output .= html_writer::tag('div', $itemid, 
+                                                                array('class' => 'plagiarism_submission_itemid'));
+                        $output .= html_writer::end_tag('div');
+                    } else {
+                        $output .= html_writer::tag('div', '',
                                             array('class' => 'plagiarism_submission', 'id' => $identifier.'-'.$submissiontype));
 
-                    // Include values for use in submitting.
-                    $script = html_writer::tag('script', 'var cmid = '.$linkarray["cmid"].'; var itemid = '.$itemid.';',
-                                                                array("type" => "text/javascript"));
-                    $script = str_replace(array('/', '"'), array('\/', '\"'), $script);
-                    $output .=
-                    html_writer::script("<!--
-                                    if (!document.getElementById('submission_script')) {
-                                        document.write('".$script."');
-                                    }
-                                    //-->");
+                        // Include values for use in submitting.
+                        $script = html_writer::tag('script', 'var cmid = '.$linkarray["cmid"].'; var itemid = '.$itemid.';',
+                                                                    array("type" => "text/javascript"));
+
+                        $script = str_replace(array('/', '"'), array('\/', '\"'), $script);
+                        $output .=
+                        html_writer::script("<!--
+                                        if (!document.getElementById('submission_script')) {
+                                            document.write('".$script."');
+                                        }
+                                        //-->");
+                    }
                 }
             }
 

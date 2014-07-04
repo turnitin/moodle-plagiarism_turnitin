@@ -16,7 +16,7 @@
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, 
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, 
-.tii_links_container .cmid, .tii_links_container .userid {
+.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission {
     display:none;
 }
 

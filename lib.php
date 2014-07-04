@@ -198,7 +198,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $courseid = (int)$eventdata['courseid'];
         $resetcourse = true;
 
-        $resetassign = ($eventdata['other']['reset_options']['reset_assign_submissions']) ? 
+        $resetassign = (isset($eventdata['other']['reset_options']['reset_assign_submissions'])) ? 
                             $eventdata['other']['reset_options']['reset_assign_submissions'] : 0;
         $resetforum = (isset($eventdata['other']['reset_options']['reset_forum_all'])) ? 
                             $eventdata['other']['reset_options']['reset_forum_all'] : 0;
@@ -1215,11 +1215,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $turnitincourse->turnitin_ctl = $coursedata->fullname . " (Moodle PP)";
         $turnitincourse->course_type = 'PP';
 
-        if (empty($course->tii_rel_id)) {
+        if (empty($coursedata->tii_rel_id)) {
             $method = "insert_record";
         } else {
             $method = "update_record";
-            $turnitincourse->id = $course->tii_rel_id;
+            $turnitincourse->id = $coursedata->tii_rel_id;
         }
 
         if (!$insertid = $DB->$method('turnitintooltwo_courses', $turnitincourse)) {

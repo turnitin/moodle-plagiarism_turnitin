@@ -151,7 +151,7 @@ class turnitinplugin_view {
             $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                             '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
                                             get_string('launchquickmarkmanager', 'turnitintooltwo'),
-                                            array('class' => 'quickmark_manager_launch',
+                                            array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                 'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
             $quickmarkmanagerlink .= html_writer::tag('span', '',
                                             array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
@@ -165,7 +165,7 @@ class turnitinplugin_view {
                                                 '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                     '&action=peermarkmanager&view_context=box',
                                                 get_string('launchpeermarkmanager', 'turnitintooltwo'),
-                                                array('class' => 'peermark_manager_pp_launch',
+                                                array('class' => 'plagiarism_turnitin_peermark_manager_pp_launch',
                                                         'id' => 'peermark_manager_'.$cmid,
                                                         'title' => get_string('launchpeermarkmanager', 'turnitintooltwo')));
                 $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',

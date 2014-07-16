@@ -530,8 +530,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 array('class' => 'plagiarism_submission_itemid'));
                         $output .= html_writer::end_tag('div');
                     }
-
-
                 }
             }
 
@@ -731,7 +729,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Only update as necessary.
                 if ($updaterequired) {
                     $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
-                    $return = $this->update_grade($cm, $response->getSubmission(), $submissiondata->userid);
+                    if (!is_null($plagiarismfile->grade)) {
+                        $return = $this->update_grade($cm, $response->getSubmission(), $submissiondata->userid);
+                    }
                 }
 
             } catch (Exception $e) {
@@ -1164,7 +1164,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             echo "File failed to update: ".$plagiarismfile->id."\n";
                         }
 
-                        $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
+                        if (!is_null($readsubmission->getGrade())) {
+                            $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
+                        }
                     }
                 }
             } catch (Exception $e) {

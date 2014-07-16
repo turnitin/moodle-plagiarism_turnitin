@@ -513,29 +513,25 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $output .= html_writer::start_tag('div', array('class' => 'plagiarism_submission'));
                         $output .= html_writer::tag('div', $identifier.'-'.$submissiontype, 
                                                                 array('class' => 'plagiarism_submission_id'));
-                        $output .= html_writer::tag('div', $linkarray["cmid"], 
-                                                                array('class' => 'plagiarism_submission_cmid'));
                         $output .= html_writer::tag('div', $linkarray["content"], 
                                                                 array('class' => 'plagiarism_submission_content'));
+                        $output .= html_writer::tag('div', $linkarray["cmid"], 
+                                                            array('class' => 'plagiarism_submission_cmid'));
                         $output .= html_writer::tag('div', $itemid, 
                                                                 array('class' => 'plagiarism_submission_itemid'));
                         $output .= html_writer::end_tag('div');
                     } else {
-                        $output .= html_writer::tag('div', '',
-                                            array('class' => 'plagiarism_submission', 'id' => $identifier.'-'.$submissiontype));
-
-                        // Include values for use in submitting.
-                        $script = html_writer::tag('script', 'var cmid = '.$linkarray["cmid"].'; var itemid = '.$itemid.';',
-                                                                    array("type" => "text/javascript"));
-
-                        $script = str_replace(array('/', '"'), array('\/', '\"'), $script);
-                        $output .=
-                        html_writer::script("<!--
-                                        if (!document.getElementById('submission_script')) {
-                                            document.write('".$script."');
-                                        }
-                                        //-->");
+                        $output .= html_writer::start_tag('div', 
+                                                        array('class' => 'plagiarism_submission', 
+                                                                'id' => $identifier.'-'.$submissiontype));
+                        $output .= html_writer::tag('div', $linkarray["cmid"], 
+                                                            array('class' => 'plagiarism_submission_cmid'));
+                        $output .= html_writer::tag('div', $itemid, 
+                                                                array('class' => 'plagiarism_submission_itemid'));
+                        $output .= html_writer::end_tag('div');
                     }
+
+
                 }
             }
 

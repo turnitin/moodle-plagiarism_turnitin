@@ -295,6 +295,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
+        // Don't submit feedback files to Turnitin.
+        if (!empty($linkarray["file"])) {
+            $file = $linkarray["file"];
+            $filearea = $file->get_filearea();
+            if ($filearea == "feedback_files") {
+                return;
+            }
+        }
+
         // Set static variables.
         static $cm;
         if (empty($cm)) {
@@ -401,7 +410,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get File or Content information, for content only submit if it has been modified.
             $itemid = 0;
             if (!empty($linkarray["file"])) {
-                $file = $linkarray["file"];
                 $identifier = $file->get_pathnamehash();
                 $itemid = $file->get_itemid();
                 $submissiontype = 'file';

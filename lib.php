@@ -315,6 +315,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $config = turnitintooltwo_admin_config();
         }
 
+        static $plagiarismsettings;
+        if (empty($plagiarismsettings)) {
+            $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
+        }
+
+        // Exit if Turnitin is not being used for this module.
+        if (empty($plagiarismsettings['use_turnitin'])) {
+            return;
+        }
+
+        static $configsettings;
+        if (empty($configsettings)) {
+            $configsettings = $this->get_config_settings('mod_'.$cm->modname);
+        }
+
+        // Exit if Turnitin is not being used for this activity type.
+        if (empty($configsettings['turnitin_use_mod_'.$cm->modname])) {
+            return;
+        }
+
         static $moduledata;
         if (empty($moduledata)) {
             $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
@@ -342,16 +362,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
                 }
             }
-        }
-
-        static $plagiarismsettings;
-        if (empty($plagiarismsettings)) {
-            $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
-        }
-
-        // exit if Turnitin is not being used.
-        if (empty($plagiarismsettings['use_turnitin'])) {
-            return;
         }
 
         // Work out if logged in user is a tutor on this module.
@@ -1282,6 +1292,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // This module isn't using Turnitin so return true to remove event from queue.
         if (empty($plagiarismsettings['use_turnitin'])) {
             return true;
+        }
+
+        $configsettings = $this->get_config_settings('mod_'.$cm->modname);
+        // Exit if Turnitin is not being used for this activity type.
+        if (empty($configsettings['turnitin_use_mod_'.$cm->modname])) {
+            return;
         }
 
         if ($cm) {

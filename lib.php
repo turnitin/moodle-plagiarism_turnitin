@@ -428,11 +428,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Get turnitin text content details.
                 $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
-                $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
-                                            " userid = ? AND cm = ? AND submissiontype = '".$submissiontype."' ",
-                                                array($linkarray["userid"], $linkarray["cmid"]));
-                $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
-
                 switch ($cm->modname) {
                     case 'assign':
                         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
@@ -447,17 +442,44 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     case 'forum':
                         static $discussionid;
                         if (empty($discussionid)) {
-                            $discussionid = required_param('d', PARAM_INT);
+                            $discussionid = optional_param('d', 0, PARAM_INT);
                         }
-                        $submission = $DB->get_record('forum_posts',
-                                                array('userid' => $linkarray["userid"], 'discussion' => $discussionid));
+                        if (empty($discussionid)) {
+                            $reply   = optional_param('reply', 0, PARAM_INT);
+                            if (!$parent = forum_get_post_full($reply)) {
+                                print_error('invalidparentpostid', 'forum');
+                            }
+                            if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
+                                print_error('notpartofdiscussion', 'forum');
+                            }
+                            $discussionid = $discussion->id;
+                        }
+                        $submission = $DB->get_record_select('forum_posts', 
+                                                " userid = ? AND message = ? AND discussion = ? ",
+                                                array($linkarray["userid"], $linkarray["content"], $discussionid));
                         $itemid = $submission->id;
                         $submission->timemodified = $submission->modified;
                         $content = $linkarray["content"];
                         break;
                 }
 
+                // Get plagiarism file info.
                 $identifier = sha1($content);
+                switch ($cm->modname) {
+                    case 'assign':
+                    case 'workshop':
+                        $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
+                                            " userid = ? AND cm = ? AND submissiontype = '".$submissiontype."' ",
+                                                array($linkarray["userid"], $linkarray["cmid"]));
+                        break;
+                    case 'forum':
+                        $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
+                                            " userid = ? AND cm = ? AND identifier AND submissiontype = '".$submissiontype."' ",
+                                                array($linkarray["userid"], $linkarray["cmid"], $identifier));
+                        break;
+                }
+
+                $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
                 $submitting = ($submission->timemodified > $tiimodifieddate ||
                                         $plagiarismfile->identifier != $identifier) ? true : false;
             }

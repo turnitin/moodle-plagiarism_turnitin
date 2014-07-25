@@ -474,7 +474,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                     case 'forum':
                         $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
-                                            " userid = ? AND cm = ? AND identifier =? AND submissiontype = '".$submissiontype."' ",
+                                            " userid = ? AND cm = ? AND identifier = ? AND submissiontype = '".$submissiontype."' ",
                                                 array($linkarray["userid"], $linkarray["cmid"], $identifier));
                         break;
                 }

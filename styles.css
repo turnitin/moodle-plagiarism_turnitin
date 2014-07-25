@@ -29,6 +29,11 @@
 	font-size: 8px;
 }
 
+.forumpost .attachments .tii_links_container {
+	clear: both;
+	float: right;
+}
+
 .tii_links_container .row_rubric_view {
     position: relative;
     top:4px;

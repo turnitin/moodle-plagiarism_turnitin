@@ -318,6 +318,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         static $plagiarismsettings;
         if (empty($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
+            if ($cm->modname == 'assign') {
+                $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ? 
+                                                                    $plagiarismsettings["plagiarism_draft_submit"] : 0;
+            }
         }
 
         // Exit if Turnitin is not being used for this module.
@@ -411,7 +415,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($submission = $DB->get_record('assign_submission',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id))) {
                     $submission_status = ($submission->status == "submitted" || 
-                                        ($moduledata->submissiondrafts == 1 && $plagiarismsettings->plagiarism_draft_submit == 0)) 
+                                        ($moduledata->submissiondrafts == 1 && $plagiarismsettings["plagiarism_draft_submit"] == 0)) 
                                         ? true : false;
                 }
             }
@@ -1310,6 +1314,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Initialise plugin class.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);
+        if ($cm->modname == 'assign') {
+            $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ? 
+                                                                $plagiarismsettings["plagiarism_draft_submit"] : 0;
+        }
 
         // This module isn't using Turnitin so return true to remove event from queue.
         if (empty($plagiarismsettings['use_turnitin'])) {
@@ -1356,7 +1364,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // If draft submissions are turned on then only submit to Turnitin if using newer than 2.3 and
                     // the Turnitin draft submit setting is set.
                     if ($moduledata->submissiondrafts && $CFG->branch > 23 && 
-                        $plagiarismsettings->plagiarism_draft_submit == 1 &&
+                        $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
                         ($eventdata->event_type == 'file_uploaded' || $eventdata->event_type == 'content_uploaded')) {
                         return true;
                     }

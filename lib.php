@@ -1536,7 +1536,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->identifier = $identifier;
         $plagiarismfile->statuscode = "pending";
         $plagiarismfile->similarityscore = null;
-        $plagiarismfile->attempt = 1;
+        if ($currentsubmission->statuscode != "error") {
+            $plagiarismfile->attempt = 1;
+        }
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->submissiontype = $submissiontype;
 
@@ -1616,10 +1618,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Do not submit if 5 attempts have been made previously.
         $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? AND statuscode != ? ",
-                                    array($cm->id, $user->id, $submissiontype, $identifier, 'success'), 'id');
+                                        " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
+                                    array($cm->id, $user->id, $submissiontype, $identifier), 'id, attempt');
+        $previoussubmission = current($previoussubmissions);
 
-        if (count($previoussubmissions) >= 5) {
+        if (count($previoussubmissions) >= 5 || $previoussubmission->attempt >= 5) {
             $return["success"] = false;
             $return["message"] = get_string('pp_submission_error', 'turnitintooltwo');
             return $return;
@@ -1692,7 +1695,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $this->reset_tii_submission($cm, $user, $identifier, $previoussubmission, $submissiontype);
                     } else {
                         $apimethod = "createSubmission";
-                        $submissionid = $this->create_new_tii_submission($cm, $user, $identifier, $submissiontype);
+                        if ($previoussubmission->statuscode != "success") {
+                            $submissionid = $previoussubmission->id;
+                            $this->reset_tii_submission($cm, $user, $identifier, $previoussubmission, $submissiontype);
+                        } else {
+                            $submissionid = $this->create_new_tii_submission($cm, $user, $identifier, $submissiontype);
+                        }
                     }
 
                 } else {

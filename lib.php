@@ -219,7 +219,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             if (count($modules) > 0) {
                 $reset = "reset".$supportedmod;
-                if ($$reset) {
+                if (!empty($$reset)) {
                     // Remove Plagiarism plugin submissions and assignment id from DB for this module.
                     foreach ($modules as $mod) {
                         $DB->delete_records('plagiarism_turnitin_files', array('cm' => $mod->id));

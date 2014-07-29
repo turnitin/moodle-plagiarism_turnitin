@@ -1314,7 +1314,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Initialise plugin class.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);
-        if ($cm->modname == 'assign') {
+        if ($eventdata->modulename == 'assign') {
             $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ? 
                                                                 $plagiarismsettings["plagiarism_draft_submit"] : 0;
         }
@@ -1324,9 +1324,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        $configsettings = $this->get_config_settings('mod_'.$cm->modname);
+        $configsettings = $this->get_config_settings('mod_'.$eventdata->modulename);
         // Exit if Turnitin is not being used for this activity type.
-        if (empty($configsettings['turnitin_use_mod_'.$cm->modname])) {
+        if (empty($configsettings['turnitin_use_mod_'.$eventdata->modulename])) {
             return;
         }
 

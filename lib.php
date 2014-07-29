@@ -758,7 +758,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $plagiarismfile->similarityscore = $readsubmission->getTranslatedOverallSimilarity();
                     $plagiarismfile->transmatch = 1;
                 }
-                $plagiarismfile->grade = ($readsubmission->getGrade()) ? $readsubmission->getGrade() : null;
+                $plagiarismfile->grade = ($readsubmission->getGrade() == '') ? null : $readsubmission->getGrade();
                 $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
 
                 // Identify if an update is required for the similarity score and grade.

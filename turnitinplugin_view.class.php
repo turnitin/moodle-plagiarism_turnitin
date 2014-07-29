@@ -31,6 +31,10 @@ class turnitinplugin_view {
                         get_string('config', 'turnitintooltwo'), get_string('config', 'turnitintooltwo'), false);
         $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
                         get_string('defaults', 'turnitintooltwo'), get_string('defaults', 'turnitintooltwo'), false);
+        $tabs[] = new tabobject('turnitinshowusage', 'settings.php?do=viewreport',
+                        get_string('showusage', 'turnitintooltwo'), get_string('showusage', 'turnitintooltwo'), false);
+        $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
+                        get_string('saveusage', 'turnitintooltwo'), get_string('saveusage', 'turnitintooltwo'), false);
         $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',
                         get_string('errors', 'turnitintooltwo'), get_string('errors', 'turnitintooltwo'), false);
         print_tabs(array($tabs), $currenttab);

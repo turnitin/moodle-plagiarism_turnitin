@@ -1162,7 +1162,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function cron() {
         global $DB;
 
-        $submissions = $DB->get_records('plagiarism_turnitin_files', array('statuscode' => 'success', 'similarityscore' => null),
+        $submissions = $DB->get_records('plagiarism_turnitin_files', 
+                            array('statuscode' => 'success', 'similarityscore' => null, 'orcapable' => null),
                                                 '', 'externalid, cm');
         $submissionids = array();
 
@@ -1206,6 +1207,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
                             echo "File failed to update: ".$plagiarismfile->id."\n";
+                        } else {
+                            echo "File updated: ".$plagiarismfile->id."\n";
                         }
 
                         if (!is_null($readsubmission->getGrade())) {
@@ -1621,8 +1624,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
                                     array($cm->id, $user->id, $submissiontype, $identifier), 'id, attempt');
         $previoussubmission = current($previoussubmissions);
+        $attempt = (empty($previoussubmission)) ? 0 : $previoussubmission->attempt;
 
-        if (count($previoussubmissions) >= 5 || $previoussubmission->attempt >= 5) {
+        if (count($previoussubmissions) >= 5 && $attempt >= 5) {
             $return["success"] = false;
             $return["message"] = get_string('pp_submission_error', 'turnitintooltwo');
             return $return;

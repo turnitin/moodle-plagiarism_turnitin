@@ -41,7 +41,12 @@ if (isset($_SESSION["notice"])) {
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
 $supported_mods = array('assign', 'forum', 'workshop');
-$pluginconfig = array();
+$pluginconfig = array('turnitin_use' => 0);
+
+if ($configfield = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
+    $pluginconfig['turnitin_use'] = $configfield->value;
+}
+
 foreach ($supported_mods as $mod) {
     $tmp_pluginconfig = $plagiarismpluginturnitin->get_config_settings('mod_'.$mod);
     $pluginconfig = array_merge($pluginconfig, $tmp_pluginconfig);
@@ -52,8 +57,27 @@ $plugindefaults = $plagiarismpluginturnitin->get_settings();
 if (!empty($action)) {
     switch ($action) {
         case "config":
+            // Overall plugin use setting
+            $turnitinoveralluse = optional_param('turnitin_use', 0, PARAM_INT);
+            if ($configfield = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
+                $configfield->value = $turnitinoveralluse;
+                if (! $DB->update_record('config_plugins', $configfield)) {
+                    turnitintooltwo_print_error('settingsupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                }
+            } else {
+                $configfield = new object();
+                $configfield->value = $turnitinoveralluse;
+                $configfield->plugin = 'plagiarism';
+                $configfield->name = 'turnitin_use';
+                if (! $DB->insert_record('config_plugins', $configfield)) {
+                    turnitintooltwo_print_error('settingsinserterror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                }
+            }
+
+            // Allow Turnitin to be on for Individual modules. 
             foreach ($supported_mods as $mod) {
                 $turnitinuse = optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT);
+                $turnitinuse = ($turnitinoveralluse == 0) ? 0 : $turnitinuse;
                 if ($configfield = $DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod, 'plugin' => 'plagiarism'))) {
                     $configfield->value = $turnitinuse;
                     if (! $DB->update_record('config_plugins', $configfield)) {

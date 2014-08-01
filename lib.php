@@ -526,7 +526,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         } else {
                             $ula = html_writer::tag('div', get_string('turnitinula', 'turnitintooltwo'),
                                                                         array('class' => 'pp_turnitin_ula', 'data-userid' => $userid));
-                            $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid'));
+                            $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid pp_turnitin_cmid'));
 
                             $noscriptula = html_writer::tag('noscript',
                                             turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
@@ -548,7 +548,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
                         $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                                                 'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
-                        $output .= $OUTPUT->box($eulaform->display(), '', 'useragreement_form');
+                        $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                     }
                 }
 

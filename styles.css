@@ -16,7 +16,7 @@
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, 
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, 
-.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission {
+.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form {
     display:none;
 }
 
@@ -155,7 +155,7 @@
     line-height: 28px;
 }
 
-.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .tii_links_container .pp_turnitin_ula {
+.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_ula {
     cursor:pointer;
     text-decoration: underline;
 }

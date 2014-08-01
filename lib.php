@@ -144,14 +144,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function get_form_elements_module($mform, $context, $modulename = "") {
         global $DB;
 
-        $configsettings = $this->get_config_settings($modulename);
-        if (empty($configsettings['turnitin_use_'.$modulename])) {
-            return;
-        }
-
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
             $cmid = optional_param('update', 0, PARAM_INT);
+
+            // Only 2.4+ passes in the modulename so in 2.3 when adding a module 
+            // we can not differentiate whether plugin is enabled by module.
+            if (!empty($modulename)) {
+                $configsettings = $this->get_config_settings($modulename);
+                if (empty($configsettings['turnitin_use_'.$modulename])) {
+                    return;
+                }
+            }
 
             $plagiarismvalues = $this->get_settings($cmid);
             $plagiarismelements = $this->get_settings_fields();
@@ -167,13 +171,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Check if files have already been submitted and disable exclude biblio and quoted if turnitin is enabled.
-            if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
-                $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
-                $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
-            }
+            if ($cmid != 0) {
+                if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
+                    $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
+                    $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
+                }
 
-            if ($DB->record_exists('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'submitted'))) {
-                $mform->disabledIf('plagiarism_anonymity', 'use_turnitin');
+                if ($DB->record_exists('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'submitted'))) {
+                    $mform->disabledIf('plagiarism_anonymity', 'use_turnitin');
+                }
             }
 
             // Set the default value for each option as the value we have stored.

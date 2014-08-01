@@ -125,7 +125,7 @@ class turnitinplugin_view {
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
                 $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.2.custom.min.js');
+                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
                 $PAGE->requires->js($jsurl, true);

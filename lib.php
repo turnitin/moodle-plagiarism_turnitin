@@ -504,7 +504,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $userid = 0;
                 }
 
-                if ($userid != $linkarray["userid"]) {
+                // Condition added to test for Moodle 2.7 as it calls this function twice.
+                if ($CFG->branch >= 27 || $userid != $linkarray["userid"]) {
                     $user = new turnitintooltwo_user($USER->id, "Learner");
                     $user->join_user_to_class($coursedata->turnitin_cid);
                     $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;

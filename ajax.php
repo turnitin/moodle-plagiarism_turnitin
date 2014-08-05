@@ -46,6 +46,8 @@ switch ($action) {
                                             (has_capability('mod/'.$cm->modname.':submit', $context) ||
                                                     has_capability('mod/'.$cm->modname.':grade', $context));
 
+        $textcontent = ($cm->modname == "forum") ? optional_param('textcontent', "", PARAM_ALPHAEXT) : '';
+
         if ($cansubmit) {
             // Create the course/class in Turnitin if it doesn't already exist.
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
@@ -72,8 +74,15 @@ switch ($action) {
                 // Create/Edit the module as an assignment in Turnitin.
                 $assignmentid = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
+                $title = '';
+                if ($cm->modname == "forum") {
+                    $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                    $title = 'forumpost_'.$user->id."_".$cm->id."_".$moduledata->id."_".$itemid.'.txt';
+                }
+
                 // Submit or resubmit file to Turnitin.
-                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, $itemid);
+                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, 
+                                                            $itemid, $title, $textcontent);
 
             } else {
                 $return = array("success" => true);
@@ -95,13 +104,18 @@ switch ($action) {
                 break;
         }
 
-        $role = ($istutor) ? "Instructor" : "Learner";
-        $user = new turnitintooltwo_user($USER->id, $role);
-        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
+                                                has_capability('mod/'.$cm->modname.':submit', $context);
 
-        $user->join_user_to_class($coursedata->turnitin_cid);
+        if ($istutor || $isstudent) {
+            $role = ($istutor) ? "Instructor" : "Learner";
+            $user = new turnitintooltwo_user($USER->id, $role);
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
 
-        echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
+            $user->join_user_to_class($coursedata->turnitin_cid);
+
+            echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
+        }
         break;
 
     case "update_grade":
@@ -147,12 +161,12 @@ switch ($action) {
         }
 
         if ($istutor) {
+            // Create the course/class in Turnitin if it doesn't already exist.
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
             if (!$tiiassignment) {
-                // Create the course/class in Turnitin if it doesn't already exist.
-                $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
-
                 if (empty($coursedata->turnitin_cid)) {
                     // Course may existed in a previous incarnation of this plugin so the Turnitin id may be located
                     // in the config table. Get this and save it in courses table if so.
@@ -169,6 +183,9 @@ switch ($action) {
                 $tiiassignment->value = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
             }
 
+            $user = new turnitintooltwo_user($USER->id, "Instructor");
+            $user->join_user_to_class($coursedata->turnitin_cid);
+
             echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_manager',
                                                         'Instructor', $tiiassignment->value),
                                                         array("class" => "launch_form", "style" => "display:none;"));
@@ -183,7 +200,7 @@ switch ($action) {
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
-            
+
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             $user->join_user_to_class($coursedata->turnitin_cid);

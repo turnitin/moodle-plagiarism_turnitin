@@ -6,44 +6,52 @@
         Purpose of the stylesheet follows.
 */
 
-.clear {
+.tii_links_container .clear {
 	clear:both;
 }
 
-.grademark_open img {
+.tii_links_container .grademark_open img {
     padding-right: 8px;
 }
 
-.launch_form, .useragreement_form, .turnitin_eula_link, #useragreement_form form, .cmid, .userid {
+.tii_links_container .launch_form, .tii_links_container .useragreement_form, 
+.tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, 
+.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form {
     display:none;
 }
 
-.origreport_open, .grade_icon, .row_rubric_view, .row_peermark_reviews {
+.tii_links_container .origreport_open, .tii_links_container .grade_icon, 
+.tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews {
     float: left;
 }
 
-.grade_icon {
+.tii_links_container .grade_icon {
 	font-size: 8px;
 }
 
-.row_rubric_view {
+.forumpost .attachments .tii_links_container {
+	clear: both;
+	float: right;
+}
+
+.tii_links_container .row_rubric_view {
     position: relative;
     top:4px;
 }
 
-.rubric_view_pp_launch {
-    background:url(../../../../mod/turnitintooltwo/pix/rubric.png) no-repeat 0px 0px;
+.tii_links_container .rubric_view_pp_launch {
+    background:url([[pix:turnitintooltwo|rubric]]) no-repeat 0px 0px;
     cursor:pointer;
     height: 34px;
     width:32px;
     display: block;
 }
 
-a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
+.tii_links_container a.rubric_view_pp_launch, .tii_links_container a.peermark_reviews_pp_launch {
     color:#000000;
 }
 
-.peermark_reviews_pp_launch {
+.tii_links_container .peermark_reviews_pp_launch {
     background:url(../../../../mod/turnitintooltwo/pix/peermark-reviews.png) no-repeat 0px 0px;
     cursor:pointer;
     padding: 4px 0 18px 36px;
@@ -51,15 +59,15 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
     display: block;
 }
 
-.attachments {
+.tii_links_container .attachments {
 	clear:both;
 }
 
-.forumpost .attachments .tii_links_container {
+.tii_links_container .forumpost .attachments .tii_links_container {
     float:right;
 }
 
-.tii_links_container {
+.tii_links_container .tii_links_container {
     white-space: nowrap;
 }
 
@@ -79,7 +87,7 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
 }
 
 .tii_links_container .score_colour {
-    background-image:url(../../../../mod/turnitintooltwo/pix/gradback.jpg);
+    background-image:url([[pix:turnitintooltwo|gradback]]);
     width:36px;
     font-size:12px;
     display:inline-block;
@@ -89,23 +97,23 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
-.score_colour_0 { background-position: 0% 0%; color:#FFFFFF; }
-.score_colour_10 { background-position: 0% 10%; color:#FFFFFF; }
-.score_colour_20 { background-position: 0% 20%; color:#FFFFFF; }
-.score_colour_30 { background-position: 0% 30%; }
-.score_colour_40 { background-position: 0% 40%; }
-.score_colour_50 { background-position: 0% 50%; }
-.score_colour_60 { background-position: 0% 60%; }
-.score_colour_70 { background-position: 0% 70%; }
-.score_colour_80 { background-position: 0% 80%; color:#FFFFFF; }
-.score_colour_90 { background-position: 0% 90%; color:#FFFFFF; }
-.score_colour_100 { background-position: 0% 100%; color:#FFFFFF; }
+.tii_links_container .score_colour_0 { background-position: 0% 0%; color:#FFFFFF; }
+.tii_links_container .score_colour_10 { background-position: 0% 10%; color:#FFFFFF; }
+.tii_links_container .score_colour_20 { background-position: 0% 20%; color:#FFFFFF; }
+.tii_links_container .score_colour_30 { background-position: 0% 30%; }
+.tii_links_container .score_colour_40 { background-position: 0% 40%; }
+.tii_links_container .score_colour_50 { background-position: 0% 50%; }
+.tii_links_container .score_colour_60 { background-position: 0% 60%; }
+.tii_links_container .score_colour_70 { background-position: 0% 70%; }
+.tii_links_container .score_colour_80 { background-position: 0% 80%; color:#FFFFFF; }
+.tii_links_container .score_colour_90 { background-position: 0% 90%; color:#FFFFFF; }
+.tii_links_container .score_colour_100 { background-position: 0% 100%; color:#FFFFFF; }
 
-.origreport_score {
+.tii_links_container .origreport_score {
     white-space:nowrap;
 }
 
-.warning {
+.tii_links_container .warning {
     border: 1px solid #CC0000;
     padding: 8px;
     background: #FFE9E8;
@@ -115,7 +123,7 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
     margin-bottom:6px;
 }
 
-#ppErrors {
+.tii_links_container #ppErrors {
     width:100%;
 }
 
@@ -127,30 +135,32 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
     text-align: center;
 }
 
-.row_peermark_manager {
+#page-admin-plagiarism-turnitin-settings .row_peermark_manager {
     float:left;
     display:inline;
 }
 
-.peermark_manager_pp_launch {
-    background:url(../pix/peermark-settings.png) no-repeat 0px 0px;
+.plagiarism_turnitin_peermark_manager_pp_launch {
+    background:url([[pix:turnitintooltwo|peermark-settings]]) no-repeat 0px 0px;
     cursor:pointer;
     padding: 4px 16px 4px 40px;
+    display: inline;
     line-height: 28px;
 }
 
-.quickmark_manager_launch {
-    padding-top: 2px;
-    padding-bottom: 2px;
+.plagiarism_turnitin_quickmark_manager_launch {
+	background:url([[pix:turnitintooltwo|quickmark]]) no-repeat 0px 0px;
+    padding: 2px 0px 2px 40px;
+    display: inline;
     line-height: 28px;
 }
 
-.forum_eula_launch_noscript, .forum_eula_launch span, .pp_turnitin_ula {
+.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_ula {
     cursor:pointer;
     text-decoration: underline;
 }
 
-.forum_eula_launch_noscript, .forum_eula_launch span {
+.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span {
     color: #FF0000;
 }
 
@@ -207,11 +217,11 @@ a.rubric_view_pp_launch, a.peermark_reviews_pp_launch {
         .cboxIframe{background:none;}/*#FFF*/
         #cboxError{padding:50px; border:1px solid #ccc;}
         #cboxLoadedContent{background:none; padding:1px;}
-        #cboxLoadingGraphic{background:url(../../../../mod/turnitintooltwo/pix/colorbox/loading.gif) no-repeat center center;}
+        #cboxLoadingGraphic{background:url([[pix:turnitintooltwo|colorbox/loading]]) no-repeat center center;}
         #cboxLoadingOverlay{background:none;}
         #cboxTitle{position:absolute; top:-22px; left:0; color:#000; display:none !important;}
         #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-        #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../../../../mod/turnitintooltwo/pix/colorbox/controls.png) no-repeat 0 0;}
+        #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url([[pix:turnitintooltwo|colorbox/controls]]) no-repeat 0 0;}
         #cboxClose{background-position:-50px 0px; right:0;}
         #cboxClose:hover{background-position:-50px -25px;}
 
@@ -259,7 +269,7 @@ iframe html{background:none;}
     position: absolute;
     top: 48%;
     left: 48%;
-    background:url(../../../../mod/turnitintooltwo/pix/colorbox/loading.gif) no-repeat center center #000;
+    background:url([[pix:turnitintooltwo|colorbox/loading]]) no-repeat center center #000;
     height: 32px;
     width: 32px;
     -moz-border-radius: 12px;

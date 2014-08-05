@@ -25,12 +25,10 @@
 function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     global $DB;
 
+    $dbman = $DB->get_manager();
     $result = true;
 
     if ($oldversion < 2013081202) {
-
-        $dbman = $DB->get_manager();
-
         $table = new xmldb_table('plagiarism_turnitin_files');
         $field1 = new xmldb_field('transmatch', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'legacyteacher');
         $field2 = new xmldb_field('lastmodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'transmatch');
@@ -61,8 +59,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2014012403) {
-        $dbman = $DB->get_manager();
-
         $table = new xmldb_table('plagiarism_turnitin_files');
         $field = new xmldb_field('orcapable', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, NULL, 'submissiontype');
         if (!$dbman->field_exists($table, $field)) {
@@ -71,6 +67,23 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_default($table, $field);
         }
         upgrade_plugin_savepoint(true, 2014012403, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2014012405) {
+        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
+            if ($turnitinsetting->value == 1) {
+                $supported_mods = array('assign', 'forum', 'workshop');
+                foreach ($supported_mods as $mod) {
+                    $configfield = new object();
+                    $configfield->value = 1;
+                    $configfield->plugin = 'plagiarism';
+                    $configfield->name = 'turnitin_use_mod_'.$mod;
+                    $DB->insert_record('config_plugins', $configfield);
+                }
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2014012405, 'plagiarism', 'turnitin');
     }
 
     return $result;

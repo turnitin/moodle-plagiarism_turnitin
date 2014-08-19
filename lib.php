@@ -736,12 +736,30 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
                         }
                     } else {
-                        $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', 
-                                                                get_string('errorcode'.$plagiarismfile->errorcode, 
-                                                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE)), 
-                                                                'mod_turnitintooltwo'), 
-                                                                array('title' => get_string('errorcode'.$plagiarismfile->errorcode, 
-                                                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE)), 
+
+                        $errorcode = $plagiarismfile->errorcode;
+                        // Deal with legacy error issues.
+                        if (is_null($errorcode)) {
+                            $errorcode = 0;
+                            if ($submissiontype == 'file') {
+                                if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                                    $errorcode = 2;
+                                }
+                            }
+                        }
+
+                        // Show error message if there is one.
+                        $errormsg = $plagiarismfile->errormsg;
+                        if ($errorcode == 0) {
+                            $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
+                            $errorstring = (is_null($errormsg)) ? get_string($langstring, 'turnitintooltwo') : $errormsg;
+                        } else {
+                            $errorstring = get_string('errorcode'.$plagiarismfile->errorcode, 
+                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                        }
+
+                        $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'mod_turnitintooltwo'), 
+                                                                array('title' => $errorstring, 
                                                                         'class' => 'tii_tooltip tii_error_icon'));
                         $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
                     }

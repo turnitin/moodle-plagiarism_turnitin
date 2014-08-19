@@ -255,7 +255,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function print_disclosure($cmid) {
-        global $DB, $OUTPUT;
+        global $DB, $OUTPUT, $USER, $PAGE;
 
         $config = turnitintooltwo_admin_config();
         $output = '';
@@ -266,6 +266,77 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
                 $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
             }
+        }
+
+        // Get course details
+        $cm = get_coursemodule_from_id('', $cmid);
+        // Create the course/class in Turnitin if it doesn't already exist.
+        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+        if (empty($coursedata->turnitin_cid)) {
+            // Course may existed in a previous incarnation of this plugin.
+            // Get this and save it in courses table if so.
+            if ($turnitincid = $this->get_previous_course_id($cm)) {
+                $coursedata->turnitin_cid = $turnitincid;
+                $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
+            } else {
+                // Otherwise create new course in Turnitin.
+                $tiicoursedata = $this->create_tii_course($cm, $coursedata);
+                $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
+                $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
+            }
+        }
+
+        // Show EULA if necessary
+        $user = new turnitintooltwo_user($USER->id, "Learner");
+        $user->join_user_to_class($coursedata->turnitin_cid);
+        $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
+
+        if (!$eulaaccepted) {
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+            $PAGE->requires->js($jsurl);
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+            $PAGE->requires->js($jsurl);
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+            $PAGE->requires->js($jsurl);
+
+            // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
+            if ($cm->modname == "forum") {
+                $ula = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cm->id.
+                                                '&cmd=useragreement&view_context=box', get_string('turnitinppula', 'turnitintooltwo'),
+                                                array('target' => 'eulaWindow', 'class' => 'forum_eula_launch_noscript'));
+                $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid'));
+                $ula .= html_writer::tag('span', $user->id, array('class' => 'userid'));
+
+                // Get the EULA endpoint.
+                $config = turnitintooltwo_admin_config();
+                $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $user->id));
+                $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch'));
+            } else {
+                $ula = html_writer::tag('div', get_string('turnitinppula', 'turnitintooltwo'),
+                                                            array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
+                $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid pp_turnitin_cmid'));
+
+                $noscriptula = html_writer::tag('noscript',
+                                turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
+                                    "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
+                                        get_string('noscriptula', 'turnitintooltwo'),
+                                            array('class' => 'warning turnitin_ula_noscript'));
+            }
+            $submitting = false;
+        }
+
+        // Show EULA launcher and form placeholder.
+        if (!empty($ula)) {
+            $output .= $ula.$noscriptula;
+
+            $turnitincomms = new turnitintooltwo_comms();
+            $turnitincall = $turnitincomms->initialise_api();
+
+            $customdata = array("disable_form_change_checker" => true,
+                                "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
+            $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+                                                    'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
+            $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
         }
         return $output;
     }
@@ -515,7 +586,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
                         if ($cm->modname == "forum" && empty($linkarray["file"])) {
                             $ula = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cm->id.
-                                                            '&cmd=useragreement&view_context=box', get_string('turnitinula', 'turnitintooltwo'),
+                                                            '&cmd=useragreement&view_context=box', get_string('turnitinppula', 'turnitintooltwo'),
                                                             array('target' => 'eulaWindow', 'class' => 'forum_eula_launch_noscript'));
                             $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid'));
                             $ula .= html_writer::tag('span', $userid, array('class' => 'userid'));
@@ -525,13 +596,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $userid));
                             $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch'));
                         } else {
-                            $ula = html_writer::tag('div', get_string('turnitinula', 'turnitintooltwo'),
+                            $ula = html_writer::tag('div', get_string('turnitinppula', 'turnitintooltwo'),
                                                                         array('class' => 'pp_turnitin_ula', 'data-userid' => $userid));
                             $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid pp_turnitin_cmid'));
 
                             $noscriptula = html_writer::tag('noscript',
                                             turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                                "Learner", get_string('turnitinula', 'turnitintooltwo'), false)." ".
+                                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
                                                     get_string('noscriptula', 'turnitintooltwo'),
                                                         array('class' => 'warning turnitin_ula_noscript'));
                         }
@@ -1607,6 +1678,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->submissiontype = $submissiontype;
+        $plagiarismfile->orcapable = null;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
             turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.")", "PP_REPLACE_SUB");

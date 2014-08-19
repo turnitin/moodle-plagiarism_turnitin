@@ -176,10 +176,14 @@
 .tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_ula {
     cursor:pointer;
     text-decoration: underline;
-}
-
-.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span {
-    color: #FF0000;
+	text-align: center;
+	border: 1px solid #CC0000;
+	background:url([[pix:turnitintooltwo|icon]]) no-repeat center 12px;
+	padding: 48px 12px 12px;
+	color: #FF0000;
+	margin-top:12px;
+	font-size: 14px;
+	font-weight: bold;
 }
 
 .tii_links_container #turnitin_submit_error {

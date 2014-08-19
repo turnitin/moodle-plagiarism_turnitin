@@ -757,7 +757,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box_end(true);
                         }
 
-                        if ($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable)) {
+                        if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))
+                            || (is_null($plagiarismfile->similarityscore) && $plagiarismfile->orcapable == 1)) {
                             $output .= $OUTPUT->box_start('row_score origreport_open', '');
                             $output .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'turnitintooltwo'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
@@ -910,7 +911,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
 
                 // Identify if an update is required for the similarity score and grade.
-                if (!is_null($plagiarismfile->similarityscore) || !is_null($plagiarismfile->grade)) {
+                if (!is_null($plagiarismfile->similarityscore) || !is_null($plagiarismfile->grade) || 
+                        !is_null($plagiarismfile->orcapable)) {
                     if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
                             $submissiondata->grade != $plagiarismfile->grade || 
                             $submissiondata->orcapable != $plagiarismfile->orcapable) {
@@ -1827,14 +1829,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                             array('submission' => $moodlesubmission->id), 'onlinetext');
                                 $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = $moodletextsubmission->onlinetext;
+                                $textcontent = strip_tags($moodletextsubmission->onlinetext);
                                 break;
                             case 'workshop':
                                 $moodlesubmission = $DB->get_record('workshop_submissions',
                                                         array('workshopid' => $cm->instance,
                                                                 'authorid' => $user->id), 'title, content, timemodified');
                                 $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = $moodlesubmission->content;
+                                $textcontent = strip_tags($moodlesubmission->content);
                                 $title = $moodlesubmission->title;
                                 break;
                         }
@@ -1919,51 +1921,53 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $forum_post = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $itemid));
-                $textcontent = $forum_post->message;
+                $textcontent = strip_tags($forum_post->message);
 
                 $filename = $title;
                 break;
         }
 
-        // Remove event and do not submit if we're not accepting anything and
+        // Do not submit if this is text_content and we're not accepting anything and
         // content is less than 20 words or 100 characters.
-        $content = explode(' ', $textcontent);
-        if ($settings['plagiarism_allow_non_or_submissions'] != 1 && 
-                (strlen($textcontent) < 100 || count($textcontent) < 20)) {
-            $plagiarismfile = new object();
-            if ($submissionid != 0) {
-                $plagiarismfile->id = $submissionid;
-            }
-            $plagiarismfile->cm = $cm->id;
-            $plagiarismfile->userid = $user->id;
-            $plagiarismfile->identifier = $identifier;
-            $plagiarismfile->statuscode = 'error';
-            $plagiarismfile->errorcode = 1;
-            $plagiarismfile->attempt = 1;
-            $plagiarismfile->lastmodified = time();
-            $plagiarismfile->submissiontype = $submissiontype;
-
-            if ($context == 'cron') {
-                mtrace('-------------------------');
-                mtrace(get_string('errorcode1', 'turnitintooltwo').':');
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-            }
-
-            if ($submissionid != 0) {
-                if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                    turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
+        if ($submissiontype != 'file') {
+            $content = explode(' ', $textcontent);
+            if ($settings['plagiarism_allow_non_or_submissions'] != 1 && 
+                    (strlen($textcontent) < 100 || count($textcontent) < 20)) {
+                $plagiarismfile = new object();
+                if ($submissionid != 0) {
+                    $plagiarismfile->id = $submissionid;
                 }
-            } else {
-                if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                    turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
-                }
-            }
+                $plagiarismfile->cm = $cm->id;
+                $plagiarismfile->userid = $user->id;
+                $plagiarismfile->identifier = $identifier;
+                $plagiarismfile->statuscode = 'error';
+                $plagiarismfile->errorcode = 1;
+                $plagiarismfile->attempt = 1;
+                $plagiarismfile->lastmodified = time();
+                $plagiarismfile->submissiontype = $submissiontype;
 
-            $return["success"] = false;
-            $return["message"] = get_string('errorcode1', 'turnitintooltwo');
-            return $return;
+                if ($context == 'cron') {
+                    mtrace('-------------------------');
+                    mtrace(get_string('errorcode1', 'turnitintooltwo').':');
+                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                    mtrace('Course Module: '.$cm->id.'');
+                    mtrace('-------------------------');
+                }
+
+                if ($submissionid != 0) {
+                    if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                        turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
+                    }
+                } else {
+                    if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                        turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
+                    }
+                }
+
+                $return["success"] = false;
+                $return["message"] = get_string('errorcode1', 'turnitintooltwo');
+                return $return;
+            }
         }
 
         // Check file is less than maximum allowed size.
@@ -2009,7 +2013,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Read the stored file/content into a temp file for submitting.
         $tempfile = turnitintooltwo_tempfile("_".$filename);
         $fh = fopen($tempfile, "w");
-        fwrite($fh, strip_tags($textcontent));
+        fwrite($fh, $textcontent);
         fclose($fh);
 
         // Create submission object.

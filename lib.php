@@ -742,7 +742,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 }
                             }
                         }
-                    } else {
+                    } else if ($plagiarismfile->statuscode == 'error') {
 
                         $errorcode = $plagiarismfile->errorcode;
                         // Deal with legacy error issues.
@@ -2002,6 +2002,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->attempt = 1;
             $plagiarismfile->lastmodified = time();
             $plagiarismfile->submissiontype = $submissiontype;
+            $plagiarismfile->errorcode = 0;
+            $plagiarismfile->errormsg = $return["message"];
 
             if ($context == 'cron') {
                 mtrace('-------------------------');

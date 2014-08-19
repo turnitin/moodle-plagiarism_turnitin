@@ -565,6 +565,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         $plagiarismfile->identifier != $identifier) ? true : false;
             }
 
+            $output .= $OUTPUT->box_start('tii_links_container');
+
             // Show the EULA for a student if necessary.
             if ($linkarray["userid"] == $USER->id) {
                 $noscriptula = "";
@@ -594,7 +596,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Get the EULA endpoint.
                             $config = turnitintooltwo_admin_config();
                             $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $userid));
-                            $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch'));
+                            $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch clear'));
                         } else {
                             $ula = html_writer::tag('div', get_string('turnitinppula', 'turnitintooltwo'),
                                                                         array('class' => 'pp_turnitin_ula', 'data-userid' => $userid));
@@ -654,8 +656,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
             }
-
-            $output .= $OUTPUT->box_start('tii_links_container');
 
             // Add Error to show that user has not accepted EULA.
             if (($linkarray["userid"] != $USER->id) && $istutor) {
@@ -843,10 +843,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                $output .= html_writer::tag('div', '', array('id' => 'turnitin_submit_error', 'class' => 'warning clear'));
+                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_error warning clear'));
 
                 // Show success of submission
-                $output .= html_writer::tag('div', '', array('id' => 'turnitin_submit_success', 'class' => 'success clear'));
+                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_success success clear'));
                 $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 

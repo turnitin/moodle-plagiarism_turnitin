@@ -14,9 +14,10 @@
     padding-right: 8px;
 }
 
-.tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container #turnitin_submit_error,
+.tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, 
-.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form {
+.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
+#tii_view_context {
     display:none;
 }
 
@@ -184,18 +185,22 @@
 	margin-top:12px;
 	font-size: 14px;
 	font-weight: bold;
+	display: block;
 }
 
-.tii_links_container #turnitin_submit_error {
+.tii_links_container .turnitin_submit_error {
     width: auto;
     margin-top: 12px;
+    display:none;
 }
 
 .tii_links_container .tii_error_icon {
     cursor: pointer;
 }
 
-
+.tii_links_container .eularedirect {
+    text-align: center;
+}
 
 
 

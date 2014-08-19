@@ -40,30 +40,40 @@ $cmid = required_param('cmid', PARAM_INT);
 $PAGE->set_context(context_system::instance());
 require_login();
 
-// Load Javascript and CSS.
-$turnitintooltwoview->load_page_components(false);
-
 switch ($cmd) {
     case "useragreement":
-		$cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
+        $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
         $PAGE->requires->css($cssurl);
         if ($CFG->branch <= 25) {
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+            $PAGE->requires->js($jsurl, true);
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
+            $PAGE->requires->js($jsurl, true);
             $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
             $PAGE->requires->js($jsurl);
         } else {
+            $PAGE->requires->jquery();
+            $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
         }
+
+        $output .= $OUTPUT->box_start('tii_links_container');
 
         $output .= html_writer::tag('span', $cmid, array('class' => 'cmid'));
     	$user = new turnitintooltwo_user($USER->id, "Learner");
 
-    	$turnitincomms = new turnitintooltwo_comms();
+     	$turnitincomms = new turnitintooltwo_comms();
         $turnitincall = $turnitincomms->initialise_api();
+        $loadericon = $OUTPUT->pix_icon('loader-lrg', get_string('redirecttoeula', 'turnitintooltwo'), 'mod_turnitintooltwo');
+        $text = html_writer::tag('p', get_string('redirecttoeula', 'turnitintooltwo'));
 
+        $output .= html_writer::tag('div', $loadericon.$text, array('class' => 'eularedirect clear'));
     	$output .= html_writer::tag("div",
                         turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner",
-                        								get_string('turnitinula', 'turnitintooltwo'), false),
-                            								array("class" => "eula_launch_form"));
+                        								get_string('turnitinula', 'turnitintooltwo'), false, 'PP'),
+                            								array("class" => "eula_launch_form hide"));
+
+        $output .= $OUTPUT->box_end(true);
     	break;
 }
 
@@ -71,21 +81,16 @@ switch ($cmd) {
 echo $turnitintooltwoview->output_header(null,
             null,
             $_SERVER["REQUEST_URI"],
-            $title,
-            $title,
-            $nav,
+            '',
+            '',
+            array(),
             "",
             "",
             true,
             '',
             '');
 
-echo html_writer::tag("div", $viewcontext, array("id" => "view_context"));
-if ($cmd == 'courses') {
-    echo $OUTPUT->heading(get_string('pluginname', 'turnitintooltwo'), 2, 'main');
-    // Show a warning if javascript is not enabled while a tutor is logged in.
-    echo html_writer::tag('noscript', get_string('noscript', 'turnitintooltwo'), array("class" => "warning"));
-}
+echo html_writer::tag("div", $viewcontext, array("id" => "tii_view_context"));
 
 echo $output;
 

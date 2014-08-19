@@ -666,6 +666,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box_end(true);
                         }
 
+                        if ($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable)) {
+                            $output .= $OUTPUT->box_start('row_score origreport_open', '');
+                            $output .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'turnitintooltwo'),
+                                                                        'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
+                            $output .= $OUTPUT->box_end(true);
+                        }
+
                         // Show link to open grademark.
                         if ((($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade) && (!empty($duedate) && $duedate <= time()))) || 
                                 ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time()) && !is_null($plagiarismfile->grade)))) 

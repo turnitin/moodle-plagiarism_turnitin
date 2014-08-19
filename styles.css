@@ -113,6 +113,14 @@
     white-space:nowrap;
 }
 
+.tii_links_container .score_no_orcapable {
+    width:16px;
+    text-align:center;
+    color:#CC0000;
+    background:#CCCCCC;
+    cursor: normal;
+}
+
 .tii_links_container .warning {
     border: 1px solid #CC0000;
     padding: 8px;

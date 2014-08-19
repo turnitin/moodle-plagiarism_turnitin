@@ -1045,7 +1045,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Configure assignment object to send to Turnitin.
         $assignment = new TiiAssignment();
         $assignment->setClassId($coursetiiid);
-        $assignment->setTitle($moduledata->name." (Moodle PP)");
+        // Need to truncate the moodle assignment title to be compatible with a Turnitin class (max length 99)
+        $assignment->setTitle( mb_strlen( $moduledata->name ) > 80 ? mb_substr( $moduledata->name, 0, 80 ) . "... (Moodle PP)" 
+                            : $moduledata->name . " (Moodle PP)" );
         $assignment->setSubmitPapersTo(!empty($modulepluginsettings["plagiarism_submitpapersto"]) ?
                                             $modulepluginsettings["plagiarism_submitpapersto"] : 1);
         $assignment->setSubmittedDocumentsCheck($modulepluginsettings["plagiarism_compare_student_papers"]);

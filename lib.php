@@ -528,8 +528,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                         if (empty($discussionid)) {
                             $reply   = optional_param('reply', 0, PARAM_INT);
+                            $edit    = optional_param('edit', 0, PARAM_INT);
                             if (!$parent = forum_get_post_full($reply)) {
-                                print_error('invalidparentpostid', 'forum');
+                                if (!$parent = forum_get_post_full($edit)) {
+                                    print_error('invalidparentpostid', 'forum');
+                                } 
                             }
                             if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
                                 print_error('notpartofdiscussion', 'forum');
@@ -638,7 +641,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $output .= html_writer::start_tag('div', array('class' => 'plagiarism_submission'));
                         $output .= html_writer::tag('div', $identifier.'-'.$submissiontype, 
                                                                 array('class' => 'plagiarism_submission_id'));
-                        $output .= html_writer::tag('div', $linkarray["content"], 
+                        $output .= html_writer::tag('div', urlencode($linkarray["content"]), 
                                                                 array('class' => 'plagiarism_submission_content'));
                         $output .= html_writer::tag('div', $linkarray["cmid"], 
                                                             array('class' => 'plagiarism_submission_cmid'));
@@ -660,13 +663,29 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Add Error to show that user has not accepted EULA.
             if (($linkarray["userid"] != $USER->id) && $istutor) {
-                $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
-                if (!$user->user_agreement_accepted) {
-                    $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'), 
-                                                            'mod_turnitintooltwo'), 
-                                                            array('title' => get_string('notacceptedeula', 'turnitintooltwo'), 
-                                                                    'class' => 'tii_tooltip tii_error_icon'));
-                    $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+                // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is killing
+                // this functionality. Have to check that user exists here first else there will be a fatal error.
+                if ($mdl_user = $DB->get_record('user', array('id' => $linkarray["userid"]))) {
+                    // We also need to check for security that they are actually on the Course.
+                    switch ($cm->modname) {
+                        case 'assign':
+                        case 'workshop':
+                            $capability = 'mod/'.$cm->modname.':submit';
+                            break;
+                        case 'forum':
+                            $capability = 'mod/'.$cm->modname.':replypost';
+                            break;
+                    }
+                    if (has_capability($capability, $context, $linkarray["userid"])) {
+                        $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
+                        if (!$user->user_agreement_accepted) {
+                            $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'), 
+                                                                    'mod_turnitintooltwo'), 
+                                                                    array('title' => get_string('notacceptedeula', 'turnitintooltwo'), 
+                                                                            'class' => 'tii_tooltip tii_error_icon'));
+                            $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+                        }
+                    }
                 }
             }
 
@@ -1708,7 +1727,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($submissiontype == 'file') {
             if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
                                                     array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
-
                 list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
                 $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
                                                                             " AND submissiontype = 'file' AND identifier ".$notinsql,
@@ -1899,6 +1917,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $apimethod = "createSubmission";
                     $submissionid = $this->create_new_tii_submission($cm, $user, $identifier, $submissiontype);
                 }
+
+                $forum_post = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $itemid));
+                $textcontent = $forum_post->message;
+
                 $filename = $title;
                 break;
         }
@@ -1987,7 +2009,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Read the stored file/content into a temp file for submitting.
         $tempfile = turnitintooltwo_tempfile("_".$filename);
         $fh = fopen($tempfile, "w");
-        fwrite($fh, $textcontent);
+        fwrite($fh, strip_tags($textcontent));
         fclose($fh);
 
         // Create submission object.

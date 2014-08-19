@@ -773,6 +773,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $output .= html_writer::tag('div', '', array('id' => 'turnitin_submit_error', 'class' => 'warning clear'));
+
+                // Show success of submission
+                $output .= html_writer::tag('div', '', array('id' => 'turnitin_submit_success', 'class' => 'success clear'));
                 $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 
@@ -1984,6 +1987,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             $return["success"] = true;
+            $return["message"] = get_string('submissionuploadsuccess', 'turnitintooltwo').'<br/>'.
+                                    get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
 
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";

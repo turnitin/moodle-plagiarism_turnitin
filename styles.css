@@ -131,6 +131,16 @@
     margin-bottom:6px;
 }
 
+.tii_links_container .success {
+    border: 1px solid #CC0000;
+    padding: 8px;
+    background: #FFFFFF;
+    width: 100%;
+    text-align:center;
+    display:none;
+    margin-bottom:6px;
+}
+
 .tii_links_container #ppErrors {
     width:100%;
 }

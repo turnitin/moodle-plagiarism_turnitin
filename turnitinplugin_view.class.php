@@ -339,6 +339,7 @@ class turnitinplugin_view {
         $cells["course"] = new html_table_cell(get_string('course', 'turnitintooltwo'));
         $cells["module"] = new html_table_cell(get_string('module', 'turnitintooltwo'));
         $cells["file"] = new html_table_cell(get_string('file'));
+        $cells["error"] = new html_table_cell(get_string('error'));
         $cells["delete"] = new html_table_cell('&nbsp;');
         $cells["delete"]->attributes['class'] = 'centered_cell';
 
@@ -383,6 +384,27 @@ class turnitinplugin_view {
                     } else {
                         $cells["file"] = str_replace('_', ' ', ucfirst($v->submissiontype));
                     }
+
+                    $errorcode = $v->errorcode;
+                    // Deal with legacy error issues.
+                    if (is_null($errorcode)) {
+                        $errorcode = 0;
+                        if ($submissiontype == 'file') {
+                            if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                                $errorcode = 2;
+                            }
+                        }
+                    }
+
+                    // Show error message if there is one.
+                    $errormsg = $v->errormsg;
+                    if ($errorcode == 0) {
+                        $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'turnitintooltwo') : $errormsg;
+                    } else {
+                        $errorstring = get_string('errorcode'.$v->errorcode, 
+                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                    }
+                    $cells["error"] = $errorstring;
 
                     $fnd = array("\n", "\r");
                     $rep = array('\n', '\r');

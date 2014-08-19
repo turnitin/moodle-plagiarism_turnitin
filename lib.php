@@ -83,7 +83,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         $files = $DB->get_records_sql("SELECT PTF.id, U.firstname, U.lastname, U.email, PTF.cm, M.name AS moduletype,
-                                        C.id AS courseid, C.fullname AS coursename, PTF.identifier, PTF.submissiontype
+                                        C.id AS courseid, C.fullname AS coursename, PTF.identifier, PTF.submissiontype,
+                                        PTF.errorcode, PTF.errormsg
                                         FROM {plagiarism_turnitin_files} PTF
                                         LEFT JOIN {user} U ON U.id = PTF.userid
                                         LEFT JOIN {course_modules} CM ON CM.id = PTF.cm

@@ -676,7 +676,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Display Links for files and contents.
-            if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && ($istutor || $submission_status)) {
+            if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && 
+                    ($istutor || ($submission_status && ($USER->id == $linkarray["userid"])))) {
                 // Get turnitin details - have to do this again as submission may have been made above.
                 $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
                                                         'cm' => $linkarray["cmid"], 'identifier' => $identifier), 
@@ -712,6 +713,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
+                        if ($istutor || ($linkarray["userid"] == $USER->id)) {
+                            $output .= html_writer::tag('div', 
+                                            $OUTPUT->pix_icon('icon-sml', 
+                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid, 'mod_turnitintooltwo', 
+                                                array('class' => 'turnitin_paper_id')).
+                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid);
+                        }
+
                         // Show Originality Report score and link.
                         if (($istutor || ($linkarray["userid"] == $USER->id && $plagiarismsettings["plagiarism_show_student_report"])) && 
                             ((is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1) && !is_null($plagiarismfile->similarityscore))) {

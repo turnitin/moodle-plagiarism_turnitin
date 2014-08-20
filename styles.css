@@ -122,6 +122,10 @@
     cursor: normal;
 }
 
+.tii_links_container .turnitin_paper_id {
+	padding-right:6px;
+}
+
 .tii_links_container .warning {
     border: 1px solid #CC0000;
     padding: 8px;

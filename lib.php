@@ -832,7 +832,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     } else if ($plagiarismfile->statuscode == 'error') {
 
                         // Deal with legacy error issues.
-                        if (is_null($plagiarismfile->errorcode)) {
+                        if (isset($plagiarismfile->errorcode)) {
                             $errorcode = 0;
                             if ($submissiontype == 'file') {
                                 if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
@@ -846,7 +846,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Show error message if there is one.
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (is_null($plagiarismfile->errormsg)) ? 
+                            $errorstring = (isset($plagiarismfile->errormsg)) ? 
                                                 get_string($langstring, 'turnitintooltwo') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode, 
@@ -860,10 +860,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_error warning clear'));
+                // Show error warning for submission
+                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_error warning clear',
+                                                                'id' => 'turnitin_submit_error_'.$identifier));
 
                 // Show success of submission
-                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_success success clear'));
+                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_success success clear',
+                                                                'id' => 'turnitin_submit_success_'.$identifier));
                 $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 

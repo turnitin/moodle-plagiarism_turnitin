@@ -1569,14 +1569,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $eventdata->event_type == "assessable_submitted")
                             && !empty($eventdata->content)) {
 
-                        // Remove event and do not submit if we're not accepting anything and
-                        // content is less than 20 words or 100 characters.
-                        $content = explode(' ', $eventdata->content);
-                        if ($plagiarismsettings['plagiarism_allow_non_or_submissions'] != 1 && 
-                                (strlen($eventdata->content) < 100 || count($content) < 20)) {
-                            $result = true;
-                        }
-
                         switch ($eventdata->modulename) {
                             case "assign":
                                 if ($contentsubmission = $DB->get_record('assign_submission', array('userid' => $user->id,
@@ -1783,15 +1775,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $attempt = (empty($previoussubmission)) ? 0 : $previoussubmission->attempt;
 
         if (count($previoussubmissions) >= 5 && $attempt >= 5) {
-            $return["success"] = false;
-            $return["message"] = get_string('pastfiveattempts', 'turnitintooltwo');
             if ($context == 'cron') {
                 mtrace('-------------------------');
                 mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
                 mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
                 mtrace('Course Module: '.$cm->id.'');
                 mtrace('-------------------------');
+
+                return true;
             }
+            $return["success"] = false;
+            $return["message"] = get_string('pastfiveattempts', 'turnitintooltwo');
             return $return;
         }
 
@@ -1946,14 +1940,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile->lastmodified = time();
                 $plagiarismfile->submissiontype = $submissiontype;
 
-                if ($context == 'cron') {
-                    mtrace('-------------------------');
-                    mtrace(get_string('errorcode1', 'turnitintooltwo').':');
-                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                    mtrace('Course Module: '.$cm->id.'');
-                    mtrace('-------------------------');
-                }
-
                 if ($submissionid != 0) {
                     if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
                         turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
@@ -1962,6 +1948,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
                         turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
                     }
+                }
+
+                if ($context == 'cron') {
+                    mtrace('-------------------------');
+                    mtrace(get_string('errorcode1', 'turnitintooltwo').':');
+                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                    mtrace('Course Module: '.$cm->id.'');
+                    mtrace('-------------------------');
+
+                    return true;
                 }
 
                 $return["success"] = false;
@@ -1986,14 +1982,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile->lastmodified = time();
                 $plagiarismfile->submissiontype = 'file';
 
-                if ($context == 'cron') {
-                    mtrace('-------------------------');
-                    mtrace(get_string('errorcode2', 'turnitintooltwo').':');
-                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                    mtrace('Course Module: '.$cm->id.'');
-                    mtrace('-------------------------');
-                }
-
                 if ($submissionid != 0) {
                     if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
                         turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
@@ -2002,6 +1990,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
                         turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
                     }
+                }
+
+                if ($context == 'cron') {
+                    mtrace('-------------------------');
+                    mtrace(get_string('errorcode2', 'turnitintooltwo').':');
+                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                    mtrace('Course Module: '.$cm->id.'');
+                    mtrace('-------------------------');
+
+                    return true;
                 }
 
                 $return["success"] = false;
@@ -2089,6 +2087,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $return["message"] = get_string('submissionuploadsuccess', 'turnitintooltwo').'<br/>'.
                                     get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
 
+            if ($context == 'cron') {
+                return true;
+            }
+
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
 
@@ -2098,24 +2100,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile = new object();
             if ($submissionid != 0) {
                 $plagiarismfile->id = $submissionid;
+
+                // Get attempt no
+                $current_record = $DB->get_record('plagiarism_turnitin_files', array("id" => $submissionid));
+                $plagiarismfile->attempt = $current_record->attempt + 1;
+            } else {
+                $plagiarismfile->attempt = 1;
             }
             $plagiarismfile->cm = $cm->id;
             $plagiarismfile->userid = $user->id;
             $plagiarismfile->identifier = $identifier;
             $plagiarismfile->statuscode = 'error';
-            $plagiarismfile->attempt = 1;
             $plagiarismfile->lastmodified = time();
             $plagiarismfile->submissiontype = $submissiontype;
             $plagiarismfile->errorcode = 0;
             $plagiarismfile->errormsg = $return["message"];
-
-            if ($context == 'cron') {
-                mtrace('-------------------------');
-                mtrace(get_string('pp_submission_error', 'turnitintooltwo').': '.$e->getMessage());
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-            }
 
             if ($submissionid != 0) {
                 if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
@@ -2128,6 +2127,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             $turnitincomms->handle_exceptions($e, $errorstring, false);
+
+            if ($context == 'cron') {
+                mtrace('-------------------------');
+                mtrace(get_string('pp_submission_error', 'turnitintooltwo').': '.$e->getMessage());
+                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                mtrace('Course Module: '.$cm->id.'');
+                mtrace('-------------------------');
+
+                return false;
+            }
         }
 
         return $return;

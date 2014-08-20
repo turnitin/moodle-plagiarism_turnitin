@@ -1309,9 +1309,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function cron() {
         global $DB;
 
-        $submissions = $DB->get_records('plagiarism_turnitin_files', 
-                            array('statuscode' => 'success', 'similarityscore' => null, 'orcapable' => null),
-                                                '', 'externalid, cm');
+        $submissions = $DB->get_records_select('plagiarism_turnitin_files',
+                                        " statuscode = ? AND similarityscore IS NULL AND orcapable != ? ",
+                                        array('success', 0), 'externalid, cm');
         $submissionids = array();
 
         foreach ($submissions as $tiisubmission) {

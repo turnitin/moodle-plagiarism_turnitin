@@ -521,7 +521,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     if (!$parent = forum_get_post_full($delete)) {
                                         print_error('invalidparentpostid', 'forum');
                                     }
-                                } 
+                                }
                             }
                             if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
                                 print_error('notpartofdiscussion', 'forum');
@@ -755,8 +755,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box_end(true);
                         }
 
-                        if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))
-                            || (is_null($plagiarismfile->similarityscore) && $plagiarismfile->orcapable == 1)) {
+                        if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
                             $output .= $OUTPUT->box_start('row_score origreport_open', '');
                             $output .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'turnitintooltwo'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));

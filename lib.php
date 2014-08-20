@@ -301,29 +301,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $PAGE->requires->js($jsurl);
 
             // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
-            if ($cm->modname == "forum") {
-                $ula = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cm->id.
-                                                '&cmd=useragreement&view_context=box', get_string('turnitinppula', 'turnitintooltwo'),
-                                                array('target' => 'eulaWindow', 'class' => 'forum_eula_launch_noscript'));
-                $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid'));
-                $ula .= html_writer::tag('span', $user->id, array('class' => 'userid'));
+            $ula = html_writer::tag('div', turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
+                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false),
+                                    array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
 
-                // Get the EULA endpoint.
-                $config = turnitintooltwo_admin_config();
-                $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $user->id));
-                $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch'));
-            } else {
-                $ula = html_writer::tag('div', get_string('turnitinppula', 'turnitintooltwo'),
-                                                            array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
-                $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid pp_turnitin_cmid'));
-
-                $noscriptula = html_writer::tag('noscript',
-                                turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                    "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
-                                        get_string('noscriptula', 'turnitintooltwo'),
-                                            array('class' => 'warning turnitin_ula_noscript'));
-            }
-            $submitting = false;
+            $noscriptula = html_writer::tag('noscript',
+                            turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
+                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
+                                    get_string('noscriptula', 'turnitintooltwo'),
+                                        array('class' => 'warning turnitin_ula_noscript'));
         }
 
         // Show EULA launcher and form placeholder.
@@ -602,9 +588,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $userid));
                             $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch clear'));
                         } else {
-                            $ula = html_writer::tag('div', get_string('turnitinppula', 'turnitintooltwo'),
-                                                                        array('class' => 'pp_turnitin_ula', 'data-userid' => $userid));
-                            $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid pp_turnitin_cmid'));
+                            $ula = html_writer::tag('div', turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
+                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false),
+                                    array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
 
                             $noscriptula = html_writer::tag('noscript',
                                             turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,

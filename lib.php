@@ -831,22 +831,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     } else if ($plagiarismfile->statuscode == 'error') {
 
-                        $errorcode = $plagiarismfile->errorcode;
                         // Deal with legacy error issues.
-                        if (is_null($errorcode)) {
+                        if (is_null($plagiarismfile->errorcode)) {
                             $errorcode = 0;
                             if ($submissiontype == 'file') {
                                 if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
                                     $errorcode = 2;
                                 }
                             }
+                        } else {
+                            $errorcode = $plagiarismfile->errorcode;
                         }
 
                         // Show error message if there is one.
-                        $errormsg = $plagiarismfile->errormsg;
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (is_null($errormsg)) ? get_string($langstring, 'turnitintooltwo') : $errormsg;
+                            $errorstring = (is_null($plagiarismfile->errormsg)) ? 
+                                                get_string($langstring, 'turnitintooltwo') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode, 
                                             'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));

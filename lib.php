@@ -515,9 +515,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (empty($discussionid)) {
                             $reply   = optional_param('reply', 0, PARAM_INT);
                             $edit    = optional_param('edit', 0, PARAM_INT);
+                            $delete  = optional_param('delete', 0, PARAM_INT);
                             if (!$parent = forum_get_post_full($reply)) {
                                 if (!$parent = forum_get_post_full($edit)) {
-                                    print_error('invalidparentpostid', 'forum');
+                                    if (!$parent = forum_get_post_full($delete)) {
+                                        print_error('invalidparentpostid', 'forum');
+                                    }
                                 } 
                             }
                             if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
@@ -861,12 +864,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 // Show error warning for submission
-                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_error warning clear',
-                                                                'id' => 'turnitin_submit_error_'.$identifier));
+                $output .= html_writer::tag('div', '', array('class' => 
+                                                'turnitin_submit_error warning clear turnitin_submit_error_'.$identifier));
 
                 // Show success of submission
-                $output .= html_writer::tag('div', '', array('class' => 'turnitin_submit_success success clear',
-                                                                'id' => 'turnitin_submit_success_'.$identifier));
+                $output .= html_writer::tag('div', '', array('class' => 
+                                                'turnitin_submit_success success clear turnitin_submit_success_'.$identifier));
                 $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 

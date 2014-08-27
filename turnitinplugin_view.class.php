@@ -326,12 +326,15 @@ class turnitinplugin_view {
 
                     if ($v->submissiontype == "file") {
                         $fs = get_file_storage();
-                        $file = $fs->get_file_by_hash($v->identifier);
-                        $cells["file"] = new html_table_cell(html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
+                        if ($file = $fs->get_file_by_hash($v->identifier)) {
+                            $cells["file"] = new html_table_cell(html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
                                                 $file->get_contextid().'/'.$file->get_component().'/'.$file->get_filearea().'/'.
                                                 $file->get_itemid().'/'.$file->get_filename(),
                                                 $OUTPUT->pix_icon('fileicon', 'open '.$file->get_filename(), 'mod_turnitintooltwo').
                                                     " ".$file->get_filename()));
+                        } else {
+                            $cells["file"] = get_string('filedoesnotexist', 'plagiarism_turnitin');
+                        }
                     } else {
                         $cells["file"] = str_replace('_', ' ', ucfirst($v->submissiontype));
                     }

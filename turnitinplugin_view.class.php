@@ -234,7 +234,7 @@ class turnitinplugin_view {
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
             $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
 
-            if ($location == "activity") {
+            if ($location == "activity" && $config->usegrademark) {
                 // Populate Rubric options.
                 $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
                 if (!empty($this->turnitintooltwo->rubric)) {
@@ -258,6 +258,9 @@ class turnitinplugin_view {
                 $mform->setType('rubric_warning_seen', PARAM_RAW);
 
                 $mform->addElement('static', 'rubric_note', '', get_string('attachrubricnote', 'turnitintooltwo'));
+            } else {
+                $mform->addElement('hidden', 'plagiarism_rubric', '');
+                $mform->setType('plagiarism_rubric', PARAM_RAW);
             }
 
             if (!empty($config->useerater)) {

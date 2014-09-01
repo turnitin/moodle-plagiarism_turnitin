@@ -154,33 +154,40 @@ class turnitinplugin_view {
             }
 
             // Quickmark Manager.
-            $quickmarkmanagerlink = $OUTPUT->box_start('row_quickmark_manager', '');
-            $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                            '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
-                                            get_string('launchquickmarkmanager', 'turnitintooltwo'),
-                                            array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
-                                                'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
-            $quickmarkmanagerlink .= html_writer::tag('span', '',
-                                            array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
-            $quickmarkmanagerlink .= $OUTPUT->box_end(true);
+            $quickmarkmanagerlink = '';
+            if ($config->usegrademark) {
+                $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
+                $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
+                                                '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
+                                                get_string('launchquickmarkmanager', 'turnitintooltwo'),
+                                                array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
+                                                    'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
+                $quickmarkmanagerlink .= html_writer::tag('span', '',
+                                                array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
+                $quickmarkmanagerlink .= $OUTPUT->box_end(true);
+            }
 
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if ($cmid != 0) {
-                $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
-                $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                                '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
-                                                    '&action=peermarkmanager&view_context=box',
-                                                get_string('launchpeermarkmanager', 'turnitintooltwo'),
-                                                array('class' => 'plagiarism_turnitin_peermark_manager_pp_launch',
-                                                        'id' => 'peermark_manager_'.$cmid,
-                                                        'title' => get_string('launchpeermarkmanager', 'turnitintooltwo')));
-                $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',
-                                                                        'id' => 'peermark_manager_form'));
-                $peermarkmanagerlink .= $OUTPUT->box_end(true);
+            if ($config->enablepeermark) {
+                if ($cmid != 0) {
+                    $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
+                    $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
+                                                    '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
+                                                        '&action=peermarkmanager&view_context=box',
+                                                    get_string('launchpeermarkmanager', 'turnitintooltwo'),
+                                                    array('class' => 'plagiarism_turnitin_peermark_manager_pp_launch',
+                                                            'id' => 'peermark_manager_'.$cmid,
+                                                            'title' => get_string('launchpeermarkmanager', 'turnitintooltwo')));
+                    $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',
+                                                                            'id' => 'peermark_manager_form'));
+                    $peermarkmanagerlink .= $OUTPUT->box_end(true);
+                }
             }
 
-            $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
+            if (!empty($quickmarkmanagerlink) || !empty($peermarkmanagerlink)) {
+                $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
+            }
         }
 
         if (empty($config_warning)) {

@@ -9,4 +9,3 @@ $string['turnitin'] = 'Turnitin';
 $string['turnitin:enable'] = 'Enable Turnitin';
 $string['turnitin:viewsimilarityscore'] = 'View Similarity Score';
 $string['turnitin:viewfullreport'] = 'View Originality Report';
-$string['filedoesnotexist'] = 'File has been deleted';

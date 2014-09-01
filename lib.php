@@ -1316,8 +1316,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " statuscode = ? AND similarityscore IS NULL AND orcapable != ? ",
-                                        array('success', 0), 'externalid, cm');
+                                        " statuscode = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                                        array('success', 1), 'externalid, cm');
         $submissionids = array();
 
         foreach ($submissions as $tiisubmission) {

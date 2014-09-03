@@ -1173,7 +1173,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $modulepluginsettings["plagiarism_exclude_matches_value"] : 0;
 
         $assignment->setSmallMatchExclusionThreshold($modulepluginsettings["plagiarism_exclude_matches_value"]);
-        $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
+        if ($config->useanon) {
+            $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
+        }
         $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
         $assignment->setTranslatedMatching(!empty($modulepluginsettings["plagiarism_transmatch"]) ? 1 : 0);
 

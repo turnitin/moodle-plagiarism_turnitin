@@ -1230,9 +1230,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($cm->modname == "forum") {
             $dtpost = $dtstart;
         } else {
-            $dtpost = ($dtdue <= $dtstart) ? time() : $dtdue;
+            $now = time();
+            if ($dtdue <= $dtstart) {
+                if ($dtstart > $now) {
+                    $dtpost = $dtstart;
+                } else {
+                    $dtpost = $now;
+                }
+            } else {
+                $dtpost = $dtdue;
+            }
         }
-        $dtdue = ($dtdue <= $dtstart) ? strtotime('+1 month') : $dtdue;
+        if ($dtdue <= $dtstart) {
+            $dtdue = strtotime('+1 month', $dtstart);
+        }
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 

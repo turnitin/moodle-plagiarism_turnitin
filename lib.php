@@ -1350,6 +1350,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $plagiarismfile->externalid = $tiisubmissionid;
                         $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ?
                                                                         $readsubmission->getOverallSimilarity() : null;
+                        $plagiarismfile->grade = (is_numeric($readsubmission->getGrade())) ? $readsubmission->getGrade() : null;
                         $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
                         $plagiarismfile->transmatch = 0;
                         if (is_int($readsubmission->getTranslatedOverallSimilarity()) &&
@@ -1364,7 +1365,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             echo "File updated: ".$plagiarismfile->id."\n";
                         }
 
-                        if (!is_null($readsubmission->getGrade())) {
+                        if (!is_null($plagiarismfile->grade)) {
                             $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
                         }
                     }

@@ -1173,7 +1173,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $modulepluginsettings["plagiarism_exclude_matches_value"] : 0;
 
         $assignment->setSmallMatchExclusionThreshold($modulepluginsettings["plagiarism_exclude_matches_value"]);
-        $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
+        if ($config->useanon) {
+            $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
+        }
         $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
         $assignment->setTranslatedMatching(!empty($modulepluginsettings["plagiarism_transmatch"]) ? 1 : 0);
 
@@ -1228,9 +1230,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($cm->modname == "forum") {
             $dtpost = $dtstart;
         } else {
-            $dtpost = ($dtdue <= $dtstart) ? time() : $dtdue;
+            $now = time();
+            if ($dtdue <= $dtstart) {
+                if ($dtstart > $now) {
+                    $dtpost = $dtstart;
+                } else {
+                    $dtpost = $now;
+                }
+            } else {
+                $dtpost = $dtdue;
+            }
         }
-        $dtdue = ($dtdue <= $dtstart) ? strtotime('+1 month') : $dtdue;
+        if ($dtdue <= $dtstart) {
+            $dtdue = strtotime('+1 month', $dtstart);
+        }
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 

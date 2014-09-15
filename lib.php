@@ -162,7 +162,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismelements = $this->get_settings_fields();
 
             $turnitinpluginview = new turnitinplugin_view();
-            $turnitinpluginview->add_elements_to_settings_form($mform, "activity", $cmid);
+            $turnitinpluginview->add_elements_to_settings_form($mform, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
 
             // Disable all plagiarism elements if turnitin is not enabled.
             foreach ($plagiarismelements as $element) {

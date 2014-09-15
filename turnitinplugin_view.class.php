@@ -92,7 +92,7 @@ class turnitinplugin_view {
      * @param type $plugin_defaults
      * @return type
      */
-    public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0) {
+    public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
@@ -237,14 +237,14 @@ class turnitinplugin_view {
             if ($location == "activity" && $config->usegrademark) {
                 // Populate Rubric options.
                 $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
-                if (!empty($this->turnitintooltwo->rubric)) {
-                    $rubricoptions[$this->turnitintooltwo->rubric] = (isset($rubricoptions[$this->turnitintooltwo->rubric])) ?
-                                    $rubricoptions[$this->turnitintooltwo->rubric] : get_string('otherrubric', 'turnitintooltwo');
+                if (!empty($currentrubric)) {
+                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
+                                    $rubricoptions[$currentrubric] : get_string('otherrubric', 'turnitintooltwo');
                 }
+                
+                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'turnitintooltwo'), $rubricoptions);
 
-                $rubricline = array();
-                $rubricline[] = $mform->createElement('select', 'plagiarism_rubric', '', $rubricoptions);
-                $rubricline[] = $mform->createElement('static', 'rubric_link', '',
+                $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
                                                     get_string('launchrubricmanager', 'turnitintooltwo'),
@@ -252,8 +252,8 @@ class turnitinplugin_view {
                                                         'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).
                                                     html_writer::tag('span', '', array('class' => 'launch_form',
                                                                                     'id' => 'rubric_manager_form')));
-                $mform->setDefault('rubric', '');
-                $mform->addGroup($rubricline, 'rubricline', get_string('attachrubric', 'turnitintooltwo'), array(' '), false);
+                $mform->setDefault('plagiarism_rubric', '');
+
                 $mform->addElement('hidden', 'rubric_warning_seen', '');
                 $mform->setType('rubric_warning_seen', PARAM_RAW);
 

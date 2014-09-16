@@ -261,12 +261,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $config = turnitintooltwo_admin_config();
         $output = '';
 
+        // Check Turnitin is enabled for this current module.
+        $usingtii = $DB->get_field('plagiarism_turnitin_config', 'value', array('cm' => $cmid, 'name' => 'use_turnitin'));
+        if (!$usingtii) {
+            return '';
+        }
+
         if (!empty($config->agreement)) {
-            $usingtii = $DB->get_field('plagiarism_turnitin_config', 'value', array('cm' => $cmid, 'name' => 'use_turnitin'));
-            if (!empty($config->agreement) && $usingtii) {
-                $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
-                $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
-            }
+            $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
+            $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
         }
 
         // Get course details

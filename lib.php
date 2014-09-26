@@ -843,7 +843,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                         'class' => 'tii_tooltip tii_error_icon'));
                         $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
                     }
-                    
+
                 } else {
                     // Add Error to show that user has not accepted EULA.
                     if (($linkarray["userid"] != $USER->id) && $istutor) {
@@ -1396,7 +1396,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
             } catch (Exception $e) {
+                mtrace(get_string('tiisubmissionsgeterror', 'turnitintooltwo'));
                 $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
+                return false;
             }
         }
 
@@ -1510,6 +1512,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Exit if Turnitin is not being used for this activity type.
         if (empty($configsettings['turnitin_use_mod_'.$eventdata->modulename])) {
             return;
+        }
+
+        // Test connection to Turnitin and show error message if it can't connect.
+        $turnitincomms = new turnitintooltwo_comms();
+        $tiiapi = $turnitincomms->initialise_api();
+
+        $class = new TiiClass();
+        $class->setTitle('Test finding a class to see if connection works');
+
+        try {
+            $response = $tiiapi->findClasses($class);
+        } catch (Exception $e) {
+            mtrace(get_string('connecttesterror', 'turnitintooltwo'));
+            $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
+            return false;
         }
 
         if ($cm) {

@@ -363,7 +363,7 @@ iframe html{background:none;}
 
 
 
-html {
+html .tooltipster-base {
 	 -webkit-font-smoothing: antialiased;
 }
 

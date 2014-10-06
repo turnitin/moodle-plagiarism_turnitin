@@ -2197,17 +2197,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private function delete_tii_submission($submissionid) {
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
-        $turnitincall = $turnitincomms->initialise_api();
+        // $turnitincomms = new turnitintooltwo_comms();
+        // $turnitincall = $turnitincomms->initialise_api();
 
-        $submission = new TiiSubmission();
-        $submission->setSubmissionId($submissionid);
+        // $submission = new TiiSubmission();
+        // $submission->setSubmissionId($submissionid);
 
-        try {
-            $response = $turnitincall->deleteSubmission($submission);
-        } catch (Exception $e) {
-            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror');
-        }
+        // try {
+        //     $response = $turnitincall->deleteSubmission($submission);
+        // } catch (Exception $e) {
+        //     $turnitincomms->handle_exceptions($e, 'turnitindeletionerror');
+        // }
     }
 }
 

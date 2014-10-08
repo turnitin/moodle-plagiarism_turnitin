@@ -671,7 +671,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile = current($plagiarismfiles);
 
                 // Get user's grades.
-                $duedate = 0;
+                $postdate = 0;
                 $currentgradequery = false;
                 if ($cm->modname == 'forum') {
                     static $gradeitem;
@@ -683,7 +683,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $currentgradequery = $DB->get_record('grade_grades',
                                                     array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
                     }
-                    $duedate = (isset($moduledata->timedue)) ? $moduledata->timedue : 0;
                 } else if ($cm->modname == 'workshop') {
                     static $gradeitem;
                     if (empty($gradeitem)) {
@@ -691,11 +690,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0));
                     }
                     $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                    $duedate = $moduledata->assessmentend;
+                    $postdate = $moduledata->assessmentend;
                 } else if ($cm->modname == 'assign') {
+                    static $gradeitem;
+                    if (empty($gradeitem)) {
+                        $gradeitem = $DB->get_record('grade_items',
+                                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
+                    }
                     $currentgradequery = $DB->get_record('assign_grades',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $cm->instance));
-                    $duedate = (!empty($moduledata->duedate)) ? $moduledata->duedate : time();
+
+                    $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
                 }
 
                 if ($plagiarismfile) {
@@ -747,9 +752,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Show link to open grademark.
-                        if ((($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade) && (!empty($duedate) && $duedate <= time()))) || 
-                                ((!empty($currentgradequery) && (!empty($duedate) && $duedate <= time()) && !is_null($plagiarismfile->grade)))) 
-                                    && $config->usegrademark) {
+                        if ($config->usegrademark && 
+                            ($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade) 
+                                            && ($postdate != 1 && $postdate <= time()) && !empty($currentgradequery)))) {
 
                             // Output grademark icon.
                             $output .= $OUTPUT->box_start('grade_icon', '');
@@ -1240,22 +1245,25 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = $moduledata->timedue;
         }
 
-        // If the module has no due date or is a forum, or the due date has passed 
+        // If the module has no due date or is a forum, or the due date has passed, 
         // we make the due date one month from now in Turnitin so that we can submit past the due date.
         $dtdue = ($dtdue <= time()) ? strtotime('+1 month') : 0;
 
-        if ($cm->modname == "forum") {
-            $dtpost = $dtstart;
-        } else {
-            $now = time();
-            if ($dtdue <= $dtstart) {
-                if ($dtstart > $now) {
+        // Set post date. If "hidden until" has been set in gradebook then we will use that value, otherwise we will
+        // use start date. If the grades are to be completely hidden then we will set post date in the future.
+        $dtpost = $dtstart;
+        if ($cm->modname != "forum") {
+            $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
+            switch ($gradeitem->hidden) {
+                case 1:
+                    $dtpost = strtotime('+1 month');
+                    break;
+                case 0:
                     $dtpost = $dtstart;
-                } else {
-                    $dtpost = $now;
-                }
-            } else {
-                $dtpost = $dtdue;
+                    break;
+                default:
+                    $dtpost = $gradeitem->hidden;
+                    break;
             }
         }
         if ($dtdue <= $dtstart) {

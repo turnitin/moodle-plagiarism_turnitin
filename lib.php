@@ -1247,11 +1247,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If the module has no due date or is a forum, or the due date has passed, 
         // we make the due date one month from now in Turnitin so that we can submit past the due date.
-        $dtdue = ($dtdue <= time()) ? strtotime('+1 month') : 0;
+        $dtdue = ($dtdue <= time()) ? strtotime('+1 month') : $dtdue;
 
         // Set post date. If "hidden until" has been set in gradebook then we will use that value, otherwise we will
         // use start date. If the grades are to be completely hidden then we will set post date in the future.
-        $dtpost = $dtstart;
+        $dtpost = 0;
         if ($cm->modname != "forum") {
             $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
             switch ($gradeitem->hidden) {
@@ -1266,8 +1266,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     break;
             }
         }
+        // Ensure due date can't be before start date
         if ($dtdue <= $dtstart) {
             $dtdue = strtotime('+1 month', $dtstart);
+        }
+        // Ensure post date can't be before start date
+        if ($dtpost < $dtstart) {
+            $dtpost = $dtstart;
         }
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));

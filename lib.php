@@ -540,7 +540,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $discussionid = $discussion->id;
                         }
                         $submission = $DB->get_record_select('forum_posts', 
-                                                " userid = ? AND message = ? AND discussion = ? ",
+                                                " userid = ? AND message LIKE ? AND discussion = ? ",
                                                 array($linkarray["userid"], $linkarray["content"], $discussionid));
                         $itemid = $submission->id;
                         $submission->timemodified = $submission->modified;

@@ -1679,14 +1679,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user = new turnitintooltwo_user($eventdata->userid, 'Learner');
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
-                    // Don't submit if a user has not accepted the eula.
+                    // Don't submit and remove from queue if a user has not accepted the eula.
                     if (!$user->user_agreement_accepted) {
                         mtrace('-------------------------');
-                        mtrace(get_string('notacceptedeula', 'turnitintooltwo').':');
+                        mtrace(get_string('notacceptedeula', 'turnitintooltwo'));
+                        mtrace(get_string('eventremoved', 'turnitintooltwo').':');
                         mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                        mtrace('Course Module: '.$cm->id.'');
+                        mtrace('Course Module: '.$cm->id);
                         mtrace('-------------------------');
-                        return false;
+                        return true;
                     }
 
                     $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);

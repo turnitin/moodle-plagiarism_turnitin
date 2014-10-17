@@ -385,7 +385,6 @@ class turnitinplugin_view {
 
                     if ($v->submissiontype == "file") {
                         $fs = get_file_storage();
-                        $file = $fs->get_file_by_hash($v->identifier);
                         if ($file = $fs->get_file_by_hash($v->identifier)) {
                             $cells["file"] = new html_table_cell(html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
                                                     $file->get_contextid().'/'.$file->get_component().'/'.$file->get_filearea().'/'.
@@ -403,8 +402,8 @@ class turnitinplugin_view {
                     // Deal with legacy error issues.
                     if (is_null($errorcode)) {
                         $errorcode = 0;
-                        if ($submissiontype == 'file') {
-                            if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                        if ($v->submissiontype == 'file') {
+                            if (is_object($file) && $file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
                                 $errorcode = 2;
                             }
                         }

@@ -131,15 +131,6 @@ switch ($action) {
         $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
         break;
 
-    case "useragreement":
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
-                                                has_capability('mod/'.$cm->modname.':submit', $context);
-        if ($isstudent) {
-            $user = new turnitintooltwo_user($USER->id, "Learner");
-            echo turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", "Submit", true);
-        }
-        break;
-
     case "refresh_peermark_assignments":
         if (!confirm_sesskey()) {
             throw new moodle_exception('invalidsesskey', 'error');

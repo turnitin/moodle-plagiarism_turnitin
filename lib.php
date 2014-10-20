@@ -162,6 +162,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismelements = $this->get_settings_fields();
 
             $turnitinpluginview = new turnitinplugin_view();
+            $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? 
+                                                                $plagiarismvalues["plagiarism_rubric"] : 0;
             $turnitinpluginview->add_elements_to_settings_form($mform, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
 
             // Disable all plagiarism elements if turnitin is not enabled.
@@ -256,7 +258,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function print_disclosure($cmid) {
-        global $DB, $OUTPUT, $USER, $PAGE;
+        global $DB, $OUTPUT, $USER, $PAGE, $CFG;
 
         $config = turnitintooltwo_admin_config();
         $output = '';
@@ -310,11 +312,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $PAGE->requires->js($jsurl);
             $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
             $PAGE->requires->js($jsurl);
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+            $PAGE->requires->js($jsurl);
 
             // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
-            $ula = html_writer::tag('div', turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false),
-                                    array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
+            $ula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cmid.'&cmd=useragreement&view_context=box_solid', 
+                                    get_string('turnitinppula', 'turnitintooltwo'),
+                                    array("class" => "pp_turnitin_eula_link"));
+
+            $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
 
             $noscriptula = html_writer::tag('noscript',
                             turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
@@ -573,8 +579,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Show the EULA for a student if necessary.
             if ($linkarray["userid"] == $USER->id) {
-                $noscriptula = "";
-                $ula = "";
+                $eula = "";
 
                 static $userid;
                 if (empty($userid)) {
@@ -589,35 +594,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $userid = $linkarray["userid"];
 
                     if (!$eulaaccepted) {
-                        // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
-                        if ($cm->modname == "forum" && empty($linkarray["file"])) {
-                            $ula = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cm->id.
-                                                            '&cmd=useragreement&view_context=box', get_string('turnitinppula', 'turnitintooltwo'),
-                                                            array('target' => 'eulaWindow', 'class' => 'forum_eula_launch_noscript'));
-                            $ula .= html_writer::tag('span', $cm->id, array('class' => 'cmid'));
-                            $ula .= html_writer::tag('span', $userid, array('class' => 'userid'));
+                        $eula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
+                                                                                '&cmd=useragreement&view_context=box_solid', 
+                                                    get_string('turnitinppula', 'turnitintooltwo'),
+                                                    array("class" => "pp_turnitin_eula_link"));
 
-                            // Get the EULA endpoint.
-                            $config = turnitintooltwo_admin_config();
-                            $ula .= html_writer::tag('span', $config->apiurl.TiiLTI::EULAENDPOINT, array('class' => 'turnitin_eula_link', 'data-userid' => $userid));
-                            $ula .= html_writer::tag('span', '', array('class' => 'forum_eula_launch clear'));
-                        } else {
-                            $ula = html_writer::tag('div', turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false),
-                                    array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
-
-                            $noscriptula = html_writer::tag('noscript',
-                                            turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                                "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
-                                                    get_string('noscriptula', 'turnitintooltwo'),
-                                                        array('class' => 'warning turnitin_ula_noscript'));
-                        }
+                        $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
                         $submitting = false;
                     }
 
                     // Show EULA launcher and form placeholder.
-                    if (!empty($ula)) {
-                        $output .= $ula.$noscriptula;
+                    if (!empty($eula)) {
+                        $output .= $eula;
 
                         $turnitincomms = new turnitintooltwo_comms();
                         $turnitincall = $turnitincomms->initialise_api();

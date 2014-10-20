@@ -56,24 +56,18 @@ switch ($cmd) {
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
         }
+        $user = new turnitintooltwo_user($USER->id, "Learner");
 
-        $output .= $OUTPUT->box_start('tii_links_container');
-
-        $output .= html_writer::tag('span', $cmid, array('class' => 'cmid'));
-    	$user = new turnitintooltwo_user($USER->id, "Learner");
-
-     	$turnitincomms = new turnitintooltwo_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-        $loadericon = $OUTPUT->pix_icon('loader-lrg', get_string('redirecttoeula', 'turnitintooltwo'), 'mod_turnitintooltwo');
-        $text = html_writer::tag('p', get_string('redirecttoeula', 'turnitintooltwo'));
-
-        $output .= html_writer::tag('div', $loadericon.$text, array('class' => 'eularedirect clear'));
-    	$output .= html_writer::tag("div",
-                        turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner",
-                        								get_string('turnitinula', 'turnitintooltwo'), false, 'PP'),
-                            								array("class" => "eula_launch_form hide"));
-
+        $output .= $OUTPUT->box_start('tii_eula_launch');
+        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", 
+                                                get_string('turnitinppula', 'turnitintooltwo'));
         $output .= $OUTPUT->box_end(true);
+        echo $output;
+
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        exit;
     	break;
 }
 

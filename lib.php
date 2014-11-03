@@ -2055,7 +2055,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($submissiontype != 'file') {
             $content = explode(' ', $textcontent);
             if ($settings['plagiarism_allow_non_or_submissions'] != 1 && 
-                    (strlen($textcontent) < 100 || count($textcontent) < 20)) {
+                    (strlen($textcontent) < 100 || count($content) < 20)) {
                 $plagiarismfile = new object();
                 if ($submissionid != 0) {
                     $plagiarismfile->id = $submissionid;
@@ -2369,7 +2369,7 @@ function event_mod_deleted($eventdata) {
 
     $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata->cmid));
     $DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata->cmid));
-    
+
     return true;
 }
 

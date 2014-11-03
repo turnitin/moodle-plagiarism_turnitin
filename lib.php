@@ -1223,8 +1223,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // If the module has no due date or is a forum, or the due date has passed, 
-        // we make the due date one month from now in Turnitin so that we can submit past the due date.
-        $dtdue = ($dtdue <= time()) ? strtotime('+1 month') : $dtdue;
+        // we make the due date one day from now in Turnitin so that we can submit past the due date.
+        $dtdue = ($dtdue <= time()) ? strtotime('+1 day') : $dtdue;
 
         // Set post date. If "hidden until" has been set in gradebook then we will use that value, otherwise we will
         // use start date. If the grades are to be completely hidden then we will set post date in the future.

@@ -1189,20 +1189,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
         $assignment->setTranslatedMatching(!empty($modulepluginsettings["plagiarism_transmatch"]) ? 1 : 0);
 
-        // In Moodle 2.4 the preventlatesubmissions setting was removed and replaced by a cut off date
-        if (isset($moduledata->preventlatesubmissions)) {
-            $latesubmissionsallowed = ($moduledata->preventlatesubmissions == 1) ? 0 : 1;
-        } else if (isset($moduledata->cutoffdate)) {
-            if ($moduledata->cutoffdate > time()) {
-                $latesubmissionsallowed = 1;
-            } else {
-                $latesubmissionsallowed = 0;
-            }
-        } else {
-            $latesubmissionsallowed = 0;
-        }
-
-        $assignment->setLateSubmissionsAllowed($latesubmissionsallowed);
+        // Moodle handles submissions and whether they are allowed so this should always be true.
+        // Otherwise, the Turnitin setting is incompatible with Moodle due to multiple files and resubmission rules.
+        $assignment->setLateSubmissionsAllowed(1);
         $assignment->setMaxGrade(0);
         $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ?
                                         $modulepluginsettings["plagiarism_rubric"] : '');

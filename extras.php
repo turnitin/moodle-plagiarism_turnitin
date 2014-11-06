@@ -31,16 +31,46 @@ $turnitintooltwoview = new turnitintooltwo_view();
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
 
+// If opening DV then $viewcontext needs to be set to box
+if ($cmd == "origreport" || $cmd == "grademark") {
+    $viewcontext = "box";
+}
+
 // Initialise variables.
 $output = "";
 $jsrequired = false;
 
 $cmid = required_param('cmid', PARAM_INT);
+$cm = get_coursemodule_from_id('', $cmid);
+$context = context_course::instance($cm->course);
+
+// Work out user role.
+switch ($cm->modname) {
+    case "forum":
+    case "workshop":
+        $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
+        break;
+    default:
+        $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
+        break;
+}
 
 $PAGE->set_context(context_system::instance());
 require_login();
 
 switch ($cmd) {
+    case "origreport":
+    case "grademark":
+        $submissionid = required_param('submissionid', PARAM_INT);
+        $user = new turnitintooltwo_user($USER->id, $userrole);
+        echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
+                                                                                array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        exit;
+        break;
+
     case "useragreement":
         $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
         $PAGE->requires->css($cssurl);

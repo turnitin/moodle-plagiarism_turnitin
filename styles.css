@@ -10,7 +10,7 @@
 	clear:both;
 }
 
-.tii_links_container .grademark_open img {
+.tii_links_container .pp_grademark_open img {
     padding-right: 8px;
 }
 
@@ -21,13 +21,15 @@
     display:none;
 }
 
-.tii_links_container .origreport_open, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
+.tii_links_container .pp_origreport_open, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
 .tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews {
     float: left;
 }
 
 .tii_links_container .grade_icon {
 	font-size: 8px;
+	position: relative;
+    top:4px;
 }
 
 .forumpost .attachments .tii_links_container {
@@ -72,16 +74,16 @@
     white-space: nowrap;
 }
 
-.tii_links_container .grademark_open, .tii_links_container .origreport_open {
+.tii_links_container .pp_grademark_open, .tii_links_container .pp_origreport_open {
     cursor:pointer;
     margin-bottom:6px;
 }
 
-.tii_links_container .grademark_open {
+.tii_links_container .pp_grademark_open {
     padding-top:6px;
 }
 
-.tii_links_container .origreport_open {
+.tii_links_container .pp_origreport_open {
     position:relative;
     top:4px;
     display:inline;

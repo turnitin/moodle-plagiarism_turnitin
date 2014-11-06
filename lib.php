@@ -704,8 +704,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Show Originality Report score and link.
                         if (($istutor || ($linkarray["userid"] == $USER->id && $plagiarismsettings["plagiarism_show_student_report"])) && 
                             ((is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1) && !is_null($plagiarismfile->similarityscore))) {
-                            $output .= $OUTPUT->box_start('row_score origreport_open origreport_'.
-                                                            $plagiarismfile->externalid.'_'.$linkarray["cmid"], '');
+                            $output .= $OUTPUT->box_start('row_score pp_origreport_open origreport_'.
+                                                            $plagiarismfile->externalid.'_'.$linkarray["cmid"], 
+                                                            $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]);
                             // Show score.
                             if ($plagiarismfile->statuscode == "pending") {
                                 $output .= html_writer::tag('div', '&nbsp;', array('title' => get_string('pending', 'turnitintooltwo'),
@@ -733,7 +734,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
-                            $output .= $OUTPUT->box_start('row_score origreport_open', '');
+                            $output .= $OUTPUT->box_start('row_score pp_origreport_open', '');
                             $output .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'turnitintooltwo'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
                             $output .= $OUTPUT->box_end(true);
@@ -750,7 +751,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 get_string('grademark', 'turnitintooltwo'), 'mod_turnitintooltwo'),
                                                     array('title' => get_string('grademark', 'turnitintooltwo'),
                                                         'class' => 'grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
-                                                                        '_'.$linkarray["cmid"]));
+                                                                        '_'.$linkarray["cmid"],
+                                                        'id' => $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]));
 
                             // Put in div placeholder for DV launch form.
                             $output .= $OUTPUT->box('', 'launch_form grademark_form_'.$plagiarismfile->externalid);

@@ -750,7 +750,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-edit',
                                                                 get_string('grademark', 'turnitintooltwo'), 'mod_turnitintooltwo'),
                                                     array('title' => get_string('grademark', 'turnitintooltwo'),
-                                                        'class' => 'grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
+                                                        'class' => 'pp_grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
                                                                         '_'.$linkarray["cmid"],
                                                         'id' => $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]));
 

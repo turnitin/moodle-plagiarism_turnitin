@@ -730,6 +730,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
                             // Put in div placeholder for DV launch form.
                             $output .= $OUTPUT->box('', 'launch_form origreport_form_'.$plagiarismfile->externalid);
+                            // Add url for launching DV from Forum post.
+                            if ($cm->modname == 'forum') {
+                                $output .= $OUTPUT->box($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"], 
+                                                        'origreport_forum_launch origreport_forum_launch_'.$plagiarismfile->externalid);
+                            }
                             $output .= $OUTPUT->box_end(true);
                         }
 
@@ -754,6 +759,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                         '_'.$linkarray["cmid"],
                                                         'id' => $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]));
 
+                            // Add url for launching DV from Forum post.
+                            if ($cm->modname == 'forum') {
+                                $output .= $OUTPUT->box($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"], 
+                                                        'grademark_forum_launch grademark_forum_launch_'.$plagiarismfile->externalid);
+                            }
                             // Put in div placeholder for DV launch form.
                             $output .= $OUTPUT->box('', 'launch_form grademark_form_'.$plagiarismfile->externalid);
                             $output .= $OUTPUT->box_end(true);

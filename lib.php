@@ -1310,9 +1310,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduleconfigvalue->value = $dtpost;
 
         if ($plagiarism_post_date = $DB->get_record('plagiarism_turnitin_config',
-                                    array('cm' => $cm->id, 'name' => 'plagiarism_post_date'), 'value')) {
+                                    array('cm' => $cm->id, 'name' => 'plagiarism_post_date'), 'id')) {
 
-            $moduleconfigvalue->id = $plagiarism_post_date->value;
+            $moduleconfigvalue->id = $plagiarism_post_date->id;
             $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
         } else {
             $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);

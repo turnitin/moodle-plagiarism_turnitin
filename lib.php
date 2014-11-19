@@ -1374,6 +1374,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         foreach ($assignments as $assignment) {
             $cm = get_coursemodule_from_id('', $assignment->cm);
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
             // Don't update for forums as post date will be start date in this instance as there is no gradebook.
             if ($cm && $cm->modname != 'forum') {
@@ -1390,6 +1391,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
                         $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
                     }
+                }
+
+                // Only update modules that haven't started yet.
+                $dtstart = 0;
+                if (!empty($moduledata->allowsubmissionsfromdate)) {
+                    $dtstart = $moduledata->allowsubmissionsfromdate;
+                } else if (!empty($moduledata->timeavailable)) {
+                    $dtstart = $moduledata->timeavailable;
+                } else {
+                    $dtstart = $cm->added;
+                }
+                if ($dtstart > time()) {
+                    break;
                 }
 
                 if ($plagiarism_post_date = $DB->get_record_select('plagiarism_turnitin_config',

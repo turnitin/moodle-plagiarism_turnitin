@@ -1359,7 +1359,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function cron() {
         $this->cron_update_assignments();
-        $this->cron_update_scores();
+
+        // Update scores by separate submission type.
+        $submissiontypes = array('file', 'text_content', 'forum_post');
+        foreach ($submissiontypes as $submissiontype) {
+            $this->cron_update_scores($submissiontype);
+        }
         return true;
     }
 
@@ -1447,12 +1452,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      *
      * @return boolean
      */
-    public function cron_update_scores() {
+    public function cron_update_scores($submissiontype = 'file') {
         global $DB;
 
         $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " statuscode = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
-                                        array('success', 1), 'externalid, cm');
+                                        " statuscode = ? AND submissiontype = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                                        array('success', $submissiontype, 1), 'externalid, cm');
         $submissionids = array();
 
         foreach ($submissions as $tiisubmission) {

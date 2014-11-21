@@ -1376,7 +1376,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm = get_coursemodule_from_id('', $assignment->cm);
 
             // Don't update for forums as post date will be start date in this instance as there is no gradebook.
-            if ($cm->modname != 'forum') {
+            if ($cm && $cm->modname != 'forum') {
                 // Get course data.
                 $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
                 if (empty($coursedata->turnitin_cid)) {

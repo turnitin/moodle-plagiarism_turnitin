@@ -1410,7 +1410,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $dtstart = $cm->added;
                     }
                     if ($dtstart > time()) {
-                        break;
+                        continue;
                     }
 
                     if ($plagiarism_post_date = $DB->get_record_select('plagiarism_turnitin_config',

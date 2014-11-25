@@ -31,16 +31,50 @@ $turnitintooltwoview = new turnitintooltwo_view();
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
 
+// If opening DV then $viewcontext needs to be set to box
+if ($cmd == "origreport" || $cmd == "grademark") {
+    $viewcontext = "box";
+}
+
 // Initialise variables.
 $output = "";
 $jsrequired = false;
 
 $cmid = required_param('cmid', PARAM_INT);
+$cm = get_coursemodule_from_id('', $cmid);
+$context = context_course::instance($cm->course);
+
+// Work out user role.
+switch ($cm->modname) {
+    case "forum":
+    case "workshop":
+        $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
+        break;
+    default:
+        $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
+        break;
+}
 
 $PAGE->set_context(context_system::instance());
 require_login();
 
 switch ($cmd) {
+    case "origreport":
+    case "grademark":
+        $submissionid = required_param('submissionid', PARAM_INT);
+        $user = new turnitintooltwo_user($USER->id, $userrole);
+        if ($userrole == 'Instructor') {
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $user->join_user_to_class($coursedata->turnitin_cid);
+        }
+        echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
+                                                                                array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        exit;
+        break;
+
     case "useragreement":
         $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
         $PAGE->requires->css($cssurl);
@@ -56,24 +90,18 @@ switch ($cmd) {
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
         }
+        $user = new turnitintooltwo_user($USER->id, "Learner");
 
-        $output .= $OUTPUT->box_start('tii_links_container');
-
-        $output .= html_writer::tag('span', $cmid, array('class' => 'cmid'));
-    	$user = new turnitintooltwo_user($USER->id, "Learner");
-
-     	$turnitincomms = new turnitintooltwo_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-        $loadericon = $OUTPUT->pix_icon('loader-lrg', get_string('redirecttoeula', 'turnitintooltwo'), 'mod_turnitintooltwo');
-        $text = html_writer::tag('p', get_string('redirecttoeula', 'turnitintooltwo'));
-
-        $output .= html_writer::tag('div', $loadericon.$text, array('class' => 'eularedirect clear'));
-    	$output .= html_writer::tag("div",
-                        turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner",
-                        								get_string('turnitinula', 'turnitintooltwo'), false, 'PP'),
-                            								array("class" => "eula_launch_form hide"));
-
+        $output .= $OUTPUT->box_start('tii_eula_launch');
+        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", 
+                                                get_string('turnitinppula', 'turnitintooltwo'));
         $output .= $OUTPUT->box_end(true);
+        echo $output;
+
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        exit;
     	break;
 }
 

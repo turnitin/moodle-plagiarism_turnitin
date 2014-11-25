@@ -95,7 +95,7 @@ if (!empty($action)) {
             }
 
             $_SESSION['notice']['message'] = get_string('configupdated', 'turnitintooltwo');
-            header('Location: '.$CFG->wwwroot.'/plagiarism/turnitin/settings.php');
+            redirect(new moodle_url('/plagiarism/turnitin/settings.php'));
             exit;
             break;
 
@@ -122,7 +122,7 @@ if (!empty($action)) {
             }
 
             $_SESSION['notice']['message'] = get_string('defaultupdated', 'turnitintooltwo');
-            header('Location: '.$CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
+            redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'defaults')));
             exit;
             break;
 
@@ -130,7 +130,7 @@ if (!empty($action)) {
             $id = optional_param('id', 0, PARAM_INT);
             $DB->delete_records('plagiarism_turnitin_files', array('id' => $id));
 
-            header('Location: '.$CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=errors');
+            redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'errors')));
             exit;
             break;
     }

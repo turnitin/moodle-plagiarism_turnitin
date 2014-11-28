@@ -23,6 +23,10 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
+global $tiipp;
+$tiipp = new stdClass();
+$tiipp->in_use = true;
+
 // Get global class.
 require_once($CFG->dirroot.'/plagiarism/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');

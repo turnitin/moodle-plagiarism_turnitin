@@ -16,6 +16,10 @@
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 
+global $tiipp;
+$tiipp = new stdClass();
+$tiipp->in_use = true;
+
 class turnitinplugin_view {
 
     /**

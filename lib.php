@@ -1061,10 +1061,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Create a course within Turnitin
      */
-    public function create_tii_course($cm, $coursedata) {
+    public function create_tii_course($cm, $coursedata, $workflowcontext = "site") {
         global $CFG;
 
-        // Get 1st teacher and make them the owner.
         switch ($cm->modname) {
             case "forum":
             case "workshop":
@@ -1087,7 +1086,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-        $turnitincourse = $turnitintooltwoassignment->create_tii_course($coursedata, $ownerid, "PP");
+        $turnitincourse = $turnitintooltwoassignment->create_tii_course($coursedata, $ownerid, "PP", $workflowcontext);
 
         // Join all admins to the course in Turnitin.
         $admins = explode(",", $CFG->siteadmins);
@@ -1165,7 +1164,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Create the module as an assignment within Turnitin if it does not exist,
      * if we have a Turnitin id for the module then edit it
      */
-    public function sync_tii_assignment($cm, $coursetiiid) {
+    public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site") {
         global $DB;
 
         $config = turnitintooltwo_admin_config();
@@ -1293,12 +1292,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value')) {
             $assignment->setAssignmentId($tiiassignment->value);
             $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-            $turnitintooltwoassignment->edit_tii_assignment($assignment);
+            $turnitintooltwoassignment->edit_tii_assignment($assignment, $workflowcontext);
 
             $turnitinassignid = $tiiassignment->value;
         } else {
             $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-            $turnitinassignid = $turnitintooltwoassignment->create_tii_assignment($assignment, 0, 0, 'plagiarism_plugin');
+            $turnitinassignid = $turnitintooltwoassignment->create_tii_assignment($assignment, 0, 0, 'plagiarism_plugin', $workflowcontext);
 
             $moduleconfigvalue = new stdClass();
             $moduleconfigvalue->cm = $cm->id;
@@ -1390,7 +1389,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Don't update for forums as post date will be start date in this instance as there is no gradebook.
                 if ($cm->modname != 'forum') {
                     // Get course data.
-                    $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+                    $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
                     if (empty($coursedata->turnitin_cid)) {
                         // Course may existed in a previous incarnation of this plugin.
                         // Get this and save it in courses table if so.
@@ -1398,7 +1397,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
                         } else {
                             // Otherwise create new course in Turnitin.
-                            $tiicoursedata = $this->create_tii_course($cm, $coursedata);
+                            $tiicoursedata = $this->create_tii_course($cm, $coursedata, "cron");
+                            if (empty($tiicoursedata)) {
+                                continue;
+                            }
                             $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
                             $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
                         }
@@ -1430,22 +1432,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             case 1:
                                 // If Turnitin post date is in the next 7 days then push it ahead
                                 if ($post_date < (time() + (60 * 60 * 24 * 7)))  {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
                                 }
                                 break;
                             case 0:
                                 if ($post_date > time()) {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
                                 }
                                 break;
                             default:
                                 if ($post_date != $gradeitem->hidden) {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
                                 }
                                 break;
                         }
                     } else {
-                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
                     }
                 }
             }
@@ -1507,9 +1509,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                            echo "File failed to update: ".$plagiarismfile->id."\n";
+                            mtrace("File failed to update: ".$plagiarismfile->id);
                         } else {
-                            echo "File updated: ".$plagiarismfile->id."\n";
+                            mtrace("File updated: ".$plagiarismfile->id);
                         }
 
                         if (!is_null($plagiarismfile->grade)) {
@@ -1577,7 +1579,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Migrate course from previous version of plugin to this
      */
-    public function migrate_previous_course($coursedata, $turnitincid) {
+    public function migrate_previous_course($coursedata, $turnitincid, $workflowcontext = "site") {
         global $DB, $USER;
 
         $turnitincourse = new object();
@@ -1595,8 +1597,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if (!$insertid = $DB->$method('turnitintooltwo_courses', $turnitincourse)) {
-            turnitintooltwo_print_error('classupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
-            exit();
+            if ($workflowcontext != "cron") {
+                turnitintooltwo_print_error('classupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                exit();
+            }
         }
 
         $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
@@ -1653,7 +1657,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($cm) {
             // Create the course/class in Turnitin if it doesn't already exist.
-            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
             if (empty($coursedata->turnitin_cid)) {
                 // Course may existed in a previous incarnation of this plugin.
                 // Get this and save it in courses table if so.
@@ -1661,7 +1665,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
                 } else {
                     // Otherwise create new course in Turnitin.
-                    $tiicoursedata = $this->create_tii_course($cm, $coursedata);
+                    $tiicoursedata = $this->create_tii_course($cm, $coursedata, "cron");
+                    if (empty($tiicoursedata)) {
+                        return false;
+                    }
                     $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
                     $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
                 }
@@ -1670,7 +1677,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             switch ($eventdata->event_type) {
                 case "mod_created":
                 case "mod_updated":
-                    $result = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                    $result = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
                     break;
 
                 case "file_uploaded":
@@ -1705,7 +1712,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         return true;
                     }
 
-                    $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                    $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
 
                     // Submit draft content and files for newer than 2.3.
                     if ($eventdata->modulename == 'assign' &&

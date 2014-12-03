@@ -32,7 +32,7 @@ require_once($CFG->dirroot.'/plagiarism/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once($CFG->dirroot.'/lib/pluginlib.php');
-
+require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 require_once("turnitinplugin_view.class.php");
 
@@ -1039,10 +1039,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Gradebook object.
             if ($grade) {
-                // Include gradelib file if it hasn't been included already.
-                if (!function_exists('grade_update')) {
-                    require_once($CFG->libdir.'/gradelib.php');
-                }
                 $grades = new stdClass();
                 $grades->userid = $userid;
                 $grades->rawgrade = $grade->grade;

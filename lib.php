@@ -476,6 +476,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $output = "";
 
+        // If a text submission has been made, we can only display links for current attempts so don't show links previous attempts
+        static $contentdisplayed;
+        if (!empty($linkarray["content"]) && $contentdisplayed == true) {
+            return $output;
+        }
+
         if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && !empty($linkarray["cmid"])) {
 
             // Include Javascript.
@@ -495,10 +501,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $submission_status = true;
             $identifier = '';
 
-            // Get Assignment submission data and account for draft submissions which will not be submitted
+            // Get Assignment submission data and account for draft submissions which may not be submitted
             if ($cm->modname == 'assign') {
-                if ($submission = $DB->get_record('assign_submission',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id))) {
+                if (!empty($linkarray["file"])){
+                    $submission = $DB->get_record('assign_submission',
+                                                array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id,
+                                                        'id' => $file->get_itemid()));
+                } else {
+                    $submissions = $DB->get_records('assign_submission',
+                                                array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id));
+                    $submission = end($submissions);
+                }
+
+                if ($submission) {
                     $submission_status = ($submission->status == "submitted" || 
                                         ($moduledata->submissiondrafts == 1 && $plagiarismsettings["plagiarism_draft_submit"] == 0)) 
                                         ? true : false;
@@ -521,7 +536,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     case 'assign':
                         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                     array('submission' => $submission->id), 'onlinetext');
-                        $content = $moodletextsubmission->onlinetext;
+                        if (empty($moodletextsubmission)) {
+                            $content = '';
+                            $submission_status = false;
+                        } else {
+                            $content = $moodletextsubmission->onlinetext;
+                        }
                         break;
                     case 'workshop':
                         $submission = $DB->get_record('workshop_submissions',
@@ -575,7 +595,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
-                $submitting = ($submission->timemodified > $tiimodifieddate ||
+                $submitting = ($submission->timemodified > $tiimodifieddate &&
                                         $plagiarismfile->identifier != $identifier) ? true : false;
             }
 
@@ -656,6 +676,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Display Links for files and contents.
             if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && 
                     ($istutor || ($submission_status && ($USER->id == $linkarray["userid"])))) {
+
+                // Prevent text content links being displayed for previous attempts as we have no way of getting the data.
+                if (!empty($linkarray["content"]) && $linkarray["userid"] == $USER->id) {
+                    $contentdisplayed = true;
+                }
+
                 // Get turnitin details - have to do this again as submission may have been made above.
                 $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
                                                         'cm' => $linkarray["cmid"], 'identifier' => $identifier), 
@@ -1717,7 +1743,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Get content.
                             $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                                        'userid' => $eventdata->userid), 'id');
+                                                        'userid' => $eventdata->userid, 'id' => $eventdata->itemid), 'id');
                             if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                         array('submission' => $moodlesubmission->id), 'onlinetext')) {
                                 $eventdata->content = $moodletextsubmission->onlinetext;
@@ -1743,7 +1769,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             switch ($eventdata->modulename) {
                                 case "assign":
                                     if ($contentsubmission = $DB->get_record('assign_submission', array('userid' => $user->id,
-                                                                                    'assignment' => $moduledata->id))) {
+                                                                                'assignment' => $moduledata->id, 
+                                                                                'id' => $eventdata->itemid))) {
                                         $timemodified = $contentsubmission->timemodified;
                                         $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                         $submissiontype = 'text_content';
@@ -1897,30 +1924,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if ($submissiontype == 'file') {
-            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
-                                                    array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
-                list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
-                $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
-                                                                            " AND submissiontype = 'file' AND identifier ".$notinsql,
-                                                        array_merge(array($userid, $cm->id), $notinparams));
 
-                if (!empty($oldfiles)) {
-                    // Initialise Comms Object.
-                    $turnitincomms = new turnitintooltwo_comms();
-                    $turnitincall = $turnitincomms->initialise_api();
-
-                    foreach ($oldfiles as $oldfile) {
-                        // Delete submission from Turnitin if we have an external id.
-                        if (!is_null($oldfile->externalid)) {
-                            $this->delete_tii_submission($oldfile->externalid);
-                        }
-                        $deletestr .= $oldfile->id.', ';
-                    }
-
-                    list($insql, $deleteparams) = $DB->get_in_or_equal(explode(',', substr($deletestr, 0, -2)));
-                    $deletestr = " id ".$insql;
-                }
-            }
+            // Don't remove any files.
+            return;
 
         } else if ($submissiontype == 'text_content') {
             $deletestr = " userid = ? AND cm = ? AND submissiontype = 'text_content' AND identifier != ? ";
@@ -1995,9 +2001,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($textcontent == '') {
                         switch ($cm->modname) {
                             case 'assign':
-                                $moodlesubmission = $DB->get_record('assign_submission',
+                                $moodlesubmissions = $DB->get_records('assign_submission',
                                                         array('assignment' => $cm->instance,
                                                                     'userid' => $user->id), 'id, timemodified');
+                                $moodlesubmission = end($moodlesubmissions);
                                 $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                             array('submission' => $moodlesubmission->id), 'onlinetext');
                                 $timemodified = $moodlesubmission->timemodified;
@@ -2010,6 +2017,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $timemodified = $moodlesubmission->timemodified;
                                 $textcontent = strip_tags($moodlesubmission->content);
                                 $title = $moodlesubmission->title;
+                                break;
+                        }
+                    } else {
+                        switch ($cm->modname) {
+                            case 'assign':
+                                $moodlesubmission = $DB->get_record('assign_submission',
+                                                        array('assignment' => $cm->instance,
+                                                                    'userid' => $user->id,
+                                                                    'id' => $itemid), 'id, timemodified');
+                                $timemodified = $moodlesubmission->timemodified;
+                                break;
+                            case 'workshop':
+                                $moodlesubmission = $DB->get_record('workshop_submissions',
+                                                        array('workshopid' => $cm->instance,
+                                                                'authorid' => $user->id), 'title, content, timemodified');
+                                $timemodified = $moodlesubmission->timemodified;
                                 break;
                         }
                     }
@@ -2025,7 +2048,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
 
                     // Don't submit if submission hasn't changed.
-                    if ($previoussubmission->statuscode == "success" && $timemodified <= $previoussubmission->lastmodified) {
+                    if ($previoussubmission->statuscode == "success" && 
+                            (($submissiontype == 'file' && $timemodified <= $previoussubmission->lastmodified) 
+                                || $submissiontype != 'file')) {
                         return true;
                     } else if ($settings["plagiarism_report_gen"] > 0) {
                         // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.

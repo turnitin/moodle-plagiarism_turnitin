@@ -476,7 +476,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $output = "";
 
-        // If a text submission has been made, we can only display links for current attempts so don't show links previous attempts
+        // If a text submission has been made, we can only display links for current attempts so don't show links previous attempts.
+        // This will need to be reworked when linkarray contains submission id.
         static $contentdisplayed;
         if (!empty($linkarray["content"]) && $contentdisplayed == true) {
             return $output;
@@ -508,6 +509,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                 array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id,
                                                         'id' => $file->get_itemid()));
                 } else {
+                    // This will need to be reworked when linkarray contains submission id.
                     $submissions = $DB->get_records('assign_submission',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id));
                     $submission = end($submissions);
@@ -1931,11 +1933,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } else if ($submissiontype == 'text_content') {
             $deletestr = " userid = ? AND cm = ? AND submissiontype = 'text_content' AND identifier != ? ";
             $deleteparams = array($userid, $cm->id, $identifier);
-        }
 
-        // Delete from database.
-        if (!empty($deletestr)) {
-            $DB->delete_records_select('plagiarism_turnitin_files', $deletestr, $deleteparams);
+            // Delete from database.
+            if (!empty($deletestr)) {
+                $DB->delete_records_select('plagiarism_turnitin_files', $deletestr, $deleteparams);
+            }
         }
     }
 
@@ -2001,6 +2003,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($textcontent == '') {
                         switch ($cm->modname) {
                             case 'assign':
+                                // This will need to be reworked when linkarray in get_links() contains submission id.
                                 $moodlesubmissions = $DB->get_records('assign_submission',
                                                         array('assignment' => $cm->instance,
                                                                     'userid' => $user->id), 'id, timemodified');
@@ -2027,12 +2030,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                     'userid' => $user->id,
                                                                     'id' => $itemid), 'id, timemodified');
                                 $timemodified = $moodlesubmission->timemodified;
+                                $textcontent = strip_tags($textcontent);
                                 break;
                             case 'workshop':
                                 $moodlesubmission = $DB->get_record('workshop_submissions',
                                                         array('workshopid' => $cm->instance,
                                                                 'authorid' => $user->id), 'title, content, timemodified');
                                 $timemodified = $moodlesubmission->timemodified;
+                                $textcontent = strip_tags($textcontent);
                                 break;
                         }
                     }

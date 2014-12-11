@@ -1014,17 +1014,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Module grade object.
             $grade = new stdClass();
-            // If submission has multiple content/files in it then get average grade.
+            // If submission has multiple content/files in it then get average grade (ignore NULL grades).
             $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $userid, 'cm' => $cm->id));
             if (count($tiisubmissions)) {
                 $averagegrade = null;
+                $gradescounted = 0;
                 $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $userid, 'cm' => $cm->id));
                 foreach ($tiisubmissions as $tiisubmission) {
                     if (!is_null($tiisubmission->grade)) {
                         $averagegrade = $averagegrade + $tiisubmission->grade;
+                        $gradescounted += 1;
                     }
                 }
-                $grade->grade = (!is_null($averagegrade)) ? (int)($averagegrade / count($tiisubmissions)) : null;
+                $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)($averagegrade / count($gradescounted)) : null;
             } else {
                 $grade->grade = $submission->getGrade();
             }

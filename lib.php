@@ -717,8 +717,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $gradeitem = $DB->get_record('grade_items',
                                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
                     }
-                    $currentgradequery = $DB->get_record('assign_grades',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $cm->instance));
+                    $currentgradesquery = $DB->get_records('assign_grades',
+                                                array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
+                    $currentgradequery = current($currentgradesquery);
 
                     $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
                 }
@@ -1001,7 +1002,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get gradebook data.
             switch ($cm->modname) {
                 case 'assign':
-                    $currentgrade = $DB->get_record('assign_grades', array('userid' => $userid, 'assignment' => $cm->instance));
+                    $currentgrades = $DB->get_records('assign_grades', array('userid' => $userid, 'assignment' => $cm->instance), 'id DESC');
+                    $currentgrade = current($currentgrades);
                     break;
                 case 'workshop':
                     $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,

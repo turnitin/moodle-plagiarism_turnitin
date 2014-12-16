@@ -1026,7 +1026,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $gradescounted += 1;
                     }
                 }
-                $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)(round($averagegrade / $gradescounted, 0)) : null;
+                $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)($averagegrade / $gradescounted) : null;
             } else {
                 $grade->grade = $submission->getGrade();
             }

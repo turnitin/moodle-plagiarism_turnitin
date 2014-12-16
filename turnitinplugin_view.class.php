@@ -16,6 +16,10 @@
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 
+global $tiipp;
+$tiipp = new stdClass();
+$tiipp->in_use = true;
+
 class turnitinplugin_view {
 
     /**
@@ -241,7 +245,7 @@ class turnitinplugin_view {
                     $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
                                     $rubricoptions[$currentrubric] : get_string('otherrubric', 'turnitintooltwo');
                 }
-                
+
                 $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'turnitintooltwo'), $rubricoptions);
 
                 $mform->addElement('static', 'rubric_link', '',

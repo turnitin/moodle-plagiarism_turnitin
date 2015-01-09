@@ -221,12 +221,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $module = $DB->get_record('modules', array('name' => $supportedmod));
 
             // Get all the course modules that have Turnitin enabled
-            $sql = 'SELECT cm.id
+            $sql = "SELECT cm.id
                     FROM {course_modules} cm
                     RIGHT JOIN {plagiarism_turnitin_config} ptc ON cm.id = ptc.cm
                     WHERE cm.module = :moduleid
                     AND cm.course = :courseid
-                    AND ptc.name = "turnitin_assignid"';
+                    AND ptc.name = 'turnitin_assignid'";
             $params = array('courseid' => $courseid, 'moduleid' => $module->id);
             $modules = $DB->get_records_sql($sql, $params);
 

@@ -194,6 +194,21 @@
 	display: block;
 }
 
+.pp_turnitin_ula {
+	display: none;
+}
+
+noscript.turnitin_ula_noscript {
+    border: 1px solid #CC0000;
+    padding: 8px;
+    background: #FFE9E8;
+    width: 99%;
+    text-align:center;
+    display:block;
+    margin:16px 6px;
+	line-height: 28px;
+}
+
 .tii_links_container .turnitin_submit_error {
     width: auto;
     margin-top: 12px;

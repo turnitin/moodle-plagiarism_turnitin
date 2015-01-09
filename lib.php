@@ -324,7 +324,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     get_string('turnitinppula', 'turnitintooltwo'),
                                     array("class" => "pp_turnitin_eula_link"));
 
-            $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
+            $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
 
             $noscriptula = html_writer::tag('noscript',
                             turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
@@ -625,7 +625,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     get_string('turnitinppula', 'turnitintooltwo'),
                                                     array("class" => "pp_turnitin_eula_link"));
 
-                        $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula', 'data-userid' => $user->id));
+                        $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
                         $submitting = false;
                     }
 

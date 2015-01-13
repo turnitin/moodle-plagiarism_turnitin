@@ -1522,10 +1522,33 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         " statuscode = ? AND submissiontype = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
                                         array('success', $submissiontype, 1), 'externalid DESC');
         $submissionids = array();
+        $reportsexpected = array();
 
+        // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
+            // Only add the submission to the request if the module still exists.
             if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
-                $submissionids[] = $tiisubmission->externalid;
+                if (!isset($reportsexpected[$cm->id])) {
+                    $plagiarismsettings = $this->get_settings($cm->id);
+                    $reportsexpected[$cm->id] = 1;
+
+                    if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
+                        $plagiarismsettings['plagiarism_compare_institution'] = 0;
+                    }
+
+                    // Don't add the submission to the request if module settings mean we will not get a report back.
+                    if ($plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
+                        $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
+                        $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
+                        $plagiarismsettings['plagiarism_compare_institution'] == 0) {
+                        $reportsexpected[$cm->id] = 0;
+                    }
+                }
+
+                // Only add the submission to the request if we are expecting an originality report.
+                if ($reportsexpected[$cm->id] == 1) {
+                    $submissionids[] = $tiisubmission->externalid;
+                }
             }
         }
 

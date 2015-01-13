@@ -40,7 +40,7 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$supported_mods = array('assign', 'forum', 'workshop');
+$supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array('assign');
 $pluginconfig = array('turnitin_use' => 0);
 
 if ($configfield = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
@@ -76,7 +76,7 @@ if (!empty($action)) {
 
             // Allow Turnitin to be on for Individual modules. 
             foreach ($supported_mods as $mod) {
-                $turnitinuse = optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT);
+                $turnitinuse = ($CFG->branch > 23) ? optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT) : 1;
                 $turnitinuse = ($turnitinoveralluse == 0) ? 0 : $turnitinuse;
                 if ($configfield = $DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod, 'plugin' => 'plagiarism'))) {
                     $configfield->value = $turnitinuse;

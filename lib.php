@@ -723,7 +723,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     static $gradeitem;
                     if (empty($gradeitem)) {
                         $gradeitem = $DB->get_record('grade_items',
-                                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
+                                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
                     }
                     if ($gradeitem) {
                         $currentgradequery = $DB->get_record('grade_grades',
@@ -733,7 +733,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     static $gradeitem;
                     if (empty($gradeitem)) {
                         $gradeitem = $DB->get_record('grade_items',
-                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0));
+                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
                     }
                     $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
                     $postdate = $moduledata->assessmentend;
@@ -741,7 +741,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     static $gradeitem;
                     if (empty($gradeitem)) {
                         $gradeitem = $DB->get_record('grade_items',
-                                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
+                                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
                     }
                     $currentgradesquery = $DB->get_records('assign_grades',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
@@ -1033,7 +1033,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     break;
                 case 'workshop':
                     $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
-                                                    'itemmodule' => $cm->modname, 'itemnumber' => 0));
+                                                    'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' =>$cm->course));
                     $currentgrade = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $gradeitem->id));
                     break;
             }
@@ -1299,7 +1299,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // use start date. If the grades are to be completely hidden then we will set post date in the future.
         $dtpost = 0;
         if ($cm->modname != "forum") {
-            $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
+            $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
             switch ($gradeitem->hidden) {
                 case 1:
                     $dtpost = strtotime('+6 months');
@@ -1478,7 +1478,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         $post_date = $plagiarism_post_date->value;
                         $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 
-                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0));
+                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
 
                         // 1 means grade is always hidden, 0 means it's never hidden so we make it the same as start date.
                         // Otherwise there is a hidden until date which we use as the post date.

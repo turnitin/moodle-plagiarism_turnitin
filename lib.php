@@ -1006,7 +1006,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Only update as necessary.
                 if ($updaterequired) {
                     $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
-                    if (!is_null($plagiarismfile->grade)) {
+
+                    if ($cm->modname == 'forum' || $cm->modname == 'assign') {
+                        $gradeitem = $DB->get_record('grade_items',
+                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
+                    } else if ($cm->modname == 'workshop') {
+                        $gradeitem = $DB->get_record('grade_items',
+                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course, 'itemnumber' => 0));
+                    }
+
+                    if (!is_null($plagiarismfile->grade) && !empty($gradeitem)) {
                         $return = $this->update_grade($cm, $response->getSubmission(), $submissiondata->userid);
                     }
                 }

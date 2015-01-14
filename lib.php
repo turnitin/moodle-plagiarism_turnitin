@@ -735,7 +735,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $gradeitem = $DB->get_record('grade_items',
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0));
                     }
-                    $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                    if ($gradeitem) {
+                        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                    }
                     $postdate = $moduledata->assessmentend;
                 } else if ($cm->modname == 'assign') {
                     static $gradeitem;
@@ -743,11 +745,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $gradeitem = $DB->get_record('grade_items',
                                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
                     }
-                    $currentgradesquery = $DB->get_records('assign_grades',
+                    $postdate = 0;
+                    if ($gradeitem) {
+                        $currentgradesquery = $DB->get_records('assign_grades',
                                                 array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
-                    $currentgradequery = current($currentgradesquery);
+                        $currentgradequery = current($currentgradesquery);
 
-                    $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
+                        $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
+                    }
                 }
 
                 if ($plagiarismfile) {
@@ -807,7 +812,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Show link to open grademark.
                         if ($config->usegrademark && 
                             ($istutor || ($linkarray["userid"] == $USER->id && !is_null($plagiarismfile->grade) 
-                                            && ($postdate != 1 && $postdate <= time()) && !empty($currentgradequery)))) {
+                                            && ($postdate != 1 && $postdate <= time()) && !empty($currentgradequery))) && !empty($gradeitem)) {
 
                             // Output grademark icon.
                             $output .= $OUTPUT->box_start('grade_icon', '');
@@ -1032,9 +1037,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $currentgrade = current($currentgrades);
                     break;
                 case 'workshop':
-                    $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
-                                                    'itemmodule' => $cm->modname, 'itemnumber' => 0));
-                    $currentgrade = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $gradeitem->id));
+                    if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
+                                                    'itemmodule' => $cm->modname, 'itemnumber' => 0))) {
+                        $currentgrade = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $gradeitem->id));
+                    }
                     break;
             }
 
@@ -1299,17 +1305,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // use start date. If the grades are to be completely hidden then we will set post date in the future.
         $dtpost = 0;
         if ($cm->modname != "forum") {
-            $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname));
-            switch ($gradeitem->hidden) {
-                case 1:
-                    $dtpost = strtotime('+6 months');
-                    break;
-                case 0:
-                    $dtpost = $dtstart;
-                    break;
-                default:
-                    $dtpost = $gradeitem->hidden;
-                    break;
+            if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname))) {
+                switch ($gradeitem->hidden) {
+                    case 1:
+                        $dtpost = strtotime('+6 months');
+                        break;
+                    case 0:
+                        $dtpost = $dtstart;
+                        break;
+                    default:
+                        $dtpost = $gradeitem->hidden;
+                        break;
+                }
             }
         }
         // Ensure due date can't be before start date
@@ -1477,28 +1484,29 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                 " name = ? AND cm = ? ", array('plagiarism_post_date', $cm->id), 'value')) {
 
                         $post_date = $plagiarism_post_date->value;
-                        $gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 
-                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0));
+                        if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 
+                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0))) {
 
-                        // 1 means grade is always hidden, 0 means it's never hidden so we make it the same as start date.
-                        // Otherwise there is a hidden until date which we use as the post date.
-                        switch ($gradeitem->hidden) {
-                            case 1:
-                                // If Turnitin post date is in the next 7 days then push it ahead
-                                if ($post_date < (time() + (60 * 60 * 24 * 7)))  {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                }
-                                break;
-                            case 0:
-                                if ($post_date > time()) {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                }
-                                break;
-                            default:
-                                if ($post_date != $gradeitem->hidden) {
-                                    $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                }
-                                break;
+                            // 1 means grade is always hidden, 0 means it's never hidden so we make it the same as start date.
+                            // Otherwise there is a hidden until date which we use as the post date.
+                            switch ($gradeitem->hidden) {
+                                case 1:
+                                    // If Turnitin post date is in the next 7 days then push it ahead
+                                    if ($post_date < (time() + (60 * 60 * 24 * 7)))  {
+                                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
+                                    }
+                                    break;
+                                case 0:
+                                    if ($post_date > time()) {
+                                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
+                                    }
+                                    break;
+                                default:
+                                    if ($post_date != $gradeitem->hidden) {
+                                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
+                                    }
+                                    break;
+                            }
                         }
                     } else {
                         $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");

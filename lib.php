@@ -733,7 +733,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     static $gradeitem;
                     if (empty($gradeitem)) {
                         $gradeitem = $DB->get_record('grade_items',
-                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
+                                array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
                     }
                     if ($gradeitem) {
                         $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
@@ -1314,7 +1314,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // use start date. If the grades are to be completely hidden then we will set post date in the future.
         $dtpost = 0;
         if ($cm->modname != "forum") {
-            if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course))) {
+            if ($gradeitem = $DB->get_record('grade_items', 
+                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course))) {
                 switch ($gradeitem->hidden) {
                     case 1:
                         $dtpost = strtotime('+6 months');

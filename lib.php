@@ -1039,20 +1039,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (!is_null($grade) && $cm->modname != 'forum') {
 
-            // Get gradebook data.
-            switch ($cm->modname) {
-                case 'assign':
-                    $currentgrades = $DB->get_records('assign_grades', array('userid' => $userid, 'assignment' => $cm->instance), 'id DESC');
-                    $currentgrade = current($currentgrades);
-                    break;
-                case 'workshop':
-                    if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
-                                                    'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course))) {
-                        $currentgrade = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $gradeitem->id));
-                    }
-                    break;
-            }
-
             // Module grade object.
             $grade = new stdClass();
             // If submission has multiple content/files in it then get average grade (ignore NULL grades).
@@ -1072,54 +1058,91 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $grade->grade = $submission->getGrade();
             }
 
-            switch ($cm->modname) {
-                case 'workshop':
-                    if ($currentgrade) {
-                        $grade->id = $currentgrade->id;
-                    } else {
-                        $grade->userid = $userid;
-                        $grade->itemid = $gradeitem->id;
-                        $grade->timecreated = time();
-                        $grade->usermodified = $USER->id;
-                    }
-                    $table = 'grade_grades';
-                    break;
+            // Check whether submission is a group submission - only applicable to assignment module.
+            // If it's a group submission we will update the grade for everyone in the group.
+            // Note: This will not work if the submitting user is in multiple groups.
+            $userids = array($userid);
+            if ($cm->modname == "assign" && $CFG->branch > 23) {
+                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                if ($moduledata->teamsubmission) {
+                    require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                    $context = context_course::instance($cm->course);
+                    $assignment = new assign($context, $cm, null);
 
-                case 'assign':
-                    if ($currentgrade) {
-                        $grade->id = $currentgrade->id;
-                    } else {
-                        $grade->userid = $userid;
-                        $grade->assignment = $cm->instance;
-                        $grade->timecreated = time();
-                        $grade->grader = $USER->id;
+                    if ($group = $assignment->get_submission_group($userid)) {
+                        $users = groups_get_members($group->id);
+                        $userids = array_keys($users);
                     }
-                    $table = $cm->modname.'_grades';
-                    break;
-            }
-            $grade->timemodified = time();
-
-            // Insert/Update grade for this assignment.
-            if ($currentgrade) {
-                if (!$DB->update_record($table, $grade)) {
-                    $return = false;
                 }
-            } else if ($grade) {
-                if (!$DB->insert_record($table, $grade)) {
-                    $return = false;
-                }
+            } else {
+                $userids = array($userid);
             }
 
-            // Gradebook object.
-            if ($grade) {
-                $grades = new stdClass();
-                $grades->userid = $userid;
-                $grades->rawgrade = $grade->grade;
-                $params['idnumber'] = $cm->idnumber;
+            // Loop through all users and update grade
+            foreach ($userids as $userid) {
+                // Get gradebook data.
+                switch ($cm->modname) {
+                    case 'assign':
+                        $currentgrades = $DB->get_records('assign_grades', array('userid' => $userid, 'assignment' => $cm->instance), 'id DESC');
+                        $currentgrade = current($currentgrades);
+                        break;
+                    case 'workshop':
+                        if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
+                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0))) {
+                            $currentgrade = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $gradeitem->id));
+                        }
+                        break;
+                }
 
-                // Update gradebook - Grade update returns 1 on failure and 0 if successful.
-                if (grade_update('mod/'.$cm->modname, $cm->course, 'mod', $cm->modname, $cm->instance, 0, $grades, $params)) {
-                    $return = false;
+                switch ($cm->modname) {
+                    case 'workshop':
+                        if ($currentgrade) {
+                            $grade->id = $currentgrade->id;
+                        } else {
+                            $grade->userid = $userid;
+                            $grade->itemid = $gradeitem->id;
+                            $grade->timecreated = time();
+                            $grade->usermodified = $USER->id;
+                        }
+                        $table = 'grade_grades';
+                        break;
+
+                    case 'assign':
+                        if ($currentgrade) {
+                            $grade->id = $currentgrade->id;
+                        } else {
+                            $grade->userid = $userid;
+                            $grade->assignment = $cm->instance;
+                            $grade->timecreated = time();
+                            $grade->grader = $USER->id;
+                        }
+                        $table = $cm->modname.'_grades';
+                        break;
+                }
+                $grade->timemodified = time();
+
+                // Insert/Update grade for this assignment.
+                if ($currentgrade) {
+                    if (!$DB->update_record($table, $grade)) {
+                        $return = false;
+                    }
+                } else if ($grade) {
+                    if (!$DB->insert_record($table, $grade)) {
+                        $return = false;
+                    }
+                }
+
+                // Gradebook object.
+                if ($grade) {
+                    $grades = new stdClass();
+                    $grades->userid = $userid;
+                    $grades->rawgrade = $grade->grade;
+                    $params['idnumber'] = $cm->idnumber;
+
+                    // Update gradebook - Grade update returns 1 on failure and 0 if successful.
+                    if (grade_update('mod/'.$cm->modname, $cm->course, 'mod', $cm->modname, $cm->instance, 0, $grades, $params)) {
+                        $return = false;
+                    }
                 }
             }
         }

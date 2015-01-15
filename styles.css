@@ -21,7 +21,7 @@
     display:none;
 }
 
-.tii_links_container .pp_origreport_open, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
+.tii_links_container .pp_origreport, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
 .tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews {
     float: left;
 }
@@ -76,17 +76,18 @@
 
 .tii_links_container .pp_grademark_open, .tii_links_container .pp_origreport_open {
     cursor:pointer;
-    margin-bottom:6px;
 }
 
 .tii_links_container .pp_grademark_open {
     padding-top:6px;
+    margin-bottom:6px;
 }
 
-.tii_links_container .pp_origreport_open {
+.tii_links_container .pp_origreport {
     position:relative;
     top:4px;
     display:inline;
+    margin-bottom:6px;
 }
 
 .tii_links_container .score_colour {

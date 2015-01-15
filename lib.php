@@ -701,9 +701,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            // Check whether submission is a group submission - only applicable to assignment module.
+            // If it's a group submission then other users in the group should be able to see the originality score
+            // They can not open the DV though.
+            $submissionusers = array($linkarray["userid"]);
+            if ($cm->modname == "assign" && $CFG->branch > 23) {
+                if ($moduledata->teamsubmission) {
+                    $assignment = new assign($context, $cm, null);
+                    if ($group = $assignment->get_submission_group($linkarray["userid"])) {
+                        $users = groups_get_members($group->id);
+                        $submissionusers = array_keys($users);
+                    }
+                }
+            }
+
             // Display Links for files and contents.
             if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && 
-                    ($istutor || ($submission_status && ($USER->id == $linkarray["userid"])))) {
+                    ($istutor || ($submission_status && in_array($USER->id, $submissionusers)))) {
 
                 // Prevent text content links being displayed for previous attempts as we have no way of getting the data.
                 if (!empty($linkarray["content"]) && $linkarray["userid"] == $USER->id) {
@@ -719,45 +733,47 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get user's grades.
                 $postdate = 0;
                 $currentgradequery = false;
-                if ($cm->modname == 'forum') {
-                    static $gradeitem;
-                    if (empty($gradeitem)) {
-                        $gradeitem = $DB->get_record('grade_items',
-                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
-                    }
-                    if ($gradeitem) {
-                        $currentgradequery = $DB->get_record('grade_grades',
-                                                    array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                    }
-                } else if ($cm->modname == 'workshop') {
-                    static $gradeitem;
-                    if (empty($gradeitem)) {
-                        $gradeitem = $DB->get_record('grade_items',
-                                array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
-                    }
-                    if ($gradeitem) {
-                        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                    }
-                    $postdate = $moduledata->assessmentend;
-                } else if ($cm->modname == 'assign') {
-                    static $gradeitem;
-                    if (empty($gradeitem)) {
-                        $gradeitem = $DB->get_record('grade_items',
-                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
-                    }
-                    $postdate = 0;
-                    if ($gradeitem) {
-                        $currentgradesquery = $DB->get_records('assign_grades',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
-                        $currentgradequery = current($currentgradesquery);
+                if ($istutor || $linkarray["userid"] == $USER->id) {
+                    if ($cm->modname == 'forum') {
+                        static $gradeitem;
+                        if (empty($gradeitem)) {
+                            $gradeitem = $DB->get_record('grade_items',
+                                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
+                        }
+                        if ($gradeitem) {
+                            $currentgradequery = $DB->get_record('grade_grades',
+                                                        array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                        }
+                    } else if ($cm->modname == 'workshop') {
+                        static $gradeitem;
+                        if (empty($gradeitem)) {
+                            $gradeitem = $DB->get_record('grade_items',
+                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course));
+                        }
+                        if ($gradeitem) {
+                            $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                        }
+                        $postdate = $moduledata->assessmentend;
+                    } else if ($cm->modname == 'assign') {
+                        static $gradeitem;
+                        if (empty($gradeitem)) {
+                            $gradeitem = $DB->get_record('grade_items',
+                                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
+                        }
+                        $postdate = 0;
+                        if ($gradeitem) {
+                            $currentgradesquery = $DB->get_records('assign_grades',
+                                                    array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
+                            $currentgradequery = current($currentgradesquery);
 
-                        $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
+                            $postdate = ($gradeitem->hidden != 1) ? $gradeitem->hidden : strtotime('+1 month');
+                        }
                     }
                 }
 
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
-                        if ($istutor || ($linkarray["userid"] == $USER->id)) {
+                        if ($istutor || $linkarray["userid"] == $USER->id) {
                             $output .= html_writer::tag('div', 
                                             $OUTPUT->pix_icon('icon-sml', 
                                                 get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid, 'mod_turnitintooltwo', 
@@ -766,11 +782,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Show Originality Report score and link.
-                        if (($istutor || ($linkarray["userid"] == $USER->id && $plagiarismsettings["plagiarism_show_student_report"])) && 
+                        if (($istutor || (in_array($USER->id, $submissionusers) && $plagiarismsettings["plagiarism_show_student_report"])) && 
                             ((is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1) && !is_null($plagiarismfile->similarityscore))) {
-                            $output .= $OUTPUT->box_start('row_score pp_origreport_open origreport_'.
+
+                            // This class is applied so that only the user who submitted or a tutor can open the DV.
+                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
+                            $output .= $OUTPUT->box_start('row_score pp_origreport '.$useropenclass.' origreport_'.
                                                             $plagiarismfile->externalid.'_'.$linkarray["cmid"], 
                                                             $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]);
+
                             // Show score.
                             if ($plagiarismfile->statuscode == "pending") {
                                 $output .= html_writer::tag('div', '&nbsp;', array('title' => get_string('pending', 'turnitintooltwo'),
@@ -803,7 +823,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
-                            $output .= $OUTPUT->box_start('row_score pp_origreport_open', '');
+                            // This class is applied so that only the user who submitted or a tutor can open the DV.
+                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
+
+                            $output .= $OUTPUT->box_start('row_score pp_origreport '.$useropenclass, '');
                             $output .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'turnitintooltwo'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
                             $output .= $OUTPUT->box_end(true);

@@ -1074,8 +1074,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $userids = array_keys($users);
                     }
                 }
-            } else {
-                $userids = array($userid);
             }
 
             // Loop through all users and update grade

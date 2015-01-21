@@ -619,9 +619,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                 }
 
-                $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
-                $submitting = ($submission->timemodified > $tiimodifieddate &&
+                if (!empty($plagiarismfile)) {
+                    $submitting = ($submission->timemodified > $plagiarismfile->lastmodified &&
                                         $plagiarismfile->identifier != $identifier) ? true : false;
+                } else {
+                    $submitting = true;
+                }
             }
 
             $output .= $OUTPUT->box_start('tii_links_container');

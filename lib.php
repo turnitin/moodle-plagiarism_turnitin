@@ -1064,8 +1064,35 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Module grade object.
             $grade = new stdClass();
-            // If submission has multiple content/files in it then get average grade (ignore NULL grades).
-            $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $userid, 'cm' => $cm->id));
+            // If submission has multiple content/files in it then get average grade.
+            // Ignore NULL grades and files no longer part of submission.
+
+            switch ($cm->modname) {
+                case 'assign':
+                    $component = 'assignsubmission_file';
+                    break;
+                default:
+                    $component = 'mod_'.$cm->modname;
+                    break;
+            }
+
+            // Get file from pathname hash
+            $submissiondata = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $submission->getSubmissionId()), 'identifier');
+
+            // Get file as we need item id for discounting files that are no longer in submission.
+            $fs = get_file_storage();
+            if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
+                $moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
+                                                    array($component, $userid, $file->get_itemid()), 'id DESC', 'pathnamehash');
+
+                list($insql, $inparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', true);
+                $tiisubmissions = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? AND identifier ".$insql,
+                                                        array_merge(array($userid, $cm->id), $inparams));
+            } else {
+                $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $userid, 'cm' => $cm->id));
+                $tiisubmissions = current($tiisubmissions);
+            }
+
             if (count($tiisubmissions)) {
                 $averagegrade = null;
                 $gradescounted = 0;

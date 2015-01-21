@@ -2433,6 +2433,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->transmatch = 0;
             $plagiarismfile->lastmodified = time();
             $plagiarismfile->submissiontype = $submissiontype;
+            $plagiarismfile->errorcode = null;
+            $plagiarismfile->errormsg = null;
 
             if ($apimethod == "replaceSubmission" || $submissionid != 0) {
                 if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {

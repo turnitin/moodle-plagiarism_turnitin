@@ -627,6 +627,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            // Group submissions where all students have to submit sets userid to 0;
+            if ($linkarray['userid'] == 0 && !$istutor) {
+                $linkarray['userid'] = $USER->id;
+            }
+
             $output .= $OUTPUT->box_start('tii_links_container');
 
             // Show the EULA for a student if necessary.
@@ -2093,7 +2098,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function tii_submission($cm, $tiiassignmentid, $user, $identifier, $submissiontype, $itemid = 0,
                                     $title = '', $textcontent = '', $context = 'instant') {
-        global $DB, $USER;
+        global $CFG, $DB, $USER;
 
         $settings = $this->get_settings($cm->id);
         $nooffilesallowed = $this->get_max_files_allowed($cm->instance, $cm->modname);
@@ -2148,10 +2153,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($textcontent == '') {
                         switch ($cm->modname) {
                             case 'assign':
+                                // Check whether submission is a group submission so we can get the correct content.
+                                // Note: This will not work if the submitting user is in multiple groups.
+                                $submissionsquery = array('assignment' => $cm->instance);
+                                $submissionsquery['userid'] = $user->id;
+                                if ($CFG->branch > 23) {
+                                    $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                                    if ($moduledata->teamsubmission) {
+                                        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                                        $context = context_course::instance($cm->course);
+                                        $assignment = new assign($context, $cm, null);
+
+                                        if ($group = $assignment->get_submission_group($user->id)) {
+                                            $submissionsquery['userid'] = 0;
+                                            $submissionsquery['groupid'] = $group->id;
+                                        }
+                                    }
+                                }
+
                                 // This will need to be reworked when linkarray in get_links() contains submission id.
-                                $moodlesubmissions = $DB->get_records('assign_submission',
-                                                        array('assignment' => $cm->instance,
-                                                                    'userid' => $user->id), 'id, timemodified');
+                                $moodlesubmissions = $DB->get_records('assign_submission', $submissionsquery, 'id, timemodified');
                                 $moodlesubmission = end($moodlesubmissions);
                                 $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                             array('submission' => $moodlesubmission->id), 'onlinetext');

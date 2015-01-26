@@ -2385,7 +2385,27 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Read the stored file/content into a temp file for submitting.
-        $tempfile = turnitintooltwo_tempfile("_".$filename);
+        $submission_title = explode('.', $title);
+
+        $file_string = array(
+            $submission_title[0],
+            $cm->id
+        );
+        
+        $modulepluginsettings = $this->get_settings($cm->id);
+        
+        if ( ! $modulepluginsettings["plagiarism_anonymity"]) {
+            $user_details = array(
+                $user->id,
+                $user->firstname,
+                $user->lastname
+            );
+
+            $file_string = array_merge($user_details, $file_string);
+        }
+
+        $tempfile = turnitintooltwo_tempfile($file_string, $filename);
+
         $fh = fopen($tempfile, "w");
         fwrite($fh, $textcontent);
         fclose($fh);

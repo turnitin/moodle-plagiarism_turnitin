@@ -1652,53 +1652,71 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if (count($submissionids) > 0) {
-            // Initialise Comms Object.
-            $turnitincomms = new turnitintooltwo_comms();
-            $turnitincall = $turnitincomms->initialise_api();
 
-            try {
-                $submission = new TiiSubmission();
-                $submission->setSubmissionIds($submissionids);
+            // Process submissions in batches of 500, which is the maximum number
+            // of submissions the TI service will return.
+            $submissionbatches = array_chunk($submissionids, 500);
+            foreach ($submissionbatches as $submissionsbatch) {
 
-                $response = $turnitincall->readSubmissions($submission);
-                $readsubmissions = $response->getSubmissions();
+                // Initialise Comms Object.
+                $turnitincomms = new turnitintooltwo_comms();
+                $turnitincall = $turnitincomms->initialise_api();
 
-                foreach ($readsubmissions as $readsubmission) {
-                    $tiisubmissionid = (int)$readsubmission->getSubmissionId();
+                try {
+                    $submission = new TiiSubmission();
 
-                    $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid),
-                                                                                            'id, cm, externalid, userid');
-                    if ($cm = get_coursemodule_from_id('', $currentsubmission->cm)) {
+                    // Use $submissionsbatch array instead of original $submissionids.
+                    $submission->setSubmissionIds($submissionsbatch);
 
-                        $plagiarismfile = new object();
-                        $plagiarismfile->id = $currentsubmission->id;
-                        $plagiarismfile->externalid = $tiisubmissionid;
-                        $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ?
-                                                                        $readsubmission->getOverallSimilarity() : null;
-                        $plagiarismfile->grade = (is_numeric($readsubmission->getGrade())) ? $readsubmission->getGrade() : null;
-                        $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
-                        $plagiarismfile->transmatch = 0;
-                        if (is_int($readsubmission->getTranslatedOverallSimilarity()) &&
-                                $readsubmission->getTranslatedOverallSimilarity() > $readsubmission->getOverallSimilarity()) {
-                            $plagiarismfile->similarityscore = $readsubmission->getTranslatedOverallSimilarity();
-                            $plagiarismfile->transmatch = 1;
+                    $response = $turnitincall->readSubmissions($submission);
+                    $readsubmissions = $response->getSubmissions();
+
+                    foreach ($readsubmissions as $readsubmission) {
+
+                        // Catch exceptions thrown by getSubmissionId to allow rest of the
+                        // submissions to get processed.
+                        try {
+                            $tiisubmissionid = (int)$readsubmission->getSubmissionId();
+
+                            $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid),
+                                                                                                    'id, cm, externalid, userid');
+                            if ($cm = get_coursemodule_from_id('', $currentsubmission->cm)) {
+
+                                $plagiarismfile = new object();
+                                $plagiarismfile->id = $currentsubmission->id;
+                                $plagiarismfile->externalid = $tiisubmissionid;
+                                $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ?
+                                                                                $readsubmission->getOverallSimilarity() : null;
+                                $plagiarismfile->grade = (is_numeric($readsubmission->getGrade())) ? $readsubmission->getGrade() : null;
+                                $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
+                                $plagiarismfile->transmatch = 0;
+                                if (is_int($readsubmission->getTranslatedOverallSimilarity()) &&
+                                        $readsubmission->getTranslatedOverallSimilarity() > $readsubmission->getOverallSimilarity()) {
+                                    $plagiarismfile->similarityscore = $readsubmission->getTranslatedOverallSimilarity();
+                                    $plagiarismfile->transmatch = 1;
+                                }
+
+                                if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                                    mtrace("File failed to update: ".$plagiarismfile->id);
+                                } else {
+                                    mtrace("File updated: ".$plagiarismfile->id);
+                                }
+
+                                if (!is_null($plagiarismfile->grade)) {
+                                    $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
+                                }
+                            }
+                        } catch (Exception $e) {
+                            mtrace("An exception was thrown while attempting to read submission $tiisubmissionid: "
+                                   . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
                         }
 
-                        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                            mtrace("File failed to update: ".$plagiarismfile->id);
-                        } else {
-                            mtrace("File updated: ".$plagiarismfile->id);
-                        }
-
-                        if (!is_null($plagiarismfile->grade)) {
-                            $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
-                        }
                     }
+                } catch (Exception $e) {
+                    mtrace(get_string('tiisubmissionsgeterror', 'turnitintooltwo'));
+                    $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
+                    // Do not return false if a batch fails - another one might work.
                 }
-            } catch (Exception $e) {
-                mtrace(get_string('tiisubmissionsgeterror', 'turnitintooltwo'));
-                $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
-                return false;
             }
         }
 
@@ -2385,27 +2403,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Read the stored file/content into a temp file for submitting.
-        $submission_title = explode('.', $title);
-
-        $file_string = array(
-            $submission_title[0],
-            $cm->id
-        );
-        
-        $modulepluginsettings = $this->get_settings($cm->id);
-        
-        if ( ! $modulepluginsettings["plagiarism_anonymity"]) {
-            $user_details = array(
-                $user->id,
-                $user->firstname,
-                $user->lastname
-            );
-
-            $file_string = array_merge($user_details, $file_string);
-        }
-
-        $tempfile = turnitintooltwo_tempfile($file_string, $filename);
-
+        $tempfile = turnitintooltwo_tempfile("_".$filename);
         $fh = fopen($tempfile, "w");
         fwrite($fh, $textcontent);
         fclose($fh);

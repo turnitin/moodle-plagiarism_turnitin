@@ -99,5 +99,14 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014012406, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2015012413) {
+        // Add new indexes to tables
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $index = new xmldb_index('externalid', XMLDB_INDEX_NOTUNIQUE, array('externalid'));
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+    }
+
     return $result;
 }

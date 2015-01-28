@@ -30,6 +30,9 @@
         <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary" NEXT="userid"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="cm"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="externalid" UNIQUE="false" FIELDS="externalid" />
+      </INDEXES>
     </TABLE>
     <TABLE NAME="plagiarism_turnitin_config" COMMENT="info about submitted files" PREVIOUS="plagiarism_turnitin_files">
       <FIELDS>

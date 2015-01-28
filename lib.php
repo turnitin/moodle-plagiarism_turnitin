@@ -2166,8 +2166,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         $context = context_course::instance($cm->course);
                                         $assignment = new assign($context, $cm, null);
 
+                                        $submissionsquery['userid'] = 0;
+                                        $submissionsquery['groupid'] = 0;
                                         if ($group = $assignment->get_submission_group($user->id)) {
-                                            $submissionsquery['userid'] = 0;
                                             $submissionsquery['groupid'] = $group->id;
                                         }
                                     }

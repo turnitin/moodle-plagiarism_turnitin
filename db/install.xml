@@ -3,48 +3,48 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
-  <TABLES>
-    <TABLE NAME="plagiarism_turnitin_files" COMMENT="info about submitted files" NEXT="plagiarism_turnitin_config">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
-        <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="cm" NEXT="identifier"/>
-        <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="userid" NEXT="externalid"/>
-        <FIELD NAME="externalid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="identifier" NEXT="externalstatus"/>
-        <FIELD NAME="externalstatus" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="externalid" NEXT="statuscode"/>
-        <FIELD NAME="statuscode" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="externalstatus" NEXT="similarityscore"/>
-        <FIELD NAME="similarityscore" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="statuscode" NEXT="attempt"/>
-        <FIELD NAME="attempt" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="similarityscore" NEXT="apimd5"/>
-        <FIELD NAME="apimd5" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="This is the md5 used in the last api call to Turnitin" PREVIOUS="attempt" NEXT="legacyteacher"/>
-        <FIELD NAME="legacyteacher" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="flag to specify this should use legacy teacher to access file." PREVIOUS="apimd5" NEXT="transmatch"/>
-        <FIELD NAME="transmatch" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="legacyteacher" NEXT="lastmodified"/>
-        <FIELD NAME="lastmodified" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="transmatch" NEXT="grade"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="lastmodified" NEXT="submissiontype"/>
-        <FIELD NAME="submissiontype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="orcapable" />
-        <FIELD NAME="orcapable" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="submissiontype" NEXT="errorcode"/>
-        <FIELD NAME="errorcode" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="orcapable" NEXT="errormsg"/>
-        <FIELD NAME="errormsg" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="errorcode"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
-        <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary" NEXT="userid"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="cm"/>
-      </KEYS>
-      <INDEXES>
-        <INDEX NAME="externalid" UNIQUE="false" FIELDS="externalid" />
-      </INDEXES>
-    </TABLE>
-    <TABLE NAME="plagiarism_turnitin_config" COMMENT="info about submitted files" PREVIOUS="plagiarism_turnitin_files">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
-        <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="cm" NEXT="value"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="name"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
-        <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary"/>
-      </KEYS>
-    </TABLE>
-  </TABLES>
+    <TABLES>
+        <TABLE NAME="plagiarism_turnitin_files" COMMENT="info about submitted files" NEXT="plagiarism_turnitin_config">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
+                <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="cm" NEXT="identifier"/>
+                <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="userid" NEXT="externalid"/>
+                <FIELD NAME="externalid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="identifier" NEXT="externalstatus"/>
+                <FIELD NAME="externalstatus" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="externalid" NEXT="statuscode"/>
+                <FIELD NAME="statuscode" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="externalstatus" NEXT="similarityscore"/>
+                <FIELD NAME="similarityscore" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="statuscode" NEXT="attempt"/>
+                <FIELD NAME="attempt" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="similarityscore" NEXT="apimd5"/>
+                <FIELD NAME="apimd5" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="This is the md5 used in the last api call to Turnitin" PREVIOUS="attempt" NEXT="legacyteacher"/>
+                <FIELD NAME="legacyteacher" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="flag to specify this should use legacy teacher to access file." PREVIOUS="apimd5" NEXT="transmatch"/>
+                <FIELD NAME="transmatch" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="legacyteacher" NEXT="lastmodified"/>
+                <FIELD NAME="lastmodified" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="transmatch" NEXT="grade"/>
+                <FIELD NAME="grade" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="lastmodified" NEXT="submissiontype"/>
+                <FIELD NAME="submissiontype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="orcapable" />
+                <FIELD NAME="orcapable" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="submissiontype" NEXT="errorcode"/>
+                <FIELD NAME="errorcode" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="orcapable" NEXT="errormsg"/>
+                <FIELD NAME="errormsg" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="errorcode"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
+                <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary" NEXT="userid"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="cm"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="externalid" UNIQUE="false" FIELDS="externalid" />
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="plagiarism_turnitin_config" COMMENT="info about submitted files" PREVIOUS="plagiarism_turnitin_files">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
+                <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="cm" NEXT="value"/>
+                <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="name"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
+                <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary"/>
+            </KEYS>
+        </TABLE>
+    </TABLES>
 </XMLDB>

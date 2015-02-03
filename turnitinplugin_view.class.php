@@ -116,7 +116,7 @@ class turnitinplugin_view {
         if ($location == "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'turnitintooltwo'));
             $mform->addElement('html', get_string("defaultsdesc", "turnitintooltwo"));
-        } 
+        }
 
         if ($location != "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'turnitintooltwo'));
@@ -213,16 +213,30 @@ class turnitinplugin_view {
 
             $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
                                 1 => get_string('standardrepository', 'turnitintooltwo'));
-            if ($config->userepository == "1") {
-                $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
+            switch ($config->repositoryoption) {
+                case 0; // Standard options
+                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
+                    break;
+                case 1; // Standard options + Allow Instituional Repository
+                    $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
+
+                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
+                    break;
+                case 2; // Force Standard Repository
+                    $mform->addElement('hidden', 'plagiarism_submitpapersto', 1);
+                    $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
+                    break;
+                case 3; // Force No Repository
+                    $mform->addElement('hidden', 'plagiarism_submitpapersto', 0);
+                    $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
+                    break;
             }
-            $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
             $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);
             $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
 
-            if ($config->userepository) {
+            if ($config->repositoryoption == 1) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
                                                 get_string('compareinstitution', 'turnitintooltwo'), $options);
             }

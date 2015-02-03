@@ -1332,7 +1332,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setSubmittedDocumentsCheck($modulepluginsettings["plagiarism_compare_student_papers"]);
         $assignment->setInternetCheck($modulepluginsettings["plagiarism_compare_internet"]);
         $assignment->setPublicationsCheck($modulepluginsettings["plagiarism_compare_journals"]);
-        if ($config->userepository) {
+        if ($config->repositoryoption == 1) {
             $institutioncheck = (isset($modulepluginsettings["plagiarism_compare_institution"])) ?
                                         $modulepluginsettings["plagiarism_compare_institution"] : 0;
             $assignment->setInstitutionCheck($institutioncheck);

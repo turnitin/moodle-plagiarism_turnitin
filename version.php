@@ -11,4 +11,4 @@ $plugin->cron     = 300;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release  = '2.3+';
-$plugin->dependencies = array('mod_turnitintooltwo' => 2014012412);
+$plugin->dependencies = array('mod_turnitintooltwo' => 2014012413);

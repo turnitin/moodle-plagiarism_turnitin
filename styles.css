@@ -165,7 +165,7 @@
     display:inline;
 }
 
-.plagiarism_turnitin_peermark_manager_pp_launch {
+.peermark_manager_launch {
     background:url([[pix:turnitintooltwo|peermark-settings]]) no-repeat 0px 0px;
     cursor:pointer;
     padding: 4px 16px 4px 40px;

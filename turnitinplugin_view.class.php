@@ -180,7 +180,7 @@ class turnitinplugin_view {
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
                                                     get_string('launchpeermarkmanager', 'turnitintooltwo'),
-                                                    array('class' => 'plagiarism_turnitin_peermark_manager_pp_launch',
+                                                    array('class' => 'peermark_manager_launch',
                                                             'id' => 'peermark_manager_'.$cmid,
                                                             'title' => get_string('launchpeermarkmanager', 'turnitintooltwo')));
                     $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',

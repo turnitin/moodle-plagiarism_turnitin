@@ -34,7 +34,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $field2 = new xmldb_field('lastmodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'transmatch');
         $field3 = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'lastmodified');
         $field4 = new xmldb_field('submissiontype', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'grade');
-        $field5 = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, NULL, 'statuscode');
+        $field5 = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'statuscode');
 
         if (!$dbman->field_exists($table, $field1)) {
             $dbman->add_field($table, $field1);
@@ -60,7 +60,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2014012403) {
         $table = new xmldb_table('plagiarism_turnitin_files');
-        $field = new xmldb_field('orcapable', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, NULL, 'submissiontype');
+        $field = new xmldb_field('orcapable', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'submissiontype');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         } else {
@@ -88,11 +88,11 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2014012406) {
         $table = new xmldb_table('plagiarism_turnitin_files');
-        $field = new xmldb_field('errorcode', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, NULL, 'orcapable');
+        $field = new xmldb_field('errorcode', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'orcapable');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        $field = new xmldb_field('errormsg', XMLDB_TYPE_TEXT, 'medium', null, null, null, NULL, 'errorcode');
+        $field = new xmldb_field('errormsg', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'errorcode');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -106,6 +106,47 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
+
+        // Alter certain datatypes incase install was made before install.xml was updated.
+        $field1 = new xmldb_field('transmatch', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'legacyteacher');
+        $field2 = new xmldb_field('lastmodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0, 'transmatch');
+        $field3 = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'lastmodified');
+        $field4 = new xmldb_field('submissiontype', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'grade');
+        $field5 = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'statuscode');
+
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        } else {
+            $dbman->change_field_precision($table, $field1);
+        }
+
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        } else {
+            $dbman->change_field_precision($table, $field2);
+        }
+
+        if (!$dbman->field_exists($table, $field3)) {
+            $dbman->add_field($table, $field3);
+        } else {
+            $dbman->change_field_precision($table, $field3);
+        }
+
+        if (!$dbman->field_exists($table, $field4)) {
+            $dbman->add_field($table, $field4);
+        } else {
+            $dbman->change_field_precision($table, $field4);
+        }
+
+        if (!$dbman->field_exists($table, $field5)) {
+            $dbman->add_field($table, $field5);
+        } else {
+            $dbman->change_field_type($table, $field5);
+            $dbman->change_field_default($table, $field5);
+            $dbman->change_field_precision($table, $field5);
+        }
+
+        upgrade_plugin_savepoint(true, 2015012413, 'plagiarism', 'turnitin');
     }
 
     return $result;

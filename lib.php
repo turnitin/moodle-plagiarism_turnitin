@@ -1654,7 +1654,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (count($submissionids) > 0) {
 
             // Process submissions in batches of 500, which is the maximum number
-            // of submissions the TI service will return.
+            // of submissions the Turnitin API will return.
             $submissionbatches = array_chunk($submissionids, 500);
             foreach ($submissionbatches as $submissionsbatch) {
 
@@ -2404,7 +2404,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Read the stored file/content into a temp file for submitting.
-        $tempfile = turnitintooltwo_tempfile("_".$filename);
+        $submission_title = explode('.', $title);
+
+        $file_string = array(
+            $submission_title[0],
+            $cm->id
+        );
+
+        $modulepluginsettings = $this->get_settings($cm->id);
+
+        if ( ! $modulepluginsettings["plagiarism_anonymity"]) {
+            $user_details = array(
+                $user->id,
+                $user->firstname,
+                $user->lastname
+            );
+
+            $file_string = array_merge($user_details, $file_string);
+        }
+
+        $tempfile = turnitintooltwo_tempfile($file_string, $filename);
         $fh = fopen($tempfile, "w");
         fwrite($fh, $textcontent);
         fclose($fh);

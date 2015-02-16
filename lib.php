@@ -420,6 +420,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         static $cm;
         if (empty($cm)) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+
+            if ($cm->modname == 'forum') {
+                static $forum;
+                if (! $forum = $DB->get_record("forum", array("id" => $cm->instance))) {
+                    print_error('invalidforumid', 'forum');
+                }
+            }
         }
 
         static $config;
@@ -579,24 +586,40 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                     case 'forum':
                         static $discussionid;
+                        // Work out the discussion id.
                         if (empty($discussionid)) {
                             $discussionid = optional_param('d', 0, PARAM_INT);
                         }
                         if (empty($discussionid)) {
-                            $reply   = optional_param('reply', 0, PARAM_INT);
-                            $edit    = optional_param('edit', 0, PARAM_INT);
-                            $delete  = optional_param('delete', 0, PARAM_INT);
-                            if (!$parent = forum_get_post_full($reply)) {
-                                if (!$parent = forum_get_post_full($edit)) {
-                                    if (!$parent = forum_get_post_full($delete)) {
-                                        print_error('invalidparentpostid', 'forum');
+                            if ($forum->type == 'blog' || $forum->type == 'single') {
+                                if (!$discussion = $DB->get_record_sql('
+                                                                    SELECT FD.id 
+                                                                    FROM {forum_posts} FP JOIN {forum_discussions} FD 
+                                                                    ON FP.discussion = FD.id
+                                                                    WHERE FD.forum = ? AND FD.course = ? 
+                                                                    AND FP.userid = ? AND FP.message LIKE ? ',
+                                                                    array($forum->id, $forum->course, 
+                                                                        $linkarray["userid"], $linkarray["content"])
+                                                                    )) {
+                                    print_error('notpartofdiscussion', 'forum');
+                                }
+                                $discussionid = $discussion->id;
+                            } else {
+                                $reply   = optional_param('reply', 0, PARAM_INT);
+                                $edit    = optional_param('edit', 0, PARAM_INT);
+                                $delete  = optional_param('delete', 0, PARAM_INT);
+                                if (!$parent = forum_get_post_full($reply)) {
+                                    if (!$parent = forum_get_post_full($edit)) {
+                                        if (!$parent = forum_get_post_full($delete)) {
+                                            print_error('invalidparentpostid', 'forum');
+                                        }
                                     }
                                 }
+                                if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
+                                    print_error('notpartofdiscussion', 'forum');
+                                }
+                                $discussionid = $discussion->id;
                             }
-                            if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
-                                print_error('notpartofdiscussion', 'forum');
-                            }
-                            $discussionid = $discussion->id;
                         }
                         $submission = $DB->get_record_select('forum_posts', 
                                                 " userid = ? AND message LIKE ? AND discussion = ? ",

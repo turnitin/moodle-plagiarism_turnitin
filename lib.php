@@ -586,13 +586,34 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                     case 'forum':
                         static $discussionid;
-                        // Work out the discussion id.
+                        // Work out the discussion id from query string.
                         if (empty($discussionid)) {
                             $discussionid = optional_param('d', 0, PARAM_INT);
                         }
+
                         if (empty($discussionid)) {
-                            if ($forum->type == 'blog' || $forum->type == 'single') {
-                                if (!$discussion = $DB->get_record_sql('
+                            $reply   = optional_param('reply', 0, PARAM_INT);
+                            $edit    = optional_param('edit', 0, PARAM_INT);
+                            $delete  = optional_param('delete', 0, PARAM_INT);
+
+                            $parent = '';
+                            if ($reply != 0) {
+                                $parent = forum_get_post_full($reply);
+                            } else if ($edit != 0) {
+                                $parent = forum_get_post_full($edit);
+                            } else if ($delete != 0) {
+                                $parent = forum_get_post_full($delete);
+                            }
+
+                            if (!empty($parent)) {
+                                $discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion));
+                                $discussionid = $discussion->id;
+                            }
+                        }
+
+                        // Some forum types don't pass in certain values on main forum page.
+                        if (empty($discussionid) && ($forum->type == 'blog' || $forum->type == 'single')) {
+                            if (!$discussion = $DB->get_record_sql('
                                                                     SELECT FD.id 
                                                                     FROM {forum_posts} FP JOIN {forum_discussions} FD 
                                                                     ON FP.discussion = FD.id
@@ -602,25 +623,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                         $linkarray["userid"], $linkarray["content"])
                                                                     )) {
                                     print_error('notpartofdiscussion', 'forum');
-                                }
-                                $discussionid = $discussion->id;
-                            } else {
-                                $reply   = optional_param('reply', 0, PARAM_INT);
-                                $edit    = optional_param('edit', 0, PARAM_INT);
-                                $delete  = optional_param('delete', 0, PARAM_INT);
-                                if (!$parent = forum_get_post_full($reply)) {
-                                    if (!$parent = forum_get_post_full($edit)) {
-                                        if (!$parent = forum_get_post_full($delete)) {
-                                            print_error('invalidparentpostid', 'forum');
-                                        }
-                                    }
-                                }
-                                if (!$discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion))) {
-                                    print_error('notpartofdiscussion', 'forum');
-                                }
-                                $discussionid = $discussion->id;
                             }
+                            $discussionid = $discussion->id;
                         }
+
                         $submission = $DB->get_record_select('forum_posts', 
                                                 " userid = ? AND message LIKE ? AND discussion = ? ",
                                                 array($linkarray["userid"], $linkarray["content"], $discussionid));

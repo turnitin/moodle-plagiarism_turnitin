@@ -606,15 +606,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
 
                             if (!empty($parent)) {
-                                $discussion = $DB->get_record("forum_discussions", array("id" => $parent->discussion));
-                                $discussionid = $discussion->id;
+                                $discussionid = $parent->discussion;
                             }
                         }
 
                         // Some forum types don't pass in certain values on main forum page.
                         if (empty($discussionid) && ($forum->type == 'blog' || $forum->type == 'single')) {
-                            if (!$discussion = $DB->get_record_sql('
-                                                                    SELECT FD.id 
+                            if (!$discussion = $DB->get_record_sql('SELECT FD.id 
                                                                     FROM {forum_posts} FP JOIN {forum_discussions} FD 
                                                                     ON FP.discussion = FD.id
                                                                     WHERE FD.forum = ? AND FD.course = ? 

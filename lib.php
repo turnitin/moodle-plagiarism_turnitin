@@ -513,7 +513,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // If a text submission has been made, we can only display links for current attempts so don't show links previous attempts.
         // This will need to be reworked when linkarray contains submission id.
         static $contentdisplayed;
-        if (!empty($linkarray["content"]) && $contentdisplayed == true) {
+        if ($cm->modname == 'assign' && !empty($linkarray["content"]) && $contentdisplayed == true) {
             return $output;
         }
 
@@ -628,6 +628,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $submission = $DB->get_record_select('forum_posts', 
                                                 " userid = ? AND message LIKE ? AND discussion = ? ",
                                                 array($linkarray["userid"], $linkarray["content"], $discussionid));
+
                         $itemid = $submission->id;
                         $submission->timemodified = $submission->modified;
                         $content = $linkarray["content"];

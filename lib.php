@@ -418,11 +418,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Set static variables.
         static $cm;
+        static $forum;
         if (empty($cm)) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
 
             if ($cm->modname == 'forum') {
-                static $forum;
                 if (! $forum = $DB->get_record("forum", array("id" => $cm->instance))) {
                     print_error('invalidforumid', 'forum');
                 }
@@ -586,6 +586,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                     case 'forum':
                         static $discussionid;
+                        // Use query string id to check whether we are on forum home page.
+                        $querystrid = optional_param('id', 0, PARAM_INT);
+
                         // Work out the discussion id from query string.
                         if (empty($discussionid)) {
                             $discussionid = optional_param('d', 0, PARAM_INT);
@@ -611,7 +614,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Some forum types don't pass in certain values on main forum page.
-                        if (empty($discussionid) && ($forum->type == 'blog' || $forum->type == 'single')) {
+                        if ((empty($discussionid) || $querystrid != 0) && 
+                            ($forum->type == 'blog' || $forum->type == 'single')) {
                             if (!$discussion = $DB->get_record_sql('SELECT FD.id 
                                                                     FROM {forum_posts} FP JOIN {forum_discussions} FD 
                                                                     ON FP.discussion = FD.id
@@ -620,7 +624,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                     array($forum->id, $forum->course, 
                                                                         $linkarray["userid"], $linkarray["content"])
                                                                     )) {
-                                    print_error('notpartofdiscussion', 'forum');
+                                print_error('notpartofdiscussion', 'forum');
                             }
                             $discussionid = $discussion->id;
                         }

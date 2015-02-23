@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once("../../config.php");
-require_once("lib.php");
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once(__DIR__."/../../config.php");
+require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_assignment.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
@@ -81,7 +80,7 @@ switch ($action) {
                 }
 
                 // Submit or resubmit file to Turnitin.
-                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, 
+                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype,
                                                             $itemid, $title, $textcontent);
 
             } else {
@@ -123,7 +122,7 @@ switch ($action) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
 
-        include_once($CFG->dirroot."/lib/gradelib.php");
+        include_once($CFG->libdir."/gradelib.php");
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 

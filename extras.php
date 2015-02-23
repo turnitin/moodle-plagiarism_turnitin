@@ -19,9 +19,9 @@
  * @copyright 2012 iParadigms LLC
  */
 
-require_once('../../config.php');
+require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/tablelib.php');
-require_once("lib.php");
+require_once(__DIR__."/lib.php");
 
 require_once($CFG->dirroot."/mod/turnitintooltwo/lib.php");
 require_once($CFG->dirroot."/mod/turnitintooltwo/turnitintooltwo_view.class.php");

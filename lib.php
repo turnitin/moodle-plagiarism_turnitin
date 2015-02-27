@@ -2128,18 +2128,39 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if ($submissiontype == 'file') {
+            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
+                                                    array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
+                list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
+                $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
+                                                                            " AND submissiontype = 'file' AND identifier ".$notinsql,
+                                                        array_merge(array($userid, $cm->id), $notinparams));
 
-            // Don't remove any files.
-            return;
+                if (!empty($oldfiles)) {
+                    // Initialise Comms Object.
+                    $turnitincomms = new turnitintooltwo_comms();
+                    $turnitincall = $turnitincomms->initialise_api();
+
+                    foreach ($oldfiles as $oldfile) {
+                        // Delete submission from Turnitin if we have an external id.
+                        if (!is_null($oldfile->externalid)) {
+                            $this->delete_tii_submission($oldfile->externalid);
+                        }
+                        $deletestr .= $oldfile->id.', ';
+                    }
+
+                    list($insql, $deleteparams) = $DB->get_in_or_equal(explode(',', substr($deletestr, 0, -2)));
+                    $deletestr = " id ".$insql;
+                }
+            }
 
         } else if ($submissiontype == 'text_content') {
             $deletestr = " userid = ? AND cm = ? AND submissiontype = 'text_content' AND identifier != ? ";
             $deleteparams = array($userid, $cm->id, $identifier);
+        }
 
-            // Delete from database.
-            if (!empty($deletestr)) {
-                $DB->delete_records_select('plagiarism_turnitin_files', $deletestr, $deleteparams);
-            }
+        // Delete from database.
+        if (!empty($deletestr)) {
+            $DB->delete_records_select('plagiarism_turnitin_files', $deletestr, $deleteparams);
         }
     }
 
@@ -2596,17 +2617,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private function delete_tii_submission($submissionid) {
 
         // Initialise Comms Object.
-        // $turnitincomms = new turnitintooltwo_comms();
-        // $turnitincall = $turnitincomms->initialise_api();
+        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincall = $turnitincomms->initialise_api();
 
-        // $submission = new TiiSubmission();
-        // $submission->setSubmissionId($submissionid);
+        $submission = new TiiSubmission();
+        $submission->setSubmissionId($submissionid);
 
-        // try {
-        //     $response = $turnitincall->deleteSubmission($submission);
-        // } catch (Exception $e) {
-        //     $turnitincomms->handle_exceptions($e, 'turnitindeletionerror');
-        // }
+        try {
+            $response = $turnitincall->deleteSubmission($submission);
+        } catch (Exception $e) {
+            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror');
+        }
     }
 }
 

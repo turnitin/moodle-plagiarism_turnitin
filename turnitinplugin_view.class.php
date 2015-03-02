@@ -328,6 +328,7 @@ class turnitinplugin_view {
 
             if ($config->useanon) {
                 $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
+                $mform->addElement('static', 'plagiarism_anonymous_note', '', get_string('ppanonmarkingnote', 'turnitintooltwo'));
             } else {
                 $mform->addElement('hidden', 'plagiarism_anonymity', 0);
             }

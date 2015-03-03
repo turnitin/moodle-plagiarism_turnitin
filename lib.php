@@ -2637,7 +2637,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
  * @param type $eventdata
  * @return type
  */
-function event_file_uploaded($eventdata) {
+function plagiarism_turnitin_event_file_uploaded($eventdata) {
     $eventdata->event_type = 'file_uploaded';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
@@ -2653,7 +2653,7 @@ function event_file_uploaded($eventdata) {
  * @param type $eventdata
  * @return boolean
  */
-function event_assessable_submitted($eventdata) {
+function plagiarism_turnitin_event_assessable_submitted($eventdata) {
     $eventdata->event_type = 'assessable_submitted';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
@@ -2668,7 +2668,7 @@ function event_assessable_submitted($eventdata) {
  * @param type $eventdata
  * @return boolean
  */
-function event_files_done($eventdata) {
+function plagiarism_turnitin_event_files_done($eventdata) {
     $eventdata->event_type = 'files_done';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
@@ -2680,7 +2680,7 @@ function event_files_done($eventdata) {
  * @param type $eventdata
  * @return boolean
  */
-function event_mod_created($eventdata) {
+function plagiarism_turnitin_event_mod_created($eventdata) {
     $eventdata->event_type = 'mod_created';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
@@ -2692,7 +2692,7 @@ function event_mod_created($eventdata) {
  * @param type $eventdata
  * @return boolean
  */
-function event_mod_updated($eventdata) {
+function plagiarism_turnitin_event_mod_updated($eventdata) {
     $eventdata->event_type = 'mod_updated';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
@@ -2704,7 +2704,7 @@ function event_mod_updated($eventdata) {
  * @param type $eventdata
  * @return boolean true
  */
-function event_mod_deleted($eventdata) {
+function plagiarism_turnitin_event_mod_deleted($eventdata) {
     global $DB;
 
     $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata->cmid));
@@ -2719,7 +2719,7 @@ function event_mod_deleted($eventdata) {
  * @param type $eventdata
  * @return type
  */
-function event_content_uploaded($eventdata) {
+function plagiarism_turnitin_event_content_uploaded($eventdata) {
     $eventdata->event_type = 'content_uploaded';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);

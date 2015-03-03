@@ -99,7 +99,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014012406, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2015012413) {
+    if ($oldversion < 2014012413) {
         // Add new indexes to tables
         $table = new xmldb_table('plagiarism_turnitin_files');
         $index = new xmldb_index('externalid', XMLDB_INDEX_NOTUNIQUE, array('externalid'));
@@ -146,7 +146,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_precision($table, $field5);
         }
 
-        upgrade_plugin_savepoint(true, 2015012413, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012413, 'plagiarism', 'turnitin');
     }
 
     return $result;

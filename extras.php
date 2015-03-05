@@ -76,6 +76,7 @@ switch ($cmd) {
         break;
 
     case "useragreement":
+        $PAGE->set_pagelayout('embedded');
         $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
         $PAGE->requires->css($cssurl);
         if ($CFG->branch <= 25) {

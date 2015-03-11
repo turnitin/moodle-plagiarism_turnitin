@@ -126,8 +126,30 @@ switch ($action) {
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        // Get moodle user id of submission.
-        $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
+        $istutor = ($cm->modname == "assign") ? $istutor = has_capability('mod/'.$cm->modname.':grade', $context) :
+                                                        has_capability('plagiarism/turnitin:viewfullreport', $context);
+
+        if ($istutor) {
+            $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
+
+            $moduleconfigvalue = new stdClass();
+
+            // If we have a turnitin timestamp stored then update it, otherwise create it.
+            if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
+                                        array('cm' => $cm->id, 'name' => 'grades_last_synced'), 'id')) {
+                $moduleconfigvalue->id = $timestampid->id;
+                $moduleconfigvalue->value = time();
+                $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
+            } else {
+                $moduleconfigvalue->cm = $cm->id;
+                $moduleconfigvalue->name = 'grades_last_synced';
+                $moduleconfigvalue->value = time();
+                $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
+            }
+
+        } else {
+            $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
+        }
         break;
 
     case "refresh_peermark_assignments":

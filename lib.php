@@ -1110,7 +1110,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $return;
     }
 
-    public function update_submission($cm, $submissionid, $tiisubmission) {
+    private function update_submission($cm, $submissionid, $tiisubmission) {
         global $DB;
 
         $return = true;

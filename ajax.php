@@ -129,7 +129,7 @@ switch ($action) {
         $istutor = ($cm->modname == "assign") ? $istutor = has_capability('mod/'.$cm->modname.':grade', $context) :
                                                         has_capability('plagiarism/turnitin:viewfullreport', $context);
 
-        if ($istutor) {
+        if ($istutor && $cm->modname == "assign") {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();

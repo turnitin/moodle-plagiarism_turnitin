@@ -17,37 +17,37 @@
 $handlers = array(
     'assessable_file_uploaded' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_file_uploaded',
+        'handlerfunction'   => 'plagiarism_turnitin_event_file_uploaded',
         'schedule'          => 'cron'
     ),
     'assessable_files_done' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_files_done',
+        'handlerfunction'   => 'plagiarism_turnitin_event_files_done',
         'schedule'          => 'cron'
     ),
     'assessable_content_uploaded' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_content_uploaded',
+        'handlerfunction'   => 'plagiarism_turnitin_event_content_uploaded',
         'schedule'          => 'cron'
     ),
     'assessable_submitted' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_assessable_submitted',
+        'handlerfunction'   => 'plagiarism_turnitin_event_assessable_submitted',
         'schedule'          => 'cron'
     ),
     'mod_created' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_mod_created',
+        'handlerfunction'   => 'plagiarism_turnitin_event_mod_created',
         'schedule'          => 'cron'
     ),
     'mod_updated' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_mod_updated',
+        'handlerfunction'   => 'plagiarism_turnitin_event_mod_updated',
         'schedule'          => 'cron'
     ),
     'mod_deleted' => array(
         'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'event_mod_deleted',
+        'handlerfunction'   => 'plagiarism_turnitin_event_mod_deleted',
         'schedule'          => 'cron'
     )
 );

@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once("../../config.php");
-require_once("lib.php");
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once(__DIR__."/../../config.php");
+require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_assignment.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
@@ -81,7 +80,7 @@ switch ($action) {
                 }
 
                 // Submit or resubmit file to Turnitin.
-                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype, 
+                $return = $pluginturnitin->tii_submission($cm, $assignmentid, $user, $pathnamehash, $submissiontype,
                                                             $itemid, $title, $textcontent);
 
             } else {
@@ -123,12 +122,34 @@ switch ($action) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
 
-        include_once($CFG->dirroot."/lib/gradelib.php");
+        include_once($CFG->libdir."/gradelib.php");
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        // Get moodle user id of submission.
-        $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
+        $istutor = ($cm->modname == "assign") ? $istutor = has_capability('mod/'.$cm->modname.':grade', $context) :
+                                                        has_capability('plagiarism/turnitin:viewfullreport', $context);
+
+        if ($istutor && $cm->modname == "assign") {
+            $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
+
+            $moduleconfigvalue = new stdClass();
+
+            // If we have a turnitin timestamp stored then update it, otherwise create it.
+            if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
+                                        array('cm' => $cm->id, 'name' => 'grades_last_synced'), 'id')) {
+                $moduleconfigvalue->id = $timestampid->id;
+                $moduleconfigvalue->value = time();
+                $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
+            } else {
+                $moduleconfigvalue->cm = $cm->id;
+                $moduleconfigvalue->name = 'grades_last_synced';
+                $moduleconfigvalue->value = time();
+                $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
+            }
+
+        } else {
+            $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
+        }
         break;
 
     case "refresh_peermark_assignments":

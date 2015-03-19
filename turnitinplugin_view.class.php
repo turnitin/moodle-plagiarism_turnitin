@@ -97,7 +97,7 @@ class turnitinplugin_view {
      * @return type
      */
     public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0, $currentrubric = 0) {
-        global $CFG, $OUTPUT, $PAGE, $USER;
+        global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $config = turnitintooltwo_admin_config();
@@ -147,6 +147,8 @@ class turnitinplugin_view {
             $PAGE->requires->css($cssurl);
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
+            $cssurl = new moodle_url('/mod/turnitintooltwo/css/font-awesome.min.css');
+            $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
                 $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
@@ -155,6 +157,24 @@ class turnitinplugin_view {
 
             if ($config_warning != '') {
                 $mform->addElement('html', $config_warning);
+            }
+
+            // Refresh Grades
+            $refreshgrades = '';
+            if ($cmid != 0) {
+                // If assignment has submissions then show a refresh grades button
+                $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
+                if ($numsubs > 0) {
+                    $refreshgrades = html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-refresh fa-2x',
+                                                    'title' => get_string('turnitinrefreshsubmissions', 'turnitintooltwo'))).
+                                                html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'turnitintooltwo')),
+                                                                    array('class' => 'plagiarism_turnitin_refresh_grades'));
+
+                    $refreshgrades .= html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-spinner fa-spin fa-2x',
+                                                    'title' => get_string('turnitinrefreshingsubmissions', 'turnitintooltwo'))).
+                                                html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'turnitintooltwo')),
+                                                                    array('class' => 'plagiarism_turnitin_refreshing_grades'));
+                }
             }
 
             // Quickmark Manager.
@@ -189,8 +209,8 @@ class turnitinplugin_view {
                 }
             }
 
-            if (!empty($quickmarkmanagerlink) || !empty($peermarkmanagerlink)) {
-                $mform->addElement('static', 'static', '', $quickmarkmanagerlink.$peermarkmanagerlink);
+            if (!empty($quickmarkmanagerlink) || !empty($peermarkmanagerlink) || !empty($refreshgrades)) {
+                $mform->addElement('static', 'static', '', $refreshgrades.$quickmarkmanagerlink.$peermarkmanagerlink);
             }
         }
 
@@ -328,6 +348,7 @@ class turnitinplugin_view {
 
             if ($config->useanon) {
                 $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
+                $mform->addElement('static', 'plagiarism_anonymous_note', '', get_string('ppanonmarkingnote', 'turnitintooltwo'));
             } else {
                 $mform->addElement('hidden', 'plagiarism_anonymity', 0);
             }

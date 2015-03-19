@@ -165,6 +165,27 @@
     display:inline;
 }
 
+.plagiarism_turnitin_refresh_grades, .plagiarism_turnitin_refreshing_grades {
+    float:right;
+    display:inline;
+    line-height: 28px;
+    cursor: pointer;
+    width:200px;
+}
+
+.plagiarism_turnitin_refresh_grades i, .plagiarism_turnitin_refreshing_grades i {
+    position: relative;
+    top: 4px;
+}
+
+.plagiarism_turnitin_refresh_grades span, .plagiarism_turnitin_refreshing_grades span {
+    padding-left: 8px;
+}
+
+.plagiarism_turnitin_refreshing_grades {
+    display: none;
+}
+
 .peermark_manager_launch {
     background:url([[pix:turnitintooltwo|peermark-settings]]) no-repeat 0px 0px;
     cursor:pointer;

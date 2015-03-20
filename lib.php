@@ -288,6 +288,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function print_disclosure($cmid) {
         global $DB, $OUTPUT, $USER, $PAGE, $CFG;
 
+        static $tiiconnection;
+        if (!empty($tiiconnection)) {
+            $tiiconnection = $this->test_turnitin_connection();
+        }
+
         $config = turnitintooltwo_admin_config();
         $output = '';
 
@@ -329,7 +334,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Show EULA if necessary and we have a connection to Turnitin.
-        if ($this->test_turnitin_connection()) {
+        if ($tiiconnection) {
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
@@ -426,6 +431,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     print_error('invalidforumid', 'forum');
                 }
             }
+        }
+
+        static $tiiconnection;
+        if (!empty($tiiconnection)) {
+            $tiiconnection = $this->test_turnitin_connection();
         }
 
         static $config;
@@ -681,7 +691,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Condition added to test for Moodle 2.7 as it calls this function twice.
                 if ($CFG->branch >= 27 || $userid != $linkarray["userid"]) {
                     // Show EULA if necessary and we have a connection to Turnitin.
-                    if ($this->test_turnitin_connection()) {
+                    if ($tiiconnection) {
                         $user = new turnitintooltwo_user($USER->id, "Learner");
                         $user->join_user_to_class($coursedata->turnitin_cid);
                         $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
@@ -1932,19 +1942,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return;
         }
 
-        // Test connection to Turnitin and show error message if it can't connect.
-        $turnitincomms = new turnitintooltwo_comms();
-        $tiiapi = $turnitincomms->initialise_api();
-
-        $class = new TiiClass();
-        $class->setTitle('Test finding a class to see if connection works');
-
-        try {
-            $response = $tiiapi->findClasses($class);
-        } catch (Exception $e) {
-            mtrace(get_string('connecttesterror', 'turnitintooltwo'));
-            $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
-            return false;
+        static $tiiconnection;
+        if (!empty($tiiconnection)) {
+            if (!$tiiconnection = $this->test_turnitin_connection()) {
+                return false;
+            }
         }
 
         if ($cm) {

@@ -433,16 +433,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        static $tiiconnection;
-        if (!empty($tiiconnection)) {
-            $tiiconnection = $this->test_turnitin_connection();
-        }
-
-        static $config;
-        if (empty($config)) {
-            $config = turnitintooltwo_admin_config();
-        }
-
         static $plagiarismsettings;
         if (empty($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
@@ -455,6 +445,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Exit if Turnitin is not being used for this module.
         if (empty($plagiarismsettings['use_turnitin'])) {
             return;
+        }
+
+        static $tiiconnection;
+        if (!empty($tiiconnection)) {
+            $tiiconnection = $this->test_turnitin_connection();
+        }
+
+        static $config;
+        if (empty($config)) {
+            $config = turnitintooltwo_admin_config();
         }
 
         static $configsettings;

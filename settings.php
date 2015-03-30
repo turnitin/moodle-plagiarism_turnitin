@@ -108,6 +108,7 @@ if (!empty($action)) {
                 array_push($settingsfields, $field . '_lock');
             }
             array_push($settingsfields, 'plagiarism_locked_message');
+
             foreach ($settingsfields as $field) {
                 $defaultfield = new object();
                 $defaultfield->cm = 0;

@@ -317,8 +317,8 @@ class turnitinplugin_view {
 
             if ($location == 'defaults'){
                 $mform->addElement('text', 'plagiarism_locked_message', get_string("locked_message", "turnitintooltwo"), 'maxlength="50" size="50"' );
-                $mform->setType(      'plagiarism_locked_message', PARAM_TEXT);
-                $mform->setDefault(   'plagiarism_locked_message', get_string("locked_message_default", "turnitintooltwo") );
+                $mform->setType('plagiarism_locked_message', PARAM_TEXT);
+                $mform->setDefault('plagiarism_locked_message', get_string("locked_message_default", "turnitintooltwo") );
                 $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'turnitintooltwo');
             }
 

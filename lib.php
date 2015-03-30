@@ -96,6 +96,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $default = $defaults[$setting];
             $settings[$setting] = $default;
         }
+
         return $settings;
     }
 

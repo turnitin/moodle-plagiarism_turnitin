@@ -100,13 +100,23 @@ if (!empty($action)) {
             break;
 
         case "defaults":
-            $settingsfields = $plagiarismpluginturnitin->get_settings_fields();
+            $fields = $plagiarismpluginturnitin->get_settings_fields();
 
+            $settingsfields = array();
+            foreach ($fields as $field) {
+                array_push($settingsfields, $field);
+                array_push($settingsfields, $field . '_lock');
+            }
+            array_push($settingsfields, 'plagiarism_locked_message');
             foreach ($settingsfields as $field) {
                 $defaultfield = new object();
                 $defaultfield->cm = 0;
                 $defaultfield->name = $field;
-                $defaultfield->value = optional_param($field, '', PARAM_ALPHANUMEXT);
+                if ($field == 'plagiarism_locked_message'){
+                    $defaultfield->value = optional_param($field, '', PARAM_TEXT);
+                } else {
+                    $defaultfield->value = optional_param($field, '', PARAM_ALPHANUMEXT);
+                }
 
                 if (isset($plugindefaults[$field])) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',

@@ -81,8 +81,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function get_settings($cmid = 0) {
         global $DB;
+        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => 0),     '', 'name,value');
         $settings = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => $cmid), '', 'name,value');
 
+        // Enforce site wide config locking.
+        foreach ($defaults as $key => $value){
+            if (substr($key,-5) !== '_lock'){
+                continue;
+            }
+            if ($value != 1){
+                continue;
+            }
+            $setting = substr($key,0,-5);
+            $default = $defaults[$setting];
+            $settings[$setting] = $default;
+        }
         return $settings;
     }
 

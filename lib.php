@@ -461,11 +461,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return;
         }
 
-        static $tiiconnection;
-        if (!empty($tiiconnection)) {
-            $tiiconnection = $this->test_turnitin_connection();
-        }
-
         static $config;
         if (empty($config)) {
             $config = turnitintooltwo_admin_config();
@@ -705,17 +700,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Condition added to test for Moodle 2.7 as it calls this function twice.
                 if ($CFG->branch >= 27 || $userid != $linkarray["userid"]) {
                     // Show EULA if necessary and we have a connection to Turnitin.
-                    if ($tiiconnection) {
-                        $user = new turnitintooltwo_user($USER->id, "Learner");
-                        $user->join_user_to_class($coursedata->turnitin_cid);
+
+                    $user = new turnitintooltwo_user($USER->id, "Learner");
+                    $success = $user->join_user_to_class($coursedata->turnitin_cid);
+
+                    // $success is null if there is no Turnitin connection
+                    if ($success) {
                         $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
                         $userid = $linkarray["userid"];
 
                         if (!$eulaaccepted) {
                             $eula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
-                                                                                    '&cmd=useragreement&view_context=box_solid',
-                                                        get_string('turnitinppula', 'turnitintooltwo'),
-                                                        array("class" => "pp_turnitin_eula_link"));
+                                    '&cmd=useragreement&view_context=box_solid',
+                                    get_string('turnitinppula', 'turnitintooltwo'),
+                                    array("class" => "pp_turnitin_eula_link"));
 
                             $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
                             $submitting = false;
@@ -729,9 +727,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $turnitincall = $turnitincomms->initialise_api();
 
                             $customdata = array("disable_form_change_checker" => true,
-                                                "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
+                                    "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
                             $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
-                                                                    'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
+                                    'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                         }
                     }
@@ -2384,7 +2382,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
 
                     // Don't submit if submission hasn't changed.
-                    if ($previoussubmission->statuscode == "success" && 
+                    if ($previoussubmission->statuscode == "success" &&
                             (($submissiontype == 'file' && $timemodified <= $previoussubmission->lastmodified)
                                 || $submissiontype != 'file')) {
                         return true;

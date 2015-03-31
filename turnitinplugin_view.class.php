@@ -216,39 +216,12 @@ class turnitinplugin_view {
 
         $locks  = $DB->get_records_sql("SELECT name,value FROM {plagiarism_turnitin_config} WHERE cm = 0");
 
-        /**
-         * This adds a site lock check to the most recently added field
-         */
-        function lock($mform, $location, $locks) {
-
-            $field = end($mform->_elements)->_attributes['name'];
-            if ($location == 'defaults'){
-                // If we are on the site config level, show the lock UI
-                $mform->addElement('advcheckbox', $field . '_lock', '', get_string('locked', 'admin'), array('group' => 1) );
-
-            } else {
-
-                // If we are at the plugin level, and we are locked then freeze
-                $locked = $locks[$field.'_lock']->value == 1;
-                if ($locked) {
-
-                    $mform->freeze($field);
-                    // Show custom message why.
-                    $msg = $locks['plagiarism_locked_message']->value;
-                    if ($msg) {
-                        $mform->addElement('static', $field . '_why', '', $msg );
-                    }
-                }
-            }
-        }
-
-
         if (empty($config_warning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
 
             $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
@@ -256,12 +229,12 @@ class turnitinplugin_view {
                                          1 => get_string("submitonfinal", "turnitintooltwo"));
 
                 $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
-                lock($mform, $location, $locks);
+                $this->lock($mform, $location, $locks);
                 $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
             }
 
             $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
 
             $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
@@ -269,13 +242,13 @@ class turnitinplugin_view {
             switch ($config->repositoryoption) {
                 case 0; // Standard options
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
-                    lock($mform, $location, $locks);
+                    $this->lock($mform, $location, $locks);
                     break;
                 case 1; // Standard options + Allow Instituional Repository
                     $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
 
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
-                    lock($mform, $location, $locks);
+                    $this->lock($mform, $location, $locks);
                     break;
                 case 2; // Force Standard Repository
                     $mform->addElement('hidden', 'plagiarism_submitpapersto', 1);
@@ -288,28 +261,28 @@ class turnitinplugin_view {
             }
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
 
             if ($config->repositoryoption == 1) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
                                                 get_string('compareinstitution', 'turnitintooltwo'), $options);
-                lock($mform, $location, $locks);
+                $this->lock($mform, $location, $locks);
             }
 
             $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
 
             $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "turnitintooltwo"),
                                                                                 $excludetypeoptions);
-            lock($mform, $location, $locks);
+            $this->lock($mform, $location, $locks);
             $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
             $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
@@ -536,5 +509,30 @@ class turnitinplugin_view {
         $output = html_writer::table($table);
 
         return $output;
+    }
+
+    /**
+     * This adds a site lock check to the most recently added field
+     */
+    public function lock($mform, $location, $locks) {
+
+        $field = end($mform->_elements)->_attributes['name'];
+        if ($location == 'defaults'){
+            // If we are on the site config level, show the lock UI
+            $mform->addElement('advcheckbox', $field . '_lock', '', get_string('locked', 'admin'), array('group' => 1) );
+
+        } else {
+
+            // If we are at the plugin level, and we are locked then freeze
+            $locked = (isset($locks[$field.'_lock']->value)) ? $locks[$field.'_lock']->value : 0;
+            if ($locked) {
+                $mform->freeze($field);
+                // Show custom message why.
+                $msg = $locks['plagiarism_locked_message']->value;
+                if ($msg) {
+                    $mform->addElement('static', $field . '_why', '', $msg );
+                }
+            }
+        }
     }
 }

@@ -5,10 +5,9 @@
  * and open the template in the editor.
  */
 
-$plugin->version =  2015030101;
+$plugin->version =  2015040101;
 $plugin->requires =  2012062500.00;
 $plugin->cron     = 300;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release  = '2.3+';
-$plugin->dependencies = array('mod_turnitintooltwo' => 2014012413);
+$plugin->dependencies = array('mod_turnitintooltwo' => 2015040101);

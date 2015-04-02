@@ -394,27 +394,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $output;
     }
 
-    private function get_max_files_allowed($moduleid, $modname) {
-        global $DB;
-        $filesallowed = 1;
-        switch($modname) {
-            case "assign":
-                $moduledata = $DB->get_record('assign_plugin_config',
-                                array('assignment' => $moduleid, 'name' => 'maxfilesubmissions'), 'value');
-                $filesallowed = $moduledata->value;
-                break;
-            case "forum":
-                $moduledata = $DB->get_record($modname, array('id' => $moduleid), 'maxattachments');
-                $filesallowed = $moduledata->maxattachments;
-                break;
-            case "workshop":
-                $moduledata = $DB->get_record($modname, array('id' => $moduleid), 'nattachments');
-                $filesallowed = $moduledata->nattachments;
-                break;
-        }
-
-        return $filesallowed;
-    }
 
     /**
      *
@@ -2263,7 +2242,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $CFG, $DB, $USER;
 
         $settings = $this->get_settings($cm->id);
-        $nooffilesallowed = $this->get_max_files_allowed($cm->instance, $cm->modname);
 
         // Do not submit if 5 attempts have been made previously.
         $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',

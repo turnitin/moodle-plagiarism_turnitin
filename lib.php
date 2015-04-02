@@ -1622,12 +1622,24 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
-        $this->cron_update_assignments();
+
+        // Catch exceptions so entire Moodle cron does not fail.
+        // If some action in the cron_update_assignments() call fails
+        // this ensures that the entire cron run does not fail.
+        try {
+            $this->cron_update_assignments();
+        } catch (Exception $ex) {
+            error_log("Exception in TII cron while updating assigments: ".$ex);
+        }
 
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
         foreach ($submissiontypes as $submissiontype) {
-            $this->cron_update_scores($submissiontype);
+            try {
+                $this->cron_update_scores($submissiontype);
+            } catch (Exception $ex) {
+                error_log("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
+            }
         }
         return true;
     }

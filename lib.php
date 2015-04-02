@@ -1630,6 +1630,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $this->cron_update_assignments();
         } catch (Exception $ex) {
             error_log("Exception in TII cron while updating assigments: ".$ex);
+            mtrace("Exception in TII cron while updating assigments: ".$ex);
         }
 
         // Update scores by separate submission type.
@@ -1639,6 +1640,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $this->cron_update_scores($submissiontype);
             } catch (Exception $ex) {
                 error_log("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
+                mtrace("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
             }
         }
         return true;

@@ -303,7 +303,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB, $OUTPUT, $USER, $PAGE, $CFG;
 
         static $tiiconnection;
-        if (!empty($tiiconnection)) {
+        if (empty($tiiconnection)) {
             $tiiconnection = $this->test_turnitin_connection();
         }
 
@@ -1964,7 +1964,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         static $tiiconnection;
-        if (!empty($tiiconnection)) {
+        if (empty($tiiconnection)) {
             if (!$tiiconnection = $this->test_turnitin_connection()) {
                 return false;
             }

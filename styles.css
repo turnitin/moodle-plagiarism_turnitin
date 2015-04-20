@@ -148,6 +148,10 @@
     margin-bottom:6px;
 }
 
+.forumpost .tii_links_container .success {
+    width:98%;
+}
+
 .tii_links_container #ppErrors {
     width:100%;
 }

@@ -954,7 +954,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     } else if ($plagiarismfile->statuscode == 'error') {
 
                         // Deal with legacy error issues.
-                        if (isset($plagiarismfile->errorcode)) {
+                        if (!isset($plagiarismfile->errorcode)) {
                             $errorcode = 0;
                             if ($submissiontype == 'file') {
                                 if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
@@ -978,7 +978,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'mod_turnitintooltwo'),
                                                                 array('title' => $errorstring,
                                                                         'class' => 'tii_tooltip tii_error_icon'));
-                        $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+
+                        // If logged in as a student, attach error text after icon.
+                        if (!$istutor) {
+                            $output .= html_writer::tag('div', $erroricon.' '.$errorstring, array('class' => 'warning clear'));
+                        } else {
+                            $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+                        }
                     }
 
                 } else {
@@ -2454,8 +2460,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // content is less than 20 words or 100 characters.
         if ($submissiontype != 'file') {
             $content = explode(' ', $textcontent);
-            if ($settings['plagiarism_allow_non_or_submissions'] != 1 &&
-                    (strlen($textcontent) < 100 || count($content) < 20)) {
+            if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
+                    (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
                 $plagiarismfile = new object();
                 if ($submissionid != 0) {
                     $plagiarismfile->id = $submissionid;

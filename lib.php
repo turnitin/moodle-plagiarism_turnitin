@@ -683,8 +683,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user = new turnitintooltwo_user($USER->id, "Learner");
                     $success = $user->join_user_to_class($coursedata->turnitin_cid);
 
-                    // $success is null if there is no Turnitin connection
-                    if ($success) {
+                    // $success is false if there is no Turnitin connection and null if user has previously been enrolled.
+                    if (is_null($success) || $success === true) {
                         $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
                         $userid = $linkarray["userid"];
 
@@ -711,6 +711,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                         }
+                    } else {
+                        $submitting = false;
                     }
                 }
 

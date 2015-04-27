@@ -2648,6 +2648,37 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $return["message"] = get_string('submissionuploadsuccess', 'turnitintooltwo').'<br/>'.
                                     get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
 
+            //Send a message to the user's Moodle inbox with the digital receipt.
+            $input = new stdClass();
+            $input->firstname = $USER->firstname;
+            $input->lastname = $USER->lastname;
+            $input->submission_title = $title;
+
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+            $input->assignment_name = $moduledata->name;
+
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
+            $input->course_fullname = $coursedata->turnitin_ctl;
+
+            $input->submission_date = date('d-M-Y h:iA');
+            $input->submission_id = $newsubmissionid;
+
+            $subject = get_string('digital_receipt_subject', 'turnitintooltwo');
+            $message = get_string('digital_receipt_message', 'turnitintooltwo', $input);
+
+            $eventdata = new stdClass();
+            $eventdata->component         = 'mod_turnitintooltwo'; //your component name
+            $eventdata->name              = 'submission'; //this is the message name from messages.php
+            $eventdata->userfrom          = get_admin();
+            $eventdata->userto            = $user->id;
+            $eventdata->subject           = $subject;
+            $eventdata->fullmessage       = '';
+            $eventdata->fullmessageformat = FORMAT_HTML;
+            $eventdata->fullmessagehtml   = $message;
+            $eventdata->smallmessage      = '';
+            $eventdata->notification      = 1; //this is only set to 0 for personal messages between users
+            message_send($eventdata);
+
             if ($context == 'cron') {
                 return true;
             }

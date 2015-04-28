@@ -38,6 +38,7 @@ if ($CFG->branch < 28) {
 require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 require_once(__DIR__."/turnitinplugin_view.class.php");
+require_once($CFG->dirroot.'/mod/turnitintooltwo/classes/digitalreceipt/receipt_message.php');
 
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
@@ -2646,35 +2647,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
 
             //Send a message to the user's Moodle inbox with the digital receipt.
-            $input = new stdClass();
-            $input->firstname = $USER->firstname;
-            $input->lastname = $USER->lastname;
-            $input->submission_title = $title;
+            $receipt = new receipt_message();
 
             $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-            $input->assignment_name = $moduledata->name;
-
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
-            $input->course_fullname = $coursedata->turnitin_ctl;
 
-            $input->submission_date = date('d-M-Y h:iA');
-            $input->submission_id = $newsubmissionid;
+            $input = array(
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'submission_title' => $title,
+                'assignment_name' => $moduledata->name,
+                'course_fullname' => $coursedata->turnitin_ctl,
+                'submission_date' => date('d-M-Y h:iA'),
+                'submission_id' => $newsubmissionid
+            );
 
-            $subject = get_string('digital_receipt_subject', 'turnitintooltwo');
-            $message = get_string('digital_receipt_message', 'turnitintooltwo', $input);
-
-            $eventdata = new stdClass();
-            $eventdata->component         = 'mod_turnitintooltwo'; //your component name
-            $eventdata->name              = 'submission'; //this is the message name from messages.php
-            $eventdata->userfrom          = get_admin();
-            $eventdata->userto            = $user->id;
-            $eventdata->subject           = $subject;
-            $eventdata->fullmessage       = '';
-            $eventdata->fullmessageformat = FORMAT_HTML;
-            $eventdata->fullmessagehtml   = $message;
-            $eventdata->smallmessage      = '';
-            $eventdata->notification      = 1; //this is only set to 0 for personal messages between users
-            message_send($eventdata);
+            $message = $receipt->build_message($input);
+            $receipt->send_message($user->id, $message);
 
             if ($context == 'cron') {
                 return true;

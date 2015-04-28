@@ -2265,28 +2265,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $settings = $this->get_settings($cm->id);
 
-        // Do not submit if 5 attempts have been made previously.
-        $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
-                                    array($cm->id, $user->id, $submissiontype, $identifier), 'id, attempt');
-        $previoussubmission = current($previoussubmissions);
-        $attempt = (empty($previoussubmission)) ? 0 : $previoussubmission->attempt;
-
-        if (count($previoussubmissions) >= 5 || $attempt >= 5) {
-            if ($context == 'cron') {
-                mtrace('-------------------------');
-                mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-
-                return true;
-            }
-            $return["success"] = false;
-            $return["message"] = get_string('pastfiveattempts', 'turnitintooltwo');
-            return $return;
-        }
-
         // Update user's details on Turnitin.
         $user->edit_tii_user();
 
@@ -2379,13 +2357,38 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
                                                 array($cm->id, $user->id, $submissiontype, $identifier),
-                                                    'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
+                                                    'id, cm, externalid, identifier, statuscode, lastmodified, attempt', 0, 1)) {
+
+                    $errorcode = (int)$previoussubmission->errorcode;
 
                     // Don't submit if submission hasn't changed.
                     if ($previoussubmission->statuscode == "success" &&
                             (($submissiontype == 'file' && $timemodified <= $previoussubmission->lastmodified)
                                 || $submissiontype != 'file')) {
                         return true;
+                    } else if ($previoussubmission->statuscode == "error" && 
+                                    $timemodified <= $previoussubmission->lastmodified) {
+
+                        $return["success"] = false;
+                        $return["message"] = get_string('errorcode'.$errorcode, 'turnitintooltwo');
+                        return $return;
+
+                    } else if ($previoussubmission->attempt >= 5) {
+
+                        // Do not submit if 5 attempts have been made previously.
+                        if ($context == 'cron') {
+                            mtrace('-------------------------');
+                            mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
+                            mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                            mtrace('Course Module: '.$cm->id.'');
+                            mtrace('-------------------------');
+
+                            return true;
+                        }
+                        $return["success"] = false;
+                        $return["message"] = get_string('pastfiveattempts', 'turnitintooltwo');
+                        return $return;
+
                     } else if ($settings["plagiarism_report_gen"] > 0) {
                         // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.
                         $submissionid = $previoussubmission->id;

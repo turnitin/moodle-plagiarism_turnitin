@@ -562,6 +562,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $itemid = $file->get_itemid();
                 $submissiontype = 'file';
                 $submitting = ($submission_status) ? true : false;
+
+                // Get plagiarism file info to check if file was previously submitted and has been modified.
+                $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
+                                        " userid = ? AND cm = ? AND identifier = ? AND submissiontype = '".$submissiontype."' ",
+                                            array($linkarray["userid"], $linkarray["cmid"], $identifier));
+
+                if (!empty($plagiarismfile)) {
+                    $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified) ? $submitting : false;
+                }
+
             } else if (!empty($linkarray["content"])) {
 
                 // Get turnitin text content details.

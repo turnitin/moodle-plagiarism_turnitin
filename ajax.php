@@ -254,17 +254,25 @@ switch ($action) {
         }
         break;
 
-    case "acceptuseragreement":
-        $eula_user_id = required_param('user_id', PARAM_INT);
+    case "actionuseragreement":
+        if (!confirm_sesskey()) {
+            throw new moodle_exception('invalidsesskey', 'error');
+        }
+
+        $message = optional_param('message', '', PARAM_ALPHAEXT);
 
         // Get the id from the turnitintooltwo_users table so we can update
-        $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $eula_user_id));
+        $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
 
         // Build user object for update
         $eula_user = new object();
-        $eula_user->id += $turnitin_user->id;
-        $eula_user->userid = $eula_user_id;
-        $eula_user->user_agreement_accepted = 1;
+        $eula_user->id = $turnitin_user->id;
+        $eula_user->user_agreement_accepted = 0;
+        if ($message == 'turnitin_eula_accepted') {
+            $eula_user->user_agreement_accepted = 1;
+        } else if ($message == 'turnitin_eula_declined') {
+            $eula_user->user_agreement_accepted = -1;
+        }
 
         // Update the user using the above object
         $DB->update_record('turnitintooltwo_users', $eula_user, $bulk=false);

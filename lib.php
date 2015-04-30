@@ -352,9 +352,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiconnection) {
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
-            $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
+            $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
 
-            if (!$eulaaccepted) {
+            if ($eulaaccepted != 1) {
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
                 $PAGE->requires->js($jsurl);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
@@ -369,7 +369,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         get_string('turnitinppula', 'turnitintooltwo'),
                                         array("class" => "pp_turnitin_eula_link"));
 
-                $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
+                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_ula_ignored' : '';
+                $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass, 
+                                            'data-userid' => $user->id));
 
                 $noscriptula = html_writer::tag('noscript',
                                 turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
@@ -696,10 +698,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                     // $success is false if there is no Turnitin connection and null if user has previously been enrolled.
                     if (is_null($success) || $success === true) {
-                        $eulaaccepted = (!$user->user_agreement_accepted) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
+                        $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
                         $userid = $linkarray["userid"];
 
-                        if (!$eulaaccepted) {
+                        if ($eulaaccepted != 1) {
                             $eula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
                                     '&cmd=useragreement&view_context=box_solid',
                                     get_string('turnitinppula', 'turnitintooltwo'),
@@ -1018,7 +1020,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
                             if (has_capability($capability, $context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
-                                if (!$user->user_agreement_accepted) {
+                                if ($user->user_agreement_accepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'),
                                                                             'mod_turnitintooltwo'),
                                                                             array('title' => get_string('notacceptedeula', 'turnitintooltwo'),
@@ -2029,7 +2031,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // Don't submit and remove from queue if a user has not accepted the eula.
-                    if (!$user->user_agreement_accepted) {
+                    if ($user->user_agreement_accepted != 1) {
                         mtrace('-------------------------');
                         mtrace(get_string('notacceptedeula', 'turnitintooltwo'));
                         mtrace(get_string('eventremoved', 'turnitintooltwo').':');

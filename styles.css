@@ -221,6 +221,7 @@
 
 .pp_turnitin_ula {
 	display: none;
+    margin-bottom:16px;
 }
 
 noscript.turnitin_ula_noscript {

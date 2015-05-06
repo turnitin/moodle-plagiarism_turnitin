@@ -100,6 +100,7 @@ class turnitinplugin_view {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
+        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
 

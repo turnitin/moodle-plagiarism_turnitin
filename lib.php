@@ -65,13 +65,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public static function get_config_settings($modulename) {
         global $DB;
-        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use_'.$modulename, 'plugin' => 'plagiarism'))) {
-            $configsettings['turnitin_use_'.$modulename] = $turnitinsetting->value;
-        } else {
-            $configsettings['turnitin_use_'.$modulename] = 0;
-        }
+        $pluginconfig = get_config('plagiarism', 'turnitin_use_'.$modulename);
 
-        return $configsettings;
+        return $pluginconfig;
     }
 
     /**

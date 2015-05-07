@@ -122,8 +122,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function save_form_elements($data) {
         global $DB;
 
-        $configsettings = $this->get_config_settings('mod_'.$data->modulename);
-        if (empty($configsettings['turnitin_use_mod_'.$data->modulename])) {
+        $moduletiienabled = $this->get_config_settings('mod_'.$data->modulename);
+        if (empty($moduletiienabled)) {
             return;
         }
 
@@ -170,8 +170,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Only 2.4+ passes in the modulename so in 2.3 when adding a module
             // we can not differentiate whether plugin is enabled by module.
             if (!empty($modulename)) {
-                $configsettings = $this->get_config_settings($modulename);
-                if (empty($configsettings['turnitin_use_'.$modulename])) {
+                $moduletiienabled = $this->get_config_settings($modulename);
+                if (empty($moduletiienabled)) {
                     return;
                 }
             }
@@ -310,9 +310,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Get course details
         $cm = get_coursemodule_from_id('', $cmid);
 
-        $configsettings = $this->get_config_settings('mod_'.$cm->modname);
+        $moduletiienabled = $this->get_config_settings('mod_'.$cm->modname);
         // Exit if Turnitin is not being used for this activity type.
-        if (empty($configsettings['turnitin_use_mod_'.$cm->modname])) {
+        if (empty($moduletiienabled)) {
             return '';
         }
 
@@ -444,13 +444,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $config = turnitintooltwo_admin_config();
         }
 
-        static $configsettings;
-        if (empty($configsettings)) {
-            $configsettings = $this->get_config_settings('mod_'.$cm->modname);
+        static $moduletiienabled;
+        if (empty($moduletiienabled)) {
+            $moduletiienabled = $this->get_config_settings('mod_'.$cm->modname);
         }
 
         // Exit if Turnitin is not being used for this activity type.
-        if (empty($configsettings['turnitin_use_mod_'.$cm->modname])) {
+        if (empty($moduletiienabled)) {
             return;
         }
 
@@ -1967,9 +1967,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        $configsettings = $this->get_config_settings('mod_'.$eventdata->modulename);
+        $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
         // Exit if Turnitin is not being used for this activity type.
-        if (empty($configsettings['turnitin_use_mod_'.$eventdata->modulename])) {
+        if (empty($moduletiienabled)) {
             return;
         }
 

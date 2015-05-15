@@ -689,12 +689,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Condition added to test for Moodle 2.7 as it calls this function twice.
                 if ($CFG->branch >= 27 || $userid != $linkarray["userid"]) {
                     // Show EULA if necessary and we have a connection to Turnitin.
+                    static $eulashown;
+                    if (empty($eulashown)) {
+                        $eulashown = false;
+                    }
 
                     $user = new turnitintooltwo_user($USER->id, "Learner");
                     $success = $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // $success is false if there is no Turnitin connection and null if user has previously been enrolled.
-                    if (is_null($success) || $success === true) {
+                    if ((is_null($success) || $success === true) && $eulashown == false) {
                         $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
                         $userid = $linkarray["userid"];
 
@@ -720,6 +724,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                     'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
+                            $eulashown = true;
                         }
                     } else {
                         $submitting = false;

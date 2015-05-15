@@ -962,7 +962,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 }
                             }
                         }
-                    } else if ($plagiarismfile->statuscode == 'error') {
+                    } else if ($plagiarismfile->statuscode == 'error' && (!$submitting || !$submission_status)) {
 
                         // Deal with legacy error issues.
                         if (!isset($plagiarismfile->errorcode)) {
@@ -2362,10 +2362,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 // Get submission method depending on whether there has been a previous submission.
+                $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt, errorcode';
                 if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
                                                 array($cm->id, $user->id, $submissiontype, $identifier),
-                                                    'id, cm, externalid, identifier, statuscode, lastmodified, attempt', 0, 1)) {
+                                                    $submissionfields, 0, 1)) {
 
                     $errorcode = (int)$previoussubmission->errorcode;
 

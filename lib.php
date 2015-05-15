@@ -562,9 +562,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $submitting = ($submission_status) ? true : false;
 
                 // Get plagiarism file info to check if file was previously submitted and has been modified.
-                $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
+                $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files',
                                         " userid = ? AND cm = ? AND identifier = ? AND submissiontype = '".$submissiontype."' ",
                                             array($linkarray["userid"], $linkarray["cmid"], $identifier));
+                $plagiarismfile = end($plagiarismfiles);
 
                 if (!empty($plagiarismfile)) {
                     $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified) ? $submitting : false;
@@ -826,7 +827,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                if ($plagiarismfile) {
+                if ($plagiarismfile && (!$submitting || !$submission_status)) {
                     if ($plagiarismfile->statuscode == 'success') {
                         if ($istutor || $linkarray["userid"] == $USER->id) {
                             $output .= html_writer::tag('div',
@@ -962,7 +963,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 }
                             }
                         }
-                    } else if ($plagiarismfile->statuscode == 'error' && (!$submitting || !$submission_status)) {
+                    } else if ($plagiarismfile->statuscode == 'error') {
 
                         // Deal with legacy error issues.
                         if (!isset($plagiarismfile->errorcode)) {

@@ -362,7 +362,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
                 $ula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cmid.'&cmd=useragreement&view_context=box_solid',
-                                        get_string('turnitinppula', 'turnitintooltwo'),
+                                        get_string('turnitinppulapre', 'turnitintooltwo'),
                                         array("class" => "pp_turnitin_eula_link"));
 
                 $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_ula_ignored' : '';
@@ -371,7 +371,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 $noscriptula = html_writer::tag('noscript',
                                 turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
-                                    "Learner", get_string('turnitinppula', 'turnitintooltwo'), false)." ".
+                                    "Learner", get_string('turnitinppulapre', 'turnitintooltwo'), false)." ".
                                         get_string('noscriptula', 'turnitintooltwo'),
                                             array('class' => 'warning turnitin_ula_noscript'));
             }
@@ -705,7 +705,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($eulaaccepted != 1) {
                             $eula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
                                     '&cmd=useragreement&view_context=box_solid',
-                                    get_string('turnitinppula', 'turnitintooltwo'),
+                                    get_string('turnitinppulapost', 'turnitintooltwo'),
                                     array("class" => "pp_turnitin_eula_link"));
 
                             $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));

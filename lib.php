@@ -2659,23 +2659,25 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
 
             //Send a message to the user's Moodle inbox with the digital receipt.
-            $receipt = new receipt_message();
+            if ( ! empty($CFG->smtphosts) && ! empty($CFG->smtpuser) && ! empty($CFG->smtppass) ) {
+                $receipt = new receipt_message();
 
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
+                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', 'cron');
 
-            $input = array(
-                'firstname' => $user->firstname,
-                'lastname' => $user->lastname,
-                'submission_title' => $title,
-                'assignment_name' => $moduledata->name,
-                'course_fullname' => $coursedata->turnitin_ctl,
-                'submission_date' => date('d-M-Y h:iA'),
-                'submission_id' => $newsubmissionid
-            );
+                $input = array(
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'submission_title' => $title,
+                    'assignment_name' => $moduledata->name,
+                    'course_fullname' => $coursedata->turnitin_ctl,
+                    'submission_date' => date('d-M-Y h:iA'),
+                    'submission_id' => $newsubmissionid
+                );
 
-            $message = $receipt->build_message($input);
-            $receipt->send_message($user->id, $message);
+                $message = $receipt->build_message($input);
+                $receipt->send_message($user->id, $message);
+            }
 
             if ($context == 'cron') {
                 return true;

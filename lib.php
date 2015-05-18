@@ -403,11 +403,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-        // Don't submit feedback files to Turnitin.
+        // Don't submit certain file types to Turnitin.
         if (!empty($linkarray["file"])) {
             $file = $linkarray["file"];
             $filearea = $file->get_filearea();
-            if ($filearea == "feedback_files") {
+            $nonsubmittingareas = array("feedback_files", "introattachment");
+            if (in_array($filearea, $nonsubmittingareas)) {
                 return;
             }
         }

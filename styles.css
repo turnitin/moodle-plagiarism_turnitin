@@ -6,6 +6,10 @@
         Purpose of the stylesheet follows.
 */
 
+.forumpost .content .attachments {
+    text-align: left;
+}
+
 .tii_links_container .clear {
 	clear:both;
 }
@@ -15,7 +19,7 @@
 }
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
-.tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, 
+.tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form,
 .tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
 #tii_view_context, .tii_links_container .grademark_forum_launch, .tii_links_container .origreport_forum_launch {
     display:none;
@@ -29,11 +33,6 @@
 .tii_links_container .grade_icon {
 	font-size: 8px;
 	position: relative;
-}
-
-.forumpost .attachments .tii_links_container {
-	clear: both;
-	float: right;
 }
 
 .tii_links_container .row_rubric_view {
@@ -59,14 +58,6 @@
     padding: 4px 0 18px 36px;
     line-height: 28px;
     display: block;
-}
-
-.tii_links_container .attachments {
-	clear:both;
-}
-
-.tii_links_container .forumpost .attachments .tii_links_container {
-    float:right;
 }
 
 .tii_links_container .tii_links_container {

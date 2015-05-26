@@ -1476,7 +1476,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * if we have a Turnitin id for the module then edit it
      */
     public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site") {
-        global $DB;
+        global $DB, $CFG;
 
         $config = turnitintooltwo_admin_config();
         $modulepluginsettings = $this->get_settings($cm->id);

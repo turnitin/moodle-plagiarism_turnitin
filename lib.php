@@ -803,8 +803,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get post date
                 $postdate = 0;
                 if ($cm->modname != "forum") {
-                    if ($gradeitem = $DB->get_record('grade_items',
-                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'itemnumber' => 0))) {
+                    if ($gradeitem = $DB->get_record(
+                            'grade_items',
+                            array(
+                                'iteminstance' => $cm->instance, 
+                                'itemmodule' => $cm->modname, 
+                                'itemnumber' => 0
+                            )
+                        )) {
                         switch ($gradeitem->hidden) {
                             case 1:
                                 $postdate = strtotime('+1 month');
@@ -812,15 +818,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             case 0:
                                 $postdate = time();
                                 if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                    $gradesreleased = $DB->record_exists('assign_user_flags',
-                                                            array('userid' => $linkarray["userid"],
-                                                                'assignment' => $cm->instance,
-                                                                'workflowstate' => 'released'));
-                                    if ($gradesreleased) {
-                                        $postdate = time();
-                                    } else {
-                                        $postdate = strtotime('+4 weeks', $duedate);
-                                    }
+                                    $gradesreleased = $DB->record_exists(
+                                                                'assign_user_flags',
+                                                                array(
+                                                                    'userid' => $linkarray["userid"],
+                                                                    'assignment' => $cm->instance,
+                                                                    'workflowstate' => 'released'
+                                                                ));
+
+                                    $postdate = ($gradesreleased) ? time() : strtotime('+4 weeks', $duedate);
                                 }
                                 break;
                             default:
@@ -1347,9 +1353,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Check marking workflow state for assignments and only update gradebook if released.
                     if ($CFG->branch >= 26 && $cm->modname == 'assign') {
                         $gradesreleased = $DB->record_exists('assign_user_flags',
-                                                            array('userid' => $userid,
-                                                                'assignment' => $cm->instance,
-                                                                'workflowstate' => 'released'));
+                                                                array(
+                                                                    'userid' => $userid,
+                                                                    'assignment' => $cm->instance,
+                                                                    'workflowstate' => 'released'
+                                                                    ));
                         // Remove any existing grade from gradebook if not released.
                         if (!$gradesreleased) {
                             $grades->rawgrade = null;
@@ -1555,8 +1563,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // From 2.6, if grading markflow is enabled and no grades have been released, we will use due date +4 weeks.
         $dtpost = 0;
         if ($cm->modname != "forum") {
-            if ($gradeitem = $DB->get_record('grade_items',
-                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course))) {
+            if ($gradeitem = $DB->get_record(
+                                            'grade_items',
+                                            array(
+                                                'iteminstance' => $cm->instance, 
+                                                'itemmodule' => $cm->modname, 
+                                                'courseid' => $cm->course)
+                                            )) {
 
                 switch ($gradeitem->hidden) {
                     case 1:
@@ -1781,9 +1794,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 case 0:
                                     // If any grades have been released early via marking workflow, the post date must be in the past.
                                     if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                        $gradesreleased = $DB->record_exists('assign_user_flags',
-                                                                        array('assignment' => $cm->instance,
-                                                                                'workflowstate' => 'released'));
+                                        $gradesreleased = $DB->record_exists(
+                                                                        'assign_user_flags',
+                                                                        array(
+                                                                            'assignment' => $cm->instance,
+                                                                            'workflowstate' => 'released'
+                                                                        ));
 
                                         if ($gradesreleased) {
                                             if ($post_date > time()) {

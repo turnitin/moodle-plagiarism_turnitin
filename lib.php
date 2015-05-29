@@ -1730,7 +1730,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * This is used to update assignments, specifically post dates in Turnitin which can be changed in Gradebook.
      */
     public function cron_update_assignments() {
-        global $DB;
+        global $DB, $CFG;
 
         $assignments = $DB->get_records_select('plagiarism_turnitin_config',
                                         " name = ? ", array('turnitin_assignid'), 'cm, value');

@@ -563,9 +563,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $submitting = ($submission_status) ? true : false;
 
                 // Get plagiarism file info to check if file was previously submitted and has been modified.
+                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " userid = ? AND cm = ? AND identifier = ? AND submissiontype = '".$submissiontype."' ",
-                                            array($linkarray["userid"], $linkarray["cmid"], $identifier));
+                                        " userid = ? AND cm = ? AND identifier = ? AND ".$typefield." = ? ",
+                                            array($linkarray["userid"], $linkarray["cmid"], $identifier, $submissiontype));
                 $plagiarismfile = end($plagiarismfiles);
 
                 if (!empty($plagiarismfile)) {
@@ -649,17 +650,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Get plagiarism file info.
                 $identifier = sha1($content);
+                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 switch ($cm->modname) {
                     case 'assign':
                     case 'workshop':
                         $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
-                                            " userid = ? AND cm = ? AND submissiontype = '".$submissiontype."' ",
-                                                array($linkarray["userid"], $linkarray["cmid"]));
+                                            " userid = ? AND cm = ? AND ".$typefield." = ? ",
+                                                array($linkarray["userid"], $linkarray["cmid"], $submissiontype));
                         break;
                     case 'forum':
                         $plagiarismfile = $DB->get_record_select('plagiarism_turnitin_files',
-                                            " userid = ? AND cm = ? AND identifier = ? AND submissiontype = '".$submissiontype."' ",
-                                                array($linkarray["userid"], $linkarray["cmid"], $identifier));
+                                            " userid = ? AND cm = ? AND identifier = ? AND ".$typefield." = ? ",
+                                                array($linkarray["userid"], $linkarray["cmid"], $identifier, $submissiontype));
                         break;
                 }
 
@@ -1845,10 +1847,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean
      */
     public function cron_update_scores($submissiontype = 'file') {
-        global $DB;
+        global $DB, $CFG;
 
+        $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
         $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " statuscode = ? AND submissiontype = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                                        " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
                                         array('success', $submissiontype, 1), 'externalid DESC');
         $submissionids = array();
         $reportsexpected = array();
@@ -2302,7 +2305,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Moodle will remove any old files or drafts during cron execution and file submission.
      */
     private function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier) {
-        global $DB;
+        global $DB, $CFG;
         $currentfiles = array();
         $deletestr = '';
 
@@ -2320,9 +2323,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
                                                     array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
                 list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
+                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
-                                                                            " AND submissiontype = 'file' AND identifier ".$notinsql,
-                                                        array_merge(array($userid, $cm->id), $notinparams));
+                                                                            " AND ".$typefield." = ? AND identifier ".$notinsql,
+                                                        array_merge(array($userid, $cm->id, 'file'), $notinparams));
 
                 if (!empty($oldfiles)) {
                     // Initialise Comms Object.
@@ -2343,8 +2347,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
         } else if ($submissiontype == 'text_content') {
-            $deletestr = " userid = ? AND cm = ? AND submissiontype = 'text_content' AND identifier != ? ";
-            $deleteparams = array($userid, $cm->id, $identifier);
+            $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
+            $deletestr = " userid = ? AND cm = ? AND ".$typefield." = ? AND identifier != ? ";
+            $deleteparams = array($userid, $cm->id, 'text_content', $identifier);
         }
 
         // Delete from database.
@@ -2454,8 +2459,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Get submission method depending on whether there has been a previous submission.
                 $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt, errorcode';
+                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
-                                                    " cm = ? AND userid = ? AND submissiontype = ? AND identifier = ? ",
+                                                    " cm = ? AND userid = ? AND ".$typefield." = ? AND identifier = ? ",
                                                 array($cm->id, $user->id, $submissiontype, $identifier),
                                                     $submissionfields, 0, 1)) {
 
@@ -2506,10 +2512,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 } else {
                     // Check if there is previous submission of text content which we will replace
+                    $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                     if ($submissiontype == 'text_content' &&
                             $previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
-                                                    " cm = ? AND userid = ? AND submissiontype = 'text_content' ",
-                                                array($cm->id, $user->id),
+                                                    " cm = ? AND userid = ? AND ".$typefield." = ? ",
+                                                array($cm->id, $user->id, 'text_content'),
                                                     'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
 
                         $submissionid = $previoussubmission->id;

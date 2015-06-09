@@ -2465,7 +2465,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND ".$typefield." = ? AND identifier = ? ",
                                                 array($cm->id, $user->id, $submissiontype, $identifier),
-                                                    $submissionfields, 'id');
+                                                    'id', $submissionfields);
                 $previoussubmission = end($previoussubmissions);
                 if ($previoussubmission) {
                     $errorcode = (int)$previoussubmission->errorcode;
@@ -2475,7 +2475,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             (($submissiontype == 'file' && $timemodified <= $previoussubmission->lastmodified)
                                 || $submissiontype != 'file')) {
                         return true;
-                    } else if ($previoussubmission->statuscode == "error" && 
+                    } else if ($previoussubmission->statuscode == "error" &&
                                     $timemodified <= $previoussubmission->lastmodified) {
 
                         $return["success"] = false;

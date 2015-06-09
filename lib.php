@@ -2460,11 +2460,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get submission method depending on whether there has been a previous submission.
                 $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt, errorcode';
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
-                if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
+
+                // Double check there is only one submission.
+                $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND ".$typefield." = ? AND identifier = ? ",
                                                 array($cm->id, $user->id, $submissiontype, $identifier),
-                                                    $submissionfields, 0, 1)) {
-
+                                                    $submissionfields, 'id');
+                $previoussubmission = end($previoussubmissions);
+                if ($previoussubmission) {
                     $errorcode = (int)$previoussubmission->errorcode;
 
                     // Don't submit if submission hasn't changed.

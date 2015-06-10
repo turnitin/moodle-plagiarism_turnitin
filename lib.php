@@ -344,6 +344,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
+        // include JS needed for EULA and Rubric launching.
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+        $PAGE->requires->js($jsurl);
+
         // Show EULA if necessary and we have a connection to Turnitin.
         if ($tiiconnection) {
             $user = new turnitintooltwo_user($USER->id, "Learner");
@@ -351,15 +361,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
 
             if ($eulaaccepted != 1) {
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
-                $PAGE->requires->js($jsurl);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
-                $PAGE->requires->js($jsurl);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
-                $PAGE->requires->js($jsurl);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
-                $PAGE->requires->js($jsurl);
-
                 // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
                 $ula_link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cmid.'&cmd=useragreement&view_context=box_solid',
                                         get_string('turnitinppulapre', 'turnitintooltwo'),
@@ -390,6 +391,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
             }
         }
+
+        if ($config->usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
+            // Update assignment in case rubric is not stored in Turnitin yet.
+            $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
+            $rubricviewlink = html_writer::tag('div', html_writer::link(
+                                                    $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
+                                                                    '&action=rubricview&view_context=box', 
+                                                    get_string('launchrubricview', 'turnitintooltwo'),
+                                                    array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
+                                                            'title' => get_string('launchrubricview', 'turnitintooltwo'))).
+                                                                html_writer::tag('span', '',
+                                                                array('class' => 'launch_form', 'id' => 'rubric_view_form')),
+                                                    array('class' => 'row_rubric_view'));
+            $output .= html_writer::tag('div', $rubricviewlink, array('class' => 'tii_links_container tii_disclosure_links'));
+        }
+
         return $output;
     }
 
@@ -950,6 +968,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         if (!$istutor && $config->usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
+                            // Update assignment in case rubric is not stored in Turnitin yet.
+                            $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
                             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                             $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box', '&nbsp;',

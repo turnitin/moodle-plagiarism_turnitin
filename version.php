@@ -6,6 +6,7 @@
  */
 
 $plugin->version =  2015040105;
+$plugin->release = "2.3+";
 $plugin->requires =  2012062500.00;
 $plugin->cron     = 300;
 $plugin->component = 'plagiarism_turnitin';

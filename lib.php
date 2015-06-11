@@ -2740,6 +2740,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.")", "PP_INSERT_SUB");
                 }
             }
+            
+            // Delete the tempfile.
+            if (!is_null($tempfile)) {
+                unlink($tempfile);
+            }
 
             // Add config field to show submissions have been made which we use to lock anonymous marking setting
             $configfield = new object();

@@ -1375,7 +1375,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $grades->rawgrade = $grade->grade;
 
                     // Check marking workflow state for assignments and only update gradebook if released.
-                    if ($CFG->branch >= 26 && $cm->modname == 'assign') {
+                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                         $gradesreleased = $DB->record_exists('assign_user_flags',
                                                                 array(
                                                                     'userid' => $userid,

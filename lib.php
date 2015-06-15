@@ -823,14 +823,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get post date
                 $postdate = 0;
                 if ($cm->modname != "forum") {
-                    if ($gradeitem = $DB->get_record(
-                            'grade_items',
-                            array(
-                                'iteminstance' => $cm->instance, 
-                                'itemmodule' => $cm->modname, 
-                                'itemnumber' => 0
-                            )
-                        )) {
+                    // Populate gradeitem query
+                    $queryarray = array(
+                                    'iteminstance' => $cm->instance,
+                                    'itemmodule' => $cm->modname,
+                                    'courseid' => $cm->course,
+                                    'itemnumber' => 0
+                                );
+
+                    if ($gradeitem = $DB->get_record('grade_items', $queryarray)) {
                         switch ($gradeitem->hidden) {
                             case 1:
                                 $postdate = strtotime('+1 month');
@@ -2393,7 +2394,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Update user's details on Turnitin.
         $user->edit_tii_user();
 
-        // Clean up old Turnitin submission files. This will only run on cron execution or for ajax file submissions.
+        // Clean up old Turnitin submission files.
         if ($itemid != 0 && $submissiontype == 'file' && $cm->modname != 'forum') {
             $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
         }
@@ -2761,7 +2762,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.")", "PP_INSERT_SUB");
                 }
             }
-            
+
             // Delete the tempfile.
             if (!is_null($tempfile)) {
                 unlink($tempfile);

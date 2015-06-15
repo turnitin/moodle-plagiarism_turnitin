@@ -2342,8 +2342,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if ($submissiontype == 'file') {
-            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
-                                                    array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
+            // If this is an assignment then we need to account for previous attempts so get other items ids.
+            if ($cm->modname == 'assign') {
+                $itemids = $DB->get_records('assign_submission', array(
+                                                                    'assignment' => $cm->instance,
+                                                                    'userid' => $userid
+                                                                    ), '', 'id');
+                list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
+                $itemidsinsql = ' itemid '.$itemidsinsql;
+                $params = array_merge(array($component, $userid), $itemidsparams);
+            } else {
+                $itemidsinsql = ' itemid = ? ';
+                $params = array($component, $userid, $itemid);
+            }
+
+            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND source IS NOT null AND ".$itemidsinsql,
+                                                    $params, 'id DESC', 'pathnamehash')) {
                 list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".

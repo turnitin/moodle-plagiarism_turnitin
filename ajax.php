@@ -112,6 +112,7 @@ switch ($action) {
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
 
             $user->join_user_to_class($coursedata->turnitin_cid);
+            $user->edit_tii_user();
 
             echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
         }

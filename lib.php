@@ -823,14 +823,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get post date
                 $postdate = 0;
                 if ($cm->modname != "forum") {
-                    if ($gradeitem = $DB->get_record(
-                            'grade_items',
-                            array(
-                                'iteminstance' => $cm->instance, 
-                                'itemmodule' => $cm->modname, 
-                                'itemnumber' => 0
-                            )
-                        )) {
+                    // Populate gradeitem query
+                    $queryarray = array(
+                                    'iteminstance' => $cm->instance,
+                                    'itemmodule' => $cm->modname,
+                                    'courseid' => $cm->course,
+                                    'itemnumber' => 0
+                                );
+
+                    if ($gradeitem = $DB->get_record('grade_items', $queryarray)) {
                         switch ($gradeitem->hidden) {
                             case 1:
                                 $postdate = strtotime('+1 month');
@@ -1374,7 +1375,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $grades->rawgrade = $grade->grade;
 
                     // Check marking workflow state for assignments and only update gradebook if released.
-                    if ($CFG->branch >= 26 && $cm->modname == 'assign') {
+                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                         $gradesreleased = $DB->record_exists('assign_user_flags',
                                                                 array(
                                                                     'userid' => $userid,
@@ -2341,8 +2342,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if ($submissiontype == 'file') {
-            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
-                                                    array($component, $userid, $itemid), 'id DESC', 'pathnamehash')) {
+            // If this is an assignment then we need to account for previous attempts so get other items ids.
+            if ($cm->modname == 'assign') {
+                $itemids = $DB->get_records('assign_submission', array(
+                                                                    'assignment' => $cm->instance,
+                                                                    'userid' => $userid
+                                                                    ), '', 'id');
+                list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
+                $itemidsinsql = ' itemid '.$itemidsinsql;
+                $params = array_merge(array($component, $userid), $itemidsparams);
+            } else {
+                $itemidsinsql = ' itemid = ? ';
+                $params = array($component, $userid, $itemid);
+            }
+
+            if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND source IS NOT null AND ".$itemidsinsql,
+                                                    $params, 'id DESC', 'pathnamehash')) {
                 list($notinsql, $notinparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', false);
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
@@ -2393,7 +2408,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Update user's details on Turnitin.
         $user->edit_tii_user();
 
-        // Clean up old Turnitin submission files. This will only run on cron execution or for ajax file submissions.
+        // Clean up old Turnitin submission files.
         if ($itemid != 0 && $submissiontype == 'file' && $cm->modname != 'forum') {
             $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
         }
@@ -2761,7 +2776,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.")", "PP_INSERT_SUB");
                 }
             }
-            
+
             // Delete the tempfile.
             if (!is_null($tempfile)) {
                 unlink($tempfile);

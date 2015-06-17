@@ -48,6 +48,20 @@
     display: block;
 }
 
+.tii_disclosure_links {
+    display:block;
+}
+
+.tii_disclosure_links .row_rubric_view {
+    float: none !important;
+    padding-left: 4px;
+}
+
+.tii_disclosure_links .row_rubric_view a {
+    width: 100%;
+    padding-left: 26px;
+}
+
 .tii_links_container a.rubric_view_pp_launch, .tii_links_container a.peermark_reviews_pp_launch {
     color:#000000;
 }

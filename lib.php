@@ -322,6 +322,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return '';
         }
 
+        // include JS needed for EULA and Rubric launching.
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
+        $PAGE->requires->js($jsurl);
+
+        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+
         // Show agreement.
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
@@ -344,16 +358,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // include JS needed for EULA and Rubric launching.
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
-        $PAGE->requires->js($jsurl);
-
         // Show EULA if necessary and we have a connection to Turnitin.
         if ($tiiconnection) {
             $user = new turnitintooltwo_user($USER->id, "Learner");
@@ -367,7 +371,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         array("class" => "pp_turnitin_eula_link"));
 
                 $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_ula_ignored' : '';
-                $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass, 
+                $ula = html_writer::tag('div', $ula_link, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass,
                                             'data-userid' => $user->id));
 
                 $noscriptula = html_writer::tag('noscript',
@@ -393,12 +397,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if ($config->usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
+
             // Update assignment in case rubric is not stored in Turnitin yet.
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                     $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                    '&action=rubricview&view_context=box', 
+                                                                    '&action=rubricview&view_context=box',
                                                     get_string('launchrubricview', 'turnitintooltwo'),
                                                     array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                             'title' => get_string('launchrubricview', 'turnitintooltwo'))).
@@ -545,6 +550,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $PAGE->requires->js($jsurl);
             $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
             $PAGE->requires->js($jsurl);
+
+            $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
 
             // Initialise vars for working out whether we are submitting.
             $submitting = false;

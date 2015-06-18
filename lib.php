@@ -331,8 +331,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
-        $PAGE->requires->js($jsurl);
 
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
 
@@ -405,7 +403,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box',
                                                     get_string('launchrubricview', 'turnitintooltwo'),
-                                                    array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
+                                                    array('class' => 'rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                             'title' => get_string('launchrubricview', 'turnitintooltwo'))).
                                                                 html_writer::tag('span', '',
                                                                 array('class' => 'launch_form', 'id' => 'rubric_view_form')),

@@ -1324,7 +1324,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get gradebook data.
                 switch ($cm->modname) {
                     case 'assign':
-                        $currentgrades = $DB->get_records('assign_grades', array('userid' => $userid, 'assignment' => $cm->instance), 'id DESC');
+
+                        // Query grades based on attempt number.
+                        $gradesquery = array('userid' => $userid, 'assignment' => $cm->instance);
+                        $attemptnumber = 0;
+                        if ($CFG->branch >= 25) {
+                            $usersubmissions = $DB->get_records('assign_submission', $gradesquery, 'attemptnumber DESC', 'attemptnumber', 0, 1);
+                            $usersubmission = current($usersubmissions);
+                            $attemptnumber = $usersubmission->attemptnumber;
+                            $gradesquery['attemptnumber'] = $attemptnumber;
+                        }
+
+                        $currentgrades = $DB->get_records('assign_grades', $gradesquery, 'id DESC');
                         $currentgrade = current($currentgrades);
                         break;
                     case 'workshop':
@@ -1356,6 +1367,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $grade->assignment = $cm->instance;
                             $grade->timecreated = time();
                             $grade->grader = $USER->id;
+                            $grade->attemptnumber = $attemptnumber;
                         }
                         $table = $cm->modname.'_grades';
                         break;

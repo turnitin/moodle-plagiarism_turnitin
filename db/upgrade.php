@@ -55,6 +55,8 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_default($table, $field5);
         }
 
+        upgrade_dm_successful_uploads();
+
         upgrade_plugin_savepoint(true, 2013081202, 'plagiarism', 'turnitin');
     }
 
@@ -78,7 +80,9 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                     $configfield->value = 1;
                     $configfield->plugin = 'plagiarism';
                     $configfield->name = 'turnitin_use_mod_'.$mod;
-                    $DB->insert_record('config_plugins', $configfield);
+                    if (!$DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod))) {
+                        $DB->insert_record('config_plugins', $configfield);
+                    }
                 }
             }
         }
@@ -149,5 +153,19 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014012413, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2015040106) {
+        upgrade_dm_successful_uploads();
+    }
+
     return $result;
+}
+
+function upgrade_dm_successful_uploads() {
+    global $DB, $CFG;
+
+    // Update successful submissions from Dan Marsden's plugin
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success' WHERE statuscode = '51'");
+
+    // Update error codes with submissions from Dan Marsden's plugin
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error' WHERE statuscode != 'success' AND statuscode != 'pending'");
 }

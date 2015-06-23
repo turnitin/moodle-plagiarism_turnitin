@@ -588,12 +588,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get plagiarism file info to check if file was previously submitted and has been modified.
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " userid = ? AND cm = ? AND identifier = ? AND ".$typefield." = ? ",
-                                            array($linkarray["userid"], $linkarray["cmid"], $identifier, $submissiontype));
+                                        " userid = ? AND cm = ? AND identifier = ? AND (".$typefield." = ? OR ".$typefield." IS NULL )",
+                                            array($linkarray["userid"], $linkarray["cmid"], $identifier, $submissiontype, ''));
                 $plagiarismfile = end($plagiarismfiles);
-
                 if (!empty($plagiarismfile)) {
-                    $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified) ? $submitting : false;
+                    $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified
+                                    && $plagiarismfile->lastmodified != 0) ? $submitting : false;
                 }
 
             } else if (!empty($linkarray["content"])) {
@@ -689,7 +689,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 if (!empty($plagiarismfile)) {
-                    $submitting = ($submission->timemodified > $plagiarismfile->lastmodified &&
+                    $submitting = (($submission->timemodified > $plagiarismfile->lastmodified
+                                        && $plagiarismfile->lastmodified != 0) &&
                                         $plagiarismfile->identifier != $identifier) ? true : false;
                 } else {
                     $submitting = true;

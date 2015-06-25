@@ -164,7 +164,7 @@ function upgrade_dm_successful_uploads() {
     global $DB, $CFG;
 
     // Update successful submissions from Dan Marsden's plugin
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success' WHERE statuscode = '51'");
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', lastmodified = ".time()." WHERE statuscode = '51'");
 
     // Update error codes with submissions from Dan Marsden's plugin
     $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error' WHERE statuscode != 'success' AND statuscode != 'pending'");

@@ -592,8 +592,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             array($linkarray["userid"], $linkarray["cmid"], $identifier, $submissiontype, ''));
                 $plagiarismfile = end($plagiarismfiles);
                 if (!empty($plagiarismfile)) {
-                    $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified
-                                    && $plagiarismfile->lastmodified != 0) ? $submitting : false;
+                    $submitting = ($file->get_timemodified() > $plagiarismfile->lastmodified) ? $submitting : false;
                 }
 
             } else if (!empty($linkarray["content"])) {
@@ -689,8 +688,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 if (!empty($plagiarismfile)) {
-                    $submitting = (($submission->timemodified > $plagiarismfile->lastmodified
-                                        && $plagiarismfile->lastmodified != 0) &&
+                    $submitting = ($submission->timemodified > $plagiarismfile->lastmodified &&
                                         $plagiarismfile->identifier != $identifier) ? true : false;
                 } else {
                     $submitting = true;

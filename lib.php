@@ -1548,7 +1548,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $assignment->setAuthorOriginalityAccess($modulepluginsettings["plagiarism_show_student_report"]);
-        $assignment->setResubmissionRule($modulepluginsettings["plagiarism_report_gen"]);
+        $assignment->setResubmissionRule((int)$modulepluginsettings["plagiarism_report_gen"]);
         $assignment->setBibliographyExcluded($modulepluginsettings["plagiarism_exclude_biblio"]);
         $assignment->setQuotedExcluded($modulepluginsettings["plagiarism_exclude_quoted"]);
         $assignment->setSmallMatchExclusionType($modulepluginsettings["plagiarism_exclude_matches"]);

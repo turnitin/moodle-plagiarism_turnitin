@@ -35,4 +35,8 @@ class turnitin_workshop {
 	public function user_enrolled_on_course($context, $userid) {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
+
+	public function set_content($linkarray, $moduleid) {
+		return $linkarray["content"];
+	}
 }

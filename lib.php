@@ -557,99 +557,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $identifier = '';
 
-            // Get Assignment submission data and account for draft submissions which may not be submitted
-            if ($cm->modname == 'assign') {
-                if (!empty($linkarray["file"])){
-                    $submission = $DB->get_record('assign_submission',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id,
-                                                        'id' => $file->get_itemid()));
-                } else {
-                    // This will need to be reworked when linkarray contains submission id.
-                    $submissions = $DB->get_records('assign_submission',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $moduledata->id));
-                    $submission = end($submissions);
-                }
-            }
-
-            // Check whether a user's submission needs to be sent to Turnitin via Ajax.
-            // Get File or Content information, for content only submit if it has been modified.
-            $itemid = 0;
+            // Get File or Content information.
             if (!empty($linkarray["file"])) {
                 $identifier = $file->get_pathnamehash();
-                $itemid = $file->get_itemid();
                 $submissiontype = 'file';
-
             } else if (!empty($linkarray["content"])) {
-
                 // Get turnitin text content details.
                 $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
-                switch ($cm->modname) {
-                    case 'assign':
-                        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                                    array('submission' => $submission->id), 'onlinetext');
-                        if (empty($moodletextsubmission)) {
-                            $content = '';
-                        } else {
-                            $content = $moodletextsubmission->onlinetext;
-                        }
-                        break;
-                    case 'workshop':
-                        $content = $linkarray["content"];
-                        break;
-                    case 'forum':
-                        static $discussionid;
-                        // Use query string id to check whether we are on forum home page.
-                        $querystrid = optional_param('id', 0, PARAM_INT);
-
-                        // Work out the discussion id from query string.
-                        if (empty($discussionid)) {
-                            $discussionid = optional_param('d', 0, PARAM_INT);
-                        }
-
-                        if (empty($discussionid)) {
-                            $reply   = optional_param('reply', 0, PARAM_INT);
-                            $edit    = optional_param('edit', 0, PARAM_INT);
-                            $delete  = optional_param('delete', 0, PARAM_INT);
-
-                            $parent = '';
-                            if ($reply != 0) {
-                                $parent = forum_get_post_full($reply);
-                            } else if ($edit != 0) {
-                                $parent = forum_get_post_full($edit);
-                            } else if ($delete != 0) {
-                                $parent = forum_get_post_full($delete);
-                            }
-
-                            if (!empty($parent)) {
-                                $discussionid = $parent->discussion;
-                            }
-                        }
-
-                        // Some forum types don't pass in certain values on main forum page.
-                        if ((empty($discussionid) || $querystrid != 0) &&
-                            ($forum->type == 'blog' || $forum->type == 'single')) {
-                            if (!$discussion = $DB->get_record_sql('SELECT FD.id
-                                                                    FROM {forum_posts} FP JOIN {forum_discussions} FD
-                                                                    ON FP.discussion = FD.id
-                                                                    WHERE FD.forum = ? AND FD.course = ?
-                                                                    AND FP.userid = ? AND FP.message LIKE ? ',
-                                                                    array($forum->id, $forum->course,
-                                                                        $linkarray["userid"], $linkarray["content"])
-                                                                    )) {
-                                print_error('notpartofdiscussion', 'forum');
-                            }
-                            $discussionid = $discussion->id;
-                        }
-
-                        $submission = $DB->get_record_select('forum_posts',
-                                                " userid = ? AND message LIKE ? AND discussion = ? ",
-                                                array($linkarray["userid"], $linkarray["content"], $discussionid));
-
-                        $itemid = $submission->id;
-                        $content = $linkarray["content"];
-                        break;
-                }
-
+                $content = $moduleobject->set_content($linkarray, $moduledata->id);
                 $identifier = sha1($content);
             }
 

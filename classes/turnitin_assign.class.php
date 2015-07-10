@@ -35,4 +35,16 @@ class turnitin_assign {
 	public function user_enrolled_on_course($context, $userid) {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
+
+	public function set_content($linkarray, $moduleid) {
+		// Get Assignment submission id as $linkarray does not contains submission id.
+        $submissions = $DB->get_records('assign_submission',
+                                array('userid' => $linkarray["userid"], 'assignment' => $moduleid));
+        $submission = end($submissions);
+
+        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                                    array('submission' => $submission->id), 'onlinetext');
+
+        return (empty($moodletextsubmission)) ? '' : $content = $moodletextsubmission->onlinetext;
+	}
 }

@@ -35,4 +35,8 @@ class turnitin_forum {
 	public function user_enrolled_on_course($context, $userid) {
 		return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
 	}
+
+	public function
+		return $linkarray["content"];
+    }
 }

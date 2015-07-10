@@ -19,7 +19,16 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out module specific code from plagiarism/turnitin/lib.php
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
 class turnitin_assign {
 
+	private $modname;
+
+	public function __construct() {
+		$this->modname = 'assign';
+	}
+
+	public function is_tutor($context) {
+		return has_capability('mod/'.$this->modname.':grade', $context);
+	}
 }

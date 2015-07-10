@@ -415,7 +415,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Load JS and CSS need by the page.
+     * Load JS and CSS needed by the page.
      */
     public function load_page_components() {
         global $PAGE;
@@ -526,20 +526,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
+        // Create module object
+        require_once('classes/turnitin_'.$cm->modname.'.php');
+        $moduleclass = "turnitin_$plugin";
+        $moduleobject = new $moduleclass;
+
         // Work out if logged in user is a tutor on this module.
         static $istutor;
-        switch ($cm->modname) {
-            case "forum":
-            case "workshop":
-                if (empty($istutor)) {
-                    $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
-                }
-                break;
-            default:
-                if (empty($istutor)) {
-                    $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
-                }
-                break;
+        if (empty($istutor)) {
+            $istutor = $moduleobject->is_tutor($context);
         }
 
         // Define the timestamp for updating Peermark Assignments.

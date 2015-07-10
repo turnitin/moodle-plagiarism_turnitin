@@ -414,6 +414,27 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $output;
     }
 
+    /**
+     * Load JS and CSS need by the page.
+     */
+    public function load_page_components() {
+        global $PAGE;
+
+        // Include Javascript.
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
+        $PAGE->requires->js($jsurl);
+
+        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+    }
+
 
     /**
      *
@@ -537,19 +558,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && !empty($linkarray["cmid"])) {
 
-            // Include Javascript.
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
-            $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
-            $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
-            $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
-            $PAGE->requires->js($jsurl);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
-            $PAGE->requires->js($jsurl);
-
-            $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+            $this->load_page_components();
 
             $identifier = '';
 

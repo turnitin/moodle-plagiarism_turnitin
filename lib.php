@@ -997,17 +997,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is killing
                         // this functionality. Have to check that user exists here first else there will be a fatal error.
                         if ($mdl_user = $DB->get_record('user', array('id' => $linkarray["userid"]))) {
-                            // We also need to check for security that they are actually on the Course.
-                            switch ($cm->modname) {
-                                case 'assign':
-                                case 'workshop':
-                                    $capability = 'mod/'.$cm->modname.':submit';
-                                    break;
-                                case 'forum':
-                                    $capability = 'mod/'.$cm->modname.':replypost';
-                                    break;
-                            }
-                            if (has_capability($capability, $context, $linkarray["userid"])) {
+                            // We need to check for security that the user is actually on the course.
+                            if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
                                 if ($user->user_agreement_accepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'),

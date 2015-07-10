@@ -31,4 +31,8 @@ class turnitin_forum {
 	public function is_tutor($context) {
 		return has_capability('plagiarism/turnitin:viewfullreport', $context);
 	}
+
+	public function user_enrolled_on_course($context, $userid) {
+		return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
+	}
 }

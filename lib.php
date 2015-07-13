@@ -2584,13 +2584,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $receipt->send_message($user->id, $message);
             }
 
-            return true;
-
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
-
-            $return["success"] = false;
-            $return["message"] = get_string('pp_submission_error', 'turnitintooltwo').' '.$e->getMessage();
 
             $plagiarismfile = new object();
             if ($submissionid != 0) {
@@ -2604,7 +2599,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->lastmodified = time();
             $plagiarismfile->submissiontype = $submissiontype;
             $plagiarismfile->errorcode = 0;
-            $plagiarismfile->errormsg = $return["message"];
+            $plagiarismfile->errormsg = get_string('pp_submission_error', 'turnitintooltwo').' '.$e->getMessage();
 
             if ($submissionid != 0) {
                 if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
@@ -2623,11 +2618,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
             mtrace('Course Module: '.$cm->id.'');
             mtrace('-------------------------');
-
-            return false;
         }
 
-        return $return;
+        return true;
     }
 
     /**

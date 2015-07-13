@@ -36,7 +36,7 @@ class turnitin_forum {
 		return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
 	}
 
-	public function
+	public function set_content($linkarray, $moduleid) {
 		return $linkarray["content"];
     }
 }

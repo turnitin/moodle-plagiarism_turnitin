@@ -19,7 +19,34 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out module specific code from plagiarism/turnitin/lib.php
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
 class turnitin_assign {
 
+	private $modname;
+
+	public function __construct() {
+		$this->modname = 'assign';
+	}
+
+	public function is_tutor($context) {
+		return has_capability('mod/'.$this->modname.':grade', $context);
+	}
+
+	public function user_enrolled_on_course($context, $userid) {
+		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+	}
+
+	public function set_content($linkarray, $moduleid) {
+		global $DB;
+
+		// Get Assignment submission id as $linkarray does not contains submission id.
+		$submissions = $DB->get_records('assign_submission',
+							array('userid' => $linkarray["userid"], 'assignment' => $moduleid));
+		$submission = end($submissions);
+
+        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                                    array('submission' => $submission->id), 'onlinetext');
+
+		return (empty($moodletextsubmission)) ? '' : $content = $moodletextsubmission->onlinetext;
+	}
 }

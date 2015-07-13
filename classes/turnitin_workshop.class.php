@@ -19,7 +19,24 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out module specific code from plagiarism/turnitin/lib.php
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
 class turnitin_workshop {
 
+	private $modname;
+
+	public function __construct() {
+		$this->modname = 'workshop';
+	}
+
+	public function is_tutor($context) {
+		return has_capability('plagiarism/turnitin:viewfullreport', $context);
+	}
+
+	public function user_enrolled_on_course($context, $userid) {
+		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+	}
+
+	public function set_content($linkarray, $moduleid) {
+		return $linkarray["content"];
+	}
 }

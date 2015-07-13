@@ -527,8 +527,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Create module object
-        require_once('classes/turnitin_'.$cm->modname.'.php');
-        $moduleclass = "turnitin_$plugin";
+        require_once('classes/turnitin_'.$cm->modname.'.class.php');
+        $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Work out if logged in user is a tutor on this module.
@@ -2290,8 +2290,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                                     if ($moduledata->teamsubmission) {
                                         require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                                        $context = context_course::instance($cm->course);
-                                        $assignment = new assign($context, $cm, null);
+                                        $course_context = context_course::instance($cm->course);
+                                        $assignment = new assign($course_context, $cm, null);
 
                                         $submissionsquery['userid'] = 0;
                                         $submissionsquery['groupid'] = 0;

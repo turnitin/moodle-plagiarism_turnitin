@@ -37,6 +37,8 @@ class turnitin_assign {
 	}
 
 	public function set_content($linkarray, $moduleid) {
+		global $DB;
+
 		// Get Assignment submission id as $linkarray does not contains submission id.
         $submissions = $DB->get_records('assign_submission',
                                 array('userid' => $linkarray["userid"], 'assignment' => $moduleid));

@@ -2071,7 +2071,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             if ($timemodified > $tiimodifieddate) {
                                 $result = $this->tii_submission($cm, $tiiassignmentid, $user, $identifier, $submissiontype,
-                                                                    $eventdata->itemid, $tempfilename, $eventdata->content, 'cron');
+                                                                    $eventdata->itemid, $tempfilename, $eventdata->content);
                             } else {
                                 $result = true;
                             }
@@ -2101,7 +2101,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                                 if ($this->check_if_submitting($cm, $eventdata->userid, $pathnamehash, 'file')) {
                                     $result = $result && $this->tii_submission($cm, $tiiassignmentid, $user, $pathnamehash, 'file',
-                                                                                $eventdata->itemid, '', '', 'cron');
+                                                                                $eventdata->itemid);
                                 } else {
                                     $result = $result && true;
                                 }
@@ -2249,7 +2249,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * If it's not then either edit submission or create new one depending on module settings.
      */
     public function tii_submission($cm, $tiiassignmentid, $user, $identifier, $submissiontype, $itemid = 0,
-                                    $title = '', $textcontent = '', $context = 'instant') {
+                                    $title = '', $textcontent = '') {
         global $CFG, $DB, $USER;
 
         $settings = $this->get_settings($cm->id);
@@ -2278,64 +2278,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $filename = $file->get_filename();
                     $textcontent = $file->get_content();
                 } else {
-                    // If we are submitting text_content via AJAX there will be no actual content passed in so we need to grab it.
-                    if ($textcontent == '') {
-                        switch ($cm->modname) {
-                            case 'assign':
-                                // Check whether submission is a group submission so we can get the correct content.
-                                // Note: This will not work if the submitting user is in multiple groups.
-                                $submissionsquery = array('assignment' => $cm->instance);
-                                $submissionsquery['userid'] = $user->id;
-                                if ($CFG->branch > 23) {
-                                    $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                                    if ($moduledata->teamsubmission) {
-                                        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                                        $course_context = context_course::instance($cm->course);
-                                        $assignment = new assign($course_context, $cm, null);
-
-                                        $submissionsquery['userid'] = 0;
-                                        $submissionsquery['groupid'] = 0;
-                                        if ($group = $assignment->get_submission_group($user->id)) {
-                                            $submissionsquery['groupid'] = $group->id;
-                                        }
-                                    }
-                                }
-
-                                // This will need to be reworked when linkarray in get_links() contains submission id.
-                                $moodlesubmissions = $DB->get_records('assign_submission', $submissionsquery, 'id, timemodified');
-                                $moodlesubmission = end($moodlesubmissions);
-                                $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                                            array('submission' => $moodlesubmission->id), 'onlinetext');
-                                $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = strip_tags($moodletextsubmission->onlinetext);
-                                break;
-                            case 'workshop':
-                                $moodlesubmission = $DB->get_record('workshop_submissions',
-                                                        array('workshopid' => $cm->instance,
-                                                                'authorid' => $user->id), 'title, content, timemodified');
-                                $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = strip_tags($moodlesubmission->content);
-                                $title = $moodlesubmission->title;
-                                break;
-                        }
-                    } else {
-                        switch ($cm->modname) {
-                            case 'assign':
-                                $moodlesubmission = $DB->get_record('assign_submission',
-                                                        array('assignment' => $cm->instance,
-                                                                    'userid' => $user->id,
-                                                                    'id' => $itemid), 'id, timemodified');
-                                $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = strip_tags($textcontent);
-                                break;
-                            case 'workshop':
-                                $moodlesubmission = $DB->get_record('workshop_submissions',
-                                                        array('workshopid' => $cm->instance,
-                                                                'authorid' => $user->id), 'title, content, timemodified');
-                                $timemodified = $moodlesubmission->timemodified;
-                                $textcontent = strip_tags($textcontent);
-                                break;
-                        }
+                    // Check when text submission was last modified.
+                    switch ($cm->modname) {
+                        case 'assign':
+                            $moodlesubmission = $DB->get_record('assign_submission',
+                                                    array('assignment' => $cm->instance,
+                                                                'userid' => $user->id,
+                                                                'id' => $itemid), 'id, timemodified');
+                            $timemodified = $moodlesubmission->timemodified;
+                            $textcontent = strip_tags($textcontent);
+                            break;
+                        case 'workshop':
+                            $moodlesubmission = $DB->get_record('workshop_submissions',
+                                                    array('workshopid' => $cm->instance,
+                                                            'authorid' => $user->id), 'title, content, timemodified');
+                            $timemodified = $moodlesubmission->timemodified;
+                            $textcontent = strip_tags($textcontent);
+                            break;
                     }
 
                     $title = (!empty($title)) ? $title : 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
@@ -2370,18 +2329,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     } else if ($previoussubmission->attempt >= 5) {
 
                         // Do not submit if 5 attempts have been made previously.
-                        if ($context == 'cron') {
-                            mtrace('-------------------------');
-                            mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
-                            mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                            mtrace('Course Module: '.$cm->id.'');
-                            mtrace('-------------------------');
+                        mtrace('-------------------------');
+                        mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
+                        mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                        mtrace('Course Module: '.$cm->id.'');
+                        mtrace('-------------------------');
 
-                            return true;
-                        }
-                        $return["success"] = false;
-                        $return["message"] = get_string('pastfiveattempts', 'turnitintooltwo');
-                        return $return;
+                        return true;
 
                     } else if ($settings["plagiarism_report_gen"] > 0) {
                         // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.
@@ -2485,19 +2439,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                if ($context == 'cron') {
-                    mtrace('-------------------------');
-                    mtrace(get_string('errorcode1', 'turnitintooltwo').':');
-                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                    mtrace('Course Module: '.$cm->id.'');
-                    mtrace('-------------------------');
+                mtrace('-------------------------');
+                mtrace(get_string('errorcode1', 'turnitintooltwo').':');
+                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                mtrace('Course Module: '.$cm->id.'');
+                mtrace('-------------------------');
 
-                    return true;
-                }
-
-                $return["success"] = false;
-                $return["message"] = get_string('errorcode1', 'turnitintooltwo');
-                return $return;
+                return true;
             }
         }
 
@@ -2527,19 +2475,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
 
-                if ($context == 'cron') {
-                    mtrace('-------------------------');
-                    mtrace(get_string('errorcode2', 'turnitintooltwo').':');
-                    mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                    mtrace('Course Module: '.$cm->id.'');
-                    mtrace('-------------------------');
+                mtrace('-------------------------');
+                mtrace(get_string('errorcode2', 'turnitintooltwo').':');
+                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+                mtrace('Course Module: '.$cm->id.'');
+                mtrace('-------------------------');
 
-                    return true;
-                }
-
-                $return["success"] = false;
-                $return["message"] = get_string('errorcode2', 'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
-                return $return;
+                return true;
             }
         }
 
@@ -2669,9 +2611,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $receipt->send_message($user->id, $message);
             }
 
-            if ($context == 'cron') {
-                return true;
-            }
+            return true;
 
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
@@ -2710,15 +2650,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $turnitincomms->handle_exceptions($e, $errorstring, false);
 
-            if ($context == 'cron') {
-                mtrace('-------------------------');
-                mtrace(get_string('pp_submission_error', 'turnitintooltwo').': '.$e->getMessage());
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
+            mtrace('-------------------------');
+            mtrace(get_string('pp_submission_error', 'turnitintooltwo').': '.$e->getMessage());
+            mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+            mtrace('Course Module: '.$cm->id.'');
+            mtrace('-------------------------');
 
-                return false;
-            }
+            return false;
         }
 
         return $return;

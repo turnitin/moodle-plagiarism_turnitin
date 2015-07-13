@@ -90,8 +90,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 continue;
             }
             $setting = substr($key,0,-5);
-            $default = $defaults[$setting];
-            $settings[$setting] = $default;
+            $settings[$setting] = $defaults[$setting];
         }
 
         return $settings;
@@ -2302,7 +2301,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 // Get submission method depending on whether there has been a previous submission.
-                $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt, errorcode';
+                $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt';
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
 
                 // Double check there is only one submission.
@@ -2312,31 +2311,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     'id', $submissionfields);
                 $previoussubmission = end($previoussubmissions);
                 if ($previoussubmission) {
-                    $errorcode = (int)$previoussubmission->errorcode;
-
                     // Don't submit if submission hasn't changed.
-                    if ($previoussubmission->statuscode == "success" &&
-                            (($submissiontype == 'file' && $timemodified <= $previoussubmission->lastmodified)
-                                || $submissiontype != 'file')) {
+                    if (in_array($previoussubmission->statuscode, array("success", "error"))
+                            && $timemodified <= $previoussubmission->lastmodified) {
                         return true;
-                    } else if ($previoussubmission->statuscode == "error" &&
-                                    $timemodified <= $previoussubmission->lastmodified) {
-
-                        $return["success"] = false;
-                        $return["message"] = get_string('errorcode'.$errorcode, 'turnitintooltwo');
-                        return $return;
-
-                    } else if ($previoussubmission->attempt >= 5) {
-
-                        // Do not submit if 5 attempts have been made previously.
-                        mtrace('-------------------------');
-                        mtrace(get_string('pastfiveattempts', 'turnitintooltwo').':');
-                        mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                        mtrace('Course Module: '.$cm->id.'');
-                        mtrace('-------------------------');
-
-                        return true;
-
                     } else if ($settings["plagiarism_report_gen"] > 0) {
                         // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.
                         $submissionid = $previoussubmission->id;
@@ -2351,7 +2329,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $submissionid = $this->create_new_tii_submission($cm, $user, $identifier, $submissiontype);
                         }
                     }
-
                 } else {
                     // Check if there is previous submission of text content which we will replace
                     $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
@@ -2359,7 +2336,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND ".$typefield." = ? ",
                                                 array($cm->id, $user->id, 'text_content'),
-                                                    'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
+                                                    'id, cm, externalid, identifier, statuscode, lastmodified, attempt', 0, 1)) {
 
                         $submissionid = $previoussubmission->id;
                         $apimethod = (is_null($previoussubmission->externalid) || $settings["plagiarism_report_gen"] == 0)
@@ -2388,7 +2365,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND identifier = ? ",
                                                     array($cm->id, $user->id, $identifier),
-                                                    'id DESC', 'id, cm, externalid, identifier, statuscode', 0, 1)) {
+                                                    'id DESC', 'id, cm, externalid, identifier, statuscode, attempt', 0, 1)) {
 
                     $previoussubmission = current($previoussubmissions);
                     if ($previoussubmission->statuscode == "success") {
@@ -2425,7 +2402,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile->identifier = $identifier;
                 $plagiarismfile->statuscode = 'error';
                 $plagiarismfile->errorcode = 1;
-                $plagiarismfile->attempt = 1;
+                $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
                 $plagiarismfile->lastmodified = time();
                 $plagiarismfile->submissiontype = $submissiontype;
 
@@ -2461,7 +2438,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $plagiarismfile->identifier = $identifier;
                 $plagiarismfile->statuscode = 'error';
                 $plagiarismfile->errorcode = 2;
-                $plagiarismfile->attempt = 1;
+                $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
                 $plagiarismfile->lastmodified = time();
                 $plagiarismfile->submissiontype = 'file';
 
@@ -2551,7 +2528,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->externalid = $newsubmissionid;
             $plagiarismfile->statuscode = 'success';
             $plagiarismfile->similarityscore = null;
-            $plagiarismfile->attempt = 1;
+            $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
             $plagiarismfile->transmatch = 0;
             $plagiarismfile->lastmodified = time();
             $plagiarismfile->submissiontype = $submissiontype;
@@ -2586,10 +2563,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            $return["success"] = true;
-            $return["message"] = get_string('submissionuploadsuccess', 'turnitintooltwo').'<br/>'.
-                                    get_string('turnitinsubmissionid', 'turnitintooltwo').': '.$newsubmissionid;
-
             //Send a message to the user's Moodle inbox with the digital receipt.
             if ( ! empty($CFG->smtphosts)) {
                 $receipt = new receipt_message();
@@ -2622,13 +2595,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile = new object();
             if ($submissionid != 0) {
                 $plagiarismfile->id = $submissionid;
-
-                // Get attempt no
-                $current_record = $DB->get_record('plagiarism_turnitin_files', array("id" => $submissionid));
-                $plagiarismfile->attempt = $current_record->attempt + 1;
-            } else {
-                $plagiarismfile->attempt = 1;
             }
+            $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
             $plagiarismfile->cm = $cm->id;
             $plagiarismfile->userid = $user->id;
             $plagiarismfile->identifier = $identifier;
@@ -2750,7 +2718,7 @@ function plagiarism_turnitin_event_mod_updated($eventdata) {
 }
 
 /**
- * Remove submission data and config settins for module.
+ * Remove submission data and config settings for module.
  *
  * @param type $eventdata
  * @return boolean true

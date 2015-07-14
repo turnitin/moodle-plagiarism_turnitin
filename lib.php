@@ -623,8 +623,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                             $eulashown = true;
                         }
-                    } else {
-                        $submitting = false;
                     }
                 }
             }
@@ -733,9 +731,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($istutor || $linkarray["userid"] == $USER->id) {
                             $output .= html_writer::tag('div',
                                             $OUTPUT->pix_icon('icon-sml',
-                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid, 'mod_turnitintooltwo',
-                                                array('class' => 'turnitin_paper_id')).
-                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid);
+                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid, 'mod_turnitintooltwo').
+                                                get_string('turnitinid', 'turnitintooltwo').': '.$plagiarismfile->externalid,
+                                            array('class' => 'turnitin_status'));
                         }
 
                         // Show Originality Report score and link.
@@ -869,18 +867,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 }
                             }
                         }
+
                     } else if ($plagiarismfile->statuscode == 'error') {
 
                         // Deal with legacy error issues.
-                        if (!isset($plagiarismfile->errorcode)) {
-                            $errorcode = 0;
-                            if ($submissiontype == 'file') {
-                                if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
-                                    $errorcode = 2;
-                                }
+                        $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
+                        if ($errorcode == 0 && $submissiontype == 'file') {
+                            if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                                $errorcode = 2;
                             }
-                        } else {
-                            $errorcode = $plagiarismfile->errorcode;
                         }
 
                         // Show error message if there is one.
@@ -897,7 +892,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 array('title' => $errorstring,
                                                                         'class' => 'tii_tooltip tii_error_icon'));
 
-                        // If logged in as a student, attach error text after icon.
+                        // Attach error text or resubmit link after icon depending on whether user is a student/teacher.
                         if (!$istutor) {
                             $output .= html_writer::tag('div', $erroricon.' '.$errorstring, array('class' => 'warning clear'));
                         } else {
@@ -906,7 +901,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
 
                 } else {
-                    // Add Error to show that user has not accepted EULA.
+                    // Add Error if the user has not accepted EULA.
+                    $eulaerror = "";
                     if (($linkarray["userid"] != $USER->id) && $istutor) {
                         // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is killing
                         // this functionality. Have to check that user exists here first else there will be a fatal error.
@@ -919,12 +915,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                             'mod_turnitintooltwo'),
                                                                             array('title' => get_string('notacceptedeula', 'turnitintooltwo'),
                                                                                     'class' => 'tii_tooltip tii_error_icon'));
-                                    $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+                                    $eulaerror = html_writer::tag('div', $erroricon, array('class' => 'clear'));
                                 }
                             }
                         }
                     }
+
+                    // Show Turnitin Pending status or EULA error.
+                    if (!empty($eulaerror)) {
+                        $output .= $eulaerror;
+                    } else {
+                        $statusstr = get_string('turnitinstatus', 'turnitintooltwo').': '.get_string('pending', 'turnitintooltwo');
+                        $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-sml', $statusstr, 'mod_turnitintooltwo').$statusstr,
+                                                    array('class' => 'turnitin_status'));
+                    }
                 }
+
+                $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 
             $output .= $OUTPUT->box_end(true);

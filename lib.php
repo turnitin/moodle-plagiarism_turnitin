@@ -526,7 +526,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Create module object
-        require_once('classes/turnitin_'.$cm->modname.'.class.php');
+        require_once('classes/modules/turnitin_'.$cm->modname.'.class.php');
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 

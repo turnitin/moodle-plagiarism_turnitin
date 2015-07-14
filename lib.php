@@ -925,15 +925,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
                 }
-
-                // Show error warning for submission
-                $output .= html_writer::tag('div', '', array('class' =>
-                                                'turnitin_submit_error warning clear turnitin_submit_error_'.$identifier));
-
-                // Show success of submission
-                $output .= html_writer::tag('div', '', array('class' =>
-                                                'turnitin_submit_success success clear turnitin_submit_success_'.$identifier));
-                $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 
             $output .= $OUTPUT->box_end(true);

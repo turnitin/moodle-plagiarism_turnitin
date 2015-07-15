@@ -36,6 +36,10 @@ class turnitin_workshop {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
 
+	public function get_author($itemid) {
+		return ;
+	}
+
 	public function set_content($linkarray, $moduleid) {
 		return $linkarray["content"];
 	}

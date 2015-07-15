@@ -36,6 +36,16 @@ class turnitin_assign {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
 
+	public function get_author($itemid) {
+		global $DB;
+
+		if ($submission = $DB->get_record('assign_submission', array('id' => $itemid), 'userid')) {
+			return $submission->userid;
+		} else {
+			return 0;
+		}
+	}
+
 	public function set_content($linkarray, $cm) {
 		global $DB;
 

@@ -698,28 +698,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $currentgradequery = false;
-                if ($istutor || $linkarray["userid"] == $USER->id) {
-                    if ($cm->modname == 'forum') {
-                        static $gradeitem;
-                        if (empty($gradeitem)) {
-                            $gradeitem = $DB->get_record('grade_items',
-                                            array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
-                        }
-                        if ($gradeitem) {
-                            $currentgradequery = $DB->get_record('grade_grades',
-                                                        array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                        }
-                    } else if ($cm->modname == 'workshop') {
-                        if ($gradeitem) {
-                            $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                        }
-                        $postdate = $moduledata->assessmentend;
-                    } else if ($cm->modname == 'assign') {
-                        if ($gradeitem) {
-                            $currentgradesquery = $DB->get_records('assign_grades',
-                                                    array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
-                            $currentgradequery = current($currentgradesquery);
-                        }
+                if ($cm->modname == 'forum') {
+                    static $gradeitem;
+                    if (empty($gradeitem)) {
+                        $gradeitem = $DB->get_record('grade_items',
+                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
+                    }
+                    if ($gradeitem) {
+                        $currentgradequery = $DB->get_record('grade_grades',
+                                                    array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                    }
+                } else if ($cm->modname == 'workshop') {
+                    if ($gradeitem) {
+                        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
+                    }
+                    $postdate = $moduledata->assessmentend;
+                } else if ($cm->modname == 'assign') {
+                    if ($gradeitem) {
+                        $currentgradesquery = $DB->get_records('assign_grades',
+                                                array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
+                        $currentgradequery = current($currentgradesquery);
                     }
                 }
 
@@ -810,6 +808,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box_end(true);
                         }
 
+                        // Show link to view rubric for student.
                         if (!$istutor && $config->usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
                             // Update assignment in case rubric is not stored in Turnitin yet.
                             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
@@ -2008,8 +2007,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         return true;
                     }
 
+                    // Get correct user. In assignments from Moodle 2.7, instructors could submit on behalf of students
+                    // but the eventdata->userid is still the user who made the submission.
+                    $submitter = $eventdata->userid;
+
+                    // Create module object.
+                    $moduleclass = "turnitin_".$this->cm->modname;
+                    $moduleobject = new $moduleclass;
+
+                    $author = $moduleobject->get_author($eventdata->itemid);
+                    $author = (!empty($author)) ? $author : $eventdata->userid;
+
                     // Join User to course.
-                    $user = new turnitintooltwo_user($eventdata->userid, 'Learner');
+                    $user = new turnitintooltwo_user($author, 'Learner');
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // Don't submit and remove from queue if a user has not accepted the eula.
@@ -2032,7 +2042,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Get content.
                             $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                                        'userid' => $eventdata->userid, 'id' => $eventdata->itemid), 'id');
+                                                        'userid' => $author, 'id' => $eventdata->itemid), 'id');
                             if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                         array('submission' => $moodlesubmission->id), 'onlinetext')) {
                                 $eventdata->content = $moodletextsubmission->onlinetext;
@@ -2041,7 +2051,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Get Files.
                             $eventdata->pathnamehashes = array();
                             $filesconditions = array('component' => 'assignsubmission_file',
-                                                    'itemid' => $moodlesubmission->id, 'userid' => $eventdata->userid);
+                                                    'itemid' => $moodlesubmission->id, 'userid' => $author);
                             if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
                                 foreach ($moodlefiles as $moodlefile) {
                                     $eventdata->pathnamehashes[] = $moodlefile->pathnamehash;
@@ -2092,7 +2102,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
 
                             if ($timemodified > $tiimodifieddate) {
-                                $result = $this->tii_submission($cm, $tiiassignmentid, $user, $identifier, $submissiontype,
+                                $result = $this->tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype,
                                                                     $eventdata->itemid, $tempfilename, $eventdata->content);
                             } else {
                                 $result = true;
@@ -2121,9 +2131,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $result = false;
                                 }
 
-                                if ($this->check_if_submitting($cm, $eventdata->userid, $pathnamehash, 'file')) {
-                                    $result = $result && $this->tii_submission($cm, $tiiassignmentid, $user, $pathnamehash, 'file',
-                                                                                $eventdata->itemid);
+                                if ($this->check_if_submitting($cm, $author, $pathnamehash, 'file')) {
+                                    $result = $result && $this->tii_submission($cm, $tiiassignmentid, $user, $submitter, $pathnamehash,
+                                                                                'file', $eventdata->itemid);
                                 } else {
                                     $result = $result && true;
                                 }
@@ -2270,7 +2280,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * If a file has already been submitted then check whether the identifier is the same, if it is do nothing.
      * If it's not then either edit submission or create new one depending on module settings.
      */
-    public function tii_submission($cm, $tiiassignmentid, $user, $identifier, $submissiontype, $itemid = 0,
+    public function tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype, $itemid = 0,
                                     $title = '', $textcontent = '') {
         global $CFG, $DB, $USER;
 
@@ -2519,11 +2529,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submission->setTitle($title);
         $submission->setAuthorUserId($user->tii_user_id);
 
-        if ($user->id == $USER->id && !is_siteadmin()) {
+        // Account for submission by teacher in assignment module.
+        if ($user->id == $submitter) {
             $submission->setSubmitterUserId($user->tii_user_id);
             $submission->setRole('Learner');
         } else {
-            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
+            $instructor = new turnitintooltwo_user($submitter, 'Instructor');
             $instructor->edit_tii_user();
 
             $submission->setSubmitterUserId($instructor->tii_user_id);
@@ -2547,6 +2558,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
             $plagiarismfile->cm = $cm->id;
             $plagiarismfile->userid = $user->id;
+            $plagiarismfile->submitter = $submitter;
             $plagiarismfile->identifier = $identifier;
             $plagiarismfile->externalid = $newsubmissionid;
             $plagiarismfile->statuscode = 'success';
@@ -2617,6 +2629,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
             $plagiarismfile->cm = $cm->id;
             $plagiarismfile->userid = $user->id;
+            $plagiarismfile->submitter = $submitter;
             $plagiarismfile->identifier = $identifier;
             $plagiarismfile->statuscode = 'error';
             $plagiarismfile->lastmodified = time();

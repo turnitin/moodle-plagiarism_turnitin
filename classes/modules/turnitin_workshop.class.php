@@ -39,4 +39,17 @@ class turnitin_workshop {
 	public function set_content($linkarray, $moduleid) {
 		return $linkarray["content"];
 	}
+
+	public function get_onlinetext($userid, $cm) {
+		global $DB;
+
+		$submission = $DB->get_recordset('workshop_submissions',
+											array('authorid' => $userid, 'workshopid' => $cm->instance),
+
+		$onlinetextdata = new stdClass();
+		$onlinetextdata->itemid = $submission->id;
+		$onlinetextdata->onlinetext = $submission->content;
+
+		return $onlinetextdata;
+	}
 }

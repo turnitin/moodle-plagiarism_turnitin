@@ -45,6 +45,8 @@ class turnitin_assign {
 	}
 
 	public function get_onlinetext($userid, $cm) {
+		global $DB;
+
 		// Get latest text content submitted as we do not have submission id.
 		$submission = $DB->get_recordset('assign_submission',
 										array('userid' => $userid, 'assignment' => $cm->instance),
@@ -53,6 +55,10 @@ class turnitin_assign {
 		$moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                 		                    array('submission' => $submission->id), 'onlinetext');
 
-		return array('itemid' => $submission->id, 'onlinetext' => $moodletextsubmission->onlinetext);
+		$onlinetextdata = new stdClass();
+		$onlinetextdata->itemid = $submission->id;
+		$onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
+
+		return $onlinetextdata;
 	}
 }

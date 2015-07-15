@@ -41,34 +41,46 @@ class turnitin_submission {
 	public function recreate_submission_event() {
 		global $DB;
 
-		$eventdata = new stdClass();
-		$eventdata->modulename = $this->cm->modname;
-        $eventdata->cmid = $this->cm->id;
-        $eventdata->courseid = $this->cm->course;
-        $eventdata->userid = $this->submissiondata->userid;
-
         // Some data depends on submission type.
 		switch ($this->submissiondata->submissiontype) {
 		 	case 'file':
 		 		$file = $this->get_file_info();
-		 		$eventdata->file = $file;
-		 		$eventdata->itemid = $file->get_itemid();
-		 		$eventdata->pathnamehashes = array($this->submissiondata->identifier);
-
-        		events_trigger('assessable_file_uploaded', $eventdata);
+		 		// Collate data and trigger new event for the cron to process.
+		        $params = array(
+		            'context' => context_module::instance($this->cm->id),
+		            'courseid' => $this->cm->course,
+		            'objectid' => $file->get_itemid(),
+		            'userid' => $this->submissiondata->userid,
+		            'other' => array(
+		                'content' => '',
+		                'pathnamehashes' => array($this->submissiondata->identifier)
+		            )
+		        );
+		        $event = $moduleobject->create_file_event($params);
+		        $event->set_legacy_files(array($this->submissiondata->identifier => $file));
+		        $event->trigger();
 		 		break;
 
 		 	case 'text_content':
-		 		// Create module object
+		 		// Create module object and get the actual text content
 		        $moduleclass = "turnitin_".$this->cm->modname;
 		        $moduleobject = new $moduleclass;
-
 		        $onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
 
-				$eventdata->itemid = $submission->id;
-				$eventdata->content = $moodletextsubmission->onlinetext;
-
-				events_trigger('assessable_content_uploaded', $eventdata);
+		        // Collate data and trigger new event for the cron to process.
+				$params = array(
+            		'context' => context_module::instance($this->cm->id),
+            		'courseid' => $this->cm->course,
+            		'objectid' => $submission->id,
+            		'userid' => $this->submissiondata->userid,
+            		'other' => array(
+                		'pathnamehashes' => '',
+                		'content' => trim($onlinetextdata->onlinetext),
+                		'format' => $onlinetextdata->onlineformat
+            		)
+        		);
+        		$event = $moduleobject->create_text_event($params);
+        		$event->trigger();
 		 		break;
 
 		 	case 'forum_post':
@@ -91,7 +103,7 @@ class turnitin_submission {
 				    }
 				}
 
-				$forum = $DB->get_record("forum", array("id" => $this->cm->instance))
+				$forum = $DB->get_record("forum", array("id" => $this->cm->instance));
 
 				// Some forum types don't pass in certain values on main forum page.
 				if ((empty($discussionid) || $querystrid != 0) && ($forum->type == 'blog' || $forum->type == 'single')) {
@@ -110,14 +122,26 @@ class turnitin_submission {
 				                                " userid = ? AND message LIKE ? AND discussion = ? ",
 				                                array($this->submissiondata->userid, $this->data['forumpost'], $discussionid));
 
-		 		$eventdata->itemid = $submission->id;
-		 		$eventdata->content = $this->data['forumpost'];
+				// Collate data and trigger new event for the cron to process.
+				$params = array(
+            		'context' => context_module::instance($this->cm->id),
+            		'courseid' => $this->cm->course,
+            		'objectid' => $submission->id,
+            		'userid' => $this->submissiondata->userid,
+            		'other' => array(
+                		'pathnamehashes' => '',
+                		'content' => trim($this->data['forumpost']),
+                		'discussionid' => $discussionid
+            		)
+        		);
+        		$event = \mod_forum\event\assessable_uploaded::create($params);
+        		$event->trigger();
 		 		break;
 		}
 
         $submissiondata = new stdClass();
         $submissiondata->id = $this->id;
-        $submissiondata->statuscode = 'resubmitted';
+        $submissiondata->statuscode = 'pending';
 
         return $DB->update_record('plagiarism_turnitin_files', $submissiondata);
 	}

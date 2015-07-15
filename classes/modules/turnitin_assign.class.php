@@ -36,7 +36,7 @@ class turnitin_assign {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
 
-	public function set_content($linkarray, $moduleid) {
+	public function set_content($linkarray, $cm) {
 		global $DB;
 
 		$onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
@@ -48,17 +48,25 @@ class turnitin_assign {
 		global $DB;
 
 		// Get latest text content submitted as we do not have submission id.
-		$submission = $DB->get_recordset('assign_submission',
-										array('userid' => $userid, 'assignment' => $cm->instance),
-										'id DESC', 'id', 0, 1);
-
+		$submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
+										array($userid, $cm->instance), 'id DESC', 'id', 0, 1);
+		$submission = end($submissions);
 		$moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                		                    array('submission' => $submission->id), 'onlinetext');
+                		                    array('submission' => $submission->id), 'onlinetext, onlineformat');
 
 		$onlinetextdata = new stdClass();
 		$onlinetextdata->itemid = $submission->id;
 		$onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
+		$onlinetextdata->onlineformat = $moodletextsubmission->onlineformat;
 
 		return $onlinetextdata;
+	}
+
+	public function create_file_event($params) {
+		return \assignsubmission_file\event\assessable_uploaded::create($params);
+	}
+
+	public function create_text_event($params) {
+		return \assignsubmission_onlinetext\event\assessable_uploaded::create($params);
 	}
 }

@@ -231,9 +231,12 @@ switch ($action) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
 
+        $forumdata = optional_param('forumdata', '', PARAM_ALPHAEXT);
+        $forumpost = optional_param('forumpost', '', PARAM_ALPHAEXT);
         $submissionid = required_param('submissionid', PARAM_INT);
-        $tiisubmission = new turnitin_submission($submission_id);
-        $eventdata = $tiisubmission->recreate_submission_event();
+
+        $tiisubmission = new turnitin_submission($submissionid, array($forumdata, $forumpost));
+        $tiisubmission->recreate_submission_event();
         break;
 }
 

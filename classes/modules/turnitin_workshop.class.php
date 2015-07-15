@@ -43,13 +43,22 @@ class turnitin_workshop {
 	public function get_onlinetext($userid, $cm) {
 		global $DB;
 
-		$submission = $DB->get_recordset('workshop_submissions',
-											array('authorid' => $userid, 'workshopid' => $cm->instance),
+		$submission = $DB->get_record('workshop_submissions',
+										array('authorid' => $userid, 'workshopid' => $cm->instance));
 
 		$onlinetextdata = new stdClass();
 		$onlinetextdata->itemid = $submission->id;
 		$onlinetextdata->onlinetext = $submission->content;
+		$onlinetextdata->onlineformat = $moodletextsubmission->contentformat;
 
 		return $onlinetextdata;
+	}
+
+	public function create_file_event($params) {
+		return \mod_workshop\event\assessable_uploaded::create($params);
+	}
+
+	public function create_text_event($params) {
+		return \mod_workshop\event\assessable_uploaded::create($params);
 	}
 }

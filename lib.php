@@ -552,10 +552,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $this->load_page_components();
 
             $identifier = '';
+            $itemid = 0;
 
             // Get File or Content information.
             if (!empty($linkarray["file"])) {
                 $identifier = $file->get_pathnamehash();
+                $itemid = $file->get_itemid();
                 $submissiontype = 'file';
             } else if (!empty($linkarray["content"])) {
                 // Get turnitin text content details.
@@ -567,6 +569,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Group submissions where all students have to submit sets userid to 0;
             if ($linkarray['userid'] == 0 && !$istutor) {
                 $linkarray['userid'] = $USER->id;
+            }
+
+            // Get correct user id that submission is for rather than who submitted, this only affects file submissions
+            // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
+            if ($itemid != 0) {
+                $author = $moduleobject->get_author($itemid);
+                $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
             }
 
             $output .= $OUTPUT->box_start('tii_links_container');

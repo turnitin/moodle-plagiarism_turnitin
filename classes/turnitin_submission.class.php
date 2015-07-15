@@ -41,6 +41,10 @@ class turnitin_submission {
 	public function recreate_submission_event() {
 		global $DB;
 
+		// Create module object.
+        $moduleclass = "turnitin_".$this->cm->modname;
+        $moduleobject = new $moduleclass;
+
         // Some data depends on submission type.
 		switch ($this->submissiondata->submissiontype) {
 		 	case 'file':
@@ -62,10 +66,8 @@ class turnitin_submission {
 		 		break;
 
 		 	case 'text_content':
-		 		// Create module object and get the actual text content
-		        $moduleclass = "turnitin_".$this->cm->modname;
-		        $moduleobject = new $moduleclass;
-		        $onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
+		 		// Get the actual text content.
+		 		$onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
 
 		        // Collate data and trigger new event for the cron to process.
 				$params = array(

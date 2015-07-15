@@ -1939,7 +1939,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function event_handler($eventdata) {
         global $DB, $CFG;
 
-        print_r($eventdata);
         $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
 
         // Initialise plugin class.

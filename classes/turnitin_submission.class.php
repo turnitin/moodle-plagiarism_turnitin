@@ -22,13 +22,15 @@
 class turnitin_submission {
 
 	private $id;
+	private $data;
 	private $submissiondata;
 	private $cm;
 
-	public function __construct($id) {
+	public function __construct($id, $data = array()) {
 		global $DB;
 
 		$this->id = $id;
+		$this->data = $data;
 		$this->submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $id));
 		$this->cm = get_coursemodule_from_id('', $this->submissiondata->cm);
 	}
@@ -58,7 +60,7 @@ class turnitin_submission {
 
 		 	case 'text_content':
 		 		// Create module object
-		        $moduleclass = "turnitin_".$cm->modname;
+		        $moduleclass = "turnitin_".$this->cm->modname;
 		        $moduleobject = new $moduleclass;
 
 		        $onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
@@ -70,9 +72,46 @@ class turnitin_submission {
 		 		break;
 
 		 	case 'forum_post':
-		 		//TODO: Get forum text and populate the following fields
-		 		//$eventdata->itemid
-		 		//$eventdata->content
+		 		// Get the forum submission id - unfortunately this is rather complex
+		 		// as the forum db tables are strangely organised.
+				list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $this->data['forumdata']);
+
+				if (empty($discussionid)) {
+				    $parent = '';
+				    if ($reply != 0) {
+				        $parent = forum_get_post_full($reply);
+				    } else if ($edit != 0) {
+				        $parent = forum_get_post_full($edit);
+				    } else if ($delete != 0) {
+				        $parent = forum_get_post_full($delete);
+				    }
+
+				    if (!empty($parent)) {
+				        $discussionid = $parent->discussion;
+				    }
+				}
+
+				$forum = $DB->get_record("forum", array("id" => $this->cm->instance))
+
+				// Some forum types don't pass in certain values on main forum page.
+				if ((empty($discussionid) || $querystrid != 0) && ($forum->type == 'blog' || $forum->type == 'single')) {
+				    $discussion = $DB->get_record_sql('SELECT FD.id
+				                                                FROM {forum_posts} FP JOIN {forum_discussions} FD
+				                                                ON FP.discussion = FD.id
+				                                                WHERE FD.forum = ? AND FD.course = ?
+				                                                AND FP.userid = ? AND FP.message LIKE ? ',
+				                                                array($forum->id, $forum->course,
+				                                                    $this->submissiondata->userid, $this->data['forumpost'])
+				                                                );
+				    $discussionid = $discussion->id;
+				}
+
+				$submission = $DB->get_record_select('forum_posts',
+				                                " userid = ? AND message LIKE ? AND discussion = ? ",
+				                                array($this->submissiondata->userid, $this->data['forumpost'], $discussionid));
+
+		 		$eventdata->itemid = $submission->id;
+		 		$eventdata->content = $this->data['forumpost'];
 		 		break;
 		}
 

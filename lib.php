@@ -329,17 +329,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return '';
         }
 
-        // include JS needed for EULA and Rubric launching.
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
-        $PAGE->requires->js($jsurl);
-
-        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+        $this->load_page_components();
 
         // Show agreement.
         if (!empty($config->agreement)) {
@@ -906,6 +896,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= html_writer::tag('div', $erroricon.' '.get_string('resubmittoturnitin', 'turnitintooltwo'),
                                                         array('class' => 'clear pp_resubmit_link',
                                                                 'id' => 'pp_resubmit_'.$plagiarismfile->id));
+
                             $output .= html_writer::tag('div',
                                                         $OUTPUT->pix_icon('loader',
                                                                         get_string('resubmitting', 'turnitintooltwo'), 'mod_turnitintooltwo').
@@ -915,6 +906,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $statusstr = get_string('turnitinstatus', 'turnitintooltwo').': '.get_string('pending', 'turnitintooltwo');
                             $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-sml', $statusstr, 'mod_turnitintooltwo').$statusstr,
                                                         array('class' => 'turnitin_status hidden'));
+
+                            // Show hidden data for potential forum post resubmissions
+                            if ($cm->modname == 'forum') {
+                                $output .= html_writer::tag('div', $linkarray["content"], 
+                                                            array('class' => 'hidden', 'id' => 'content_'.$plagiarismfile->id));
+
+                                // Get forum data from the query string as we'll need this to recreate submission event.
+                                $querystrid = optional_param('id', 0, PARAM_INT);
+                                $discussionid = optional_param('d', 0, PARAM_INT);
+                                $reply   = optional_param('reply', 0, PARAM_INT);
+                                $edit    = optional_param('edit', 0, PARAM_INT);
+                                $delete  = optional_param('delete', 0, PARAM_INT);
+                                $output .= html_writer::tag('div', $querystrid.'_'.$discussionid.'_'.$reply.'_'.$edit.'_'.$delete,
+                                                            array('class' => 'hidden', 'id' => 'forumdata_'.$plagiarismfile->id));
+                            }
                         }
                     }
 

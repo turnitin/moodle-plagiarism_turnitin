@@ -39,14 +39,20 @@ class turnitin_assign {
 	public function set_content($linkarray, $moduleid) {
 		global $DB;
 
-		// Get Assignment submission id as $linkarray does not contains submission id.
-		$submissions = $DB->get_records('assign_submission',
-							array('userid' => $linkarray["userid"], 'assignment' => $moduleid));
-		$submission = end($submissions);
+		$onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
 
-        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                    array('submission' => $submission->id), 'onlinetext');
+		return (empty($onlinetextdata->onlinetext)) ? '' : $onlinetextdata->onlinetext;
+	}
 
-		return (empty($moodletextsubmission)) ? '' : $content = $moodletextsubmission->onlinetext;
+	public function get_onlinetext($userid, $cm) {
+		// Get latest text content submitted as we do not have submission id.
+		$submission = $DB->get_recordset('assign_submission',
+										array('userid' => $userid, 'assignment' => $cm->instance),
+										'id DESC', 'id', 0, 1);
+
+		$moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                		                    array('submission' => $submission->id), 'onlinetext');
+
+		return array('itemid' => $submission->id, 'onlinetext' => $moodletextsubmission->onlinetext);
 	}
 }

@@ -225,6 +225,16 @@ switch ($action) {
         // Update the user using the above object
         $DB->update_record('turnitintooltwo_users', $eula_user, $bulk=false);
         break;
+
+    case "resubmit_event":
+        if (!confirm_sesskey()) {
+            throw new moodle_exception('invalidsesskey', 'error');
+        }
+
+        $submissionid = required_param('submissionid', PARAM_INT);
+        $tiisubmission = new turnitin_submission($submission_id);
+        $eventdata = $tiisubmission->recreate_submission_event();
+        break;
 }
 
 if (!empty($return)) {

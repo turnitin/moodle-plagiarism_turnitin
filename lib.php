@@ -40,6 +40,14 @@ require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php'
 require_once(__DIR__."/turnitinplugin_view.class.php");
 require_once($CFG->dirroot.'/mod/turnitintooltwo/classes/digitalreceipt/receipt_message.php');
 
+// Include plugin classes
+require_once('classes/turnitin_submission.class.php');
+
+// Include supported module specific code
+require_once('classes/modules/turnitin_assign.class.php');
+require_once('classes/modules/turnitin_forum.class.php');
+require_once('classes/modules/turnitin_workshop.class.php');
+
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
@@ -526,7 +534,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Create module object
-        require_once('classes/modules/turnitin_'.$cm->modname.'.class.php');
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 
@@ -563,7 +570,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             } else if (!empty($linkarray["content"])) {
                 // Get turnitin text content details.
                 $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
-                $content = $moduleobject->set_content($linkarray, $moduledata->id);
+                $content = $moduleobject->set_content($linkarray, $cm);
                 $identifier = sha1($content);
             }
 
@@ -896,7 +903,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!$istutor) {
                             $output .= html_writer::tag('div', $erroricon.' '.$errorstring, array('class' => 'warning clear'));
                         } else {
-                            $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
+                            $output .= html_writer::tag('div', $erroricon.' '.get_string('resubmittoturnitin', 'turnitintooltwo'),
+                                                        array('class' => 'clear pp_resubmit_link',
+                                                                'id' => 'pp_resubmit_'.$plagiarismfile->id));
+                            $output .= html_writer::tag('div',
+                                                        $OUTPUT->pix_icon('loader',
+                                                                        get_string('resubmitting', 'turnitintooltwo'), 'mod_turnitintooltwo').
+                                                                            get_string('resubmitting', 'turnitintooltwo'),
+                                                        array('class' => 'pp_resubmitting hidden'));
+                            // Pending status for after resubmission.
+                            $statusstr = get_string('turnitinstatus', 'turnitintooltwo').': '.get_string('pending', 'turnitintooltwo');
+                            $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-sml', $statusstr, 'mod_turnitintooltwo').$statusstr,
+                                                        array('class' => 'turnitin_status hidden'));
                         }
                     }
 
@@ -1914,6 +1932,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function event_handler($eventdata) {
         global $DB, $CFG;
+
+        print_r($eventdata);
         $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
 
         // Initialise plugin class.

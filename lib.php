@@ -29,24 +29,29 @@ global $tiipp;
 $tiipp = new stdClass();
 $tiipp->in_use = true;
 
-// Get global class.
-require_once($CFG->dirroot.'/plagiarism/lib.php');
-require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
+// Required classes from Moodle.
 if ($CFG->branch < 28) {
     require_once($CFG->libdir.'/pluginlib.php');
 }
 require_once($CFG->libdir.'/gradelib.php');
+
+// Get global class.
+require_once($CFG->dirroot.'/plagiarism/lib.php');
+
+// Require classes from mod/turnitintooltwo
+require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
-require_once(__DIR__."/turnitinplugin_view.class.php");
 require_once($CFG->dirroot.'/mod/turnitintooltwo/classes/digitalreceipt/receipt_message.php');
 
 // Include plugin classes
-require_once('classes/turnitin_submission.class.php');
+require_once(__DIR__."/turnitinplugin_view.class.php");
+require_once(__DIR__.'/classes/turnitin_submission.class.php');
+require_once(__DIR__.'/classes/turnitin_comms.class.php');
 
 // Include supported module specific code
-require_once('classes/modules/turnitin_assign.class.php');
-require_once('classes/modules/turnitin_forum.class.php');
-require_once('classes/modules/turnitin_workshop.class.php');
+require_once(__DIR__.'/classes/modules/turnitin_assign.class.php');
+require_once(__DIR__.'/classes/modules/turnitin_forum.class.php');
+require_once(__DIR__.'/classes/modules/turnitin_workshop.class.php');
 
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
@@ -280,7 +285,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Initially only being used if a student is logged in before checking whether they have accepted the EULA.
      */
     public function test_turnitin_connection() {
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $tiiapi = $turnitincomms->initialise_api();
 
         $class = new TiiClass();
@@ -380,7 +385,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if (!empty($ula)) {
                 $output .= $ula.$noscriptula;
 
-                $turnitincomms = new turnitintooltwo_comms();
+                $turnitincomms = new turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 $customdata = array("disable_form_change_checker" => true,
@@ -619,7 +624,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!empty($eula)) {
                             $output .= $eula;
 
-                            $turnitincomms = new turnitintooltwo_comms();
+                            $turnitincomms = new turnitin_comms();
                             $turnitincall = $turnitincomms->initialise_api();
 
                             $customdata = array("disable_form_change_checker" => true,
@@ -982,7 +987,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Get the submission ids from Turnitin that have been updated.
@@ -1038,7 +1043,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -1339,7 +1344,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $assignment = new TiiAssignment();
@@ -1471,8 +1476,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($gradeitem = $DB->get_record(
                                             'grade_items',
                                             array(
-                                                'iteminstance' => $cm->instance, 
-                                                'itemmodule' => $cm->modname, 
+                                                'iteminstance' => $cm->instance,
+                                                'itemmodule' => $cm->modname,
                                                 'courseid' => $cm->course)
                                             )) {
 
@@ -1687,7 +1692,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                         'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course))) {
                             // 1 means grade is always hidden, 0 means it's never hidden so we make it the same as start date.
                             // Otherwise there is a hidden until date which we use as the post date.
-                            // From 2.6, if grading markflow is enabled and no grades have been released, 
+                            // From 2.6, if grading markflow is enabled and no grades have been released,
                             // we will use due date +4 weeks.
                             switch ($gradeitem->hidden) {
                                 case 1:
@@ -1794,7 +1799,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             foreach ($submissionbatches as $submissionsbatch) {
 
                 // Initialise Comms Object.
-                $turnitincomms = new turnitintooltwo_comms();
+                $turnitincomms = new turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 try {
@@ -1863,7 +1868,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     private function get_course_id_from_assignment_id($assignmentid) {
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -2024,7 +2029,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submitter = $eventdata->userid;
 
                     // Create module object.
-                    $moduleclass = "turnitin_".$this->cm->modname;
+                    $moduleclass = "turnitin_".$cm->modname;
                     $moduleobject = new $moduleclass;
 
                     $author = $moduleobject->get_author($eventdata->itemid);
@@ -2248,7 +2253,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if (!empty($oldfiles)) {
                     // Initialise Comms Object.
-                    $turnitincomms = new turnitintooltwo_comms();
+                    $turnitincomms = new turnitin_comms();
                     $turnitincall = $turnitincomms->initialise_api();
 
                     foreach ($oldfiles as $oldfile) {
@@ -2533,7 +2538,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submission->setSubmissionDataPath($tempfile);
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -2654,7 +2659,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private function delete_tii_submission($submissionid) {
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $submission = new TiiSubmission();

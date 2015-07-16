@@ -2031,17 +2031,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user = new turnitintooltwo_user($author, 'Learner');
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
-                    // Don't submit and remove from queue if a user has not accepted the eula.
-                    if ($user->user_agreement_accepted != 1) {
-                        mtrace('-------------------------');
-                        mtrace(get_string('notacceptedeula', 'turnitintooltwo'));
-                        mtrace(get_string('eventremoved', 'turnitintooltwo').':');
-                        mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                        mtrace('Course Module: '.$cm->id);
-                        mtrace('-------------------------');
-                        return true;
-                    }
-
                     $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
 
                     if ((int)$tiiassignmentid > 0) {
@@ -2284,6 +2273,42 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
     }
 
+    public function save_failed_submission($cm, $user, $submissionid, $identifier, $submissiontype
+                                            $errorcode, $previoussubmission) {
+        global $DB;
+
+        $plagiarismfile = new object();
+        if ($submissionid != 0) {
+            $plagiarismfile->id = $submissionid;
+        }
+        $plagiarismfile->cm = $cm->id;
+        $plagiarismfile->userid = $user->id;
+        $plagiarismfile->identifier = $identifier;
+        $plagiarismfile->statuscode = 'error';
+        $plagiarismfile->errorcode = $errorcode;
+        $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
+        $plagiarismfile->lastmodified = time();
+        $plagiarismfile->submissiontype = $submissiontype;
+
+        if ($submissionid != 0) {
+            if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
+            }
+        } else {
+            if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
+            }
+        }
+
+        mtrace('-------------------------');
+        mtrace(get_string('errorcode'.$errorcode, 'turnitintooltwo').':');
+        mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+        mtrace('Course Module: '.$cm->id.'');
+        mtrace('-------------------------');
+
+        return true;
+    }
+
     /**
      * If there is no submission record then we are creating one. Text content should be submitted.
      * If a file has already been submitted then check whether the identifier is the same, if it is do nothing.
@@ -2429,79 +2454,31 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 break;
         }
 
-        // Do not submit if this is text_content and we're not accepting anything and
-        // content is less than 20 words or 100 characters.
-        if ($submissiontype != 'file') {
-            $content = explode(' ', $textcontent);
-            if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
-                    (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
-                $plagiarismfile = new object();
-                if ($submissionid != 0) {
-                    $plagiarismfile->id = $submissionid;
-                }
-                $plagiarismfile->cm = $cm->id;
-                $plagiarismfile->userid = $user->id;
-                $plagiarismfile->identifier = $identifier;
-                $plagiarismfile->statuscode = 'error';
-                $plagiarismfile->errorcode = 1;
-                $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
-                $plagiarismfile->lastmodified = time();
-                $plagiarismfile->submissiontype = $submissiontype;
+        // Take care of any errors from plugin side.
+        $errorcode = 0;
 
-                if ($submissionid != 0) {
-                    if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                        turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
-                    }
-                } else {
-                    if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                        turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
-                    }
-                }
-
-                mtrace('-------------------------');
-                mtrace(get_string('errorcode1', 'turnitintooltwo').':');
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-
-                return true;
-            }
+        // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
+        $content = explode(' ', $textcontent);
+        if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
+                (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
+            $errorcode = 1;
         }
 
         // Check file is less than maximum allowed size.
         if ($submissiontype == 'file') {
             if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
-                $plagiarismfile = new object();
-                if ($submissionid != 0) {
-                    $plagiarismfile->id = $submissionid;
-                }
-                $plagiarismfile->cm = $cm->id;
-                $plagiarismfile->userid = $user->id;
-                $plagiarismfile->identifier = $identifier;
-                $plagiarismfile->statuscode = 'error';
-                $plagiarismfile->errorcode = 2;
-                $plagiarismfile->attempt = (!empty($previoussubmission)) ? $previoussubmission->attempt + 1 : 1;
-                $plagiarismfile->lastmodified = time();
-                $plagiarismfile->submissiontype = 'file';
-
-                if ($submissionid != 0) {
-                    if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                        turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_UPDATE_SUB_ERROR");
-                    }
-                } else {
-                    if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                        turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$user->id.") - ", "PP_INSERT_SUB_ERROR");
-                    }
-                }
-
-                mtrace('-------------------------');
-                mtrace(get_string('errorcode2', 'turnitintooltwo').':');
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-
-                return true;
+                $errorcode = 2;
             }
+        }
+
+        // Don't submit if a user has not accepted the eula.
+        if ($user->user_agreement_accepted != 1) {
+            $errorcode = 3;
+        }
+
+        if ($errorcode != 0) {
+            return $this->save_failed_submission($cm, $user, $submissionid, $identifier,
+                        $submissiontype, $errorcode, $previoussubmission);
         }
 
         // Read the stored file/content into a temp file for submitting.

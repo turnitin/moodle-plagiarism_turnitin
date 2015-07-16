@@ -977,6 +977,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $output .= $OUTPUT->box_end(true);
         }
 
+        $output .= html_writer::tag('span', '
+                    <!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').' -->');
+
         return $output;
     }
 

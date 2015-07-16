@@ -23,13 +23,19 @@
 class turnitin_assign {
 
 	private $modname;
+	public $grades_table;
 
 	public function __construct() {
 		$this->modname = 'assign';
+		$this->grades_table = 'assign_grades';
 	}
 
 	public function is_tutor($context) {
-		return has_capability('mod/'.$this->modname.':grade', $context);
+		return has_capability($this->get_tutor_capability(), $context);
+	}
+
+	public function get_tutor_capability() {
+		return 'mod/'.$this->modname.':grade';
 	}
 
 	public function user_enrolled_on_course($context, $userid) {

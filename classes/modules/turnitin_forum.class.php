@@ -36,7 +36,15 @@ class turnitin_forum {
 		return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
 	}
 
+	public function get_author($itemid) {
+		return ;
+	}
+
 	public function set_content($linkarray, $moduleid) {
 		return $linkarray["content"];
     }
+
+    public function create_file_event($params) {
+		return \mod_forum\event\assessable_uploaded::create($params);
+	}
 }

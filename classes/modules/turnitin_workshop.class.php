@@ -20,33 +20,49 @@
  */
 
 // TODO: Split out all module specific code from plagiarism/turnitin/lib.php
-class turnitin_assign {
+class turnitin_workshop {
 
 	private $modname;
 
 	public function __construct() {
-		$this->modname = 'assign';
+		$this->modname = 'workshop';
 	}
 
 	public function is_tutor($context) {
-		return has_capability('mod/'.$this->modname.':grade', $context);
+		return has_capability('plagiarism/turnitin:viewfullreport', $context);
 	}
 
 	public function user_enrolled_on_course($context, $userid) {
 		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
 	}
 
+	public function get_author($itemid) {
+		return ;
+	}
+
 	public function set_content($linkarray, $moduleid) {
+		return $linkarray["content"];
+	}
+
+	public function get_onlinetext($userid, $cm) {
 		global $DB;
 
-		// Get Assignment submission id as $linkarray does not contains submission id.
-		$submissions = $DB->get_records('assign_submission',
-							array('userid' => $linkarray["userid"], 'assignment' => $moduleid));
-		$submission = end($submissions);
+		$submission = $DB->get_record('workshop_submissions',
+										array('authorid' => $userid, 'workshopid' => $cm->instance));
 
-        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                    array('submission' => $submission->id), 'onlinetext');
+		$onlinetextdata = new stdClass();
+		$onlinetextdata->itemid = $submission->id;
+		$onlinetextdata->onlinetext = $submission->content;
+		$onlinetextdata->onlineformat = $moodletextsubmission->contentformat;
 
-		return (empty($moodletextsubmission)) ? '' : $content = $moodletextsubmission->onlinetext;
+		return $onlinetextdata;
+	}
+
+	public function create_file_event($params) {
+		return \mod_workshop\event\assessable_uploaded::create($params);
+	}
+
+	public function create_text_event($params) {
+		return \mod_workshop\event\assessable_uploaded::create($params);
 	}
 }

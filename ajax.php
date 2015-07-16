@@ -225,6 +225,19 @@ switch ($action) {
         // Update the user using the above object
         $DB->update_record('turnitintooltwo_users', $eula_user, $bulk=false);
         break;
+
+    case "resubmit_event":
+        if (!confirm_sesskey()) {
+            throw new moodle_exception('invalidsesskey', 'error');
+        }
+
+        $forumdata = optional_param('forumdata', '', PARAM_ALPHAEXT);
+        $forumpost = optional_param('forumpost', '', PARAM_ALPHAEXT);
+        $submissionid = required_param('submissionid', PARAM_INT);
+
+        $tiisubmission = new turnitin_submission($submissionid, array($forumdata, $forumpost));
+        $tiisubmission->recreate_submission_event();
+        break;
 }
 
 if (!empty($return)) {

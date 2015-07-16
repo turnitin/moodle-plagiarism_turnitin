@@ -2276,7 +2276,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
     }
 
-    public function save_failed_submission($cm, $user, $submissionid, $identifier, $submissiontype
+    public function save_failed_submission($cm, $user, $submissionid, $identifier, $submissiontype,
                                             $errorcode, $previoussubmission) {
         global $DB;
 

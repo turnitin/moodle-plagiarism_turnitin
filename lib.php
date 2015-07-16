@@ -898,8 +898,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                         'class' => 'tii_tooltip tii_error_icon'));
 
                         // Attach error text or resubmit link after icon depending on whether user is a student/teacher.
+                        // Don't attach resubmit link if the user has not accepted the EULA.
                         if (!$istutor) {
                             $output .= html_writer::tag('div', $erroricon.' '.$errorstring, array('class' => 'warning clear'));
+                        } else if ($errorcode == 3) {
+                            $output .= html_writer::tag('div', $erroricon, array('class' => 'warning clear'));
                         } else {
                             $output .= html_writer::tag('div', $erroricon.' '.get_string('resubmittoturnitin', 'turnitintooltwo'),
                                                         array('class' => 'clear pp_resubmit_link',
@@ -917,7 +920,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Show hidden data for potential forum post resubmissions
                             if ($cm->modname == 'forum') {
-                                $output .= html_writer::tag('div', $linkarray["content"], 
+                                $output .= html_writer::tag('div', $linkarray["content"],
                                                             array('class' => 'hidden', 'id' => 'content_'.$plagiarismfile->id));
 
                                 // Get forum data from the query string as we'll need this to recreate submission event.
@@ -933,7 +936,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
 
                 } else {
-                    // Add Error if the user has not accepted EULA.
+                    // Add Error if the user has not accepted EULA for submissions made before instant submission was removed.
                     $eulaerror = "";
                     if (($linkarray["userid"] != $USER->id) && $istutor) {
                         // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is killing
@@ -943,9 +946,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
                                 if ($user->user_agreement_accepted != 1) {
-                                    $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'),
+                                    $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('errorcode3', 'turnitintooltwo'),
                                                                             'mod_turnitintooltwo'),
-                                                                            array('title' => get_string('notacceptedeula', 'turnitintooltwo'),
+                                                                            array('title' => get_string('errorcode3', 'turnitintooltwo'),
                                                                                     'class' => 'tii_tooltip tii_error_icon'));
                                     $eulaerror = html_writer::tag('div', $erroricon, array('class' => 'clear'));
                                 }

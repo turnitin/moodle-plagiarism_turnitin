@@ -675,14 +675,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                         'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = current($plagiarismfiles);
 
-                // Get Due date
-                $duedate = 0;
-                if (!empty($moduledata->duedate)) {
-                    $duedate = $moduledata->duedate;
-                } else if (!empty($moduledata->timedue)) {
-                    $duedate = $moduledata->timedue;
-                }
-
                 // Populate gradeitem query
                 $gradeitemqueryarray = array(
                                     'iteminstance' => $cm->instance,
@@ -709,7 +701,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 'workflowstate' => 'released'
                                                             ));
 
-                                $postdate = ($gradesreleased) ? time() : strtotime('+4 weeks', $duedate);
+                                $postdate = ($gradesreleased) ? time() - 1 : strtotime('+1 month');
                             }
                             break;
                         default:
@@ -1436,8 +1428,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $dtdue = 0;
         if (!empty($moduledata->duedate)) {
             $dtdue = $moduledata->duedate;
-        } else if (!empty($moduledata->timedue)) {
-            $dtdue = $moduledata->timedue;
         }
 
         // If the due date has been set more than a year ahead then restrict the
@@ -1471,11 +1461,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $gradesreleased = $DB->record_exists('assign_user_flags',
                                                             array('assignment' => $cm->instance,
                                                                     'workflowstate' => 'released'));
-                            if ($gradesreleased) {
-                                $dtpost = time();
-                            } else {
-                                $dtpost = strtotime('+4 weeks', $dtdue);
-                            }
+
+                            $dtpost = ($gradesreleased) ? time() : strtotime('+1 month');
                         }
                         break;
                     default:

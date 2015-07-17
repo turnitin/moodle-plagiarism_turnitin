@@ -1076,13 +1076,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
 
-                if ($cm->modname == 'assign') {
-                    $gradeitem = $DB->get_record('grade_items',
-                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
-                } else if ($cm->modname == 'workshop') {
-                    $gradeitem = $DB->get_record('grade_items',
-                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course, 'itemnumber' => 0));
-                }
+                $gradeitem = $DB->get_record('grade_items',
+                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
+                                            'courseid' => $cm->course, 'itemnumber' => 0));
 
                 if (!is_null($plagiarismfile->grade) && !empty($gradeitem)) {
                     $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
@@ -2283,21 +2279,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $moodlesubmission = $DB->get_record('assign_submission',
                                                     array('assignment' => $cm->instance,
                                                                 'userid' => $user->id,
-                                                                'id' => $itemid), 'id, timemodified');
-                            $timemodified = $moodlesubmission->timemodified;
-                            $textcontent = strip_tags($textcontent);
+                                                                'id' => $itemid), 'timemodified');
                             break;
                         case 'workshop':
                             $moodlesubmission = $DB->get_record('workshop_submissions',
                                                     array('workshopid' => $cm->instance,
-                                                            'authorid' => $user->id), 'title, content, timemodified');
-                            $timemodified = $moodlesubmission->timemodified;
-                            $textcontent = strip_tags($textcontent);
+                                                            'authorid' => $user->id), 'timemodified');
                             break;
                     }
 
                     $title = (!empty($title)) ? $title : 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
                     $filename = (substr($title, -4) == '.txt') ? $title : $title.'.txt';
+                    $textcontent = strip_tags($textcontent);
+                    $timemodified = $moodlesubmission->timemodified;
                 }
 
                 // Get submission method depending on whether there has been a previous submission.

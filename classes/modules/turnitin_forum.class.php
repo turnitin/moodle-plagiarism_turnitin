@@ -24,10 +24,12 @@ class turnitin_forum {
 
 	private $modname;
 	public $grades_table;
+	public $filecomponent;
 
 	public function __construct() {
 		$this->modname = 'forum';
-		$this->grades_table = '';
+		$this->grades_table = 'grade_grades';
+		$this->filecomponent = 'mod_'.$this->modname;
 	}
 
 	public function is_tutor($context) {
@@ -52,5 +54,16 @@ class turnitin_forum {
 
     public function create_file_event($params) {
 		return \mod_forum\event\assessable_uploaded::create($params);
+	}
+
+	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+		global $DB;
+
+		$currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        return $currentgradequery;
+	}
+
+	public function initialise_post_date($moduledata) {
+		return 0;
 	}
 }

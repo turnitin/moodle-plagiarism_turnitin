@@ -24,10 +24,12 @@ class turnitin_assign {
 
 	private $modname;
 	public $grades_table;
+	public $filecomponent;
 
 	public function __construct() {
 		$this->modname = 'assign';
-		$this->grades_table = 'assign_grades';
+		$this->grades_table = $this->modname.'_grades';
+		$this->filecomponent = $this->modname.'submission_file';
 	}
 
 	public function is_tutor($context) {
@@ -84,5 +86,19 @@ class turnitin_assign {
 
 	public function create_text_event($params) {
 		return \assignsubmission_onlinetext\event\assessable_uploaded::create($params);
+	}
+
+	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+		global $DB;
+
+		$currentgradesquery = $DB->get_records('assign_grades',
+													array('userid' => $userid, 'assignment' => $moduleid),
+													'id DESC'
+												);
+        return current($currentgradesquery);
+	}
+
+	public function initialise_post_date($moduledata) {
+		return 0;
 	}
 }

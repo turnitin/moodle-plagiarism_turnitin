@@ -23,13 +23,19 @@
 class turnitin_forum {
 
 	private $modname;
+	public $grades_table;
 
 	public function __construct() {
 		$this->modname = 'forum';
+		$this->grades_table = '';
 	}
 
 	public function is_tutor($context) {
-		return has_capability('plagiarism/turnitin:viewfullreport', $context);
+		return has_capability($this->get_tutor_capability(), $context);
+	}
+
+	public function get_tutor_capability() {
+		return 'plagiarism/turnitin:viewfullreport';
 	}
 
 	public function user_enrolled_on_course($context, $userid) {

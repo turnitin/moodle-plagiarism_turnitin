@@ -1114,14 +1114,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // If submission has multiple content/files in it then get average grade.
             // Ignore NULL grades and files no longer part of submission.
 
-            switch ($cm->modname) {
-                case 'assign':
-                    $component = 'assignsubmission_file';
-                    break;
-                default:
-                    $component = 'mod_'.$cm->modname;
-                    break;
-            }
+            // Create module object.
+            $moduleclass = "turnitin_".$cm->modname;
+            $moduleobject = new $moduleclass;
 
             // Get file from pathname hash
             $submissiondata = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $submission->getSubmissionId()), 'identifier');
@@ -1130,7 +1125,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $fs = get_file_storage();
             if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                 $moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
-                                                    array($component, $userid, $file->get_itemid()), 'id DESC', 'pathnamehash');
+                                                    array($moduleobject->filecomponent, $userid, $file->get_itemid()), 'id DESC', 'pathnamehash');
 
                 list($insql, $inparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', true);
                 $tiisubmissions = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? AND identifier ".$insql,
@@ -2184,15 +2179,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $currentfiles = array();
         $deletestr = '';
 
-        // Get all the files that are currently associated with this submission.
-        switch ($cm->modname) {
-            case 'assign':
-                $component = 'assignsubmission_file';
-                break;
-            default:
-                $component = 'mod_'.$cm->modname;
-                break;
-        }
+        // Create module object
+        $moduleclass = "turnitin_".$cm->modname;
+        $moduleobject = new $moduleclass;
 
         if ($submissiontype == 'file') {
             // If this is an assignment then we need to account for previous attempts so get other items ids.
@@ -2203,10 +2192,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                     ), '', 'id');
                 list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
                 $itemidsinsql = ' itemid '.$itemidsinsql;
-                $params = array_merge(array($component, $userid), $itemidsparams);
+                $params = array_merge(array($moduleobject->filecomponent, $userid), $itemidsparams);
             } else {
                 $itemidsinsql = ' itemid = ? ';
-                $params = array($component, $userid, $itemid);
+                $params = array($moduleobject->filecomponent, $userid, $itemid);
             }
 
             if ($moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND source IS NOT null AND ".$itemidsinsql,

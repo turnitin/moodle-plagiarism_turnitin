@@ -24,10 +24,12 @@ class turnitin_forum {
 
 	private $modname;
 	public $grades_table;
+	public $filecomponent;
 
 	public function __construct() {
 		$this->modname = 'forum';
-		$this->grades_table = '';
+		$this->grades_table = 'grade_grades';
+		$this->filecomponent = 'mod_'.$this->modname;
 	}
 
 	public function is_tutor($context) {

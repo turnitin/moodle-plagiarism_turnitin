@@ -24,10 +24,12 @@ class turnitin_assign {
 
 	private $modname;
 	public $grades_table;
+	public $filecomponent;
 
 	public function __construct() {
 		$this->modname = 'assign';
-		$this->grades_table = 'assign_grades';
+		$this->grades_table = $this->modname.'_grades';
+		$this->filecomponent = $this->modname.'submission_file';
 	}
 
 	public function is_tutor($context) {

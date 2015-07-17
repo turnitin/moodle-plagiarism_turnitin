@@ -85,4 +85,18 @@ class turnitin_assign {
 	public function create_text_event($params) {
 		return \assignsubmission_onlinetext\event\assessable_uploaded::create($params);
 	}
+
+	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+		global $DB;
+
+		$currentgradesquery = $DB->get_records('assign_grades',
+													array('userid' => $userid, 'assignment' => $moduleid),
+													'id DESC'
+												);
+        return current($currentgradesquery);
+	}
+
+	public function initialise_post_date($moduledata) {
+		return 0;
+	}
 }

@@ -242,7 +242,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $resetforum = (isset($eventdata['other']['reset_options']['reset_forum_all'])) ?
                             $eventdata['other']['reset_options']['reset_forum_all'] : 0;
 
-        $supportedmods = array('assign', 'forum', 'workshop');
+        // Get the modules that support the Plagiarism plugin by whether they have a class file.
+        $supportedmods = array();
+        foreach(scandir(__DIR__.'/classes/modules/') as $filename){
+            if (!in_array($filename, array(".",".."))) {
+                $classname = explode('.', $filename)[0];
+                $modulename = explode('_', $classname)[1];
+                $supportedmods[] = $modulename;
+            }
+        }
+
         foreach ($supportedmods as $supportedmod) {
             $module = $DB->get_record('modules', array('name' => $supportedmod));
 
@@ -652,7 +661,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            // Display Links for files and contents.
+            // Proceed to displaying links for submissions.
             if ($istutor || in_array($USER->id, $submissionusers)) {
 
                 // Prevent text content links being displayed for previous attempts as we have no way of getting the data.
@@ -666,7 +675,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                         'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = current($plagiarismfiles);
 
-                // Get user's grades.
                 // Get Due date
                 $duedate = 0;
                 if (!empty($moduledata->duedate)) {
@@ -674,67 +682,48 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else if (!empty($moduledata->timedue)) {
                     $duedate = $moduledata->timedue;
                 }
-                // Get post date
-                $postdate = 0;
-                if ($cm->modname != "forum") {
-                    // Populate gradeitem query
-                    $queryarray = array(
+
+                // Populate gradeitem query
+                $gradeitemqueryarray = array(
                                     'iteminstance' => $cm->instance,
                                     'itemmodule' => $cm->modname,
                                     'courseid' => $cm->course,
                                     'itemnumber' => 0
                                 );
 
-                    if ($gradeitem = $DB->get_record('grade_items', $queryarray)) {
-                        switch ($gradeitem->hidden) {
-                            case 1:
-                                $postdate = strtotime('+1 month');
-                                break;
-                            case 0:
-                                $postdate = time();
-                                if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                    $gradesreleased = $DB->record_exists(
-                                                                'assign_user_flags',
-                                                                array(
-                                                                    'userid' => $linkarray["userid"],
-                                                                    'assignment' => $cm->instance,
-                                                                    'workflowstate' => 'released'
-                                                                ));
+                // Get grade item and work out post date
+                $postdate = $moduleobject->initialise_post_date($moduledata);
+                if ($gradeitem = $DB->get_record('grade_items', $gradeitemqueryarray)) {
+                    switch ($gradeitem->hidden) {
+                        case 1:
+                            $postdate = strtotime('+1 month');
+                            break;
+                        case 0:
+                            $postdate = time();
+                            if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                                $gradesreleased = $DB->record_exists(
+                                                            'assign_user_flags',
+                                                            array(
+                                                                'userid' => $linkarray["userid"],
+                                                                'assignment' => $cm->instance,
+                                                                'workflowstate' => 'released'
+                                                            ));
 
-                                    $postdate = ($gradesreleased) ? time() : strtotime('+4 weeks', $duedate);
-                                }
-                                break;
-                            default:
-                                $postdate = $gradeitem->hidden;
-                                break;
-                        }
+                                $postdate = ($gradesreleased) ? time() : strtotime('+4 weeks', $duedate);
+                            }
+                            break;
+                        default:
+                            $postdate = $gradeitem->hidden;
+                            break;
                     }
                 }
 
                 $currentgradequery = false;
-                if ($cm->modname == 'forum') {
-                    static $gradeitem;
-                    if (empty($gradeitem)) {
-                        $gradeitem = $DB->get_record('grade_items',
-                                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course));
-                    }
-                    if ($gradeitem) {
-                        $currentgradequery = $DB->get_record('grade_grades',
-                                                    array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                    }
-                } else if ($cm->modname == 'workshop') {
-                    if ($gradeitem) {
-                        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $linkarray["userid"], 'itemid' => $gradeitem->id));
-                    }
-                    $postdate = $moduledata->assessmentend;
-                } else if ($cm->modname == 'assign') {
-                    if ($gradeitem) {
-                        $currentgradesquery = $DB->get_records('assign_grades',
-                                                array('userid' => $linkarray["userid"], 'assignment' => $cm->instance), 'id DESC');
-                        $currentgradequery = current($currentgradesquery);
-                    }
+                if ($gradeitem) {
+                    $currentgradequery = $moduleobject->get_current_gradequery($linkarray["userid"], $cm->instance, $gradeitem->id);
                 }
 
+                // Display links to OR, GradeMark and show relevant errors.
                 if ($plagiarismfile) {
                     if ($plagiarismfile->statuscode == 'success') {
                         if ($istutor || $linkarray["userid"] == $USER->id) {
@@ -907,7 +896,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!$istutor) {
                             $output .= html_writer::tag('div', $erroricon.' '.$errorstring, array('class' => 'warning clear'));
                         } else if ($errorcode == 3) {
-                            $output .= html_writer::tag('div', $erroricon, array('class' => 'warning clear'));
+                            $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
                         } else {
                             $output .= html_writer::tag('div', $erroricon.' '.get_string('resubmittoturnitin', 'turnitintooltwo'),
                                                         array('class' => 'clear pp_resubmit_link',

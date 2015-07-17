@@ -71,4 +71,15 @@ class turnitin_workshop {
 	public function create_text_event($params) {
 		return \mod_workshop\event\assessable_uploaded::create($params);
 	}
+
+	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+		global $DB;
+
+		$currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        return $currentgradequery;
+	}
+
+	public function initialise_post_date($moduledata) {
+		return $moduledata->assessmentend;
+	}
 }

@@ -2023,7 +2023,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         // Content has been deleted but event not removed.
                                         return true;
                                     }
+                                    break;
 
+                                case 'workshop':
+                                    if ($moodlesubmission = $DB->get_record('workshop_submissions',
+                                                    array('id' => $eventdata->itemid), 'timemodified')) {
+                                        $timemodified = $moodlesubmission->timemodified;
+                                        $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
+                                        $submissiontype = 'text_content';
+                                    } else {
+                                        // Content has been deleted but event not removed.
+                                        return true;
+                                    }
                                     break;
                             }
 

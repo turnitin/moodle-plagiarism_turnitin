@@ -2004,7 +2004,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     if ($contentsubmission = $DB->get_record('assign_submission', array('userid' => $user->id,
                                                                                 'assignment' => $moduledata->id,
                                                                                 'id' => $eventdata->itemid))) {
-                                        $timemodified = $contentsubmission->timemodified;
                                         $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                         $submissiontype = 'text_content';
                                     } else {
@@ -2016,7 +2015,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                                 case "forum":
                                     if ($contentsubmission = $DB->get_record('forum_posts', array('id' => $eventdata->itemid))) {
-                                        $timemodified = $contentsubmission->modified;
                                         $tempfilename = 'forumpost_'.$user->id."_".$cm->id."_".
                                                             $moduledata->id."_".$eventdata->itemid.'.txt';
                                         $submissiontype = 'forum_post';
@@ -2028,8 +2026,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                                 case 'workshop':
                                     if ($moodlesubmission = $DB->get_record('workshop_submissions',
-                                                    array('id' => $eventdata->itemid), 'timemodified')) {
-                                        $timemodified = $moodlesubmission->timemodified;
+                                                    array('id' => $eventdata->itemid))) {
                                         $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                         $submissiontype = 'text_content';
                                     } else {
@@ -2044,9 +2041,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Get turnitin text content details.
                             $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', array('userid' => $user->id, 'cm' => $cm->id,
                                                                                             'identifier' => $identifier));
-                            $tiimodifieddate = (!empty($plagiarismfile)) ? $plagiarismfile->lastmodified : 0;
 
-                            if ($timemodified > $tiimodifieddate) {
+                            // only submit if it hasn't been submitted successfuly before.
+                            if ($plagiarismfile->statuscode != "success") {
                                 $result = $this->tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype,
                                                                     $eventdata->itemid, $tempfilename, $eventdata->content);
                             } else {

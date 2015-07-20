@@ -1432,7 +1432,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             array(
                                                 'iteminstance' => $cm->instance,
                                                 'itemmodule' => $cm->modname,
-                                                'courseid' => $cm->course)
+                                                'courseid' => $cm->course,
+                                                'itemnumber' => 0)
                                             )) {
 
                 switch ($gradeitem->hidden) {

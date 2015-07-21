@@ -1349,7 +1349,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Create the module as an assignment within Turnitin if it does not exist,
      * if we have a Turnitin id for the module then edit it
      */
-    public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site") {
+    public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site", $submittoturnitin = false) {
         global $DB, $CFG;
 
         $config = turnitintooltwo_admin_config();
@@ -1410,18 +1410,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $dtstart = ($dtstart <= strtotime('-1 year')) ? strtotime('-11 months') : $dtstart;
         $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
 
-        $dtdue = 0;
-        if (!empty($moduledata->duedate)) {
-            $dtdue = $moduledata->duedate;
-        }
-
-        // If the due date has been set more than a year ahead then restrict the
-        // due date in Turnitin to 1 year from now.
-        $nextyear = strtotime('+1 year');
-        if ($dtdue > $nextyear) {
-            $dtdue = $nextyear;
-        }
-
         // Set post date. If "hidden until" has been set in gradebook then we will use that value, otherwise we will
         // use start date. If the grades are to be completely hidden then we will set post date in the future.
         // From 2.6, if grading markflow is enabled and no grades have been released, we will use due date +4 weeks.
@@ -1457,18 +1445,35 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
         }
-        // If a cut-off date has been set, use that as the Turnitin due date.
-        if (!empty($moduledata->cutoffdate)) {
-            $dtdue = $moduledata->cutoffdate;
-        }
-        // Ensure due date can't be before start date
-        if ($dtdue <= $dtstart) {
-            $dtdue = strtotime('+1 month', $dtstart);
-        }
+
         // Ensure post date can't be before start date
         if ($dtpost < $dtstart) {
             $dtpost = $dtstart;
         }
+
+        // Set due date, dependent on various things.
+        $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
+
+        // If the due date has been set more than a year ahead then restrict it to 1 year from now.
+        if ($dtdue > strtotime('+1 year')) {
+            $dtdue = strtotime('+1 year');
+        }
+
+        // If a cut-off date has been set, use that as the Turnitin due date.
+        if (!empty($moduledata->cutoffdate)) {
+            $dtdue = $moduledata->cutoffdate;
+        }
+
+        // Ensure due date can't be before start date
+        if ($dtdue <= $dtstart) {
+            $dtdue = strtotime('+1 month', $dtstart);
+        }
+
+        // Ensure due date is always in the future for submissions.
+        if ($dtdue <= time() && $submittoturnitin) {
+            $dtdue = strtotime('+1 day');
+        }
+
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
@@ -1659,8 +1664,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             $dtdue = 0;
                                             if (!empty($moduledata->duedate)) {
                                                 $dtdue = $moduledata->duedate;
-                                            } else if (!empty($moduledata->timedue)) {
-                                                $dtdue = $moduledata->timedue;
                                             }
                                             if ($post_date != strtotime('+4 weeks', $dtdue)) {
                                                 $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
@@ -1962,7 +1965,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $user = new turnitintooltwo_user($author, 'Learner');
                     $user->join_user_to_class($coursedata->turnitin_cid);
 
-                    $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
+                    $tiiassignmentid = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
 
                     if ((int)$tiiassignmentid > 0) {
                         // Submit draft content and files for newer than 2.3.

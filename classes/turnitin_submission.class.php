@@ -39,7 +39,7 @@ class turnitin_submission {
 	 * Get all relevant submission data to requeue submission for the cron to process.
 	 */
 	public function recreate_submission_event() {
-		global $DB;
+		global $DB, $CFG;
 
 		// Create module object.
         $moduleclass = "turnitin_".$this->cm->modname;
@@ -49,20 +49,34 @@ class turnitin_submission {
 		switch ($this->submissiondata->submissiontype) {
 		 	case 'file':
 		 		$file = $this->get_file_info();
+
 		 		// Collate data and trigger new event for the cron to process.
-		        $params = array(
-		            'context' => context_module::instance($this->cm->id),
-		            'courseid' => $this->cm->course,
-		            'objectid' => $file->get_itemid(),
-		            'userid' => $this->submissiondata->userid,
-		            'other' => array(
-		                'content' => '',
-		                'pathnamehashes' => array($this->submissiondata->identifier)
-		            )
-		        );
-		        $event = $moduleobject->create_file_event($params);
-		        $event->set_legacy_files(array($this->submissiondata->identifier => $file));
-		        $event->trigger();
+		 		if ($CFG->branch >= 26) {
+		 			$params = array(
+			            'context' => context_module::instance($this->cm->id),
+			            'courseid' => $this->cm->course,
+			            'objectid' => $file->get_itemid(),
+			            'userid' => $this->submissiondata->userid,
+			            'other' => array(
+			                'content' => '',
+			                'pathnamehashes' => array($this->submissiondata->identifier)
+			            )
+			        );
+
+					$event = $moduleobject->create_file_event($params);
+					$event->set_legacy_files(array($this->submissiondata->identifier => $file));
+		    		$event->trigger();
+				} else {
+					$eventdata = new stdClass();
+            		$eventdata->modulename = $this->cm->modname;
+            		$eventdata->cmid = $this->cm->id;
+            		$eventdata->courseid = $this->cm->course;
+            		$eventdata->itemid = $file->get_itemid();
+            		$eventdata->userid = $this->submissiondata->userid;
+            		$eventdata->pathnamehashes = array($this->submissiondata->identifier);
+
+					events_trigger('assessable_file_uploaded', $eventdata);
+				}
 		 		break;
 
 		 	case 'text_content':
@@ -70,20 +84,33 @@ class turnitin_submission {
 		 		$onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
 
 		        // Collate data and trigger new event for the cron to process.
-				$params = array(
-            		'context' => context_module::instance($this->cm->id),
-            		'courseid' => $this->cm->course,
-            		'objectid' => $submission->id,
-            		'userid' => $this->submissiondata->userid,
-            		'other' => array(
-                		'pathnamehashes' => '',
-                		'content' => trim($onlinetextdata->onlinetext),
-                		'format' => $onlinetextdata->onlineformat
-            		)
-        		);
-        		$event = $moduleobject->create_text_event($params);
-        		$event->trigger();
-		 		break;
+		        if ($CFG->branch >= 26) {
+					$params = array(
+	            		'context' => context_module::instance($this->cm->id),
+	            		'courseid' => $this->cm->course,
+	            		'objectid' => $submission->id,
+	            		'userid' => $this->submissiondata->userid,
+	            		'other' => array(
+	                		'pathnamehashes' => '',
+	                		'content' => trim($onlinetextdata->onlinetext),
+	                		'format' => $onlinetextdata->onlineformat
+	            		)
+	        		);
+
+        			$event = $moduleobject->create_text_event($params, $this->cm);
+        			$event->trigger();
+				} else {
+					$eventdata = new stdClass();
+            		$eventdata->modulename = $this->cm->modname;
+            		$eventdata->cmid = $this->cm->id;
+            		$eventdata->courseid = $this->cm->course;
+            		$eventdata->itemid = $submission->id;
+            		$eventdata->userid = $this->submissiondata->userid;
+            		$eventdata->content = trim($onlinetextdata->onlinetext);
+
+					events_trigger('assessable_content_uploaded', $eventdata);
+				}
+        		break;
 
 		 	case 'forum_post':
 		 		// Get the forum submission id - unfortunately this is rather complex

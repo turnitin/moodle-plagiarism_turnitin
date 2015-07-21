@@ -2029,6 +2029,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     array('id' => $eventdata->itemid))) {
                                         $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                         $submissiontype = 'text_content';
+                                        $eventdata->content = $moodlesubmission->content;
                                     } else {
                                         // Content has been deleted but event not removed.
                                         return true;
@@ -2042,12 +2043,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', array('userid' => $user->id, 'cm' => $cm->id,
                                                                                             'identifier' => $identifier));
 
-                            // only submit if it hasn't been submitted successfuly before.
-                            if ($plagiarismfile->statuscode != "success") {
+                            $result = true;
+                            if ($plagiarismfile) {
+                                // Only submit if this content hasn't been submitted successfuly before.
+                                if ($plagiarismfile->statuscode != "success") {
+                                    $result = $this->tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype,
+                                                                        $eventdata->itemid, $tempfilename, $eventdata->content);
+                                } else {
+                                    return true;
+                                }
+                            } else {
                                 $result = $this->tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype,
                                                                     $eventdata->itemid, $tempfilename, $eventdata->content);
-                            } else {
-                                $result = true;
                             }
                         }
 

@@ -913,6 +913,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             array('class' => 'hidden', 'id' => 'forumdata_'.$plagiarismfile->id));
                             }
                         }
+                    } else {
+                        $statusstr = get_string('turnitinstatus', 'turnitintooltwo').': '.get_string('pending', 'turnitintooltwo');
+                        $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-sml', $statusstr, 'mod_turnitintooltwo').$statusstr,
+                                                    array('class' => 'turnitin_status'));
                     }
 
                 } else {

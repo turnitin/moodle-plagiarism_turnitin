@@ -1897,22 +1897,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
 
-        // Initialise plugin class.
+        // Initialise module settings.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);
+        $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
         if ($eventdata->modulename == 'assign') {
             $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ?
                                                                 $plagiarismsettings["plagiarism_draft_submit"] : 0;
         }
 
-        // This module isn't using Turnitin so return true to remove event from queue.
-        if (empty($plagiarismsettings['use_turnitin'])) {
+        // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
+        if (empty($plagiarismsettings['use_turnitin']) || empty($moduletiienabled)) {
             return true;
-        }
-
-        $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
-        // Exit if Turnitin is not being used for this activity type.
-        if (empty($moduletiienabled)) {
-            return;
         }
 
         static $tiiconnection;

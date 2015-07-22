@@ -62,9 +62,17 @@ class turnitin_submission {
 			                'pathnamehashes' => array($this->submissiondata->identifier)
 			            )
 			        );
+			        // Forum attachments need the discussion id to be set.
+			        if ($this->cm->modname == "forum") {
+			        	$discussionid = $moduleobject->get_discussionid($this->data['forumdata']);
+			        	$params['other']['discussionid'] = $discussionid;
+			        	$params['other']['triggeredfrom'] = 'turnitin_recreate_submission_event';
+			        }
 
 					$event = $moduleobject->create_file_event($params);
-					$event->set_legacy_files(array($this->submissiondata->identifier => $file));
+					if ($this->cm->modname != "forum") {
+						$event->set_legacy_files(array($this->submissiondata->identifier => $file));
+					}
 		    		$event->trigger();
 				} else {
 					$eventdata = new stdClass();
@@ -113,24 +121,7 @@ class turnitin_submission {
         		break;
 
 		 	case 'forum_post':
-		 		// Get the forum submission id - unfortunately this is rather complex
-		 		// as the forum db tables are strangely organised.
-				list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $this->data['forumdata']);
-
-				if (empty($discussionid)) {
-				    $parent = '';
-				    if ($reply != 0) {
-				        $parent = forum_get_post_full($reply);
-				    } else if ($edit != 0) {
-				        $parent = forum_get_post_full($edit);
-				    } else if ($delete != 0) {
-				        $parent = forum_get_post_full($delete);
-				    }
-
-				    if (!empty($parent)) {
-				        $discussionid = $parent->discussion;
-				    }
-				}
+		 		$discussionid = $moduleobject->get_discussionid($this->data['forumdata']);
 
 				$forum = $DB->get_record("forum", array("id" => $this->cm->instance));
 
@@ -152,19 +143,32 @@ class turnitin_submission {
 				                                array($this->submissiondata->userid, $this->data['forumpost'], $discussionid));
 
 				// Collate data and trigger new event for the cron to process.
-				$params = array(
-            		'context' => context_module::instance($this->cm->id),
-            		'courseid' => $this->cm->course,
-            		'objectid' => $submission->id,
-            		'userid' => $this->submissiondata->userid,
-            		'other' => array(
-                		'pathnamehashes' => '',
-                		'content' => trim($this->data['forumpost']),
-                		'discussionid' => $discussionid
-            		)
-        		);
-        		$event = \mod_forum\event\assessable_uploaded::create($params);
-        		$event->trigger();
+		        if ($CFG->branch >= 26) {
+					$params = array(
+	            		'context' => context_module::instance($this->cm->id),
+	            		'courseid' => $this->cm->course,
+	            		'objectid' => $submission->id,
+	            		'userid' => $this->submissiondata->userid,
+	            		'other' => array(
+	                		'pathnamehashes' => '',
+	                		'content' => trim($this->data['forumpost']),
+	                		'discussionid' => $discussionid,
+	                		'triggeredfrom' => 'turnitin_recreate_submission_event'
+	            		)
+	        		);
+	        		$event = \mod_forum\event\assessable_uploaded::create($params);
+	        		$event->trigger();
+	        	} else {
+	        		$eventdata = new stdClass();
+            		$eventdata->modulename = $this->cm->modname;
+            		$eventdata->cmid = $this->cm->id;
+            		$eventdata->courseid = $this->cm->course;
+            		$eventdata->itemid = $submission->id;
+            		$eventdata->userid = $this->submissiondata->userid;
+            		$eventdata->content = trim($this->data['forumpost']);
+
+					events_trigger('assessable_content_uploaded', $eventdata);
+	        	}
 		 		break;
 		}
 

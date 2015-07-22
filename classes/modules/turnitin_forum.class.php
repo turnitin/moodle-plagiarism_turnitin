@@ -66,4 +66,27 @@ class turnitin_forum {
 	public function initialise_post_date($moduledata) {
 		return 0;
 	}
+
+	// Get the forum submission id - unfortunately this is rather complex as the db tables are strangely organised.
+	public function get_discussionid($forumdata) {
+
+		list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $forumdata);
+
+		if (empty($discussionid)) {
+		    $parent = '';
+		    if ($reply != 0) {
+		        $parent = forum_get_post_full($reply);
+		    } else if ($edit != 0) {
+		        $parent = forum_get_post_full($edit);
+		    } else if ($delete != 0) {
+		        $parent = forum_get_post_full($delete);
+		    }
+
+		    if (!empty($parent)) {
+		        $discussionid = $parent->discussion;
+		    }
+		}
+
+		return $discussionid;
+	}
 }

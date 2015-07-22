@@ -235,7 +235,8 @@ switch ($action) {
         $forumpost = optional_param('forumpost', '', PARAM_ALPHAEXT);
         $submissionid = required_param('submissionid', PARAM_INT);
 
-        $tiisubmission = new turnitin_submission($submissionid, array($forumdata, $forumpost));
+        $tiisubmission = new turnitin_submission($submissionid,
+                                                array('forumdata' => $forumdata, 'forumpost' => $forumpost));
         $tiisubmission->recreate_submission_event();
         break;
 }

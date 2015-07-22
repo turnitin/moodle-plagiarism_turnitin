@@ -899,10 +899,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                         array('class' => 'turnitin_status hidden'));
 
                             // Show hidden data for potential forum post resubmissions
-                            if ($cm->modname == 'forum') {
+                            if ($submissiontype == 'forum_post' && !empty($linkarray["content"])) {
                                 $output .= html_writer::tag('div', $linkarray["content"],
                                                             array('class' => 'hidden', 'id' => 'content_'.$plagiarismfile->id));
+                            }
 
+                            if ($cm->modname == 'forum') {
                                 // Get forum data from the query string as we'll need this to recreate submission event.
                                 $querystrid = optional_param('id', 0, PARAM_INT);
                                 $discussionid = optional_param('d', 0, PARAM_INT);

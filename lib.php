@@ -495,10 +495,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         static $plagiarismsettings;
         if (empty($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
-            if ($cm->modname == 'assign') {
-                $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ?
-                                                                    $plagiarismsettings["plagiarism_draft_submit"] : 0;
-            }
         }
 
         // Exit if Turnitin is not being used for this module.

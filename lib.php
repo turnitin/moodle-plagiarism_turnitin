@@ -25,6 +25,11 @@ if (!defined('MOODLE_INTERNAL')) {
 
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 
+// Define accepted files if the module is not accepting any file type.
+global $turnitinacceptedfiles;
+$turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx', '.pdf',
+                                '.txt', '.htm', '.html', '.hwp', '.odt', '.wpd', '.ps', '.rtf');
+
 global $tiipp;
 $tiipp = new stdClass();
 $tiipp->in_use = true;
@@ -2265,7 +2270,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype, $itemid = 0,
                                     $title = '', $textcontent = '') {
-        global $CFG, $DB, $USER;
+        global $CFG, $DB, $USER, $turnitinacceptedfiles;
 
         $settings = $this->get_settings($cm->id);
 
@@ -2423,6 +2428,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $errorcode = 3;
         }
 
+        // If applicable, check whether file type is accepted.
+        $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
+        if (!$acceptanyfiletype && $submissiontype == 'file') {
+            $filenameparts = explode('.', $filename);
+            $fileext = end($filenameparts);
+            if (!in_array($fileext, $turnitinacceptedfiles)) {
+                $errorcode = 4;
+            }
+        }
+
         if ($errorcode != 0) {
             return $this->save_failed_submission($cm, $user, $submissionid, $identifier,
                         $submissiontype, $errorcode, $previoussubmission);
@@ -2436,9 +2451,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm->id
         );
 
-        $modulepluginsettings = $this->get_settings($cm->id);
-
-        if ( ! $modulepluginsettings["plagiarism_anonymity"]) {
+        if ( ! $settings["plagiarism_anonymity"]) {
             $user_details = array(
                 $user->id,
                 $user->firstname,

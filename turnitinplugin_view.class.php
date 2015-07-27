@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
-require_once(__DIR__.'/classes/turnitin_class.class.php');
+require_once(__DIR__.'/lib.php');
 
 global $tiipp;
 $tiipp = new stdClass();
@@ -105,14 +105,20 @@ class turnitinplugin_view {
         $config_warning = '';
 
         $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
-        $instructorrubrics = $instructor->get_instructor_rubrics();
+        $rubrics = $instructor->get_instructor_rubrics();
 
-        // Get rubrics that are shared on the account.
-        $turnitinclass = new turnitintooltwo_class($COURSE->id);
-        $turnitinclass->read_class_from_tii();
+        if ($cmid != 0) {
+            $cm = get_coursemodule_from_id('', $cmid);
 
-        // Merge the arrays, prioitising instructor owned arrays.
-        $rubrics = $instructorrubrics + $turnitinclass->sharedrubrics;
+            // Get rubrics that are shared on the account.
+            $course = plagiarism_plugin_turnitin::get_course_data($cm);
+
+            $turnitinclass = new turnitintooltwo_class($COURSE->id);
+            $turnitinclass->read_class_from_tii();
+
+            // Merge the arrays, prioitising instructor owned arrays.
+            $rubrics = $rubrics + $turnitinclass->sharedrubrics;
+        }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
         $genoptions = array(0 => get_string('genimmediately1', 'turnitintooltwo'),

@@ -50,6 +50,7 @@ require_once($CFG->dirroot.'/mod/turnitintooltwo/classes/digitalreceipt/receipt_
 
 // Include plugin classes
 require_once(__DIR__."/turnitinplugin_view.class.php");
+require_once(__DIR__.'/classes/turnitin_class.class.php');
 require_once(__DIR__.'/classes/turnitin_submission.class.php');
 require_once(__DIR__.'/classes/turnitin_comms.class.php');
 
@@ -440,7 +441,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get Moodle and Turnitin Course data
      */
-    public function get_course_data($cm, $workflowcontext = 'site') {
+    public static function get_course_data($cm, $workflowcontext = 'site') {
         $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', $workflowcontext);
 
         if (empty($coursedata->turnitin_cid)) {

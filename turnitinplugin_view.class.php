@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
+require_once(__DIR__.'/classes/turnitin_class.class.php');
 
 global $tiipp;
 $tiipp = new stdClass();
@@ -88,16 +89,15 @@ class turnitinplugin_view {
     }
 
     /**
-     * Due to moodle's internal plugin hooks we can not use our bespoke form class
-     * for Turnitin settings. This form shows in settings > defaults as well as the
-     * activity creation screen.
+     * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
+     * settings. This form shows in settings > defaults as well as the activity creation screen.
      *
      * @global type $CFG
      * @param type $plugin_defaults
      * @return type
      */
     public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0, $currentrubric = 0) {
-        global $CFG, $OUTPUT, $PAGE, $USER, $DB;
+        global $CFG, $OUTPUT, $PAGE, $USER, $DB, $COURSE;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
@@ -106,6 +106,13 @@ class turnitinplugin_view {
 
         $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
         $instructorrubrics = $instructor->get_instructor_rubrics();
+
+        // Get rubrics that are shared on the account.
+        $turnitinclass = new turnitintooltwo_class($COURSE->id);
+        $turnitinclass->read_class_from_tii();
+
+        // Merge the arrays, prioitising instructor owned arrays.
+        $rubrics = $instructorrubrics + $turnitinclass->sharedrubrics;
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
         $genoptions = array(0 => get_string('genimmediately1', 'turnitintooltwo'),
@@ -298,7 +305,7 @@ class turnitinplugin_view {
 
             if ($location == "activity" && $config->usegrademark) {
                 // Populate Rubric options.
-                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
+                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $rubrics;
                 if (!empty($currentrubric)) {
                     $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
                                     $rubricoptions[$currentrubric] : get_string('otherrubric', 'turnitintooltwo');

@@ -141,6 +141,7 @@ class LTI extends OAuthSimple {
             'roles'                       => $lti->getRole(),
             'custom_source'               => $this->getintegrationid()
         );
+        if ( !is_null( $lti->getClassId() ) ) $params['lis_coursesection_sourcedid'] = $lti->getClassId();
         if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );

@@ -104,15 +104,16 @@ class turnitinplugin_view {
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
 
-        $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
-        $rubrics = $instructor->get_instructor_rubrics();
-
         if ($cmid != 0) {
             $cm = get_coursemodule_from_id('', $cmid);
 
-            // Get rubrics that are shared on the account.
+            // Create/Edit course in Turnitin and join user to class.
             $course = plagiarism_plugin_turnitin::get_course_data($cm);
+            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
+            $instructor->join_user_to_class($course->turnitin_cid);
+            $rubrics = $instructor->get_instructor_rubrics();
 
+            // Get rubrics that are shared on the account.
             $turnitinclass = new turnitintooltwo_class($COURSE->id);
             $turnitinclass->read_class_from_tii();
 

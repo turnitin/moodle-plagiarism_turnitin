@@ -10,7 +10,7 @@ require_once( 'response.class.php' );
 require_once( 'sdkexception.class.php' );
 
 /**
- * @ignore 
+ * @ignore
  */
 class ClassSoap extends Soap {
 
@@ -67,7 +67,11 @@ class ClassSoap extends Soap {
                 $tiiClass->setClassId( $soap->courseSectionRecord->sourcedGUID->sourcedId );
                 $tiiClass->setTitle( $soap->courseSectionRecord->courseSection->title->textString );
                 $tiiClass->setEndDate( $soap->courseSectionRecord->courseSection->timeFrame->end );
-                if ( isset( $soap->courseSectionRecord->courseSection->extension ) ) $tiiClass->setIntegrationId($soap->courseSectionRecord->courseSection->extension->extensionField->fieldValue);
+                foreach ( $soap->courseSectionRecord->courseSection->extension->extensionField as $field ) {
+                    $name = $field->fieldName;
+                    $method = 'set'.$name;
+                    if ( is_callable( array( $tiiClass, $method ) ) ) $tiiClass->$method( $field->fieldValue );
+                }
                 $response->setClass( $tiiClass );
             }
             return $response;
@@ -91,7 +95,11 @@ class ClassSoap extends Soap {
                         $tiiClass->setClassId( $record->sourcedGUID->sourcedId );
                         $tiiClass->setTitle( $record->courseSection->title->textString );
                         $tiiClass->setEndDate( $record->courseSection->timeFrame->end );
-                        if ( isset( $record->courseSection->extension ) ) $tiiClass->setIntegrationId($record->courseSection->extension->extensionField->fieldValue);
+                        foreach ( $record->courseSection->extension->extensionField as $field ) {
+                            $name = $field->fieldName;
+                            $method = 'set'.$name;
+                            if ( is_callable( array( $tiiClass, $method ) ) ) $tiiClass->$method( $field->fieldValue );
+                        }
                         $classes[] = $tiiClass;
                     }
                 }

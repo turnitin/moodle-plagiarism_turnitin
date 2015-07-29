@@ -42,7 +42,7 @@ class TurnitinAPI {
     private $membershipwsdl;
     private $resultwsdl;
 
-    const VERSION = '1.0.74';
+    const VERSION = '1.0.79';
 
     /**
      * Instantiate the API object.

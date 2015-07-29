@@ -6,6 +6,8 @@
  * and open the template in the editor.
  */
 
+require_once( 'tiirubric.class.php' );
+
 /**
  * Defines the TiiSubmission data object which contains getters and setters for a Turnitin Class API object.
  * 
@@ -21,6 +23,7 @@ class TiiClass {
     private $integrationid;
     private $userid;
     private $userrole;
+    private $sharedrubrics;
 
     /**
      * Set the Class ID for this Class
@@ -146,6 +149,42 @@ class TiiClass {
      */
     public function getIntegrationId() {
         return $this->integrationid;
+    }
+
+    /**
+     * Set the Shared Rubrics Id for a Find Class call
+     * 
+     * Optional on a Find Class call to determine the shared rubrics on the account that the classes are on
+     * 
+     * @param string $sharedrubrics
+     */
+    public function setSharedRubrics( $sharedrubrics ) {
+        $this->sharedrubrics = $sharedrubrics;
+    }
+
+    /**
+     * Get the Shared Rubrics for a Find Class call
+     * 
+     * Optional on a Find Class call to determine the shared rubrics on the account that the classes are on
+     * 
+     * @return string
+     */
+    public function getSharedRubrics() {
+        $rubrics = array();
+        $values = ( !empty( $this->sharedrubrics ) ) ? json_decode( $this->sharedrubrics ) : array();
+
+        foreach ($values as $key => $shared_rubric) {
+            $rubric = new TiiRubric();
+            foreach ($shared_rubric as $k => $v ) {
+                $method = 'set'.$k;
+                if (is_callable(array($rubric, $method))) {
+                    $rubric->$method( $v );
+                }
+            }
+            $rubrics[] = $rubric;
+        }
+
+        return $rubrics;
     }
 
     /**

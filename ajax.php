@@ -121,24 +121,11 @@ switch ($action) {
         }
 
         if ($istutor) {
-            // Create the course/class in Turnitin if it doesn't already exist.
-            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $coursedata = plagiarism_plugin_turnitin::get_course_data($cm->id, $cm->course);
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
             if (!$tiiassignment) {
-                if (empty($coursedata->turnitin_cid)) {
-                    // Course may existed in a previous incarnation of this plugin so the Turnitin id may be located
-                    // in the config table. Get this and save it in courses table if so.
-                    if ($turnitincid = $pluginturnitin->get_previous_course_id($cm)) {
-                        $coursedata = $pluginturnitin->migrate_previous_course($coursedata, $turnitincid);
-                    } else {
-                        $tiicoursedata = $pluginturnitin->create_tii_course($cm, $coursedata);
-                        $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
-                        $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
-                    }
-                }
-
                 // Create the module as an assignment in Turnitin.
                 $tiiassignment->value = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
             }

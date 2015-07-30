@@ -359,7 +359,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Show EULA if necessary and we have a connection to Turnitin.
         if ($tiiconnection) {
-            $coursedata = $this->get_course_data($cm);
+            $coursedata = $this->get_course_data($cm->id, $cm->course);
 
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
@@ -441,18 +441,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get Moodle and Turnitin Course data
      */
-    public static function get_course_data($cm, $workflowcontext = 'site') {
-        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP', $workflowcontext);
+    public static function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
+        $coursedata = turnitintooltwo_assignment::get_course_data($courseid, 'PP', $workflowcontext);
+
+        // get add from querystring to work out module type.
+        $add = optional_param('add', '', PARAM_TEXT);
 
         if (empty($coursedata->turnitin_cid)) {
-            // Course may existed in a previous incarnation of this plugin.
+            // Course may have existed in a previous incarnation of this plugin.
             // Get this and save it in courses table if so.
-            if ($turnitincid = $this->get_previous_course_id($cm)) {
+            if ($turnitincid = $this->get_previous_course_id($cmid, $courseid)) {
                 $coursedata->turnitin_cid = $turnitincid;
                 $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
             } else {
                 // Otherwise create new course in Turnitin if it doesn't exist.
-                $tiicoursedata = $this->create_tii_course($cm, $coursedata);
+                if ($cmid == 0) {
+                    $tiicoursedata = $this->create_tii_course($cmid, $add, $coursedata, $workflowcontext);
+                } else {
+                    $cm = get_coursemodule_from_id('', $cmid);
+                    $tiicoursedata = $this->create_tii_course($cmid, $cm->modname, $coursedata, $workflowcontext);
+                }
                 $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
                 $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
             }
@@ -530,7 +538,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         static $coursedata;
         if (empty($coursedata)) {
-            $coursedata = $this->get_course_data($cm);
+            $coursedata = $this->get_course_data($cm->id, $cm->course);
         }
 
         // Create module object
@@ -1259,15 +1267,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Create a course within Turnitin
      */
-    public function create_tii_course($cm, $coursedata, $workflowcontext = "site") {
+    public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
         global $CFG;
 
         // Create module object.
-        $moduleclass = "turnitin_".$cm->modname;
+        $moduleclass = "turnitin_".$modname;
         $moduleobject = new $moduleclass;
 
         $capability = $moduleobject->get_tutor_capability();
-        $tutors = get_users_by_capability(context_module::instance($cm->id), $capability, 'u.id', 'u.id');
+        if (!empty($cmid)) {
+            $tutors = get_users_by_capability(context_module::instance($cmid), $capability, 'u.id', 'u.id');
+        } else {
+            $tutors = get_users_by_capability(context_course::instance($coursedata->id), $capability, 'u.id', 'u.id');
+        }
 
         // If no tutors on this course then use main admin as owner.
         if (!empty($tutors)) {
@@ -1619,7 +1631,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Don't update for forums as post date will be start date in this instance as there is no gradebook.
                 if ($cm->modname != 'forum') {
                     // Get course data, ignore assignment if there is a problem creating course.
-                    $coursedata = $this->get_course_data($cm, 'cron');
+                    $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
                     if (empty($coursedata->turnitin_cid)) {
                         continue;
                     }
@@ -1839,26 +1851,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Previous incarnations of this plugin did not store the turnitin course id so we have to get this using the assignment id,
      * If that wasn't linked with turnitin then we have to check all the modules on this course.
      */
-    public function get_previous_course_id($cm) {
+    public function get_previous_course_id($cmid, $courseid) {
         global $DB;
-        $courseid = 0;
+        $tiicourseid = 0;
 
-        if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id,
+        if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid,
                                                     'name' => 'turnitin_assignid'))) {
             $courseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
         } else {
-            $coursemods = get_course_mods($cm->course);
+            $coursemods = get_course_mods($courseid);
             foreach ($coursemods as $coursemod) {
                 if ($coursemod->modname != 'turnitintooltwo') {
                     if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $coursemod->id,
                                                                                         'name' => 'turnitin_assignid'))) {
-                        $courseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
+                        $tiicourseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
                     }
                 }
             }
         }
 
-        return ($courseid > 0) ? $courseid : false;
+        return ($tiicourseid > 0) ? $tiicourseid : false;
     }
 
     /**
@@ -1930,7 +1942,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($cm) {
             // Get course data, return false if there is a problem creating it.
-            $coursedata = $this->get_course_data($cm, 'cron');
+            $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
             if (empty($coursedata->turnitin_cid)) {
                 return false;
             }
@@ -2546,7 +2558,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $receipt = new receipt_message();
 
                 $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                $coursedata = $this->get_course_data($cm, 'cron');
+                $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
 
                 $input = array(
                     'firstname' => $user->firstname,

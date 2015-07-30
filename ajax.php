@@ -121,7 +121,8 @@ switch ($action) {
         }
 
         if ($istutor) {
-            $coursedata = plagiarism_plugin_turnitin::get_course_data($cm->id, $cm->course);
+            $plagiarism_plugin_turnitin = new plagiarism_plugin_turnitin()
+            $coursedata = $plagiarism_plugin_turnitin->get_course_data($cm->id, $cm->course);
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 

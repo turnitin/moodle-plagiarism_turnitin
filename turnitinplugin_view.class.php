@@ -96,8 +96,8 @@ class turnitinplugin_view {
      * @param type $plugin_defaults
      * @return type
      */
-    public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0, $currentrubric = 0) {
-        global $CFG, $OUTPUT, $PAGE, $USER, $DB, $COURSE;
+    public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
+        global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
@@ -108,14 +108,11 @@ class turnitinplugin_view {
         if ($location == "activity") {
             $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
 
-            // Create/Edit course in Turnitin and join user to class.
-            $course = plagiarism_plugin_turnitin::get_course_data($cmid, $COURSE->id);
-
             $instructor->join_user_to_class($course->turnitin_cid);
             $rubrics = $instructor->get_instructor_rubrics();
 
             // Get rubrics that are shared on the account.
-            $turnitinclass = new turnitintooltwo_class($COURSE->id);
+            $turnitinclass = new turnitin_class($course->id);
             $turnitinclass->read_class_from_tii();
 
             // Merge the arrays, prioitising instructor owned arrays.

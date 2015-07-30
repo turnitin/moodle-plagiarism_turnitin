@@ -179,7 +179,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB;
+        global $DB, $COURSE;
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
@@ -200,7 +200,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $turnitinpluginview = new turnitinplugin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ?
                                                                 $plagiarismvalues["plagiarism_rubric"] : 0;
-            $turnitinpluginview->add_elements_to_settings_form($mform, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
+
+            // Create/Edit course in Turnitin and join user to class.
+            $course = $this->get_course_data($cmid, $COURSE->id);
+            $turnitinpluginview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
 
             // Disable all plagiarism elements if turnitin is not enabled.
             foreach ($plagiarismelements as $element) {
@@ -441,7 +444,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get Moodle and Turnitin Course data
      */
-    public static function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
+    public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
         $coursedata = turnitintooltwo_assignment::get_course_data($courseid, 'PP', $workflowcontext);
 
         // get add from querystring to work out module type.

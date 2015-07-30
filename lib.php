@@ -1857,7 +1857,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid,
                                                     'name' => 'turnitin_assignid'))) {
-            $courseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
+            $tiicourseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
         } else {
             $coursemods = get_course_mods($courseid);
             foreach ($coursemods as $coursemod) {

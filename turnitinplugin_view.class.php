@@ -103,13 +103,14 @@ class turnitinplugin_view {
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
+        $rubrics = array();
 
-        if ($cmid != 0) {
-            $cm = get_coursemodule_from_id('', $cmid);
+        if ($location == "activity") {
+            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
 
             // Create/Edit course in Turnitin and join user to class.
-            $course = plagiarism_plugin_turnitin::get_course_data($cm);
-            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
+            $course = plagiarism_plugin_turnitin::get_course_data($cmid, $COURSE->id);
+
             $instructor->join_user_to_class($course->turnitin_cid);
             $rubrics = $instructor->get_instructor_rubrics();
 

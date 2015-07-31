@@ -156,8 +156,6 @@ class turnitinplugin_view {
 
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/styles.css');
             $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/styles_pp.css');
-            $PAGE->requires->css($cssurl);
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/font-awesome.min.css');

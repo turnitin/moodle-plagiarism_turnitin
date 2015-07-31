@@ -703,7 +703,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $output .= $OUTPUT->box_start('tii_links_container');
 
             // Show the EULA for a student if necessary.
-            if ($linkarray["userid"] == $USER->id) {
+            if ($linkarray["userid"] == $USER->id && empty($plagiarismfile->externalid)) {
                 $eula = "";
 
                 static $userid;

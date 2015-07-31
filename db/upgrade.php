@@ -153,7 +153,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014012413, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2015040106) {
+    if ($oldversion < 2015040107) {
         upgrade_dm_successful_uploads();
     }
 
@@ -163,9 +163,12 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 function upgrade_dm_successful_uploads() {
     global $DB, $CFG;
 
-    // Update successful submissions from Dan Marsden's plugin
+    // Update successful submissions from Dan Marsden's plugin with incorrect statuscode.
     $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', lastmodified = ".time()." WHERE statuscode = '51'");
 
-    // Update error codes with submissions from Dan Marsden's plugin
+    // Update the lastmodified timestamp from all successful submissions from Dan Marsden's plugin.
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET lastmodified = ".time()." WHERE statuscode = 'success' AND lastmodified = 0");
+
+    // Update error codes with submissions from Dan Marsden's plugin.
     $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error' WHERE statuscode != 'success' AND statuscode != 'pending'");
 }

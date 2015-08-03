@@ -247,13 +247,25 @@ switch ($do) {
         break;
 
     case "errors":
+        $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
-        echo html_writer::tag("p", get_string('errorsdesc', 'turnitintooltwo'));
+        echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
+
+        if ($resubmitted == "success") {
+            echo html_writer::tag("div", get_string('pperrorssuccess', 'turnitintooltwo'),
+                                            array('class' => 'pp_errors_success'));
+        } else if ($resubmitted == "errors") {
+            echo html_writer::tag("div", get_string('pperrorsfail', 'turnitintooltwo'),
+                                            array('class' => 'pp_errors_warning'));
+        }
 
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
-                                array("class" => "btn btn-primary", "id" => "pp-resubmit-files"));
+                                array("class" => "btn btn-primary pp-resubmit-files"));
 
         echo $turnitinpluginview->show_file_errors_table();
+
+        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+                                array("class" => "btn btn-primary pp-resubmit-files"));
         break;
 }
 

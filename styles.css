@@ -137,7 +137,7 @@
     padding-right:6px;
 }
 
-.tii_links_container .warning {
+.tii_links_container .warning, .pp_errors_warning {
     border: 1px solid #CC0000;
     padding: 8px;
     background: #FFE9E8;
@@ -147,14 +147,21 @@
     margin-bottom:6px;
 }
 
-.tii_links_container .success {
+.tii_links_container .success, .pp_errors_success {
     border: 1px solid #CC0000;
     padding: 8px;
     background: #FFFFFF;
     width: 100%;
     text-align:center;
-    display:none;
     margin-bottom:6px;
+}
+
+.tii_links_container .success {
+    display:none;
+}
+
+.pp_errors_success {
+    display:block;
 }
 
 .forumpost .tii_links_container .success {
@@ -262,9 +269,11 @@ noscript.turnitin_ula_noscript {
     text-align: center;
 }
 
-
-
-
+button.pp-resubmit-files {
+    clear: both;
+    float: right;
+    margin: 10px 0;
+}
 
 
 

@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
         }
     });
 
-	$("#pp-resubmit-files").click(function() {
+	$(".pp-resubmit-files").click(function() {
 		var submission_ids = [];
         $('.errors_checkbox:checked').each(function(i){
             submission_ids[i] = $(this).val();
@@ -38,12 +38,10 @@ jQuery(document).ready(function($) {
             dataType: "json",
             data: {action: "resubmit_events", submission_ids: submission_ids, sesskey: M.cfg.sesskey},
             success: function(data) {
-                window.location.href = window.location.href;
+                window.location.href = window.location.href+"&resubmitted=true";
             },
             error: function(data, response) {
-                $(".enrol_link").show();
-                $(".enrolling_container").hide();
-                $("#enrolling_error").show();
+                window.location.href = window.location.href+"&resubmitted=false";
             }
         });
 	})

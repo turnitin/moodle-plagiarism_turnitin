@@ -418,6 +418,8 @@ class turnitinplugin_view {
 
         // Do the table headers.
         $cells = array();
+        $selectall = html_writer::checkbox('errors_select_all', false, false, '', array("class" => "select_all_checkbox"));
+        $cells["checkbox"] = new html_table_cell($selectall);
         $cells["id"] = new html_table_cell(get_string('id', 'turnitintooltwo'));
         $cells["user"] = new html_table_cell(get_string('student', 'turnitintooltwo'));
         $cells["user"]->attributes['class'] = 'left';
@@ -444,9 +446,12 @@ class turnitinplugin_view {
         } else {
             foreach ($files as $k => $v) {
                 $cells = array();
-                if (!empty($v->moduletype)) {
+                if (!empty($v->moduletype) && $v->moduletype != "forum") {
 
                     $cm = get_coursemodule_from_id($v->moduletype, $v->cm);
+
+                    $checkbox = html_writer::checkbox('check_'.$k, $k, false, '', array("class" => "errors_checkbox"));
+                    $cells["checkbox"] = new html_table_cell($checkbox);
 
                     $cells["id"] = new html_table_cell($k);
                     $cells["user"] = new html_table_cell($v->firstname." ".$v->lastname." (".$v->email.")");

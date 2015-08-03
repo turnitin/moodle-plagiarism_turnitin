@@ -121,7 +121,7 @@ switch ($action) {
         }
 
         if ($istutor) {
-            $plagiarism_plugin_turnitin = new plagiarism_plugin_turnitin()
+            $plagiarism_plugin_turnitin = new plagiarism_plugin_turnitin();
             $coursedata = $plagiarism_plugin_turnitin->get_course_data($cm->id, $cm->course);
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
@@ -226,6 +226,27 @@ switch ($action) {
         $tiisubmission = new turnitin_submission($submissionid,
                                                 array('forumdata' => $forumdata, 'forumpost' => $forumpost));
         $tiisubmission->recreate_submission_event();
+        break;
+
+    case "resubmit_events":
+
+        if (!confirm_sesskey()) {
+            throw new moodle_exception('invalidsesskey', 'error');
+        }
+
+        $submissionids = optional_param_array('submission_ids', array(), PARAM_INT);
+
+        $submissionids = optional_param_array('submission_ids', array(), PARAM_INT);
+        $errors = array();
+        $return['success'] = true;
+        foreach ($submissionids as $submissionid) {
+            $tiisubmission = new turnitin_submission($submissionid);
+            if ($tiisubmission->recreate_submission_event()) {
+                $return['success'] = false;
+                $errors[] = $submissionid;
+            }
+        }
+        $return['errors'] = $errors;
         break;
 }
 

@@ -146,9 +146,6 @@ if ($do == "errors") {
 
 if ($do != "savereport") {
     echo $OUTPUT->header();
-
-    echo html_writer::tag('link', '', array("rel" => "stylesheet", "type" => "text/css",
-                                                            "href" => $CFG->wwwroot."/mod/turnitintooltwo/css/styles_pp.css"));
 }
 
 switch ($do) {

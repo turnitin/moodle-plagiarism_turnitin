@@ -241,7 +241,7 @@ switch ($action) {
         $return['success'] = true;
         foreach ($submissionids as $submissionid) {
             $tiisubmission = new turnitin_submission($submissionid);
-            if ($tiisubmission->recreate_submission_event()) {
+            if (!$tiisubmission->recreate_submission_event()) {
                 $return['success'] = false;
                 $errors[] = $submissionid;
             }

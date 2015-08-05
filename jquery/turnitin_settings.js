@@ -38,10 +38,10 @@ jQuery(document).ready(function($) {
             dataType: "json",
             data: {action: "resubmit_events", submission_ids: submission_ids, sesskey: M.cfg.sesskey},
             success: function(data) {
-                window.location.href = window.location.href+"&resubmitted=true";
+                window.location.href = window.location.href+"&resubmitted=success";
             },
             error: function(data, response) {
-                window.location.href = window.location.href+"&resubmitted=false";
+                window.location.href = window.location.href+"&resubmitted=errors";
             }
         });
 	})

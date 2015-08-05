@@ -131,7 +131,7 @@ if ($do == "errors") {
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.plugins.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/plagiarism_settings.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
         $PAGE->requires->js($jsurl);
 
         $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/jquery.dataTables.css');

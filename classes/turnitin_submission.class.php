@@ -96,7 +96,7 @@ class turnitin_submission {
 					$params = array(
 	            		'context' => context_module::instance($this->cm->id),
 	            		'courseid' => $this->cm->course,
-	            		'objectid' => $submission->id,
+	            		'objectid' => $onlinetextdata->itemid,
 	            		'userid' => $this->submissiondata->userid,
 	            		'other' => array(
 	                		'pathnamehashes' => '',
@@ -112,7 +112,7 @@ class turnitin_submission {
             		$eventdata->modulename = $this->cm->modname;
             		$eventdata->cmid = $this->cm->id;
             		$eventdata->courseid = $this->cm->course;
-            		$eventdata->itemid = $submission->id;
+            		$eventdata->itemid = $onlinetextdata->itemid;
             		$eventdata->userid = $this->submissiondata->userid;
             		$eventdata->content = trim($onlinetextdata->onlinetext);
 

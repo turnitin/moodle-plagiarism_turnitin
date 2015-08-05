@@ -126,7 +126,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         LEFT JOIN {course_modules} CM ON CM.id = PTF.cm
                                         LEFT JOIN {modules} M ON CM.module = M.id
                                         LEFT JOIN {course} C ON CM.course = C.id
-                                        WHERE PTF.statuscode != 'success'
+                                        WHERE PTF.statuscode = 'error'
                                         ORDER BY PTF.id DESC");
         return $files;
     }
@@ -424,18 +424,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS and CSS needed by the page.
      */
     public function load_page_components() {
-        global $PAGE;
+        global $CFG, $PAGE;
 
         // Include Javascript.
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.colorbox.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
         $PAGE->requires->js($jsurl);
 
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');

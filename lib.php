@@ -24,6 +24,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
+define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 50);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
@@ -1923,6 +1924,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
 
+        // Initialise counter, limit submission events processing to
+        // PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT per cron run.
+        $i = 0;
+
         // Initialise module settings.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);
         $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
@@ -1960,6 +1965,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 case "assessable_submitted":
                 case "content_uploaded":
                 case "files_done":
+
+                    // Only process submissions up to the processing limit.
+                    if ($i >= PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {
+                        return false;
+                    }
+                    $i++;
+
                     $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                     if ($cm->modname != 'assign') {
                         $moduledata->submissiondrafts = 0;
@@ -2557,25 +2569,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             //Send a message to the user's Moodle inbox with the digital receipt.
-            if ( ! empty($CFG->smtphosts)) {
-                $receipt = new receipt_message();
+            $receipt = new receipt_message();
 
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+            $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
 
-                $input = array(
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'submission_title' => $title,
-                    'assignment_name' => $moduledata->name,
-                    'course_fullname' => $coursedata->turnitin_ctl,
-                    'submission_date' => date('d-M-Y h:iA'),
-                    'submission_id' => $newsubmissionid
-                );
+            $input = array(
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'submission_title' => $title,
+                'assignment_name' => $moduledata->name,
+                'course_fullname' => $coursedata->turnitin_ctl,
+                'submission_date' => date('d-M-Y h:iA'),
+                'submission_id' => $newsubmissionid
+            );
 
-                $message = $receipt->build_message($input);
-                $receipt->send_message($user->id, $message);
-            }
+            $message = $receipt->build_message($input);
+            $receipt->send_message($user->id, $message);
 
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";

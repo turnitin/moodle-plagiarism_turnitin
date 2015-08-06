@@ -200,9 +200,11 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_end(true);
             }
 
+            $use_turnitin = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'use_turnitin'));
+
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if ($config->enablepeermark) {
+            if (($config->enablepeermark) && ($use_turnitin->value == 1)) {
                 if ($cmid != 0) {
                     $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.

@@ -1022,7 +1022,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     foreach ($readsubmissions as $readsubmission) {
                         $submissiondata = $DB->get_record('plagiarism_turnitin_files',
                                                             array('externalid' => $readsubmission->getSubmissionId()), 'id');
-
                         $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
                     }
 
@@ -1118,7 +1117,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $grade = $submission->getGrade();
 
         if (!is_null($grade) && $cm->modname != 'forum') {
-
             // Module grade object.
             $grade = new stdClass();
             // If submission has multiple content/files in it then get average grade.
@@ -1134,8 +1132,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get file as we need item id for discounting files that are no longer in submission.
             $fs = get_file_storage();
             if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
-                $moodlefiles = $DB->get_records_select('files', " component = ? AND userid = ? AND itemid = ? AND source IS NOT null ",
-                                                    array($moduleobject->filecomponent, $userid, $file->get_itemid()), 'id DESC', 'pathnamehash');
+                $moodlefiles = $DB->get_records_select('files', " component = ? AND itemid = ? AND source IS NOT null ",
+                                                    array($moduleobject->filecomponent, $file->get_itemid()), 'id DESC', 'pathnamehash');
 
                 list($insql, $inparams) = $DB->get_in_or_equal(array_keys($moodlefiles), SQL_PARAMS_QM, 'param', true);
                 $tiisubmissions = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? AND identifier ".$insql,
@@ -1214,7 +1212,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if ($currentgrade) {
                     $grade->id = $currentgrade->id;
-
                     $return = $DB->update_record($table, $grade);
                 } else {
                     $grade->userid = $userid;

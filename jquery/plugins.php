@@ -15,6 +15,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 $plugins = array(
+	'plagiarism-turnitin_module'		=> array('files' => array('turnitin_module.js')),
 	'plagiarism-dataTables'				=> array('files' => array('jquery.dataTables.js', 'jquery.dataTables.css')),
 	'plagiarism-dataTables_plugins'		=> array('files' => array('jquery.dataTables.plugins.js')),
 	'plagiarism-turnitin_settings'		=> array('files' => array('turnitin_settings.js'))

@@ -422,17 +422,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Load JS and CSS needed by the page.
+     * Load JS needed by the page.
      */
     public function load_page_components() {
         global $CFG, $PAGE;
 
-        // Include Javascript.
-        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.colorbox.js');
         $PAGE->requires->js($jsurl);

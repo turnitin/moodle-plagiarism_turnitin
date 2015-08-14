@@ -136,11 +136,11 @@ class turnitinplugin_view {
 
             // Add in custom Javascript and CSS.
             if ($CFG->branch <= 25) {
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
                 $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/turnitin_module.js');
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
                 $PAGE->requires->js($jsurl, true);
@@ -150,7 +150,7 @@ class turnitinplugin_view {
                 $PAGE->requires->jquery();
                 $PAGE->requires->jquery_plugin('ui');
                 $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
-                $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
+                $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
                 $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
             }
 

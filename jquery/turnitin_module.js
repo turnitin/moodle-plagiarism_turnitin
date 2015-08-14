@@ -221,7 +221,7 @@ jQuery(document).ready(function($) {
             dataType: "json",
             data: {action: "update_grade", submission: submission_id, cmid: coursemoduleid, sesskey: M.cfg.sesskey},
             success: function(data) {
-                //window.location = window.location;
+                window.location = window.location;
             }
         });
     }

@@ -1268,8 +1268,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Create a course within Turnitin
      */
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
-        global $CFG;
-
+        global $CFG, $USER;
+        
         // Create module object.
         $moduleclass = "turnitin_".$modname;
         $moduleobject = new $moduleclass;
@@ -1281,14 +1281,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $tutors = get_users_by_capability(context_course::instance($coursedata->id), $capability, 'u.id', 'u.id');
         }
 
-        // If no tutors on this course then use main admin as owner.
-        if (!empty($tutors)) {
-            $owner = current($tutors);
-            $ownerid = $owner->id;
-        } else {
-            $admins = explode(",", $CFG->siteadmins);
-            $ownerid = $admins[0];
-        }
+        $ownerid = $USER->id;
 
         $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
         $turnitincourse = $turnitintooltwoassignment->create_tii_course($coursedata, $ownerid, "PP", $workflowcontext);

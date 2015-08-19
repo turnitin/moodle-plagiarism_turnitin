@@ -99,7 +99,7 @@ class turnitin_submission {
 	            		'objectid' => $onlinetextdata->itemid,
 	            		'userid' => $this->submissiondata->userid,
 	            		'other' => array(
-	                		'pathnamehashes' => '',
+	                		'pathnamehashes' => array(),
 	                		'content' => trim($onlinetextdata->onlinetext),
 	                		'format' => $onlinetextdata->onlineformat
 	            		)

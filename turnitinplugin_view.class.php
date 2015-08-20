@@ -98,6 +98,10 @@ class turnitinplugin_view {
      */
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
+        
+        // Required for font icons.
+        require_once(__DIR__.'/font-awesome.php');
+        require_once(__DIR__.'/tii-icon-webfont.php');
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
@@ -192,6 +196,7 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
+                                                html_writer::tag('i', '', array('class' => 'icon icon-quickmarks icon-lg icon_margin')).
                                                 get_string('launchquickmarkmanager', 'turnitintooltwo'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                     'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
@@ -210,6 +215,7 @@ class turnitinplugin_view {
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
+                                                    html_writer::tag('i', '', array('class' => 'icon icon-settings icon-lg icon_margin icon_peermark_manager')).
                                                     get_string('launchpeermarkmanager', 'turnitintooltwo'),
                                                     array('class' => 'peermark_manager_launch',
                                                             'id' => 'peermark_manager_'.$cmid,
@@ -319,6 +325,7 @@ class turnitinplugin_view {
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
+                                                    html_writer::tag('i', '', array('class' => 'icon icon-rubric icon-lg icon_margin')).
                                                     get_string('launchrubricmanager', 'turnitintooltwo'),
                                                     array('class' => 'rubric_manager_launch',
                                                         'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).

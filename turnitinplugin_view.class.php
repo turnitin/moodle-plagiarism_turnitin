@@ -436,9 +436,6 @@ class turnitinplugin_view {
         $cells["delete"]->attributes['class'] = 'centered_cell';
 
         $table = new html_table();
-        if (count($files) > 0) {
-            $table->id = "ppErrors";
-        }
         $table->head = $cells;
 
         $i = 0;
@@ -524,10 +521,12 @@ class turnitinplugin_view {
 
             if ($i == 0) {
                 $cells = array();
-                $cells["id"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
-                $cells["id"]->colspan = 7;
-                $cells["id"]->attributes['class'] = 'centered_cell';
+                $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
+                $cells["checkbox"]->colspan = 8;
+                $cells["checkbox"]->attributes['class'] = 'centered_cell';
                 $rows[0] = new html_table_row($cells);
+            } else {
+                $table->id = "ppErrors";
             }
         }
         $table->data = $rows;

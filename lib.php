@@ -1061,13 +1061,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     private function update_submission($cm, $submissionid, $tiisubmission) {
-        global $DB;
+        global $DB, $CFG;
 
         $return = true;
         $updaterequired = false;
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
-                                                 'id, cm, userid, similarityscore, grade, orcapable')) {
+                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable')) {
             $plagiarismfile = new object();
             $plagiarismfile->id = $submissiondata->id;
             $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ?
@@ -1090,6 +1090,32 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            // Don't update grademark if the submission is not part of the latest attempt.
+            $gbupdaterequired = $updaterequired;
+            if ($cm->modname == "assign" && $CFG->branch >= 25) {
+                if ($submissiondata->submissiontype == "file") {
+                    $fs = get_file_storage();
+                    if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
+                        $itemid = $file->get_itemid();
+                        $submission = $DB->get_record('assign_submission', array('id' => $itemid), 'latest');
+                        if ($submission->latest != 1) {
+                            $gbupdaterequired = false;
+                        }
+                    } else {
+                        $gbupdaterequired = false;
+                    }
+                } elseif ($submissiondata->submissiontype == "text_content") {
+                    // Get latest submission
+                    $moduleobject = new turnitin_assign();
+                    $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
+                    $latestidentifier = sha1($latesttext->onlinetext);
+                    // Check submission being graded is latest.
+                    if ($submissiondata->identifier != $latestidentifier) {
+                        $gbupdaterequired = false;
+                    }
+                }
+            }
+
             // Only update as necessary.
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
@@ -1098,7 +1124,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
                                             'courseid' => $cm->course, 'itemnumber' => 0));
 
-                if (!is_null($plagiarismfile->grade) && !empty($gradeitem)) {
+                if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
                     $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
                 }
             }
@@ -2437,7 +2463,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Don't submit if a user has not accepted the eula.
-        if ($user->user_agreement_accepted != 1) {
+        if ($user->id == $submitter && $user->user_agreement_accepted != 1) {
             $errorcode = 3;
         }
 

@@ -2463,7 +2463,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Don't submit if a user has not accepted the eula.
-        if ($user->user_agreement_accepted != 1) {
+        if ($user->id == $submitter && $user->user_agreement_accepted != 1) {
             $errorcode = 3;
         }
 

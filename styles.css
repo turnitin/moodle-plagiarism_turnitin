@@ -41,7 +41,6 @@
 }
 
 .tii_links_container .rubric_view_pp_launch {
-    background:url([[pix:turnitintooltwo|rubric]]) no-repeat 0px 0px;
     cursor:pointer;
     height: 34px;
     width:32px;
@@ -67,7 +66,6 @@
 }
 
 .tii_links_container .peermark_reviews_pp_launch {
-    background:url([[pix:turnitintooltwo|peermark-reviews]]) no-repeat 0px 0px;
     cursor:pointer;
     padding: 4px 0 18px 36px;
     line-height: 28px;
@@ -95,7 +93,6 @@
 }
 
 .tii_links_container .score_colour {
-    background-image:url([[pix:turnitintooltwo|gradback]]);
     width:36px;
     font-size:12px;
     display:inline-block;
@@ -105,17 +102,17 @@
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
-.tii_links_container .score_colour_0 { background-position: 0% 0%; color:#FFFFFF; }
-.tii_links_container .score_colour_10 { background-position: 0% 10%; color:#FFFFFF; }
-.tii_links_container .score_colour_20 { background-position: 0% 20%; color:#FFFFFF; }
-.tii_links_container .score_colour_30 { background-position: 0% 30%; }
-.tii_links_container .score_colour_40 { background-position: 0% 40%; }
-.tii_links_container .score_colour_50 { background-position: 0% 50%; }
-.tii_links_container .score_colour_60 { background-position: 0% 60%; }
-.tii_links_container .score_colour_70 { background-position: 0% 70%; }
-.tii_links_container .score_colour_80 { background-position: 0% 80%; color:#FFFFFF; }
-.tii_links_container .score_colour_90 { background-position: 0% 90%; color:#FFFFFF; }
-.tii_links_container .score_colour_100 { background-position: 0% 100%; color:#FFFFFF; }
+.tii_links_container .score_colour_0 { background: #3552B7; color:#FFFFFF; }
+.tii_links_container .score_colour_10 { background: #617B8D; color:#FFFFFF; }
+.tii_links_container .score_colour_20 { background: #A1B556; color:#FFFFFF; }
+.tii_links_container .score_colour_30 { background: #DAE235; }
+.tii_links_container .score_colour_40 { background: #EDAC28; }
+.tii_links_container .score_colour_50 { background: #EDD42F; }
+.tii_links_container .score_colour_60 { background: #ECAD28; }
+.tii_links_container .score_colour_70 { background: #E15A21; }
+.tii_links_container .score_colour_80 { background: #E05A21; color:#FFFFFF; }
+.tii_links_container .score_colour_90 { background: #DC4321; color:#FFFFFF; }
+.tii_links_container .score_colour_100 { background: #DB4221; color:#FFFFFF; }
 
 .tii_links_container .origreport_score {
     white-space:nowrap;
@@ -207,16 +204,14 @@
 }
 
 .peermark_manager_launch {
-    background:url([[pix:turnitintooltwo|peermark-settings]]) no-repeat 0px 0px;
     cursor:pointer;
-    padding: 4px 16px 4px 40px;
+    padding: 4px 16px 4px 0px;
     display: inline;
     line-height: 28px;
 }
 
 .plagiarism_turnitin_quickmark_manager_launch {
-	background:url([[pix:turnitintooltwo|quickmark]]) no-repeat 0px 0px;
-    padding: 2px 0px 2px 40px;
+    padding: 2px 0px 2px 0px;
     display: inline;
     line-height: 28px;
 }
@@ -226,8 +221,7 @@
     text-decoration: underline;
 	text-align: center;
 	border: 1px solid #CC0000;
-	background:url([[pix:turnitintooltwo|icon]]) no-repeat center 12px;
-	padding: 48px 12px 12px;
+	padding: 12px 12px 12px;
 	color: #FF0000;
 	margin-top:12px;
 	font-size: 14px;
@@ -276,15 +270,29 @@ button.pp-resubmit-files {
 }
 
 .rubric_manager_launch {
-    background:url([[pix:mod_turnitintooltwo|rubric]]) no-repeat;
-    padding:9px 0 4px 32px;
     line-height:22px;
     margin-left:6px
 }
 
+.icon_size {
+    width: 16px;
+    height: 16px;
+}
+.icon_size_large {
+    width: 32px;
+    height: 32px;
+}
 
+.blue {
+    color: #009ACD;
+}
 
-
+.icon_margin {
+    margin-right: 20px;
+}
+.icon_peermark_manager {
+    color: #009900 !important;
+}
 
 
 

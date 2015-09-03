@@ -582,6 +582,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $itemid = 0;
 
             // Get File or Content information.
+            $submittinguser = $linkarray['userid'];
             if (!empty($linkarray["file"])) {
                 $identifier = $file->get_pathnamehash();
                 $itemid = $file->get_itemid();
@@ -600,6 +601,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Get correct user id that submission is for rather than who submitted, this only affects file submissions
             // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
+            $author = $linkarray['userid'];
             if ($itemid != 0) {
                 $author = $moduleobject->get_author($itemid);
                 $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
@@ -640,7 +642,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     array("class" => "pp_turnitin_eula_link"));
 
                             $eula = html_writer::tag('div', $eula_link, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
-                            $submitting = false;
                         }
 
                         // Show EULA launcher and form placeholder.
@@ -942,7 +943,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else {
                     // Add Error if the user has not accepted EULA for submissions made before instant submission was removed.
                     $eulaerror = "";
-                    if (($linkarray["userid"] != $USER->id) && $istutor) {
+                    if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {
                         // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is killing
                         // this functionality. Have to check that user exists here first else there will be a fatal error.
                         if ($mdl_user = $DB->get_record('user', array('id' => $linkarray["userid"]))) {

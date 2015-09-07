@@ -19,7 +19,7 @@
 }
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
-.tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form,
+.tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, .tii_links_container .hidden,
 .tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
 #tii_view_context, .tii_links_container .grademark_forum_launch, .tii_links_container .origreport_forum_launch {
     display:none;
@@ -41,7 +41,6 @@
 }
 
 .tii_links_container .rubric_view_pp_launch {
-    background:url([[pix:turnitintooltwo|rubric]]) no-repeat 0px 0px;
     cursor:pointer;
     height: 34px;
     width:32px;
@@ -67,7 +66,6 @@
 }
 
 .tii_links_container .peermark_reviews_pp_launch {
-    background:url(../../../../mod/turnitintooltwo/pix/peermark-reviews.png) no-repeat 0px 0px;
     cursor:pointer;
     padding: 4px 0 18px 36px;
     line-height: 28px;
@@ -95,7 +93,6 @@
 }
 
 .tii_links_container .score_colour {
-    background-image:url([[pix:turnitintooltwo|gradback]]);
     width:36px;
     font-size:12px;
     display:inline-block;
@@ -105,17 +102,17 @@
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
-.tii_links_container .score_colour_0 { background-position: 0% 0%; color:#FFFFFF; }
-.tii_links_container .score_colour_10 { background-position: 0% 10%; color:#FFFFFF; }
-.tii_links_container .score_colour_20 { background-position: 0% 20%; color:#FFFFFF; }
-.tii_links_container .score_colour_30 { background-position: 0% 30%; }
-.tii_links_container .score_colour_40 { background-position: 0% 40%; }
-.tii_links_container .score_colour_50 { background-position: 0% 50%; }
-.tii_links_container .score_colour_60 { background-position: 0% 60%; }
-.tii_links_container .score_colour_70 { background-position: 0% 70%; }
-.tii_links_container .score_colour_80 { background-position: 0% 80%; color:#FFFFFF; }
-.tii_links_container .score_colour_90 { background-position: 0% 90%; color:#FFFFFF; }
-.tii_links_container .score_colour_100 { background-position: 0% 100%; color:#FFFFFF; }
+.tii_links_container .score_colour_0 { background: #3552B7; color:#FFFFFF; }
+.tii_links_container .score_colour_10 { background: #617B8D; color:#FFFFFF; }
+.tii_links_container .score_colour_20 { background: #A1B556; color:#FFFFFF; }
+.tii_links_container .score_colour_30 { background: #DAE235; }
+.tii_links_container .score_colour_40 { background: #EDAC28; }
+.tii_links_container .score_colour_50 { background: #EDD42F; }
+.tii_links_container .score_colour_60 { background: #ECAD28; }
+.tii_links_container .score_colour_70 { background: #E15A21; }
+.tii_links_container .score_colour_80 { background: #E05A21; color:#FFFFFF; }
+.tii_links_container .score_colour_90 { background: #DC4321; color:#FFFFFF; }
+.tii_links_container .score_colour_100 { background: #DB4221; color:#FFFFFF; }
 
 .tii_links_container .origreport_score {
     white-space:nowrap;
@@ -129,11 +126,15 @@
     cursor: normal;
 }
 
-.tii_links_container .turnitin_paper_id {
-	padding-right:6px;
+.tii_links_container .turnitin_status {
+    white-space:nowrap;
 }
 
-.tii_links_container .warning {
+.tii_links_container .turnitin_status img {
+    padding-right:6px;
+}
+
+.tii_links_container .warning, .pp_errors_warning {
     border: 1px solid #CC0000;
     padding: 8px;
     background: #FFE9E8;
@@ -143,14 +144,21 @@
     margin-bottom:6px;
 }
 
-.tii_links_container .success {
+.tii_links_container .success, .pp_errors_success {
     border: 1px solid #CC0000;
     padding: 8px;
     background: #FFFFFF;
     width: 100%;
     text-align:center;
-    display:none;
     margin-bottom:6px;
+}
+
+.tii_links_container .success {
+    display:none;
+}
+
+.pp_errors_success {
+    display:block;
 }
 
 .forumpost .tii_links_container .success {
@@ -196,16 +204,14 @@
 }
 
 .peermark_manager_launch {
-    background:url([[pix:turnitintooltwo|peermark-settings]]) no-repeat 0px 0px;
     cursor:pointer;
-    padding: 4px 16px 4px 40px;
+    padding: 4px 16px 4px 0px;
     display: inline;
     line-height: 28px;
 }
 
 .plagiarism_turnitin_quickmark_manager_launch {
-	background:url([[pix:turnitintooltwo|quickmark]]) no-repeat 0px 0px;
-    padding: 2px 0px 2px 40px;
+    padding: 2px 0px 2px 0px;
     display: inline;
     line-height: 28px;
 }
@@ -215,8 +221,7 @@
     text-decoration: underline;
 	text-align: center;
 	border: 1px solid #CC0000;
-	background:url([[pix:turnitintooltwo|icon]]) no-repeat center 12px;
-	padding: 48px 12px 12px;
+	padding: 12px 12px 12px;
 	color: #FF0000;
 	margin-top:12px;
 	font-size: 14px;
@@ -246,22 +251,48 @@ noscript.turnitin_ula_noscript {
     display:none;
 }
 
-.tii_links_container .tii_error_icon {
+.tii_links_container .pp_resubmit_link {
     cursor: pointer;
+}
+
+.tii_links_container .tii_error_icon, .tii_links_container .pp_resubmitting img {
+    padding-right:6px;
 }
 
 .tii_links_container .eularedirect {
     text-align: center;
 }
 
+button.pp-resubmit-files {
+    clear: both;
+    float: right;
+    margin: 10px 0;
+}
 
+.rubric_manager_launch {
+    line-height:22px;
+    margin-left:6px
+}
 
+.icon_size {
+    width: 16px;
+    height: 16px;
+}
+.icon_size_large {
+    width: 32px;
+    height: 32px;
+}
 
+.blue {
+    color: #009ACD;
+}
 
-
-
-
-
+.icon_margin {
+    margin-right: 20px;
+}
+.icon_peermark_manager {
+    color: #009900 !important;
+}
 
 
 

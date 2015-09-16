@@ -98,10 +98,6 @@ class turnitinplugin_view {
      */
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
-        
-        // Required for font icons.
-        require_once(__DIR__.'/font-awesome.php');
-        require_once(__DIR__.'/tii-icon-webfont.php');
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
@@ -160,7 +156,9 @@ class turnitinplugin_view {
 
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/font-awesome.min.css');
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/font-awesome.min.css');
+            $PAGE->requires->css($cssurl);
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/tii-icon-webfont.css');
             $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
@@ -209,7 +207,7 @@ class turnitinplugin_view {
 
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if (($config->enablepeermark) && ($use_turnitin->value == 1)) {
+            if (!empty($config->enablepeermark) && !empty($use_turnitin->value)) {
                 if ($cmid != 0) {
                     $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.

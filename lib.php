@@ -610,7 +610,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $output .= $OUTPUT->box_start('tii_links_container');
 
             // Show the EULA for a student if necessary.
-            if ($linkarray["userid"] == $USER->id) {
+            if ($linkarray["userid"] == $USER->id && empty($plagiarismfile->externalid)) {
                 $eula = "";
 
                 static $userid;
@@ -1944,10 +1944,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
 
-        // Initialise counter, limit submission events processing to
-        // PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT per cron run.
-        $i = 0;
-
         // Initialise module settings.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);
         $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
@@ -1985,6 +1981,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 case "assessable_submitted":
                 case "content_uploaded":
                 case "files_done":
+                    // Initialise counter, limit submission events processing to
+                    // PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT per cron run.
+                    static $i;
+                    if (empty($i)) {
+                        $i = 0;
+                    }
 
                     // Only process submissions up to the processing limit.
                     if ($i >= PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {

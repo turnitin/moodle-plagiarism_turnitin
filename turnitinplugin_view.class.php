@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
+require_once(__DIR__.'/lib.php');
 
 global $tiipp;
 $tiipp = new stdClass();
@@ -67,7 +68,7 @@ class turnitinplugin_view {
         $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'turnitintooltwo'), '', array(0, 1));
 
         // Enable Turnitin for specific modules
-        $supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : '';
+        $supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array();
         foreach ($supported_mods as $mod) {
             $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod), '', 
                                 '', '', '', array('turnitin_use', '==', 1));
@@ -88,24 +89,35 @@ class turnitinplugin_view {
     }
 
     /**
-     * Due to moodle's internal plugin hooks we can not use our bespoke form class
-     * for Turnitin settings. This form shows in settings > defaults as well as the
-     * activity creation screen.
+     * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
+     * settings. This form shows in settings > defaults as well as the activity creation screen.
      *
      * @global type $CFG
      * @param type $plugin_defaults
      * @return type
      */
-    public function add_elements_to_settings_form($mform, $location = "activity", $cmid = 0, $currentrubric = 0) {
+    public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
         $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
+        $rubrics = array();
 
-        $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
-        $instructorrubrics = $instructor->get_instructor_rubrics();
+        if ($location == "activity") {
+            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
+
+            $instructor->join_user_to_class($course->turnitin_cid);
+            $rubrics = $instructor->get_instructor_rubrics();
+
+            // Get rubrics that are shared on the account.
+            $turnitinclass = new turnitin_class($course->id);
+            $turnitinclass->read_class_from_tii();
+
+            // Merge the arrays, prioitising instructor owned arrays.
+            $rubrics = $rubrics + $turnitinclass->sharedrubrics;
+        }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
         $genoptions = array(0 => get_string('genimmediately1', 'turnitintooltwo'),
@@ -124,11 +136,11 @@ class turnitinplugin_view {
 
             // Add in custom Javascript and CSS.
             if ($CFG->branch <= 25) {
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
                 $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/turnitin_module.js');
                 $PAGE->requires->js($jsurl, true);
                 $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
                 $PAGE->requires->js($jsurl, true);
@@ -138,17 +150,15 @@ class turnitinplugin_view {
                 $PAGE->requires->jquery();
                 $PAGE->requires->jquery_plugin('ui');
                 $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
-                $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
+                $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
                 $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
             }
 
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/styles.css');
-            $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/styles_pp.css');
-            $PAGE->requires->css($cssurl);
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/font-awesome.min.css');
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/font-awesome.min.css');
+            $PAGE->requires->css($cssurl);
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/tii-icon-webfont.css');
             $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
@@ -184,6 +194,7 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
+                                                html_writer::tag('i', '', array('class' => 'icon icon-quickmarks icon-lg icon_margin')).
                                                 get_string('launchquickmarkmanager', 'turnitintooltwo'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                     'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
@@ -192,14 +203,17 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_end(true);
             }
 
+            $use_turnitin = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'use_turnitin'));
+
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if ($config->enablepeermark) {
+            if (!empty($config->enablepeermark) && !empty($use_turnitin->value)) {
                 if ($cmid != 0) {
                     $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
+                                                    html_writer::tag('i', '', array('class' => 'icon icon-settings icon-lg icon_margin icon_peermark_manager')).
                                                     get_string('launchpeermarkmanager', 'turnitintooltwo'),
                                                     array('class' => 'peermark_manager_launch',
                                                             'id' => 'peermark_manager_'.$cmid,
@@ -298,7 +312,7 @@ class turnitinplugin_view {
 
             if ($location == "activity" && $config->usegrademark) {
                 // Populate Rubric options.
-                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $instructorrubrics;
+                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $rubrics;
                 if (!empty($currentrubric)) {
                     $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
                                     $rubricoptions[$currentrubric] : get_string('otherrubric', 'turnitintooltwo');
@@ -309,6 +323,7 @@ class turnitinplugin_view {
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
+                                                    html_writer::tag('i', '', array('class' => 'icon icon-rubric icon-lg icon_margin')).
                                                     get_string('launchrubricmanager', 'turnitintooltwo'),
                                                     array('class' => 'rubric_manager_launch',
                                                         'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).
@@ -406,6 +421,8 @@ class turnitinplugin_view {
 
         // Do the table headers.
         $cells = array();
+        $selectall = html_writer::checkbox('errors_select_all', false, false, '', array("class" => "select_all_checkbox"));
+        $cells["checkbox"] = new html_table_cell($selectall);
         $cells["id"] = new html_table_cell(get_string('id', 'turnitintooltwo'));
         $cells["user"] = new html_table_cell(get_string('student', 'turnitintooltwo'));
         $cells["user"]->attributes['class'] = 'left';
@@ -417,7 +434,6 @@ class turnitinplugin_view {
         $cells["delete"]->attributes['class'] = 'centered_cell';
 
         $table = new html_table();
-        $table->id = "ppErrors";
         $table->head = $cells;
 
         $i = 0;
@@ -425,16 +441,19 @@ class turnitinplugin_view {
 
         if (count($files) == 0) {
             $cells = array();
-            $cells["id"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
-            $cells["id"]->colspan = 7;
-            $cells["id"]->attributes['class'] = 'centered_cell';
+            $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
+            $cells["checkbox"]->colspan = 8;
+            $cells["checkbox"]->attributes['class'] = 'centered_cell';
             $rows[0] = new html_table_row($cells);
         } else {
             foreach ($files as $k => $v) {
                 $cells = array();
-                if (!empty($v->moduletype)) {
+                if (!empty($v->moduletype) && $v->moduletype != "forum") {
 
                     $cm = get_coursemodule_from_id($v->moduletype, $v->cm);
+
+                    $checkbox = html_writer::checkbox('check_'.$k, $k, false, '', array("class" => "errors_checkbox"));
+                    $cells["checkbox"] = new html_table_cell($checkbox);
 
                     $cells["id"] = new html_table_cell($k);
                     $cells["user"] = new html_table_cell($v->firstname." ".$v->lastname." (".$v->email.")");
@@ -500,10 +519,12 @@ class turnitinplugin_view {
 
             if ($i == 0) {
                 $cells = array();
-                $cells["id"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
-                $cells["id"]->colspan = 7;
-                $cells["id"]->attributes['class'] = 'centered_cell';
+                $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
+                $cells["checkbox"]->colspan = 8;
+                $cells["checkbox"]->attributes['class'] = 'centered_cell';
                 $rows[0] = new html_table_row($cells);
+            } else {
+                $table->id = "ppErrors";
             }
         }
         $table->data = $rows;

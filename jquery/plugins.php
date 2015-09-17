@@ -8,18 +8,15 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package   plagiarism_turnitin
- * @copyright 2012 iParadigms LLC *
- */
-
-// TODO: Split out module specific code from plagiarism/turnitin/lib.php
-class turnitin_workshop {
-
-}
+$plugins = array(
+	'plagiarism-turnitin_module'		=> array('files' => array('turnitin_module.js')),
+	'plagiarism-dataTables'				=> array('files' => array('jquery.dataTables.js', 'jquery.dataTables.css')),
+	'plagiarism-dataTables_plugins'		=> array('files' => array('jquery.dataTables.plugins.js')),
+	'plagiarism-turnitin_settings'		=> array('files' => array('turnitin_settings.js'))
+);

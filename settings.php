@@ -122,11 +122,30 @@ if (!empty($action)) {
     }
 }
 
+// Include Javascript & CSS.
+if ($do == "errors") {
+    if ($CFG->branch <= 25) {
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.plugins.js');
+        $PAGE->requires->js($jsurl);
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
+        $PAGE->requires->js($jsurl);
+
+        $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/jquery.dataTables.css');
+        $PAGE->requires->css($cssurl);
+    } else {
+        $PAGE->requires->jquery();
+        $PAGE->requires->jquery_plugin('plagiarism-dataTables', 'plagiarism_turnitin');
+        $PAGE->requires->jquery_plugin('plagiarism-dataTables_plugins', 'plagiarism_turnitin');
+        $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
+    }
+}
+
 if ($do != "savereport") {
     echo $OUTPUT->header();
-
-    echo html_writer::tag('link', '', array("rel" => "stylesheet", "type" => "text/css",
-                                                            "href" => $CFG->wwwroot."/mod/turnitintooltwo/css/styles_pp.css"));
 }
 
 switch ($do) {
@@ -225,9 +244,25 @@ switch ($do) {
         break;
 
     case "errors":
+        $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
-        echo html_writer::tag("p", get_string('errorsdesc', 'turnitintooltwo'));
+        echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
+
+        if ($resubmitted == "success") {
+            echo html_writer::tag("div", get_string('pperrorssuccess', 'turnitintooltwo'),
+                                            array('class' => 'pp_errors_success'));
+        } else if ($resubmitted == "errors") {
+            echo html_writer::tag("div", get_string('pperrorsfail', 'turnitintooltwo'),
+                                            array('class' => 'pp_errors_warning'));
+        }
+
+        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+                                array("class" => "btn btn-primary pp-resubmit-files"));
+
         echo $turnitinpluginview->show_file_errors_table();
+
+        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+                                array("class" => "btn btn-primary pp-resubmit-files"));
         break;
 }
 

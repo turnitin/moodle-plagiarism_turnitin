@@ -77,25 +77,22 @@ switch ($cmd) {
 
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
-        $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/styles_pp.css');
-        $PAGE->requires->css($cssurl);
         if ($CFG->branch <= 25) {
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js');
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
             $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-ui-1.10.4.custom.min.js');
             $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/plagiarism_plugin.js');
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
             $PAGE->requires->js($jsurl);
         } else {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('turnitintooltwo-plagiarism_plugin', 'mod_turnitintooltwo');
+            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
         }
         $user = new turnitintooltwo_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", 
-                                                get_string('turnitinppula', 'turnitintooltwo'));
+        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", '');
         $output .= $OUTPUT->box_end(true);
         echo $output;
 

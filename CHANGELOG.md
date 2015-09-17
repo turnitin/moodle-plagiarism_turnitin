@@ -1,4 +1,22 @@
-Releases before version 2015040106 will refer to changes made to the Turnitin's other Moodle plugins as well; the direct module and block.
+### Date:       2015-September-16
+### Release:    v2015040109
+
+- Submissions workflow changed to exclusively use Moodle's cron. Functionally to instantly send files to Turnitin via AJAX removed.
+- Instructors and admins can resend failed submissions to Turnitin.
+- Cron submissions limited to 50 per cron run.
+- Shared Turnitin Rubrics can be attached to modules.
+- Digital receipts can be sent without SMTP settings enabled (Thanks to NeillM).
+- Icons replaced with Font Awesome and Tii font sets.
+- Ability for instructor to submit on behalf of a student added.
+- SDK and Turnitin communication code added (not yet used).
+- Fixes:
+	- Peermark manager link hidden if Peermark not enabled.
+	- Due date pushed out on submission to forum.
+	- User who creates module is enrolled in Turnitin as main instructor instead of site admin.
+	- Rubric Manager now shows Shared Rubrics.
+	- File check added and slashes removed from filename before sending to Turnitin.
+
+---
 
 ### Date:       2015-July-31
 ### Release:    v2015040107
@@ -9,6 +27,8 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 	- Don't show the EULA for files previously submitted to Turnitin.
 
 ---
+
+Releases prior to version 2015040106 will refer to changes made to the Turnitin's other Moodle plugins as well; the direct module and block.
 
 ### Date:       2015-June-29
 ### Release:    v2015040106

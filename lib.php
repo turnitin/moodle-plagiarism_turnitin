@@ -717,7 +717,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
                             break;
                         default:
-                            $gradesreleased = ($gradeitem->hidden >= time()) false : true;
+                            $gradesreleased = ($gradeitem->hidden >= time()) ? false : true;
                             break;
                     }
                 }

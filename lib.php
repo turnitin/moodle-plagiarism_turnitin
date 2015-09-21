@@ -698,15 +698,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     'itemnumber' => 0
                                 );
 
-                // Get grade item and work out post date
-                $postdate = $moduleobject->initialise_post_date($moduledata);
+                // Get grade item and work out whether grades have been released for viewing.
+                $gradesreleased = true;
                 if ($gradeitem = $DB->get_record('grade_items', $gradeitemqueryarray)) {
                     switch ($gradeitem->hidden) {
                         case 1:
-                            $postdate = strtotime('+1 month');
+                            $gradesreleased = false;
                             break;
                         case 0:
-                            $postdate = time();
                             if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                                 $gradesreleased = $DB->record_exists(
                                                             'assign_user_flags',
@@ -715,12 +714,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 'assignment' => $cm->instance,
                                                                 'workflowstate' => 'released'
                                                             ));
-
-                                $postdate = ($gradesreleased) ? time() - 1 : strtotime('+1 month');
                             }
                             break;
                         default:
-                            $postdate = $gradeitem->hidden;
+                            $gradesreleased = ($gradeitem->hidden >= time()) false : true;
                             break;
                     }
                 }
@@ -793,7 +790,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Can grade and feedback be released to this student yet?
-                        $released = ($postdate <= time() && (!is_null($plagiarismfile->grade) || isset($currentgradequery->grade)));
+                        $released = ($gradesreleased && (!is_null($plagiarismfile->grade) || isset($currentgradequery->grade)));
 
                         // Show link to open grademark.
                         if ($config->usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))

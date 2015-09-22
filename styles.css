@@ -297,6 +297,12 @@ button.pp-resubmit-files {
     color: #009900 !important;
 }
 
+.tii_checkagainstnote {
+    border: 1px solid #6FCAFF;
+    background: #BBE6FF;
+    padding: 10px;
+    margin-bottom: 16px;
+}
 
 
 

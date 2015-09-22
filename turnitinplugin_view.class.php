@@ -275,6 +275,8 @@ class turnitinplugin_view {
                     break;
             }
 
+            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'turnitintooltwo'), array('class' => 'tii_checkagainstnote')));
+
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);

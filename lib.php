@@ -705,20 +705,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         case 1:
                             $gradesreleased = false;
                             break;
-                        case 0:
-                            if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                $gradesreleased = $DB->record_exists(
-                                                            'assign_user_flags',
-                                                            array(
-                                                                'userid' => $linkarray["userid"],
-                                                                'assignment' => $cm->instance,
-                                                                'workflowstate' => 'released'
-                                                            ));
-                            }
-                            break;
                         default:
                             $gradesreleased = ($gradeitem->hidden >= time()) ? false : true;
                             break;
+                    }
+
+                    // Give Marking workflow higher priority than gradebook hidden date.
+                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                        $gradesreleased = $DB->record_exists(
+                                                    'assign_user_flags',
+                                                    array(
+                                                        'userid' => $linkarray["userid"],
+                                                        'assignment' => $cm->instance,
+                                                        'workflowstate' => 'released'
+                                                    ));
                     }
                 }
 

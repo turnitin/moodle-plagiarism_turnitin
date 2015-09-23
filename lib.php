@@ -1125,10 +1125,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($submissiondata->submissiontype == "file") {
                     $fs = get_file_storage();
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
+                        $itemid = $file->get_itemid();
+                        
                         $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
                         $item = current($submission);
 
-                        if ($item->attemptnumber != 0) {
+                        if ($item->id != $itemid) {
                              $gbupdaterequired = false;
                         }
                     } else {

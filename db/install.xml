@@ -24,7 +24,8 @@
                 <FIELD NAME="submissiontype" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="orcapable" />
                 <FIELD NAME="orcapable" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="submissiontype" NEXT="errorcode"/>
                 <FIELD NAME="errorcode" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="orcapable" NEXT="errormsg"/>
-                <FIELD NAME="errormsg" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="errorcode"/>
+                <FIELD NAME="errormsg" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="errorcode" NEXT="student_read"/>
+                <FIELD NAME="student_read" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="errormsg"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

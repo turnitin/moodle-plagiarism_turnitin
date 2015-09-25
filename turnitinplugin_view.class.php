@@ -473,7 +473,7 @@ class turnitinplugin_view {
                             $cells["file"] = new html_table_cell(html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
                                                     $file->get_contextid().'/'.$file->get_component().'/'.$file->get_filearea().'/'.
                                                     $file->get_itemid().'/'.$file->get_filename(),
-                                                    $OUTPUT->pix_icon('fileicon', 'open '.$file->get_filename(), 'mod_turnitintooltwo').
+                                                    $OUTPUT->pix_icon('fileicon', 'open '.$file->get_filename(), 'turnitintool').
                                                         " ".$file->get_filename()));
                         } else {
                             $cells["file"] = get_string('filedoesnotexist', 'turnitintooltwo');
@@ -511,7 +511,7 @@ class turnitinplugin_view {
                     $cells["delete"] = new html_table_cell(html_writer::link($CFG->wwwroot.
                                             '/plagiarism/turnitin/settings.php?do=errors&action=deletefile&id='.$k,
                                             $OUTPUT->pix_icon('delete', get_string('deletesubmission', 'turnitintooltwo'),
-                                                'mod_turnitintooltwo'), $attributes));
+                                                'turnitintool'), $attributes));
                     $cells["delete"]->attributes['class'] = 'centered_cell';
 
                     $rows[$i] = new html_table_row($cells);

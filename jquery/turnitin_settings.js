@@ -45,4 +45,13 @@ jQuery(document).ready(function($) {
             }
         });
 	})
+
+    //Disable/enable resubmit selected files when one or more are selected.
+    $(document).on('click', '.errors_checkbox, input[name="errors_select_all"]', function() {
+        if ($('.errors_checkbox:checked').length > 0) {
+            $('.pp-resubmit-files').removeAttr('disabled');
+        } else {
+            $('.pp-resubmit-files').attr('disabled', 'disabled');
+        }
+    });
 });

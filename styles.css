@@ -31,13 +31,16 @@
 }
 
 .tii_links_container .grade_icon {
-	font-size: 8px;
-	position: relative;
+	margin-right: 8px;
 }
 
 .tii_links_container .row_rubric_view {
     position: relative;
     top:4px;
+}
+
+.tii_links_container .row_rubric_view i {
+    line-height: 1 !important;
 }
 
 .tii_links_container .rubric_view_pp_launch {
@@ -294,7 +297,16 @@ button.pp-resubmit-files {
     color: #009900 !important;
 }
 
+.student_read_icon {
+    margin-top: 10px;
+}
 
+.tii_checkagainstnote {
+    border: 1px solid #6FCAFF;
+    background: #BBE6FF;
+    padding: 10px;
+    margin-bottom: 16px;
+}
 
 
 

@@ -698,30 +698,27 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     'itemnumber' => 0
                                 );
 
-                // Get grade item and work out post date
-                $postdate = $moduleobject->initialise_post_date($moduledata);
+                // Get grade item and work out whether grades have been released for viewing.
+                $gradesreleased = true;
                 if ($gradeitem = $DB->get_record('grade_items', $gradeitemqueryarray)) {
                     switch ($gradeitem->hidden) {
                         case 1:
-                            $postdate = strtotime('+1 month');
-                            break;
-                        case 0:
-                            $postdate = time();
-                            if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                $gradesreleased = $DB->record_exists(
-                                                            'assign_user_flags',
-                                                            array(
-                                                                'userid' => $linkarray["userid"],
-                                                                'assignment' => $cm->instance,
-                                                                'workflowstate' => 'released'
-                                                            ));
-
-                                $postdate = ($gradesreleased) ? time() - 1 : strtotime('+1 month');
-                            }
+                            $gradesreleased = false;
                             break;
                         default:
-                            $postdate = $gradeitem->hidden;
+                            $gradesreleased = ($gradeitem->hidden >= time()) ? false : true;
                             break;
+                    }
+
+                    // Give Marking workflow higher priority than gradebook hidden date.
+                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                        $gradesreleased = $DB->record_exists(
+                                                    'assign_user_flags',
+                                                    array(
+                                                        'userid' => $linkarray["userid"],
+                                                        'assignment' => $cm->instance,
+                                                        'workflowstate' => 'released'
+                                                    ));
                     }
                 }
 
@@ -793,7 +790,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Can grade and feedback be released to this student yet?
-                        $released = ($postdate <= time() && (!is_null($plagiarismfile->grade) || isset($currentgradequery->grade)));
+                        $released = ($gradesreleased && (!is_null($plagiarismfile->grade) || isset($currentgradequery->grade)));
 
                         // Show link to open grademark.
                         if ($config->usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))
@@ -815,6 +812,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Put in div placeholder for DV launch form.
                             $output .= $OUTPUT->box('', 'launch_form grademark_form_'.$plagiarismfile->externalid);
                             $output .= $OUTPUT->box_end(true);
+                        }
+
+                        // Indicate whether student has viewed the feedback.
+                        if ($istutor) {
+                            if (isset($plagiarismfile->externalid)) {
+                                $studentread = (!empty($plagiarismfile->student_read)) ? $plagiarismfile->student_read : 0;
+                                if ($studentread > 0) {
+                                    $output .= $OUTPUT->pix_icon('icon-student-read',
+                                                        get_string('student_read', 'turnitintooltwo').' '.userdate($studentread),
+                                                        'mod_turnitintooltwo', array("class" => "student_read_icon"));
+                                } else {
+                                    $output .= $OUTPUT->pix_icon('icon-dot', get_string('student_notread', 'turnitintooltwo'),
+                                                        'mod_turnitintooltwo', array("class" => "student_read_icon"));
+                                }
+                            } else {
+                                $output .= "--";
+                            }
                         }
 
                         // Show link to view rubric for student.
@@ -1055,7 +1069,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $readsubmission = $response->getSubmission();
 
-            $this->update_submission($cm, $submissionid, $readsubmission);
+            $submissiondata = $DB->get_record('plagiarism_turnitin_files',
+                                                array('externalid' => $readsubmission->getSubmissionId()), 'id');
+
+            $this->update_submission($cm, $submissiondata->id, $readsubmission);
 
         } catch (Exception $e) {
             $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
@@ -1072,7 +1089,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $updaterequired = false;
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
-                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable')) {
+                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read')) {
             $plagiarismfile = new object();
             $plagiarismfile->id = $submissiondata->id;
             $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ?
@@ -1085,16 +1102,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
             $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
 
+            //Update feedback timestamp.
+            $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ?
+                                    strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
+
             // Identify if an update is required for the similarity score and grade.
             if (!is_null($plagiarismfile->similarityscore) || !is_null($plagiarismfile->grade) ||
                     !is_null($plagiarismfile->orcapable)) {
                 if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
                         $submissiondata->grade != $plagiarismfile->grade ||
-                        $submissiondata->orcapable != $plagiarismfile->orcapable) {
+                        $submissiondata->orcapable != $plagiarismfile->orcapable || 
+                        $submissiondata->student_read != $plagiarismfile->student_read) {
                     $updaterequired = true;
                 }
             }
-
             // Don't update grademark if the submission is not part of the latest attempt.
             $gbupdaterequired = $updaterequired;
             if ($cm->modname == "assign" && $CFG->branch >= 25) {
@@ -1102,9 +1123,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $fs = get_file_storage();
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
-                        $submission = $DB->get_record('assign_submission', array('id' => $itemid), 'latest');
-                        if ($submission->latest != 1) {
-                            $gbupdaterequired = false;
+                        
+                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
+                        $item = current($submission);
+
+                        if ($item->id != $itemid) {
+                             $gbupdaterequired = false;
                         }
                     } else {
                         $gbupdaterequired = false;

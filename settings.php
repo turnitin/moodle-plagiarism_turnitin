@@ -257,12 +257,12 @@ switch ($do) {
         }
 
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
-                                array("class" => "btn btn-primary pp-resubmit-files"));
+                                array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
         echo $turnitinpluginview->show_file_errors_table();
 
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
-                                array("class" => "btn btn-primary pp-resubmit-files"));
+                                array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
         break;
 }
 

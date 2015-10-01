@@ -1,3 +1,15 @@
+### Date:       2015-October-01
+### Release:    v2015040110
+
+- Disable resubmit button in admin area until a submission has been selected.
+- Indicator added to show whether student has viewed GradeMark feedback.
+- Notice added to warn assignment creators to check against sources.
+- Fixes:
+	- File titles cleaned up before creating temp files to remove slash permission errors.
+	- Checking for released grades reworked for assignments with marking workflow.
+
+---
+
 ### Date:       2015-September-16
 ### Release:    v2015040109
 

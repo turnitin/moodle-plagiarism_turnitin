@@ -2,19 +2,19 @@
 
 /*
  * @package TurnitinAPI
- * @subpackage TiiPeermarkAssignment 
+ * @subpackage TiiPeermarkAssignment
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
 /**
  * Defines the TiiPeermarkAssignment data object which contains getters and setters for a Turnitin Peermark Assignment object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
 class TiiPeermarkAssignment {
-    
+
     private $assignmentid;
     private $title;
     private $startdate;
@@ -34,7 +34,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Id for this Peermark Assignment
-     * 
+     *
      * @return integer
      */
     public function getAssignmentId() {
@@ -43,7 +43,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Id for this Peermark Assignment
-     * 
+     *
      * @param integer $assignmentid
      */
     public function setAssignmentId($assignmentid) {
@@ -52,7 +52,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Title for this Peermark Assignment
-     * 
+     *
      * @return text
      */
     public function getTitle() {
@@ -61,7 +61,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Title for this Peermark Assignment
-     * 
+     *
      * @param text $title
      */
     public function setTitle($title) {
@@ -70,9 +70,9 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Start Date for this Peermark Assignment
-     * 
+     *
      * Start Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $startdate
      */
     public function setStartDate( $startdate ) {
@@ -81,9 +81,9 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Start Date for this Peermark Assignment
-     * 
+     *
      * Start Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getStartDate() {
@@ -92,9 +92,9 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Due Date for this Peermark Assignment
-     * 
+     *
      * Due Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $duedate
      */
     public function setDueDate( $duedate ) {
@@ -103,21 +103,21 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Due Date for this Peermark Assignment
-     * 
+     *
      * Due Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getDueDate() {
         return $this->duedate;
     }
-    
+
     /**
      * Set the Feedback Release Date for this Peermark Assignment
-     * 
+     *
      * Feedback Release Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
      * The date that any GradeMark feedback is released to the authors of reviews made to this assignment.
-     * 
+     *
      * @param string $feedbackreleasedate
      */
     public function setFeedbackReleaseDate( $feedbackreleasedate ) {
@@ -126,10 +126,10 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Feedback ReleaseDate for this Peermark Assignment
-     * 
+     *
      * Feedback Release Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
      * The date that any GradeMark feedback is released to the authors of reviews made to this Peermark assignment.
-     * 
+     *
      * @return string
      */
     public function getFeedbackReleaseDate() {
@@ -138,10 +138,10 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Max Grade awarded for this Peermark Assignment
-     * 
+     *
      * This will determine the maximum grade allowed as an overall grade for this Peermark Assignment.
      * Value must be between 0 and 100
-     * 
+     *
      * @param integer $maxgrade
      */
     public function setMaxGrade( $maxgrade ) {
@@ -150,10 +150,10 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Max Grade awarded for this Assignment
-     * 
+     *
      * This will determine the maximum grade allowed as an overall grade for this Peermark Assignment.
      * Value must be between 0 and 100
-     * 
+     *
      * @return integer
      */
     public function getMaxGrade() {
@@ -162,7 +162,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the number of distributed reviews required for this Peermark Assignment
-     * 
+     *
      * @return integer
      */
     public function getDistributedReviews() {
@@ -171,7 +171,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the number of distributed reviews required for this Peermark Assignment
-     * 
+     *
      * @param integer $distributedreviews
      */
     public function setDistributedReviews($distributedreviews) {
@@ -180,7 +180,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the number of user selected reviews required for this Peermark Assignment
-     * 
+     *
      * @return integer
      */
     public function getSelectedReviews() {
@@ -189,7 +189,7 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the number of user selected reviews required for this Peermark Assignment
-     * 
+     *
      * @param integer $selectedreviews
      */
     public function setSelectedReviews($selectedreviews) {
@@ -200,7 +200,7 @@ class TiiPeermarkAssignment {
      * Get the Self Review Required setting for this Peermark Assignment
      *
      * This will determine whether a student has to review their own paper
-     * 
+     *
      * @return boolean
      */
     public function getSelfReviewRequired() {
@@ -210,7 +210,7 @@ class TiiPeermarkAssignment {
     /**
      * Set the Self Review Required setting for this Peermark Assignment
      *
-     * This will determine whether a student has to review their own paper 
+     * This will determine whether a student has to review their own paper
      *
      * @param boolean $selfreviewrequired
      */
@@ -222,7 +222,7 @@ class TiiPeermarkAssignment {
      * Get the Show Reviewer Names setting for this Peermark Assignment
      *
      * This will determine whether reviewers names are revealed to students
-     * 
+     *
      * @return boolean
      */
     public function getShowReviewerNames() {
@@ -244,7 +244,7 @@ class TiiPeermarkAssignment {
      * Get the Non Submitters To Review setting for this Peermark Assignment
      *
      * This will determine whether students who have not yet submitted to the assignment can review papers
-     * 
+     *
      * @return boolean
      */
     public function getNonSubmittersToReview() {
@@ -266,7 +266,7 @@ class TiiPeermarkAssignment {
      * Get the Submitters Read All Papers setting for this Peermark Assignment
      *
      * This will determine whether submitters can read all papers after the start date
-     * 
+     *
      * @return boolean
      */
     public function getSubmittersReadAllPapers() {
@@ -288,7 +288,7 @@ class TiiPeermarkAssignment {
      * Get the Students Read All Papers setting for this Peermark Assignment
      *
      * This will determine whether students can read all papers and all reviews after the feedback release date
-     * 
+     *
      * @return boolean
      */
     public function getStudentsReadAllPapers() {
@@ -310,7 +310,7 @@ class TiiPeermarkAssignment {
      * Get the Full Credit If Completed setting for this Peermark Assignment
      *
      * This will determine whether students get full points if a review is written
-     * 
+     *
      * @return boolean
      */
     public function getFullCreditIfCompleted() {
@@ -330,9 +330,9 @@ class TiiPeermarkAssignment {
 
     /**
      * Set the Instructions message for this Peermark Assignment
-     * 
+     *
      * Instructions for the Peermark Assignment must be a string with a maximum of 1000 characters
-     * 
+     *
      * @param string $instructions
      */
     public function setInstructions( $instructions ) {
@@ -341,9 +341,9 @@ class TiiPeermarkAssignment {
 
     /**
      * Get the Instructors message for this Peermark Assignment
-     * 
+     *
      * Instructions for the Peermark Assignment must be a string with a maximum of 1000 characters
-     * 
+     *
      * @return string
      */
     public function getInstructions() {
@@ -354,7 +354,7 @@ class TiiPeermarkAssignment {
      * Get the To Delete flag for this Peermark Assignment
      *
      * This will determine whether peermark assignment is to be deleted
-     * 
+     *
      * @return boolean
      */
     public function getToDelete() {
@@ -373,3 +373,5 @@ class TiiPeermarkAssignment {
     }
 
 }
+
+//?>

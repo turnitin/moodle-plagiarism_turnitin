@@ -1,7 +1,7 @@
 <?php
-/* 
+/*
  * @package TurnitinAPI
- * @subpackage TiiAssignment 
+ * @subpackage TiiAssignment
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -10,7 +10,7 @@ require_once( 'tiipeermarkassignment.class.php' );
 
 /**
  * Defines the TiiAssignment data object which contains getters and setters for a Turnitin Assignment API object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
@@ -51,10 +51,14 @@ class TiiAssignment {
     private $instructordefaultssave;
     private $peermarkassignments;
     private $allownonorsubmissions;
+    private $eraterclientid;
+    private $eraterpromptid;
+    private $eraterusername;
+    private $eraterpassword;
 
     /**
      * Set the Class ID
-     * 
+     *
      * @param integer $classid
      */
     public function setClassId( $classid ) {
@@ -63,7 +67,7 @@ class TiiAssignment {
 
     /**
      * Get the Class ID
-     * 
+     *
      * @return integer
      */
     public function getClassId() {
@@ -72,9 +76,9 @@ class TiiAssignment {
 
     /**
      * Set the Title for this Assignment
-     * 
+     *
      * Assignment titles may be between 3 and 99 characters
-     * 
+     *
      * @param string $title
      */
     public function setTitle( $title ) {
@@ -83,9 +87,9 @@ class TiiAssignment {
 
     /**
      * Get the Title for this Assignment
-     * 
+     *
      * Assignment titles may be between 3 and 99 characters
-     * 
+     *
      * @return string
      */
     public function getTitle() {
@@ -94,7 +98,7 @@ class TiiAssignment {
 
     /**
      * Set the Assignment ID
-     * 
+     *
      * @param integer $assignmentid
      */
     public function setAssignmentId( $assignmentid ) {
@@ -103,7 +107,7 @@ class TiiAssignment {
 
     /**
      * Get the Assignment ID
-     * 
+     *
      * @return integer
      */
     public function getAssignmentId() {
@@ -112,7 +116,7 @@ class TiiAssignment {
 
     /**
      * Set an array of Assignment IDs
-     * 
+     *
      * @param array $assignmentids
      */
     public function setAssignmentIds( $assignmentids ) {
@@ -121,7 +125,7 @@ class TiiAssignment {
 
     /**
      * Get an array of Assignment IDs
-     * 
+     *
      * @return array
      */
     public function getAssignmentIds() {
@@ -130,9 +134,9 @@ class TiiAssignment {
 
     /**
      * Set the Start Date for this Assignment
-     * 
+     *
      * Start Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $startdate
      */
     public function setStartDate( $startdate ) {
@@ -141,9 +145,9 @@ class TiiAssignment {
 
     /**
      * Get the Start Date for this Assignment
-     * 
+     *
      * Start Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getStartDate() {
@@ -152,9 +156,9 @@ class TiiAssignment {
 
     /**
      * Set the Due Date for this Assignment
-     * 
+     *
      * Due Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $duedate
      */
     public function setDueDate( $duedate ) {
@@ -163,21 +167,21 @@ class TiiAssignment {
 
     /**
      * Get the Due Date for this Assignment
-     * 
+     *
      * Due Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getDueDate() {
         return $this->duedate;
     }
-    
+
     /**
      * Set the Feedback Release Date for this Assignment
-     * 
+     *
      * Feedback Release Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
      * The date that any GradeMark feedback is released to the authors of submissions made to this assignment.
-     * 
+     *
      * @param string $feedbackreleasedate
      */
     public function setFeedbackReleaseDate( $feedbackreleasedate ) {
@@ -186,10 +190,10 @@ class TiiAssignment {
 
     /**
      * Get the Feedback ReleaseDate for this Assignment
-     * 
+     *
      * Feedback Release Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
      * The date that any GradeMark feedback is released to the authors of submissions made to this assignment.
-     * 
+     *
      * @return string
      */
     public function getFeedbackReleaseDate() {
@@ -198,9 +202,9 @@ class TiiAssignment {
 
     /**
      * Set the Instructions message for this Assignment
-     * 
+     *
      * Instructions for the Assignment must be a string with a maximum of 1000 characters
-     * 
+     *
      * @param string $instructions
      */
     public function setInstructions( $instructions ) {
@@ -209,9 +213,9 @@ class TiiAssignment {
 
     /**
      * Get the Instructors message for this Assignment
-     * 
+     *
      * Instructions for the Assignment must be a string with a maximum of 1000 characters
-     * 
+     *
      * @return string
      */
     public function getInstructions() {
@@ -220,9 +224,9 @@ class TiiAssignment {
 
     /**
      * Set the Author Originality Access setting for this Assignment
-     * 
+     *
      * This will determine if submission authors should be able to view originality reports
-     * 
+     *
      * @param boolean $authororiginalityaccess
      */
     public function setAuthorOriginalityAccess( $authororiginalityaccess ) {
@@ -231,9 +235,9 @@ class TiiAssignment {
 
     /**
      * Get the Author Originality Access setting for this Assignment
-     * 
+     *
      * This will determine if submission authors should be able to view originality reports
-     * 
+     *
      * @return boolean
      */
     public function getAuthorOriginalityAccess() {
@@ -246,7 +250,7 @@ class TiiAssignment {
 
     /**
      * Set the Rubric ID attached to this assignment
-     * 
+     *
      * @param integer $rubricid
      */
     public function setRubricId( $rubricid ) {
@@ -255,7 +259,7 @@ class TiiAssignment {
 
     /**
      * Get the Rubric ID
-     * 
+     *
      * @return integer
      */
     public function getRubricId() {
@@ -264,9 +268,9 @@ class TiiAssignment {
 
     /**
      * Set the Submitted Documents Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Submitted Documents sources database
-     * 
+     *
      * @param boolean $submitteddocumentscheck
      */
     public function setSubmittedDocumentsCheck( $submitteddocumentscheck ) {
@@ -275,9 +279,9 @@ class TiiAssignment {
 
     /**
      * Get the Submitted Documents Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Submitted Documents sources database
-     * 
+     *
      * @return boolean
      */
     public function getSubmittedDocumentsCheck() {
@@ -290,9 +294,9 @@ class TiiAssignment {
 
     /**
      * Set the Internet Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Internet sources database
-     * 
+     *
      * @param boolean $internetcheck
      */
     public function setInternetCheck(  $internetcheck ) {
@@ -301,9 +305,9 @@ class TiiAssignment {
 
     /**
      * Get the Internet Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Internet sources database
-     * 
+     *
      * @return boolean
      */
     public function getInternetCheck() {
@@ -316,9 +320,9 @@ class TiiAssignment {
 
     /**
      * Set the Publications Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Publication sources database
-     * 
+     *
      * @param boolean $publicationscheck
      */
     public function setPublicationsCheck(  $publicationscheck ) {
@@ -327,9 +331,9 @@ class TiiAssignment {
 
     /**
      * Get the Publications Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Publication sources database
-     * 
+     *
      * @return boolean
      */
     public function getPublicationsCheck() {
@@ -342,10 +346,10 @@ class TiiAssignment {
 
     /**
      * Set the Institution Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Institution paper repository.
      * Only applicable if the account has an institutional repository.
-     * 
+     *
      * @param boolean $institutioncheck
      */
     public function setInstitutionCheck(  $institutioncheck ) {
@@ -354,10 +358,10 @@ class TiiAssignment {
 
     /**
      * Get the Institution Check setting for this Assignment
-     * 
+     *
      * This will determine if submissions are checked for similarity with the Institution paper repository.
      * Only applicable if the account has an institutional repository.
-     * 
+     *
      * @return boolean
      */
     public function getInstitutionCheck() {
@@ -367,13 +371,13 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Max Grade awarded for this Assignment
-     * 
+     *
      * This will determine the maximum grade allowed as an overall grade for this Assignment.
      * Value must be between 0 and 999
-     * 
+     *
      * @param integer $maxgrade
      */
     public function setMaxGrade( $maxgrade ) {
@@ -382,21 +386,21 @@ class TiiAssignment {
 
     /**
      * Get the Max Grade awarded for this Assignment
-     * 
+     *
      * This will determine the maximum grade allowed as an overall grade for this Assignment.
      * Value must be between 0 and 999
-     * 
+     *
      * @return integer
      */
     public function getMaxGrade() {
         return $this->maxgrade;
     }
-    
+
     /**
      * Set the Late Submissions Allowed setting for this Assignment
-     * 
+     *
      * This will determine whether a submission can be made after the Due Date for this Assignment
-     * 
+     *
      * @param boolean $latesubmissionsallowed
      */
     public function setLateSubmissionsAllowed(  $latesubmissionsallowed ) {
@@ -405,9 +409,9 @@ class TiiAssignment {
 
     /**
      * Get the Late Submissions Allowed setting for this Assignment
-     * 
+     *
      * This will determine whether a submission can be made after the Due Date for this Assignment
-     * 
+     *
      * @return boolean
      */
     public function getLateSubmissionsAllowed() {
@@ -417,17 +421,17 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the setting to determine where the submission is submitted to
-     * 
+     *
      * Options are:<br />
      * <ul>
      * <li>No Repository (0)</li>
      * <li>Standard Repository (1) (Default)</li>
      * <li>Institution Repository (2)</li>
-     * </ul>  
-     * 
+     * </ul>
+     *
      * @param integer $submitpapersto
      */
     public function setSubmitPapersTo(  $submitpapersto ) {
@@ -436,30 +440,30 @@ class TiiAssignment {
 
     /**
      * Get the setting to determine where the submission is submitted to
-     * 
+     *
      * Options are:<br />
      * <ul>
      * <li>No Repository (0)</li>
      * <li>Standard Repository (1) (Default)</li>
      * <li>Institution Repository (2)</li>
      * </ul>
-     * 
+     *
      * @return integer
      */
     public function getSubmitPapersTo() {
         return $this->submitpapersto;
     }
-    
+
     /**
      * Set the setting to determine the Resubmission and Report Generation rules
-     * 
+     *
      * Options are:<br />
      * <ul>
      * <li>Generate Report Immediately, firt report is final (0) (Default)</li>
      * <li>Generate Report Immediately, can resubmit until due date (1)</li>
      * <li>Generate Report on Due Date, (2)</li>
      * </ul>
-     * 
+     *
      * @param integer $resubmissionrule
      */
     public function setResubmissionRule( $resubmissionrule ) {
@@ -468,25 +472,25 @@ class TiiAssignment {
 
     /**
      * Get the setting to determine the Resubmission and Report Generation rules
-     * 
+     *
      * Options are:<br />
      * <ul>
      * <li>Generate Report Immediately, firt report is final (0) (Default)</li>
      * <li>Generate Report Immediately, can resubmit until due date (1)</li>
      * <li>Generate Report on Due Date, (2)</li>
      * </ul>
-     * 
+     *
      * @return integer
      */
     public function getResubmissionRule() {
         return $this->resubmissionrule;
     }
-    
+
     /**
      * Set the Bibliography Excluded setting
-     * 
+     *
      * This setting determines whether bibliographies should be excluded when calculating similarities
-     * 
+     *
      * @param boolean $bibliographyexcluded
      */
     public function setBibliographyExcluded(  $bibliographyexcluded ) {
@@ -495,9 +499,9 @@ class TiiAssignment {
 
     /**
      * Get the Bibliography Excluded setting
-     * 
+     *
      * This setting determines whether bibliographies should be excluded when calculating similarities
-     * 
+     *
      * @return boolean
      */
     public function getBibliographyExcluded() {
@@ -507,12 +511,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Quoted Excluded setting for this Assignment
-     * 
+     *
      * This setting determines whether quoted text should be excluded when calculating similarities
-     * 
+     *
      * @param boolean $quotedexcluded
      */
     public function setQuotedExcluded(  $quotedexcluded ) {
@@ -521,9 +525,9 @@ class TiiAssignment {
 
     /**
      * Get the Quoted Excluded setting for this Assignment
-     * 
+     *
      * This setting determines whether quoted text should be excluded when calculating similarities
-     * 
+     *
      * @return boolean
      */
     public function getQuotedExcluded() {
@@ -536,7 +540,7 @@ class TiiAssignment {
 
     /**
      * Set the Exclude Small Matches type setting on this Assignment
-     * 
+     *
      * This setting determines whether small matches should be excluded when calculating similarities.
      * It also defines what type of small match exclusion to use, options are:
      * <ul>
@@ -544,7 +548,7 @@ class TiiAssignment {
      * <li>Exclude Based on Word Count (1)</li>
      * <li>Exclude Based on Percentage (2)</li>
      * </ul>
-     * 
+     *
      * @param integer $smallmatchexclusiontype
      */
     public function setSmallMatchExclusionType( $smallmatchexclusiontype ) {
@@ -553,7 +557,7 @@ class TiiAssignment {
 
     /**
      * Get the Exclude Small Matches type setting on this Assignment
-     * 
+     *
      * This setting determines whether small matches should be excluded when calculating similarities.
      * It also defines what type of small match exclusion to use, options are:
      * <ul>
@@ -561,20 +565,20 @@ class TiiAssignment {
      * <li>Exclude Based on Word Count (1)</li>
      * <li>Exclude Based on Percentage (2)</li>
      * </ul>
-     * 
+     *
      * @return integer
      */
     public function getSmallMatchExclusionType() {
         return $this->smallmatchexclusiontype;
     }
-    
+
     /**
      * Set the Exclude Small Matches Threshold on this Assignment
-     * 
+     *
      * This setting determines the threshold at which to exclude small matches.
      * Takes an integer which is used to determine the threshold depending on the Small Match Type
      * set by {@link TiiAssignment.html#getSmallMatchExclusionType TiiAssignment->getSmallMatchExclusionType()}
-     * 
+     *
      * @param integer $smallmatchexclusionthreshold
      */
     public function setSmallMatchExclusionThreshold( $smallmatchexclusionthreshold ) {
@@ -583,23 +587,23 @@ class TiiAssignment {
 
     /**
      * Get the Exclude Small Matches Threshold on this Assignment
-     * 
+     *
      * This setting determines the threshold at which to exclude small matches.
      * Takes an integer which is used to determine the threshold depending on the Small Match Type
      * set by {@link TiiAssignment.html#getSmallMatchExclusionType TiiAssignment->getSmallMatchExclusionType()}
-     * 
+     *
      * @return integer
      */
     public function getSmallMatchExclusionThreshold() {
         return $this->smallmatchexclusionthreshold;
     }
-    
+
     /**
      * Set the Anonymous Marking setting for this Assignment
-     * 
+     *
      * This setting determines whether student names associated with the submissions made to
      * this Assignment should remain anonymous until the Post Date for this Assignment.
-     * 
+     *
      * @param boolean $anonymousmarking
      */
     public function setAnonymousMarking(  $anonymousmarking ) {
@@ -608,10 +612,10 @@ class TiiAssignment {
 
     /**
      * Get the Anonymous Marking setting for this Assignment
-     * 
+     *
      * This setting determines whether student names associated with the submissions made to
      * this Assignment should remain anonymous until the Post Date for this Assignment.
-     * 
+     *
      * @return boolean
      */
     public function getAnonymousMarking() {
@@ -621,13 +625,13 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater setting for this Assignment
-     * 
+     *
      * This setting determines whether the submissions made to this Assignment should be assessed by the ETS e-rater service.
      * This setting is only applicable for accounts that have the erater service enabled.
-     * 
+     *
      * @param boolean $erater
      */
     public function setErater(  $erater ) {
@@ -636,10 +640,10 @@ class TiiAssignment {
 
     /**
      * Get the Erater setting for this Assignment
-     * 
+     *
      * This setting determines whether the submissions made to this Assignment should be assessed by the ETS e-rater service.
      * This setting is only applicable for accounts that have the erater service enabled.
-     * 
+     *
      * @return boolean
      */
     public function getErater() {
@@ -649,12 +653,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Spelling setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check spelling.
-     * 
+     *
      * @param boolean $eraterspelling
      */
     public function setEraterSpelling(  $eraterspelling ) {
@@ -663,9 +667,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Spelling setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check spelling.
-     * 
+     *
      * @return boolean
      */
     public function getEraterSpelling() {
@@ -675,12 +679,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Grammar setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check grammar.
-     * 
+     *
      * @param boolean $eratergrammar
      */
     public function setEraterGrammar(  $eratergrammar ) {
@@ -689,9 +693,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Grammar setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check grammar.
-     * 
+     *
      * @return boolean
      */
     public function getEraterGrammar() {
@@ -701,12 +705,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Usage setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check word and phrase usage.
-     * 
+     *
      * @param boolean $eraterusage
      */
     public function setEraterUsage(  $eraterusage ) {
@@ -715,9 +719,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Usage setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check word and phrase usage.
-     * 
+     *
      * @return boolean
      */
     public function getEraterUsage() {
@@ -727,12 +731,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Mechanics setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check word and phrase mechanics.
-     * 
+     *
      * @param boolean $eratermechanics
      */
     public function setEraterMechanics(  $eratermechanics ) {
@@ -741,9 +745,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Mechanics setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check word and phrase mechanics.
-     * 
+     *
      * @return boolean
      */
     public function getEraterMechanics() {
@@ -753,12 +757,12 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Style setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check writing style.
-     * 
+     *
      * @param integer $eraterstyle
      */
     public function setEraterStyle( $eraterstyle ) {
@@ -767,9 +771,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Style setting for this Assignment
-     * 
+     *
      * This setting determines whether the ETS e-rater service should check writing style.
-     * 
+     *
      * @return boolean
      */
     public function getEraterStyle() {
@@ -779,19 +783,19 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Set the Erater Spelling Dictionary setting for this Assignment
-     * 
+     *
      * This setting determines which dictionary to use with the ETS e-rater service.
-     * 
+     *
      * Options are:
      * <ul>
      * <li>UK and US English Dictionaries (en)</li>
      * <li>UK English Dictionaries (en_GB)</li>
      * <li>US English Dictionaries (en_US)</li>
      * </ul>
-     * 
+     *
      * @param string $eraterspellingdictionary
      */
     public function setEraterSpellingDictionary( $eraterspellingdictionary ) {
@@ -800,27 +804,27 @@ class TiiAssignment {
 
     /**
      * Get the Erater Spelling Dictionary setting for this Assignment
-     * 
+     *
      * This setting determines which dictionary to use with the ETS e-rater service.
-     * 
+     *
      * Options are:
      * <ul>
      * <li>UK and US English Dictionaries (en)</li>
      * <li>UK English Dictionaries (en_GB)</li>
      * <li>US English Dictionaries (en_US)</li>
      * </ul>
-     * 
+     *
      * @return string
      */
     public function getEraterSpellingDictionary() {
         return $this->eraterspellingdictionary;
     }
-    
+
     /**
      * Set the Erater Handbook setting for this Assignment
-     * 
+     *
      * This setting determines which Student Handbook to use with the ETS e-rater service.
-     * 
+     *
      * Options are:
      * <ul>
      * <li>Advanced (1)</li>
@@ -829,7 +833,7 @@ class TiiAssignment {
      * <li>Elementary (4)</li>
      * <li>English Learners (5)</li>
      * </ul>
-     * 
+     *
      * @return string $eraterhandbook
      */
     public function setEraterHandbook( $eraterhandbook ) {
@@ -838,9 +842,9 @@ class TiiAssignment {
 
     /**
      * Get the Erater Handbook setting for this Assignment
-     * 
+     *
      * This setting determines which Student Handbook to use with the ETS e-rater service.
-     * 
+     *
      * Options are:
      * <ul>
      * <li>Advanced (1)</li>
@@ -849,7 +853,7 @@ class TiiAssignment {
      * <li>Elementary (4)</li>
      * <li>English Learners (5)</li>
      * </ul>
-     * 
+     *
      * @return string
      */
     public function getEraterHandbook() {
@@ -858,9 +862,9 @@ class TiiAssignment {
 
     /**
      * Set the Translated Matching setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use Translated Matching on submissions to this Assignment when calculating the similarity.
-     * 
+     *
      * @param boolean $translatedmatching
      */
     public function setTranslatedMatching(  $translatedmatching ) {
@@ -869,9 +873,9 @@ class TiiAssignment {
 
     /**
      * Get the Translated Matching setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use Translated Matching on submissions to this Assignment when calculating the similarity.
-     * 
+     *
      * @return boolean
      */
     public function getTranslatedMatching() {
@@ -881,13 +885,13 @@ class TiiAssignment {
             return null;
         }
     }
-    
+
     /**
      * Get the Instructor Defaults setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use the Instructor Saved Defaults as default settings for this Assignment
      * Takes the Turnitin User ID of the Instructor that the default settings are saved against
-     * 
+     *
      * @return integer
      */
     public function getInstructorDefaults() {
@@ -896,10 +900,10 @@ class TiiAssignment {
 
     /**
      * Set the Instructor Defaults setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use the Instructor Saved Defaults as default settings for this Assignment
      * Takes the Turnitin User ID of the Instructor that the default settings are saved against
-     * 
+     *
      * @param integer $instructordefaults
      */
     public function setInstructorDefaults( $instructordefaults ) {
@@ -908,10 +912,10 @@ class TiiAssignment {
 
     /**
      * Get the Instructor Defaults Save setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use the Assignment settings in this Assignment object as Instructor Defaults
      * Takes the Turnitin User ID of the Instructor that the default settings are to be saved against
-     * 
+     *
      * @return integer
      */
     public function getInstructorDefaultsSave() {
@@ -920,10 +924,10 @@ class TiiAssignment {
 
     /**
      * Set the Instructor Defaults Save setting for this Assignment
-     * 
+     *
      * This setting determines whether or not to use the Assignment settings in this Assignment object as Instructor Defaults
      * Takes the Turnitin User ID of the Instructor that the default settings are to be saved against
-     * 
+     *
      * @param integer $instructordefaultssave
      */
     public function setInstructorDefaultsSave($instructordefaultssave) {
@@ -932,9 +936,9 @@ class TiiAssignment {
 
     /**
      * Get the Peermark Assignments for this Assignment
-     * 
+     *
      * Returns an array of TiiPeermarkAssignment Objects
-     * 
+     *
      * @return array
      */
     public function getPeermarkAssignments() {
@@ -943,9 +947,9 @@ class TiiAssignment {
 
     /**
      * Set the Peermark Assignments for this Assignment
-     * 
+     *
      * Takes an array of TiiPeermarkAssignment Objects
-     * 
+     *
      * @param array $peermarkassignments
      */
     public function setPeermarkAssignments( $peermarkassignments ) {
@@ -974,4 +978,94 @@ class TiiAssignment {
         $this->allownonorsubmissions = $allownonorsubmissions;
     }
 
+    /**
+     * Get the Erater Prompt ID for this Assignment
+     *
+     * Returns the e-rater prompt id string
+     *
+     * @return string
+     */
+    public function getEraterPromptId() {
+        return $this->eraterpromptid;
+    }
+
+    /**
+     * Set the Erater Prompt ID for this Assignment
+     *
+     * Sets the e-rater prompt id string
+     *
+     * @param string $eraterpromptid
+     */
+    public function setEraterPromptId( $eraterpromptid ) {
+        $this->eraterpromptid = $eraterpromptid;
+    }
+
+    /**
+     * Get the Erater Client ID for this Assignment
+     *
+     * Returns the e-rater client id string
+     *
+     * @return string
+     */
+    public function getEraterClientId() {
+        return $this->eraterclientid;
+    }
+
+    /**
+     * Set the Erater Client ID for this Assignment
+     *
+     * Sets the e-rater client id string
+     *
+     * @param string $eraterclientid
+     */
+    public function setEraterClientId( $eraterclientid ) {
+        $this->eraterclientid = $eraterclientid;
+    }
+
+    /**
+     * Get the Erater Username for this Assignment
+     *
+     * Returns the e-rater username
+     *
+     * @return string
+     */
+    public function getEraterUsername() {
+        return $this->eraterusername;
+    }
+
+    /**
+     * Set the Erater Username for this Assignment
+     *
+     * Sets the e-rater username
+     *
+     * @param string $eraterusername
+     */
+    public function setEraterUsername( $eraterusername ) {
+        $this->eraterusername = $eraterusername;
+    }
+
+    /**
+     * Get the Erater Password for this Assignment
+     *
+     * Returns the e-rater Password
+     *
+     * @return string
+     */
+    public function getEraterPassword() {
+        return $this->eraterpassword;
+    }
+
+    /**
+     * Set the Erater Password for this Assignment
+     *
+     * Sets the e-rater Password
+     *
+     * @param string $eraterpassword
+     */
+    public function setEraterPassword( $eraterpassword ) {
+        $this->eraterpassword = $eraterpassword;
+    }
+
 }
+
+//?>

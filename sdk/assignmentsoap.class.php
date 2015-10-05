@@ -14,7 +14,7 @@ require_once( 'sdkexception.class.php' );
  * @ignore
  */
 class AssignmentSoap extends Soap {
-    
+
     public static $extensionname_vocab = 'http://www.turnitin.com/static/source/media/turnitinvocabularyv1p0.xml';
     public static $extensionvalue_vocab = 'http://www.imsglobal.org/vdex/lis/omsv1p0/extensionvocabularyv1p0.xml';
     public $ns;
@@ -23,7 +23,7 @@ class AssignmentSoap extends Soap {
         $this->ns = 'http://www.imsglobal.org/services/lis/oms1p0/wsdl11/sync/imsoms_v1p0';
         parent::__construct( $wsdl, $options );
     }
-    
+
     public function createAssignment( $assignment ) {
         try {
             $request = $this->buildAssignmentRequest( $assignment );
@@ -66,7 +66,7 @@ class AssignmentSoap extends Soap {
             throw new TurnitinSDKException( $e->faultcode, $e->faultstring, parent::getLogPath() );
         }
     }
-    
+
     public function readAssignments( $assignment ) {
         try {
             $soap = $this->readLineItems( array( 'sourcedIdSet' => array( 'sourcedId' => $assignment->getAssignmentIds() ) ) );
@@ -98,7 +98,7 @@ class AssignmentSoap extends Soap {
             throw new TurnitinSDKException( $e->faultcode, $e->faultstring, parent::getLogPath() );
         }
     }
-    
+
     public function updateAssignment( $assignment ) {
         try {
             $request = $this->buildAssignmentRequest( $assignment, true );
@@ -115,7 +115,7 @@ class AssignmentSoap extends Soap {
             throw new TurnitinSDKException( $e->faultcode, $e->faultstring, parent::getLogPath() );
         }
     }
-    
+
     public function deleteAssignment( $assignment ) {
         try {
             $this->deleteLineItem( array( 'sourcedId' => $assignment->getAssignmentId() ) );
@@ -131,7 +131,7 @@ class AssignmentSoap extends Soap {
             throw new TurnitinSDKException( $e->faultcode, $e->faultstring, parent::getLogPath() );
         }
     }
-    
+
     public function findAssignments( $assignment ) {
         try {
             $soap = $this->readLineItemIdsForCourseSection( array( 'sectionSourcedId' => $assignment->getClassId() ) );
@@ -155,7 +155,7 @@ class AssignmentSoap extends Soap {
             throw new TurnitinSDKException( $e->faultcode, $e->faultstring, parent::getLogPath() );
         }
     }
-    
+
     private function buildAssignmentRequest( $assignment, $update = false ) {
         $request = array();
         if ( $update ) {
@@ -186,7 +186,7 @@ class AssignmentSoap extends Soap {
             $request['lineItemRecord']['lineItem']['extension']['extensionNameVocabulary'] = self::$extensionname_vocab;
             $request['lineItemRecord']['lineItem']['extension']['extensionValueVocabulary'] = self::$extensionvalue_vocab;
         }
-        
+
         return $request;
     }
 
@@ -228,7 +228,9 @@ class AssignmentSoap extends Soap {
             }
             $peermarkassignments[] = $pm_assignment;
         }
-        return json_encode( $peermarkassignments );        
+        return json_encode( $peermarkassignments );
     }
-    
+
 }
+
+//?>

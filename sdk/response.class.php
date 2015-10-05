@@ -56,13 +56,12 @@ class Response {
         $this->setDescription( @$this->domobject->getElementsByTagName( 'imsx_description' )->item(0)->nodeValue );
         if ( is_null( $this->getDescription() ) ) $this->setDescription( $this->domobject->getElementsByTagName( 'message' )->item(0)->nodeValue );
         $this->setMessageRefId( @$this->domobject->getElementsByTagName( 'imsx_messageRefIdentifier' )->item(0)->nodeValue );
-        
     }
-    
+
     /**
      * @ignore
      * Output the request/response to screen for debugging purposes
-     * 
+     *
      * @param string $message
      * @param string $title
      */
@@ -70,22 +69,22 @@ class Response {
         $style = 'font-size: small; display: block; padding: 4px; border: 1px solid black; background-color: #EFEFEF;';
         echo '<pre style="' . $style . '"><b>' . $title . '</b><hr />' . str_replace( ',', ','.PHP_EOL, $headers ) . PHP_EOL . htmlspecialchars( $this->xmlPretty( $message ) ) . '</pre>';
     }
-    
+
     /**
      * @ignore
      * Formats the XML into a more human readable form to use in debugging output
-     * 
+     *
      * @param string $xml
      * @return string
      */
     private function xmlPretty( $xml ) {
-        
+
         try {
             @$xml_obj = new SimpleXMLElement( $xml );
         } catch ( Exception $e ) {
             return $xml;
         }
-        
+
         $level = 4;
         $indent = 0;
         $pretty = array();
@@ -110,7 +109,7 @@ class Response {
                 $pretty[] = str_repeat( ' ', $indent ) . $el;
             }
         }
-     
+
         $xml = implode( "\n", $pretty );
         return $xml;
 
@@ -119,7 +118,7 @@ class Response {
     /**
      * @ignore
      * Set the Message Ref Id from the API response.
-     * 
+     *
      * @param string $messagerefid
      */
     private function setMessageRefId( $messagerefid ) {
@@ -128,10 +127,10 @@ class Response {
 
     /**
      * Get the API Response Message Reference Id
-     * 
+     *
      * The Message Id from the request echoed back in the response,
      * logged on Turnitin for use in the event of error tracking.
-     * 
+     *
      * @return string
      */
     public function getMessageRefId() {
@@ -141,7 +140,7 @@ class Response {
     /**
      * @ignore
      * Set the Message Id from the response
-     * 
+     *
      * @param string $messageid
      */
     private function setMessageId( $messageid ) {
@@ -150,9 +149,9 @@ class Response {
 
     /**
      * Get the response Message Id
-     * 
+     *
      * Useful for debugging, logged on the Turnitin side for use in error tracking.
-     * 
+     *
      * @return string
      */
     public function getMessageId() {
@@ -162,7 +161,7 @@ class Response {
     /**
      * @ignore
      * Sets the status from the Response message
-     * 
+     *
      * @param string $status
      */
     private function setStatus( $status ) {
@@ -171,7 +170,7 @@ class Response {
 
     /**
      * Get the status from the API response
-     * 
+     *
      * @return string
      */
     public function getStatus() {
@@ -181,7 +180,7 @@ class Response {
     /**
      * @ignore
      * Set the API response status code.
-     * 
+     *
      * @param string $statuscode
      */
     private function setStatusCode( $statuscode ) {
@@ -190,7 +189,7 @@ class Response {
 
     /**
      * Get the API response status code.
-     * 
+     *
      * @return string
      */
     public function getStatusCode() {
@@ -200,7 +199,7 @@ class Response {
     /**
      * @ignore
      * Set the API response message description.
-     * 
+     *
      * @param string $description
      */
     private function setDescription( $description ) {
@@ -209,7 +208,7 @@ class Response {
 
     /**
      * Get the API response message description.
-     * 
+     *
      * @return string
      */
     public function getDescription() {
@@ -219,16 +218,16 @@ class Response {
     /**
      * @ignore
      * Set the TiiUser object in the response.
-     * 
+     *
      * @param TiiUser $user
      */
     public function setUser( $user ) {
         $this->user = $user;
     }
-    
+
     /**
      * Get the TiiUser object from the API response.
-     * 
+     *
      * @return TiiUser
      */
     public function getUser() {
@@ -238,7 +237,7 @@ class Response {
     /**
      * @ignore
      * Set the array of TiiUser objects from the API response.
-     * 
+     *
      * @param array $users
      */
     public function setUsers( $users ) {
@@ -247,7 +246,7 @@ class Response {
 
     /**
      * Get array of TiiUser objects from the API response.
-     * 
+     *
      * @return array
      */
     public function getUsers() {
@@ -257,7 +256,7 @@ class Response {
     /**
      * @ignore
      * Set the TiiAssignment object from the API response.
-     * 
+     *
      * @param TiiAssignment $assignment
      */
     public function setAssignment( $assignment ) {
@@ -266,17 +265,17 @@ class Response {
 
     /**
      * Get the TiiAssignment object from the API response.
-     * 
+     *
      * @return TiiAssignment
      */
     public function getAssignment() {
         return $this->assignment;
     }
-    
+
     /**
      * @ignore
      * Set an array of TiiAssignment objects from the API response.
-     * 
+     *
      * @param array $assignments
      */
     public function setAssignments( $assignments ) {
@@ -285,7 +284,7 @@ class Response {
 
     /**
      * Get array of TiiAssignment objects from the API response.
-     * 
+     *
      * @return array
      */
     public function getAssignments() {
@@ -294,8 +293,8 @@ class Response {
 
     /**
      * @ignore
-     * Set the TiiClass object from the API response. 
-     * 
+     * Set the TiiClass object from the API response.
+     *
      * @param TiiClass $class
      */
     public function setClass( $class ) {
@@ -304,7 +303,7 @@ class Response {
 
     /**
      * Get the TiiClass object from the API response.
-     * 
+     *
      * @return TiiClass
      */
     public function getClass() {
@@ -314,7 +313,7 @@ class Response {
     /**
      * @ignore
      * Set an array of TiiClass objects from the API response.
-     * 
+     *
      * @param array $classes
      */
     public function setClasses( $classes ) {
@@ -323,7 +322,7 @@ class Response {
 
     /**
      * Get array of TiiClass objects from the API response.
-     * 
+     *
      * @return array
      */
     public function getClasses() {
@@ -333,7 +332,7 @@ class Response {
     /**
      * @ignore
      * Set the TiiMembership object from the API response.
-     * 
+     *
      * @param TiiMembership $membership
      */
     public function setMembership( $membership ) {
@@ -342,7 +341,7 @@ class Response {
 
     /**
      * Get the TiiMembership object from the API response.
-     * 
+     *
      * @return TiiMembership
      */
     public function getMembership() {
@@ -352,7 +351,7 @@ class Response {
     /**
      * @ignore
      * Set an array of TiiMembership objects from the API response.
-     * 
+     *
      * @param array $memberships
      */
     public function setMemberships( $memberships ) {
@@ -361,7 +360,7 @@ class Response {
 
     /**
      * Get array of TiiMembership objects from API response.
-     * 
+     *
      * @return array
      */
     public function getMemberships() {
@@ -371,7 +370,7 @@ class Response {
     /**
      * @ignore
      * Set the TiiSubmission object from the API response.
-     * 
+     *
      * @param TiiSubmission $submission
      */
     public function setSubmission( $submission ) {
@@ -380,17 +379,17 @@ class Response {
 
     /**
      * Get the TiiSubmission object from the API response.
-     * 
+     *
      * @return object
      */
     public function getSubmission() {
         return $this->submission;
     }
-    
+
     /**
      * @ignore
      * Set an array of TiiSubmission objects from the API response.
-     * 
+     *
      * @param array $submissions
      */
     public function setSubmissions( $submissions ) {
@@ -399,17 +398,17 @@ class Response {
 
     /**
      * Get array of TiiSubmission objects from the API response.
-     * 
+     *
      * @return array
      */
     public function getSubmissions() {
         return $this->submissions;
     }
-    
+
     /**
      * @ignore
      * Get a DomDocument object from the API request XML.
-     * 
+     *
      * @return DomDocument
      */
     public function getRequestDomObject() {
@@ -419,7 +418,7 @@ class Response {
     /**
      * @ignore
      * Set a DomDocument object from the API request XML.
-     * 
+     *
      * @param DomDocument $requestdomobject
      */
     public function setRequestDomObject($requestdomobject) {
@@ -429,7 +428,7 @@ class Response {
     /**
      * @ignore
      * Get a DomDocument object from the API response XML.
-     * 
+     *
      * @return DomDocument
      */
     public function getDomObject() {
@@ -439,7 +438,7 @@ class Response {
     /**
      * @ignore
      * Set a DomDocument object from the API response XML.
-     * 
+     *
      * @param DomDocument $domobject
      */
     public function setDomObject($domobject) {
@@ -447,3 +446,5 @@ class Response {
     }
 
 }
+
+//?>

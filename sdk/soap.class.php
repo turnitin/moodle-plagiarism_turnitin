@@ -51,7 +51,7 @@ class Soap extends SoapClient {
     }
 
     public function getIntegrationVersion() {
-        return $this->integrationversion;
+        return (empty($this->integrationversion)) ? 'Not provided' : $this->integrationversion;
     }
 
     public function setPluginVersion( $pluginversion = null ) {
@@ -59,7 +59,7 @@ class Soap extends SoapClient {
     }
 
     public function getPluginVersion() {
-        return $this->pluginversion;
+        return (empty($this->pluginversion)) ? 'Not provided' : $this->pluginversion;
     }
 
     public function setIntegrationId( $product ) {
@@ -269,12 +269,17 @@ class Soap extends SoapClient {
                         'AllowNonOrSubmissions' => 'Boolean',
                         'Submitter' => 'Integer',
                         'OriginalityReportCapable' => 'Boolean',
-                        'AcceptNothingSubmission' => 'Boolean'
+                        'AcceptNothingSubmission' => 'Boolean',
+                        'EraterPromptId' => 'String',
+                        'EraterClientId' => 'String',
+                        'EraterUsername' => 'String',
+                        'EraterPassword' => 'String'
                         );
         $this->istestingconnection = false;
         $this->perflog = null;
         $this->integrationversion = '';
         $this->pluginversion = '';
+
         parent::__construct( $wsdl, $options );
     }
 
@@ -353,3 +358,5 @@ class Soap extends SoapClient {
     }
 
 }
+
+//?>

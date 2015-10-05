@@ -2,25 +2,25 @@
 
 /*
  * @package TurnitinAPI
- * @subpackage TiiRubric 
+ * @subpackage TiiRubric
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
 /**
  * Defines the TiiRubric data object which contains getters and setters for a Turnitin Rubric object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
 class TiiRubric {
-    
+
     private $rubricid;
     private $rubricname;
-    
+
     /**
      * Get the Id for this Rubric
-     * 
+     *
      * @return integer
      */
     public function getRubricId() {
@@ -29,7 +29,7 @@ class TiiRubric {
 
     /**
      * Set the Id for this Rubric
-     * 
+     *
      * @param integer $rubricid
      */
     public function setRubricId($rubricid) {
@@ -38,7 +38,7 @@ class TiiRubric {
 
     /**
      * Get the Name for this Rubric
-     * 
+     *
      * @return text
      */
     public function getRubricName() {
@@ -47,11 +47,13 @@ class TiiRubric {
 
     /**
      * Set the Name for this Rubric
-     * 
+     *
      * @param text $rubricname
      */
     public function setRubricName($rubricname) {
         $this->rubricname = $rubricname;
     }
-    
+
 }
+
+//?>

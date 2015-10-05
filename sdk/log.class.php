@@ -10,17 +10,17 @@ require_once( 'logger.php' );
  * @ignore
  */
 class TurnitinLogger extends Klogger {
-    
+
     const LOGLEVEL = 6;
     const KEEPLOGS = 10;
-    
+
     public function __construct( $filepath ) {
         if ( $filepath == null ) return false;
         $this->rotateLogs( $filepath );
         parent::setDateFormat( 'Y-m-d G:i:s O' );
         parent::__construct($filepath, self::LOGLEVEL);
     }
-    
+
     private function rotateLogs( $filepath ) {
         if ( !file_exists( $filepath ) ) {
             mkdir( $filepath, 0777, true );
@@ -37,5 +37,7 @@ class TurnitinLogger extends Klogger {
             unlink( $filepath . '/' . $files[$i] );
         }
     }
-    
+
 }
+
+//?>

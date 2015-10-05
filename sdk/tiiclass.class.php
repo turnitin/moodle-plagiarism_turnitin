@@ -1,7 +1,7 @@
 <?php
 /*
  * @package TurnitinAPI
- * @subpackage TiiClass 
+ * @subpackage TiiClass
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -10,7 +10,7 @@ require_once( 'tiirubric.class.php' );
 
 /**
  * Defines the TiiSubmission data object which contains getters and setters for a Turnitin Class API object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
@@ -27,7 +27,7 @@ class TiiClass {
 
     /**
      * Set the Class ID for this Class
-     * 
+     *
      * @param integer $classid
      */
     public function setClassId( $classid ) {
@@ -36,7 +36,7 @@ class TiiClass {
 
     /**
      * Get the Class ID for this Class
-     * 
+     *
      * @return integer
      */
     public function getClassId() {
@@ -45,7 +45,7 @@ class TiiClass {
 
     /**
      * Set an array of Class IDs for this Class data object
-     * 
+     *
      * @param array $classids
      */
     public function setClassIds( $classids ) {
@@ -54,7 +54,7 @@ class TiiClass {
 
     /**
      * Get an array of Class IDs for this Class data object
-     * 
+     *
      * @return array
      */
     public function getClassIds() {
@@ -63,9 +63,9 @@ class TiiClass {
 
     /**
      * Set the Title for this Class
-     * 
+     *
      * A string between 5 and 100 characters to use as the Class title.
-     * 
+     *
      * @param string $title
      */
     public function setTitle( $title ) {
@@ -74,9 +74,9 @@ class TiiClass {
 
     /**
      * Get the Title for this Class
-     * 
+     *
      * A string between 5 and 100 characters to use as the Class title.
-     * 
+     *
      * @return string
      */
     public function getTitle() {
@@ -85,9 +85,9 @@ class TiiClass {
 
     /**
      * Set the End Date for this Class
-     * 
+     *
      * Class End Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $enddate
      */
     public function setEndDate( $enddate ) {
@@ -96,9 +96,9 @@ class TiiClass {
 
     /**
      * Get the End Date for this Class
-     * 
+     *
      * Class End Date must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getEndDate() {
@@ -107,10 +107,10 @@ class TiiClass {
 
     /**
      * Set the Date From for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the date from which to return active classes,
      * the Date From must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @param string $datefrom
      */
     public function setDateFrom( $datefrom ) {
@@ -119,10 +119,10 @@ class TiiClass {
 
     /**
      * Get the Date From for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the date from which to return active classes,
      * the Date From must be in ISO8601 format and include a timezone e.g. 2012-09-23T02:30:00Z
-     * 
+     *
      * @return string
      */
     public function getDateFrom() {
@@ -131,9 +131,9 @@ class TiiClass {
 
     /**
      * Set the Integration Id for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the integration source id to return active classes for
-     * 
+     *
      * @param integer $integrationid
      */
     public function setIntegrationId( $integrationid ) {
@@ -142,9 +142,9 @@ class TiiClass {
 
     /**
      * Get the Integration Id for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the integration source id to return active classes for
-     * 
+     *
      * @return integer
      */
     public function getIntegrationId() {
@@ -153,9 +153,9 @@ class TiiClass {
 
     /**
      * Set the Shared Rubrics Id for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the shared rubrics on the account that the classes are on
-     * 
+     *
      * @param string $sharedrubrics
      */
     public function setSharedRubrics( $sharedrubrics ) {
@@ -164,9 +164,9 @@ class TiiClass {
 
     /**
      * Get the Shared Rubrics for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the shared rubrics on the account that the classes are on
-     * 
+     *
      * @return string
      */
     public function getSharedRubrics() {
@@ -189,9 +189,9 @@ class TiiClass {
 
     /**
      * Set the User Id for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the user to return active classes for
-     * 
+     *
      * @param integer $userid
      */
     public function setUserId( $userid ) {
@@ -200,9 +200,9 @@ class TiiClass {
 
     /**
      * Get the User Id for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the user to return active classes for
-     * 
+     *
      * @return integer
      */
     public function getUserId() {
@@ -211,9 +211,9 @@ class TiiClass {
 
     /**
      * Set the User Role for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the user role to return active classes for combined with userid, options are Instructor and Learner
-     * 
+     *
      * @param integer $userrole
      */
     public function setUserRole( $userrole ) {
@@ -222,9 +222,9 @@ class TiiClass {
 
     /**
      * Get the User Role for a Find Class call
-     * 
+     *
      * Optional on a Find Class call to determine the user role to return active classes for combined with userid, options are Instructor and Learner
-     * 
+     *
      * @return integer
      */
     public function getUserRole() {
@@ -232,3 +232,5 @@ class TiiClass {
     }
 
 }
+
+//?>

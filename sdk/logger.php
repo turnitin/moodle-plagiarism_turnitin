@@ -24,7 +24,7 @@
 class KLogger
 {
     /**
-     * 
+     *
      * Error severity, from low to high. From BSD syslog RFC, secion 4.1.1
      * @link http://www.faqs.org/rfcs/rfc3164.html
      */
@@ -61,7 +61,7 @@ class KLogger
      * are often the values the developers will test for. So we'll make one up.
      */
     const NO_ARGUMENTS = 'KLogger::NO_ARGUMENTS';
-    
+
     const PREFIX = 'apilog_';
 
     /**
@@ -135,7 +135,7 @@ class KLogger
         if ($severity === false) {
             $severity = self::$_defaultSeverity;
         }
-        
+
         if ($logDirectory === false) {
             if (count(self::$instances) > 0) {
                 return current(self::$instances);
@@ -243,7 +243,7 @@ class KLogger
 
     /**
      * Sets the date format used by all instances of KLogger
-     * 
+     *
      * @param string $dateFormat Valid format string for date()
      */
     public static function setDateFormat($dateFormat)
@@ -277,7 +277,7 @@ class KLogger
 
     /**
      * Writes a $line to the log with a severity level of WARN. Generally
-     * corresponds to E_WARNING, E_USER_WARNING, E_CORE_WARNING, or 
+     * corresponds to E_WARNING, E_USER_WARNING, E_CORE_WARNING, or
      * E_COMPILE_WARNING
      *
      * @param string $line Information to log
@@ -356,15 +356,15 @@ class KLogger
     {
         if ($this->_severityThreshold >= $severity) {
             $status = $this->_getTimeLine($severity);
-            
+
             $break = PHP_EOL . '------------------------------------------------------------' . PHP_EOL;
             $line = "$break$status$break$line$break";
-            
+
             if($args !== self::NO_ARGUMENTS) {
                 /* Print the passed object value */
                 $line = $line . '; ' . var_export($args, true);
             }
-            
+
             $this->writeFreeFormLine( PHP_EOL . $line . PHP_EOL );
         }
     }
@@ -413,3 +413,5 @@ class KLogger
         }
     }
 }
+
+//?>

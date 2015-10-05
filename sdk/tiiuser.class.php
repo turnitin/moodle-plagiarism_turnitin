@@ -1,7 +1,7 @@
 <?php
 /*
  * @package TurnitinAPI
- * @subpackage TiiUser 
+ * @subpackage TiiUser
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -11,7 +11,7 @@ require_once( 'tiirubric.class.php' );
 
 /**
  * Defines the TiiUser data object which contains getters and setters for a Turnitin User object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
@@ -30,16 +30,16 @@ class TiiUser {
 
     /**
      * Set the User ID for this User
-     * 
+     *
      * @param integer $userid
      */
     public function setUserId( $userid ) {
         $this->userid = $userid;
     }
-    
+
     /**
      * Get the User ID for this User
-     * 
+     *
      * @return integer
      */
     public function getUserId() {
@@ -48,16 +48,16 @@ class TiiUser {
 
     /**
      * Set an array of User IDs for this User data object
-     * 
+     *
      * @param array $userids
      */
     public function setUserIds( $userids ) {
         $this->userids = $userids;
     }
-    
+
     /**
      * Get an array of User IDs for this User data object
-     * 
+     *
      * @return array
      */
     public function getUserIds() {
@@ -66,16 +66,16 @@ class TiiUser {
 
     /**
      * Set the Email Address for this User
-     * 
+     *
      * @param string $email
      */
     public function setEmail( $email ) {
         $this->email = $email;
     }
-    
+
     /**
      * Get the Email Address for this User
-     * 
+     *
      * @return string
      */
     public function getEmail() {
@@ -84,16 +84,16 @@ class TiiUser {
 
     /**
      * Set the First Name for this User
-     * 
+     *
      * @param string $firstname
      */
     public function setFirstName( $firstname ) {
         $this->firstname = $firstname;
     }
-    
+
     /**
      * Get the First Name for this User
-     * 
+     *
      * @return string
      */
     public function getFirstName() {
@@ -102,16 +102,16 @@ class TiiUser {
 
     /**
      * Set the Last Name for this User
-     * 
+     *
      * @param string $lastname
      */
     public function setLastName( $lastname ) {
         $this->lastname = $lastname;
     }
-    
+
     /**
      * Get the Last Name for this User
-     * 
+     *
      * @return string
      */
     public function getLastName() {
@@ -120,7 +120,7 @@ class TiiUser {
 
     /**
      * Get the number of User Messages for this User
-     * 
+     *
      * @return integer
      */
     public function getUserMessages() {
@@ -130,7 +130,7 @@ class TiiUser {
     /**
      * @ignore
      * Set the number of User Messages for this User
-     * 
+     *
      * @param integer $usermessages
      */
     public function setUserMessages( $usermessages ) {
@@ -141,7 +141,7 @@ class TiiUser {
      * Set the Default Role for this User
      *
      * Options are Instructor and Learner
-     * 
+     *
      * @param string $defaultrole
      */
     public function setDefaultRole( $defaultrole ) {
@@ -163,18 +163,18 @@ class TiiUser {
      * Get the Default Role for this User
      *
      * Options are Instructor and Learner
-     * 
+     *
      * @param string $defaultrole
      */
     public function getDefaultRole() {
         return $this->defaultrole;
     }
-    
+
     /**
      * Get the Instructor Default Assignment settings for this user
-     * 
+     *
      * Returns a prepopulated TiiAssignment data transfer object containing the instructor's default assignment settings
-     * 
+     *
      * @return TiiAssignment
      */
     public function getInstructorDefaults() {
@@ -190,7 +190,7 @@ class TiiUser {
     /**
      * @ignore
      * Set the Instructor Default Assignment settings for this user
-     * 
+     *
      * @param string $instructordefaults
      */
     public function setInstructorDefaults($instructordefaults) {
@@ -199,9 +199,9 @@ class TiiUser {
 
     /**
      * Get the Default Language for this user
-     * 
+     *
      * Returns the following language codes:
-     * 
+     *
      * <ul>
      * <li><b>en_us, en, en-EN, en-US</b><br />
      * English US</li>
@@ -232,7 +232,7 @@ class TiiUser {
      * <li><b>ar, ar-AR</b><br />
      * Arabic</li>
      * </ul>
-     * 
+     *
      * @return string
      */
     public function getDefaultLanguage() {
@@ -241,9 +241,9 @@ class TiiUser {
 
     /**
      * Set the Default Language for this user
-     * 
+     *
      * Accepts the following language codes:
-     * 
+     *
      * <ul>
      * <li><b>en_us, en, en-EN, en-US</b><br />
      * English US</li>
@@ -274,7 +274,7 @@ class TiiUser {
      * <li><b>ar, ar-AR</b><br />
      * Arabic</li>
      * </ul>
-     * 
+     *
      * @param string $defaultlanguage
      */
     public function setDefaultLanguage($defaultlanguage) {
@@ -325,10 +325,10 @@ class TiiUser {
         );
         $this->defaultlanguage = (isset( $langarray[$defaultlanguage] )) ? $langarray[$defaultlanguage] : 'en_us';
     }
-    
+
     /**
      * Get the Boolean that determines if this user has accepted the latest available Turnitin User Agreement
-     * 
+     *
      * @return boolean
      */
     public function getAcceptedUserAgreement() {
@@ -338,7 +338,7 @@ class TiiUser {
     /**
      * @ignore
      * Set the Boolean that determines if this user has accepted the latest available Turnitin User Agreement
-     * 
+     *
      * @param boolean $accepteduseragreement
      */
     public function setAcceptedUserAgreement(  $accepteduseragreement ) {
@@ -349,7 +349,7 @@ class TiiUser {
      * Get any rubrics the instructor owns in Turnitin
      *
      * Returns an array of Rubric objects
-     * 
+     *
      * @return array
      */
     public function getInstructorRubrics() {
@@ -373,7 +373,7 @@ class TiiUser {
     /**
      * @ignore
      * Set the Instructor Rubrics for this user
-     * 
+     *
      * @param string $instructorrubrics
      */
     public function setInstructorRubrics($instructorrubrics) {
@@ -381,3 +381,5 @@ class TiiUser {
     }
 
 }
+
+//?>

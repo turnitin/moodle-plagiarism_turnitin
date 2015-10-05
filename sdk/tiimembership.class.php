@@ -2,14 +2,14 @@
 
 /*
  * @package TurnitinAPI
- * @subpackage TiiMembership 
+ * @subpackage TiiMembership
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
 /**
  * Defines the TiiMembership data object which contains getters and setters for a Turnitin Membership object.
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Data
  */
@@ -22,9 +22,9 @@ class TiiMembership {
 
     /**
      * Set the Membership ID for this Membership
-     * 
+     *
      * The membership ID is the ID Turnitin uses to identify an enrollment on a class
-     * 
+     *
      * @param integer $membershipid
      */
     public function setMembershipId( $membershipid ) {
@@ -33,9 +33,9 @@ class TiiMembership {
 
     /**
      * Get the Membership ID for this Membership
-     * 
+     *
      * The membership ID is the ID Turnitin uses to identify an enrollment on a class
-     * 
+     *
      * @param integer $membershipid
      */
     public function getMembershipId() {
@@ -44,9 +44,9 @@ class TiiMembership {
 
     /**
      * Set an array of Membership IDs for this Membership data object
-     * 
+     *
      * The membership ID is the ID Turnitin uses to identify an enrollment on a class
-     * 
+     *
      * @param array $membershipids
      */
     public function setMembershipIds( $membershipids ) {
@@ -55,9 +55,9 @@ class TiiMembership {
 
     /**
      * Get an array of Membership IDs for this Membership data object
-     * 
+     *
      * The membership ID is the ID Turnitin uses to identify an enrollment on a class
-     * 
+     *
      * @return array
      */
     public function getMembershipIds() {
@@ -66,9 +66,9 @@ class TiiMembership {
 
     /**
      * Set the User ID for this Membership
-     * 
+     *
      * The User ID of the User enrolled on this Class
-     * 
+     *
      * @return integer
      */
     public function setUserId( $userid ) {
@@ -77,9 +77,9 @@ class TiiMembership {
 
     /**
      * Get the User ID for this Membership
-     * 
+     *
      * The User ID of the User enrolled on this Class
-     * 
+     *
      * @return integer
      */
     public function getUserId() {
@@ -88,9 +88,9 @@ class TiiMembership {
 
     /**
      * Set the Class ID for this Membership
-     * 
+     *
      * The Class ID a User is enrolled on
-     * 
+     *
      * @param integer $classid
      */
     public function setClassId( $classid ) {
@@ -99,9 +99,9 @@ class TiiMembership {
 
     /**
      * Get the Class ID for this Membership
-     * 
+     *
      * The Class ID a User is enrolled on
-     * 
+     *
      * @return integer
      */
     public function getClassId() {
@@ -110,9 +110,9 @@ class TiiMembership {
 
     /**
      * Set the Role for this Membership
-     * 
+     *
      * The Role the user is enrolled on the Class as, Learner or Instructor
-     * 
+     *
      * @param string $role
      */
     public function setRole( $role ) {
@@ -132,9 +132,9 @@ class TiiMembership {
 
     /**
      * Get the Role for this Membership
-     * 
+     *
      * The Role the user is enrolled on the Class as, Learner or Instructor
-     * 
+     *
      * @return string
      */
     public function getRole() {
@@ -142,3 +142,5 @@ class TiiMembership {
     }
 
 }
+
+//?>

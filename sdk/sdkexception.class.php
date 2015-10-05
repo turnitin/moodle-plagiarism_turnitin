@@ -2,7 +2,7 @@
 
 /**
  * Exception that is thrown for errors in the SDK, covers SOAP Faults and API Errors
- * 
+ *
  * @package TurnitinSDK
  * @subpackage Exception
  */
@@ -12,7 +12,7 @@ class TurnitinSDKException extends Exception {
 
     /**
      * @ignore
-     * 
+     *
      * @param string $faultcode
      * @param string $message
      * @param boolean $json
@@ -28,43 +28,43 @@ class TurnitinSDKException extends Exception {
 
     /**
      * @ignore
-     * 
+     *
      * @param string $message
      */
     private function setMessage( $message ) {
         $this->message = $message;
     }
-    
+
     /**
      * @ignore
-     * 
+     *
      * @param string $outputtitle
      */
     private function setOutputTitle( $outputtitle ) {
         $this->outputtitle = $outputtitle;
     }
-    
+
     /**
      * @ignore
-     * 
+     *
      * @return string
      */
     private function getOutputTitle() {
         return $this->outputtitle;
     }
-    
+
     /**
      * @ignore
-     * 
+     *
      * @param string $faultcode
      */
     private function setFaultCode( $faultcode ) {
         $this->faultcode = $faultcode;
     }
-    
+
     /**
      * Get the API Fault Code
-     * 
+     *
      * Possible Fault Code strings:
      * <ul>
      * <li>invaliddata
@@ -77,7 +77,7 @@ class TurnitinSDKException extends Exception {
      * <li>apiconnecterror
      * <li>Authentication Fault
      * </ul>
-     * 
+     *
      * @return string
      */
     public function getFaultCode() {
@@ -85,3 +85,5 @@ class TurnitinSDKException extends Exception {
     }
 
 }
+
+//?>

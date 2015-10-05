@@ -15,32 +15,32 @@ require_once( 'response.class.php' );
  */
 class LTI extends OAuthSimple {
 
-    private $integrationid;
-    private $accountid;
-    private $sharedkey;
-    private $logpath;
-    private $debug;
-    private $endpoint;
-    private $ltiparams;
-    private $xmlresponse;
-    private $lastrequest;
-    private $lastresponse;
-    private $apibaseurl;
-    private $language;
+    protected $integrationid;
+    protected $accountid;
+    protected $sharedkey;
+    protected $logpath;
+    protected $debug;
+    protected $endpoint;
+    protected $ltiparams;
+    protected $xmlresponse;
+    protected $lastrequest;
+    protected $lastresponse;
+    protected $apibaseurl;
+    protected $language;
 
-    private $integrationversion;
-    private $pluginversion;
+    protected $integrationversion;
+    protected $pluginversion;
 
-    private $proxyhost;
-    private $proxyport;
-    private $proxytype;
-    private $proxyuser;
-    private $proxypassword;
-    private $proxybypass;
-    private $sslcertificate;
+    protected $proxyhost;
+    protected $proxyport;
+    protected $proxytype;
+    protected $proxyuser;
+    protected $proxypassword;
+    protected $proxybypass;
+    protected $sslcertificate;
 
-    private $istestingconnection;
-    private $perflog;
+    protected $istestingconnection;
+    protected $perflog;
 
     public function __construct( $apibaseurl ) {
         $this->setApiBaseUrl( $apibaseurl );
@@ -86,7 +86,7 @@ class LTI extends OAuthSimple {
      * @param TiiLTI $lti
      * @return array
      */
-    private function getDVPeerMarkFormHash( $lti ) {
+    public function getDVPeerMarkFormHash( $lti ) {
         return $this->getDVFormHash( $lti::DVPEERMARKENDPOINT, $lti );
     }
 
@@ -96,7 +96,7 @@ class LTI extends OAuthSimple {
      * @param TiiLTI $lti
      * @return array
      */
-    private function getDVFormHash( $endpoint, $lti ) {
+    public function getDVFormHash( $endpoint, $lti ) {
         $params = array(
             'lis_person_sourcedid'        => $lti->getUserId(),
             'lis_result_sourcedid'        => $lti->getSubmissionId(),
@@ -242,6 +242,7 @@ class LTI extends OAuthSimple {
         if ( !is_null( $lti->getSkipSetup() ) AND $lti->getSkipSetup() == true ) $params['custom_skipsetup'] = 1;
         if ( !is_null( $lti->getPeermarkId() ) ) $params['custom_peermarkid'] = $lti->getPeermarkId();
         if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] = $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );
         $this->setEndPoint( $this->getApiBaseUrl() . $lti::PEERMARKSETUPENDPOINT );
@@ -263,6 +264,7 @@ class LTI extends OAuthSimple {
         );
         if ( !is_null( $lti->getPeermarkId() ) ) $params['custom_peermarkid'] = $lti->getPeermarkId();
         if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );
         $this->setEndPoint( $this->getApiBaseUrl() . $lti::PEERMARKREVIEWENDPOINT );
@@ -359,6 +361,7 @@ class LTI extends OAuthSimple {
             'custom_source'               => $this->getIntegrationId()
         );
         if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );
         $this->setEndPoint( $this->getApiBaseUrl() . $endpoint );
@@ -381,7 +384,12 @@ class LTI extends OAuthSimple {
             'custom_submission_author'    => $submission->getAuthorUserId(),
             'custom_xmlresponse'          => (integer)$this->getXmlResponse()
         );
+        if ( !is_null( $submission->getSubmissionDataUrl() ) ) {
+            $params['custom_submission_url'] =  $submission->getSubmissionDataUrl();
+            $params['custom_submission_filename'] =  $submission->getSubmissionDataFilename();
+        }
         if ( !is_null( $submission->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $submission->getCustomCSS();
+        if ( !is_null( $submission->getWideMode() ) ) $params['custom_widemode'] = (integer)$submission->getWideMode();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );
         $this->setEndPoint( $this->getApiBaseUrl() . $submission::SUBMITENDPOINT );
@@ -404,10 +412,79 @@ class LTI extends OAuthSimple {
             'custom_submission_author'   => $submission->getAuthorUserId(),
             'custom_xmlresponse'          => (integer)$this->getXmlResponse()
         );
+        if ( !is_null( $submission->getSubmissionDataUrl() ) ) {
+            $params['custom_submission_url'] =  $submission->getSubmissionDataUrl();
+            $params['custom_submission_filename'] =  $submission->getSubmissionDataFilename();
+        }
         if ( !is_null( $submission->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $submission->getCustomCSS();
+        if ( !is_null( $submission->getWideMode() ) ) $params['custom_widemode'] = (integer)$submission->getWideMode();
         $this->setLtiParams( $params );
         parent::__construct( $this->accountid, $this->sharedkey );
         $this->setEndPoint( $this->getApiBaseUrl() . $submission::RESUBMITENDPOINT );
+        $this->setParameters( $this->getLtiParams() );
+        return array_merge( $this->getLtiParams(), $this->getParamArray( $params ) );
+    }
+
+    /**
+     *
+     * @param TiiLTI $lti
+     * @return array
+     */
+    public function getCreateAssignmentFormHash( $lti ) {
+        $params = array(
+            'lis_person_sourcedid'        => $lti->getUserId(),
+            'lis_coursesection_sourcedid' => $lti->getClassId(),
+            'custom_source'               => $this->getintegrationid(),
+            'roles'                       => $lti->getRole()
+        );
+        if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
+        $this->setLtiParams( $params );
+        parent::__construct( $this->accountid, $this->sharedkey );
+        $this->setEndPoint( $this->getApiBaseUrl() . $lti::CREATEASSIGNMENTENDPOINT );
+        $this->setParameters( $this->getLtiParams() );
+        return array_merge( $this->getLtiParams(), $this->getParamArray( $params ) );
+    }
+
+    /**
+     *
+     * @param TiiLTI $lti
+     * @return array
+     */
+    public function getEditAssignmentFormHash( $lti ) {
+        $params = array(
+            'lis_person_sourcedid'        => $lti->getUserId(),
+            'lis_lineitem_sourcedid'      => $lti->getAssignmentId(),
+            'custom_source'               => $this->getintegrationid(),
+            'roles'                       => $lti->getRole()
+        );
+        if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
+        $this->setLtiParams( $params );
+        parent::__construct( $this->accountid, $this->sharedkey );
+        $this->setEndPoint( $this->getApiBaseUrl() . $lti::EDITASSIGNMENTENDPOINT );
+        $this->setParameters( $this->getLtiParams() );
+        return array_merge( $this->getLtiParams(), $this->getParamArray( $params ) );
+    }
+
+    /**
+     *
+     * @param TiiLTI $lti
+     * @return array
+     */
+    public function getAssignmentInboxFormHash( $lti ) {
+        $params = array(
+            'lis_person_sourcedid'        => $lti->getUserId(),
+            'lis_lineitem_sourcedid'      => $lti->getAssignmentId(),
+            'custom_source'               => $this->getintegrationid(),
+            'roles'                       => $lti->getRole()
+        );
+        if ( !is_null( $lti->getCustomCSS() ) ) $params['launch_presentation_css_url'] =  $lti->getCustomCSS();
+        if ( !is_null( $lti->getWideMode() ) ) $params['custom_widemode'] = (integer)$lti->getWideMode();
+        if ( !is_null( $lti->getStudentList() ) ) $params['custom_studentlist'] = $lti->getStudentList();
+        $this->setLtiParams( $params );
+        parent::__construct( $this->accountid, $this->sharedkey );
+        $this->setEndPoint( $this->getApiBaseUrl() . $lti::ASSIGNMENTINBOXENDPOINT );
         $this->setParameters( $this->getLtiParams() );
         return array_merge( $this->getLtiParams(), $this->getParamArray( $params ) );
     }
@@ -451,17 +528,17 @@ class LTI extends OAuthSimple {
      */
     public function createSubmission( $submission ) {
         $params_merge = $this->getSubmissionFormHash( $submission );
-        if ( is_null( $submission->getSubmissionDataPath() ) ) {
+        if ( is_null( $submission->getSubmissionDataPath() ) && is_null( $submission->getSubmissionDataUrl() ) ) {
             $params_merge['custom_submission_data'] = $submission->getSubmissionDataText();
-        } else {
+        } else if ( is_null( $submission->getSubmissionDataUrl() ) ) {
             if ( !file_exists( $submission->getSubmissionDataPath() ) ) {
                 throw new TurnitinSDKException( 'invaliddata', 'Submission Paper Data not found.' );
             }
 
             // CURL uploading with @ has been deprecated in PHP 5.5
             if (class_exists('CURLFile')) {
-                $mimeinfo = mimeinfo('type', $submission->getSubmissionDataPath());
-                $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimeinfo);
+                $mimetype = mime_content_type( $submission->getSubmissionDataPath() );
+                $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimetype);
             } else {
                 $params_merge['custom_submission_data'] = '@'.$submission->getSubmissionDataPath();
             }
@@ -486,13 +563,13 @@ class LTI extends OAuthSimple {
      */
     public function replaceSubmission( $submission ) {
         $params_merge = $this->getResubmissionFormHash( $submission );
-        if ( is_null( $submission->getSubmissionDataPath() ) ) {
+        if ( is_null( $submission->getSubmissionDataPath() ) && is_null( $submission->getSubmissionDataUrl() ) ) {
             $params_merge['custom_submission_data'] = $submission->getSubmissionDataText();
-        } else {
+        } else if ( is_null( $submission->getSubmissionDataUrl() ) ) {
             // CURL uploading with @ has been deprecated in PHP 5.5
             if (class_exists('CURLFile')) {
-                $mimeinfo = mimeinfo('type', $submission->getSubmissionDataPath());
-                $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimeinfo);
+                $mimetype = mime_content_type( $submission->getSubmissionDataPath() );
+                $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimetype);
             } else {
                 $params_merge['custom_submission_data'] = '@'.$submission->getSubmissionDataPath();
             }
@@ -563,7 +640,7 @@ class LTI extends OAuthSimple {
      *
      * @return array
      */
-    private function getLtiParams() {
+    protected function getLtiParams() {
         return $this->ltiparams;
     }
 
@@ -571,7 +648,7 @@ class LTI extends OAuthSimple {
      *
      * @param array $params
      */
-    private function setLtiParams( $params ) {
+    protected function setLtiParams( $params ) {
         if ( !is_null( $this->language ) ) $params["lang"] = $this->language;
         $params = array_merge( $this->ltiparams, $params );
 
@@ -926,7 +1003,7 @@ class LTI extends OAuthSimple {
     }
 
     public function getIntegrationVersion() {
-        return $this->integrationversion;
+        return (empty($this->integrationversion)) ? 'Not provided' : $this->integrationversion;
     }
 
     public function setPluginVersion( $pluginversion = null ) {
@@ -934,7 +1011,9 @@ class LTI extends OAuthSimple {
     }
 
     public function getPluginVersion() {
-        return $this->pluginversion;
+        return (empty($this->pluginversion)) ? 'Not provided' : $this->pluginversion;
     }
 
 }
+
+//?>

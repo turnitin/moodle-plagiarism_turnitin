@@ -1506,6 +1506,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $dtpost = ($gradesreleased) ? time() : strtotime('+1 month');
                         }
+                        // If blind marking is being used and identities have not been revealed then push out post date.
+                        if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+                            $dtpost = strtotime('+6 months');
+                        }
                         break;
                     default:
                         $dtpost = $gradeitem->hidden;

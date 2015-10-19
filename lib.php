@@ -353,6 +353,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return '';
         }
 
+        // Required for font icons.
+        require_once(__DIR__.'/font-awesome.php');
+        require_once(__DIR__.'/tii-icon-webfont.php');
         $this->load_page_components();
 
         // Show agreement.
@@ -410,7 +413,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                     $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box',
-                                                    html_writer::tag('i', '', array('class' => 'icon icon-rubric icon-lg blue')).
+                                                    html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg blue')).
                                                     get_string('launchrubricview', 'turnitintooltwo'),
                                                     array('class' => 'rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                             'title' => get_string('launchrubricview', 'turnitintooltwo'))).

@@ -94,7 +94,7 @@ jQuery(document).ready(function($) {
                 lightBoxCloseButton();
                 getLoadingGif();
             },
-            onCleanup:function() {
+            onCleanup: function() {
                 $('#tii_close_bar').remove();
                 hideLoadingGif();
             }

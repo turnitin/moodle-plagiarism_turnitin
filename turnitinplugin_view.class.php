@@ -113,6 +113,7 @@ class turnitinplugin_view {
 
             // Get rubrics that are shared on the account.
             $turnitinclass = new turnitin_class($course->id);
+            $turnitinclass->sharedrubrics = array();
             $turnitinclass->read_class_from_tii();
 
             // Merge the arrays, prioitising instructor owned arrays.

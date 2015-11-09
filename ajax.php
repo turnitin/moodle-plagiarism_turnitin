@@ -36,35 +36,6 @@ $return = array();
 $pluginturnitin = new plagiarism_plugin_turnitin();
 
 switch ($action) {
-    case "origreport":
-    case "grademark":
-        $submissionid = optional_param('submission', 0, PARAM_INT);
-
-        switch ($cm->modname) {
-            case "forum":
-            case "workshop":
-                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
-                break;
-            default:
-                $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
-                break;
-        }
-
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
-                                                has_capability('mod/'.$cm->modname.':submit', $context);
-
-        if ($istutor || $isstudent) {
-            $role = ($istutor) ? "Instructor" : "Learner";
-            $user = new turnitintooltwo_user($USER->id, $role);
-            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
-
-            $user->join_user_to_class($coursedata->turnitin_cid);
-            $user->edit_tii_user();
-
-            echo turnitintooltwo_view::output_dv_launch_form($action, $submissionid, $user->tii_user_id, $role);
-        }
-        break;
-
     case "update_grade":
         if (!confirm_sesskey()) {
             throw new moodle_exception('invalidsesskey', 'error');

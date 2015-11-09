@@ -1327,7 +1327,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
         global $CFG, $USER;
-        
+
         // Create module object.
         $moduleclass = "turnitin_".$modname;
         $moduleobject = new $moduleclass;
@@ -1659,17 +1659,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
-
-        // Catch exceptions so entire Moodle cron does not fail.
-        // If some action in the cron_update_assignments() call fails
-        // this ensures that the entire cron run does not fail.
-        try {
-            $this->cron_update_assignments();
-        } catch (Exception $ex) {
-            error_log("Exception in TII cron while updating assigments: ".$ex);
-            mtrace("Exception in TII cron while updating assigments: ".$ex);
-        }
-
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
         foreach ($submissiontypes as $submissiontype) {
@@ -1680,105 +1669,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 mtrace("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
             }
         }
-        return true;
-    }
-
-    /**
-     * This is used to update assignments, specifically post dates in Turnitin which can be changed in Gradebook.
-     */
-    public function cron_update_assignments() {
-        global $DB, $CFG;
-
-        $assignments = $DB->get_records_select('plagiarism_turnitin_config',
-                                        " name = ? ", array('turnitin_assignid'), 'cm, value');
-
-        foreach ($assignments as $assignment) {
-            $cm = get_coursemodule_from_id('', $assignment->cm);
-
-            if ($cm) {
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-
-                // Don't update for forums as post date will be start date in this instance as there is no gradebook.
-                if ($cm->modname != 'forum') {
-                    // Get course data, ignore assignment if there is a problem creating course.
-                    $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
-                    if (empty($coursedata->turnitin_cid)) {
-                        continue;
-                    }
-
-                    // Only update modules that haven't started yet.
-                    $dtstart = 0;
-                    if (!empty($moduledata->allowsubmissionsfromdate)) {
-                        $dtstart = $moduledata->allowsubmissionsfromdate;
-                    } else if (!empty($moduledata->timeavailable)) {
-                        $dtstart = $moduledata->timeavailable;
-                    } else {
-                        $dtstart = $cm->added;
-                    }
-                    if ($dtstart > time()) {
-                        continue;
-                    }
-
-                    if ($plagiarism_post_date = $DB->get_record_select('plagiarism_turnitin_config',
-                                                " name = ? AND cm = ? ", array('plagiarism_post_date', $cm->id), 'value')) {
-
-                        $post_date = $plagiarism_post_date->value;
-                        if ($gradeitem = $DB->get_record('grade_items', array('iteminstance' => $cm->instance,
-                                                        'itemmodule' => $cm->modname, 'itemnumber' => 0, 'courseid' => $cm->course))) {
-                            // 1 means grade is always hidden, 0 means it's never hidden so we make it the same as start date.
-                            // Otherwise there is a hidden until date which we use as the post date.
-                            // From 2.6, if grading markflow is enabled and no grades have been released,
-                            // we will use due date +4 weeks.
-                            switch ($gradeitem->hidden) {
-                                case 1:
-                                    // If Turnitin post date is in the next 7 days then push it ahead
-                                    if ($post_date < (time() + (60 * 60 * 24 * 7)))  {
-                                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                    }
-                                    break;
-                                case 0:
-                                    // If any grades have been released early via marking workflow, the post date must be in the past.
-                                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                                        $gradesreleased = $DB->record_exists(
-                                                                        'assign_user_flags',
-                                                                        array(
-                                                                            'assignment' => $cm->instance,
-                                                                            'workflowstate' => 'released'
-                                                                        ));
-
-                                        if ($gradesreleased) {
-                                            if ($post_date > time()) {
-                                                $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                            }
-                                        } else {
-                                            $dtdue = 0;
-                                            if (!empty($moduledata->duedate)) {
-                                                $dtdue = $moduledata->duedate;
-                                            }
-                                            if ($post_date != strtotime('+4 weeks', $dtdue)) {
-                                                $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                            }
-                                        }
-                                    } else {
-                                        if ($post_date > time()) {
-                                            $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                        }
-                                    }
-                                    break;
-                                default:
-                                    if ($post_date != $gradeitem->hidden) {
-                                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                                    }
-                                    break;
-                            }
-                        }
-                    } else {
-                        $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                    }
-                }
-            }
-        }
-
         return true;
     }
 

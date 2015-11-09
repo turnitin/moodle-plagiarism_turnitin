@@ -67,6 +67,11 @@ switch ($cmd) {
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
+
+        // Edit assignment in Turnitin in case any changes have been made that would affect DV.
+        $pluginturnitin = new plagiarism_plugin_turnitin();
+        $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
         echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
                                                                                 array("class" => "launch_form"));
         echo html_writer::script("<!--

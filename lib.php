@@ -256,9 +256,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $supportedmods = array();
         foreach(scandir(__DIR__.'/classes/modules/') as $filename){
             if (!in_array($filename, array(".",".."))) {
-                $classname = explode('.', $filename)[0];
-                $modulename = explode('_', $classname)[1];
-                $supportedmods[] = $modulename;
+                $filename_ar = explode('.', $filename);
+                $classname_ar = explode('_', $filename_ar[0]); // $filename_ar[0] is class name.
+                $supportedmods[] = $classname_ar[1]; // $classname_ar[1] is module name.
             }
         }
 

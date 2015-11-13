@@ -163,7 +163,7 @@ class turnitinplugin_view {
             $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
-                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
+                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'),
                                                     array('class' => 'library_not_present_warning'));
             }
 
@@ -387,14 +387,6 @@ class turnitinplugin_view {
                 $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'turnitintooltwo'));
                 $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
             }
-
-            if ($config->useanon) {
-                $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
-                $mform->addElement('static', 'plagiarism_anonymous_note', '', get_string('ppanonmarkingnote', 'turnitintooltwo'));
-            } else {
-                $mform->addElement('hidden', 'plagiarism_anonymity', 0);
-            }
-            $mform->setType('plagiarism_anonymity', PARAM_INT);
 
             if ($config->transmatch) {
                 $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);

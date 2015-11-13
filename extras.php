@@ -63,8 +63,9 @@ switch ($cmd) {
     case "grademark":
         $submissionid = required_param('submissionid', PARAM_INT);
         $user = new turnitintooltwo_user($USER->id, $userrole);
+        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+
         if ($userrole == 'Instructor') {
-            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
 

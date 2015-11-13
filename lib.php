@@ -875,7 +875,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             (!$istutor && $peermarksactive)) {
                                     $peermarkreviewslink = $OUTPUT->box_start('row_peermark_reviews', '');
                                     $peermarkreviewslink .= html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                '&action=peermarkreviews&view_context=box', 
+                                                                '&action=peermarkreviews&view_context=box',
                                                                 html_writer::tag('i', '', array('class' => 'icon icon-peermark icon-lg')),
                                                                 array('title' => get_string('launchpeermarkreviews', 'turnitintooltwo'),
                                                                     'class' => 'peermark_reviews_pp_launch tii_tooltip'));
@@ -2253,7 +2253,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $title = '', $textcontent = '') {
         global $CFG, $DB, $USER, $turnitinacceptedfiles;
 
-        // Get module and course settings that we need.
+        // Get config, module and course settings that we need.
+        $config = turnitintooltwo_admin_config();
         $settings = $this->get_settings($cm->id);
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
         $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
@@ -2435,8 +2436,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm->id
         );
 
-        // Include user's name and id if we're using anonymous marking.
-        if ( !empty($moduledata->blindmarking) ) {
+        // Only include user's name and id if we're not using anonymous marking and student privacy.
+        if ( !empty($moduledata->blindmarking) && !empty($config->enablepseudo) ) {
             $user_details = array(
                 $user->id,
                 $user->firstname,

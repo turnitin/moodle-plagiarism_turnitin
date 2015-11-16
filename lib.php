@@ -75,7 +75,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value', 'plagiarism_rubric', 'plagiarism_erater',
                         'plagiarism_erater_handbook', 'plagiarism_erater_dictionary', 'plagiarism_erater_spelling',
                         'plagiarism_erater_grammar', 'plagiarism_erater_usage', 'plagiarism_erater_mechanics',
-                        'plagiarism_erater_style', 'plagiarism_anonymity', 'plagiarism_transmatch');
+                        'plagiarism_erater_style', 'plagiarism_transmatch');
     }
 
     /**
@@ -218,10 +218,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
                     $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
                     $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
-                }
-
-                if ($DB->record_exists('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'submitted'))) {
-                    $mform->disabledIf('plagiarism_anonymity', 'use_turnitin');
                 }
             }
 
@@ -879,7 +875,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             (!$istutor && $peermarksactive)) {
                                     $peermarkreviewslink = $OUTPUT->box_start('row_peermark_reviews', '');
                                     $peermarkreviewslink .= html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                '&action=peermarkreviews&view_context=box', 
+                                                                '&action=peermarkreviews&view_context=box',
                                                                 html_writer::tag('i', '', array('class' => 'icon icon-peermark icon-lg')),
                                                                 array('title' => get_string('launchpeermarkreviews', 'turnitintooltwo'),
                                                                     'class' => 'peermark_reviews_pp_launch tii_tooltip'));
@@ -1466,10 +1462,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Don't set anonymous marking if there have been submissions.
         $previoussubmissions = $DB->record_exists('plagiarism_turnitin_files',
-                                                            array('cm' => $cm->id,
-                                                                    'statuscode' => 'success'));
+                                                            array('cm' => $cm->id, 'statuscode' => 'success'));
+
+        // Use Moodle's blind marking setting for anonymous marking.
         if ($config->useanon && !$previoussubmissions) {
-            $assignment->setAnonymousMarking($modulepluginsettings["plagiarism_anonymity"]);
+            $anonmarking = (!empty($moduledata->blindmarking)) ? 1 : 0;
+            $assignment->setAnonymousMarking($anonmarking);
         }
 
         $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
@@ -1524,16 +1522,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $dtpost = ($gradesreleased) ? time() : strtotime('+1 month');
                         }
-                        // If blind marking is being used and identities have not been revealed then push out post date.
-                        if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
-                            $dtpost = strtotime('+6 months');
-                        }
                         break;
                     default:
                         $dtpost = $gradeitem->hidden;
                         break;
                 }
             }
+        }
+
+        // If blind marking is being used and identities have not been revealed then push out post date.
+        if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+            $dtpost = strtotime('+6 months');
         }
 
         // Ensure post date can't be before start date
@@ -2254,7 +2253,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $title = '', $textcontent = '') {
         global $CFG, $DB, $USER, $turnitinacceptedfiles;
 
+        // Get config, module and course settings that we need.
+        $config = turnitintooltwo_admin_config();
         $settings = $this->get_settings($cm->id);
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
 
         // Update user's details on Turnitin.
         $user->edit_tii_user();
@@ -2433,7 +2436,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm->id
         );
 
-        if ( ! $settings["plagiarism_anonymity"]) {
+        // Only include user's name and id if we're not using anonymous marking and student privacy.
+        if ( !empty($moduledata->blindmarking) && empty($config->enablepseudo) ) {
             $user_details = array(
                 $user->id,
                 $user->firstname,
@@ -2528,10 +2532,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             //Send a message to the user's Moodle inbox with the digital receipt.
             $receipt = new receipt_message();
-
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-            $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
-
             $input = array(
                 'firstname' => $user->firstname,
                 'lastname' => $user->lastname,

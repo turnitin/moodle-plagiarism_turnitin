@@ -70,7 +70,7 @@ class turnitinplugin_view {
         // Enable Turnitin for specific modules
         $supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array();
         foreach ($supported_mods as $mod) {
-            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod), '', 
+            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod), '',
                                 '', '', '', array('turnitin_use', '==', 1));
         }
 
@@ -163,7 +163,7 @@ class turnitinplugin_view {
             $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
-                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'), 
+                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'),
                                                     array('class' => 'library_not_present_warning'));
             }
 
@@ -241,7 +241,7 @@ class turnitinplugin_view {
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
-                $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"), 
+                $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"),
                                          1 => get_string("submitonfinal", "turnitintooltwo"));
 
                 $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
@@ -276,7 +276,8 @@ class turnitinplugin_view {
                     break;
             }
 
-            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'turnitintooltwo'), array('class' => 'tii_checkagainstnote')));
+            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'turnitintooltwo'),
+                                                                                array('class' => 'tii_checkagainstnote')));
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
@@ -388,13 +389,8 @@ class turnitinplugin_view {
                 $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
             }
 
-            if ($config->useanon) {
-                $mform->addElement('select', 'plagiarism_anonymity', get_string("turnitinanon", "turnitintooltwo"), $options);
-                $mform->addElement('static', 'plagiarism_anonymous_note', '', get_string('ppanonmarkingnote', 'turnitintooltwo'));
-            } else {
-                $mform->addElement('hidden', 'plagiarism_anonymity', 0);
-            }
-            $mform->setType('plagiarism_anonymity', PARAM_INT);
+            $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'turnitintooltwo'),
+                                                                                array('class' => 'tii_anonblindmarkingnote')));
 
             if ($config->transmatch) {
                 $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
@@ -499,7 +495,7 @@ class turnitinplugin_view {
                     if ($errorcode == 0) {
                         $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'turnitintooltwo') : $errormsg;
                     } else {
-                        $errorstring = get_string('errorcode'.$v->errorcode, 
+                        $errorstring = get_string('errorcode'.$v->errorcode,
                                             'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
                     }
                     $cells["error"] = $errorstring;

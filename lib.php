@@ -413,7 +413,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                     $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box',
-                                                    html_writer::tag('i', '', array('class' => 'icon icon-rubric icon-lg icon_margin blue')).
+                                                    html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg icon_margin blue')).
                                                     get_string('launchrubricview', 'turnitintooltwo'),
                                                     array('class' => 'rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                             'title' => get_string('launchrubricview', 'turnitintooltwo'))).
@@ -842,7 +842,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                             $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box',
-                                                            html_writer::tag('i', '', array('class' => 'icon icon-rubric icon-lg blue')),
+                                                            html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg blue')),
                                                             array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                                     'title' => get_string('launchrubricview', 'turnitintooltwo'))).
                                                                         html_writer::tag('span', '',
@@ -880,7 +880,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $peermarkreviewslink = $OUTPUT->box_start('row_peermark_reviews', '');
                                     $peermarkreviewslink .= html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                 '&action=peermarkreviews&view_context=box', 
-                                                                html_writer::tag('i', '', array('class' => 'icon icon-peermark icon-lg')),
+                                                                html_writer::tag('i', '', array('class' => 'tiiicon icon-peermark icon-lg')),
                                                                 array('title' => get_string('launchpeermarkreviews', 'turnitintooltwo'),
                                                                     'class' => 'peermark_reviews_pp_launch tii_tooltip'));
                                     $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',

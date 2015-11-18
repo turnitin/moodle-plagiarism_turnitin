@@ -10,7 +10,7 @@ require_once( 'response.class.php' );
 require_once( 'sdkexception.class.php' );
 
 /**
- * @ignore 
+ * @ignore
  */
 class UserSoap extends Soap {
 
@@ -21,7 +21,7 @@ class UserSoap extends Soap {
     public static $contactinfotype_vocab = 'http://www.imsglobal.org/vdex/lis/pmsv2p0/contactinfotypevocabularyv1p0.xml';
     public static $enterpriseroletype_vocab = 'http://www.imsglobal.org/vdex/lis/pmsv2p0/epriserolestypevocabularyv1p0.xml';
     public static $institutionroletype_vocab = 'http://www.imsglobal.org/vdex/lis/pmsv2p0/institutionroletypevocabularyv1p0.xml';
-    
+
     public static $extensionvalue_vocab = 'http://www.imsglobal.org/vdex/lis/pmsv2p0/extensionvocabularyv1p0.xml';
     public static $extensionname_vocab = 'http://www.turnitin.com/static/source/media/turnitinvocabularyv1p0.xml';
 
@@ -207,11 +207,11 @@ class UserSoap extends Soap {
         $request['personRecord']['person']['roles']['institutionRole']['institutionroletype']['instanceValue']['language'] = parent::$lislanguage;
         $request['personRecord']['person']['roles']['institutionRole']['institutionroletype']['instanceValue']['textString'] = ( $user->getDefaultRole() == 'Student' ) ? 'Learner' : $user->getDefaultRole();
         $request['personRecord']['person']['roles']['institutionRole']['primaryroletype'] = '1';
-        
+
         if ( $user->getDefaultLanguage() ) {
             $request['personRecord']['person']['extension']['extensionNameVocabulary'] = self::$extensionname_vocab;
             $request['personRecord']['person']['extension']['extensionValueVocabulary'] = self::$extensionvalue_vocab;
-            
+
             $request['personRecord']['person']['extension']['extensionField']['fieldName'] = 'DefaultLanguage';
             $request['personRecord']['person']['extension']['extensionField']['fieldType'] = 'String';
             $request['personRecord']['person']['extension']['extensionField']['fieldValue'] = $user->getDefaultLanguage();
@@ -220,3 +220,5 @@ class UserSoap extends Soap {
     }
 
 }
+
+//?>

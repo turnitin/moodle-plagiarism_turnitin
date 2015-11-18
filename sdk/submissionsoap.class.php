@@ -232,3 +232,5 @@ class SubmissionSoap extends Soap {
     }
 
 }
+
+//?>

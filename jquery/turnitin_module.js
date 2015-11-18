@@ -77,7 +77,7 @@ jQuery(document).ready(function($) {
     // Open an iframe light box containing the Peermark reviews
     $(document).on('click', '.peermark_reviews_pp_launch', function() {
         $('.peermark_reviews_pp_launch').colorbox({
-            open:true,iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews",
+            open:true, iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews",
             onLoad: function() {
                 getLoadingGif();
             },
@@ -87,9 +87,9 @@ jQuery(document).ready(function($) {
     });
 
     // Open an iframe light box containing the Rubric View
-    $(document).on('click', '.rubric_view_pp_launch', function() {
-        $(this).colorbox({
-            href: this.href, iframe:true, width:"832px", height:"682px", opacity: "0.7", className: "rubric_view",
+    if ($('.rubric_view_pp_launch').length > 0) {
+        $('.rubric_view_pp_launch').colorbox({
+            iframe:true, width:"832px", height:"772px", opacity: "0.7", className: "rubric_view",
             onLoad: function() {
                 lightBoxCloseButton();
                 getLoadingGif();
@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
             }
         });
         return false;
-    });
+    }
 
     // Create new event for submission to be re-sent to Turnitin.
     $(document).on('click', '.pp_resubmit_link', function() {

@@ -302,7 +302,7 @@ button.pp-resubmit-files {
     margin-top: 10px;
 }
 
-.tii_checkagainstnote, .genspeednote {
+.tii_checkagainstnote, .tii_anonblindmarkingnote, .tii_genspeednote {
     border: 1px solid #6FCAFF;
     background: #BBE6FF;
     padding: 10px;

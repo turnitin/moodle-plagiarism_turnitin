@@ -413,11 +413,18 @@ class turnitinplugin_view {
         }
     }
 
-    public function show_file_errors_table() {
+    public function show_file_errors_table($page = 0) {
         global $CFG, $OUTPUT;
 
+        $limit = 100;
+        $offset = $page * $limit;
+
         $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-        $files = $plagiarismpluginturnitin->get_file_upload_errors();
+        $filescount = $plagiarismpluginturnitin->get_file_upload_errors(0, 0, true);
+        $files = $plagiarismpluginturnitin->get_file_upload_errors($offset, $limit);
+
+        $baseurl = new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'errors'));
+        $pagingbar = $OUTPUT->paging_bar($filescount, $page, $limit, $baseurl);
 
         // Do the table headers.
         $cells = array();
@@ -530,7 +537,7 @@ class turnitinplugin_view {
         $table->data = $rows;
         $output = html_writer::table($table);
 
-        return $output;
+        return $pagingbar.$output.$pagingbar;
     }
 
     /**

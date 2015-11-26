@@ -1,24 +1,5 @@
 jQuery(document).ready(function($) {
-	$("#ppErrors").dataTable({
-		"aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-		"sDom": 'lfr<"giveHeight"t>ip',
-        "aaSorting": [[ 1, "asc" ]],
-        "aoColumns": [
-                        {"bSortable": false,
-                            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                                $(nTd).addClass('center');
-                            }},
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                     ]
-	});
-
-    $('input[name="errors_select_all"]').click(function() {
+	$('input[name="errors_select_all"]').click(function() {
         if ($(this).prop('checked')) {
             $('.errors_checkbox').prop('checked', true);
         } else {

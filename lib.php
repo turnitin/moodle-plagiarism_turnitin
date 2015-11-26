@@ -2436,8 +2436,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm->id
         );
 
-        // Only include user's name and id if we're not using anonymous marking and student privacy.
-        if ( !empty($moduledata->blindmarking) && empty($config->enablepseudo) ) {
+        // Only include user's name and id if we're not using blind marking and student privacy.
+        if ( empty($moduledata->blindmarking) && empty($config->enablepseudo) ) {
             $user_details = array(
                 $user->id,
                 $user->firstname,

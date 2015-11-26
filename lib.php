@@ -134,7 +134,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 LEFT JOIN {course_modules} CM ON CM.id = PTF.cm
                 LEFT JOIN {modules} M ON CM.module = M.id
                 LEFT JOIN {course} C ON CM.course = C.id
-                WHERE PTF.statuscode != 'success'";
+                WHERE PTF.statuscode = 'error'";
         $countsql = "SELECT count(1) $sql";
         $selectsql = "SELECT PTF.id, U.firstname, U.lastname, U.email, PTF.cm, M.name AS moduletype,
                             C.id AS courseid, C.fullname AS coursename, PTF.identifier, PTF.submissiontype,

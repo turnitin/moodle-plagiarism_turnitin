@@ -116,20 +116,36 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $settings;
     }
 
-    public function get_file_upload_errors() {
+    /**
+     * Get a list of the file upload errors.
+     *
+     * @param int $offset Number of records to skip.
+     * @param int $limit  Max records to return.
+     * @param bool $count If true, returns a count of the total number of
+     *                    records.
+     * @access public
+     * @return array|int A list of records, or count when $count is true.
+     */
+    public function get_file_upload_errors($offset = 0, $limit = 0, $count = false) {
         global $DB;
 
-        $files = $DB->get_records_sql("SELECT PTF.id, U.firstname, U.lastname, U.email, PTF.cm, M.name AS moduletype,
-                                        C.id AS courseid, C.fullname AS coursename, PTF.identifier, PTF.submissiontype,
-                                        PTF.errorcode, PTF.errormsg
-                                        FROM {plagiarism_turnitin_files} PTF
-                                        LEFT JOIN {user} U ON U.id = PTF.userid
-                                        LEFT JOIN {course_modules} CM ON CM.id = PTF.cm
-                                        LEFT JOIN {modules} M ON CM.module = M.id
-                                        LEFT JOIN {course} C ON CM.course = C.id
-                                        WHERE PTF.statuscode = 'error'
-                                        ORDER BY PTF.id DESC");
-        return $files;
+        $sql = "FROM {plagiarism_turnitin_files} PTF
+                LEFT JOIN {user} U ON U.id = PTF.userid
+                LEFT JOIN {course_modules} CM ON CM.id = PTF.cm
+                LEFT JOIN {modules} M ON CM.module = M.id
+                LEFT JOIN {course} C ON CM.course = C.id
+                WHERE PTF.statuscode != 'success'";
+        $countsql = "SELECT count(1) $sql";
+        $selectsql = "SELECT PTF.id, U.firstname, U.lastname, U.email, PTF.cm, M.name AS moduletype,
+                            C.id AS courseid, C.fullname AS coursename, PTF.identifier, PTF.submissiontype,
+                            PTF.errorcode, PTF.errormsg
+                      $sql
+                      ORDER BY PTF.id DESC";
+
+        if ($count) {
+            return $DB->count_records_sql($countsql);
+        }
+        return $DB->get_records_sql($selectsql, array(), $offset, $limit);
     }
 
     /**

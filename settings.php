@@ -244,6 +244,7 @@ switch ($do) {
         break;
 
     case "errors":
+        $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
         echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
@@ -259,7 +260,7 @@ switch ($do) {
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
-        echo $turnitinpluginview->show_file_errors_table();
+        echo $turnitinpluginview->show_file_errors_table($page);
 
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));

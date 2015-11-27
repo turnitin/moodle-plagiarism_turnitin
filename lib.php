@@ -2547,7 +2547,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            //Send a message to the user's Moodle inbox with the digital receipt.
+            // Send a message to the user's Moodle inbox with the digital receipt.
             $receipt = new receipt_message();
             $input = array(
                 'firstname' => $user->firstname,
@@ -2562,6 +2562,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $message = $receipt->build_message($input);
             $receipt->send_message($user->id, $message);
 
+            // Output a message in the cron for successfull submission to Turnitin.
+            $outputvars = new stdClass();
+            $outputvars->title = $title;
+            $outputvars->submissionid = $newsubmissionid;
+            $outputvars->assignmentname = $moduledata->name;
+            $outputvars->coursename = $coursedata->turnitin_ctl;
+
+            mtrace(get_string('cronsubmittedsuccessfully', 'turnitintooltwo', $outputvars));
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
 

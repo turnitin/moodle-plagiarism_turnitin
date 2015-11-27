@@ -180,7 +180,7 @@ switch ($do) {
 
             $output .= "== ".$table." ==\r\n\r\n";
 
-            if ($data = $DB->get_records($table)) {
+            if ($data = $DB->get_recordset($table)) {
 
                 $headers = array_keys(get_object_vars(current($data)));
                 $columnwidth = 25;

@@ -1005,8 +1005,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $output .= $OUTPUT->box_end(true);
         }
 
+        // This comment is here as it is useful for product support.
         $output .= html_writer::tag('span', '
-                    <!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').' -->');
+                    <!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$plagiarismsettings['turnitin_assignid'].' -->');
 
         return $output;
     }

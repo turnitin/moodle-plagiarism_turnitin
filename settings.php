@@ -127,19 +127,10 @@ if ($do == "errors") {
     if ($CFG->branch <= 25) {
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.plugins.js');
-        $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
         $PAGE->requires->js($jsurl);
-
-        $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/jquery.dataTables.css');
-        $PAGE->requires->css($cssurl);
     } else {
         $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('plagiarism-dataTables', 'plagiarism_turnitin');
-        $PAGE->requires->jquery_plugin('plagiarism-dataTables_plugins', 'plagiarism_turnitin');
         $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
     }
 }

@@ -1,3 +1,23 @@
+### Date:       2015-November-30
+### Release:    v2015040111
+
+- Verified against Moodle 3.0
+- Anonymous marking setting has been removed. Moodle's blind marking workflow is now used to handle anonymity in Turnitin.
+- Retrospective support for PHP 5.3.
+- Added a note to highlight the 24 hour Originality Report delay for resubmissions.
+- Fixes:
+	- Fixed an issue where student names are visible in the file name when blind marking or student privacy is enabled.
+	- Student first name default is now saved in the plugin settings when student privacy is enabled.
+	- The post date is now handled correctly for blind marking assignments.
+	- TII user record is removed if Moodle user does not exist when unlinked.
+	- Fixed an issue where the Rubric view link is not visible for students.
+	- Shared rubsrics is now initialised when creating a Turnitin class.
+	- Force UTF-8 encoding when trimmming multi-byte assignment titles
+	- The User dropdown now uses the correct font.
+	- Turnitin anonymous marking setting no longer changed if there have been previous submissions to an assignment.
+	- TII assignment now syncs when opening the DV.
+	- Trigger between revealing identities and grades with blind marking in Turnitin has been reworked.
+
 ### Date:       2015-October-01
 ### Release:    v2015040110
 

@@ -1006,7 +1006,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // This comment is here as it is useful for product support.
-        $plagiarismsettings = $this->get_settings($cm);
+        $plagiarismsettings = $this->get_settings($cm->id);
         $output .= html_writer::tag(
             'span', '<!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$plagiarismsettings['turnitin_assignid'].' -->');
 
@@ -1128,7 +1128,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     !is_null($plagiarismfile->orcapable)) {
                 if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
                         $submissiondata->grade != $plagiarismfile->grade ||
-                        $submissiondata->orcapable != $plagiarismfile->orcapable || 
+                        $submissiondata->orcapable != $plagiarismfile->orcapable ||
                         $submissiondata->student_read != $plagiarismfile->student_read) {
                     $updaterequired = true;
                 }
@@ -1140,7 +1140,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $fs = get_file_storage();
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
-                        
+
                         $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
                         $item = current($submission);
 
@@ -1618,21 +1618,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $moduleconfigvalue->cm = $cm->id;
             $moduleconfigvalue->name = 'turnitin_assignid';
             $moduleconfigvalue->value = $turnitinassignid;
-            $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
-        }
-
-        // Save the post date we have stored in Turnitin
-        $moduleconfigvalue = new stdClass();
-        $moduleconfigvalue->cm = $cm->id;
-        $moduleconfigvalue->name = 'plagiarism_post_date';
-        $moduleconfigvalue->value = $dtpost;
-
-        if ($plagiarism_post_date = $DB->get_record('plagiarism_turnitin_config',
-                                    array('cm' => $cm->id, 'name' => 'plagiarism_post_date'), 'id')) {
-
-            $moduleconfigvalue->id = $plagiarism_post_date->id;
-            $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
-        } else {
             $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
         }
 

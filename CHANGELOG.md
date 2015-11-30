@@ -18,6 +18,8 @@
 	- TII assignment now syncs when opening the DV.
 	- Trigger between revealing identities and grades with blind marking in Turnitin has been reworked.
 
+---
+
 ### Date:       2015-October-01
 ### Release:    v2015040110
 

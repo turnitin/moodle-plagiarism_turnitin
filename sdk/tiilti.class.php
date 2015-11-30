@@ -17,18 +17,18 @@ require_once( 'tiiform.class.php' );
  */
 class TiiLTI extends TiiForm {
 
-    private $submissionid;
-    private $submissionids;
-    private $classid;
-    private $assignmentid;
-    private $userid;
-    private $role;
-    private $xmlresponse;
-    private $customcss;
-    private $asjson;
-    private $peermarkid;
-    private $skipsetup;
-    private $studentlist;
+    protected $submissionid;
+    protected $submissionids;
+    protected $classid;
+    protected $assignmentid;
+    protected $userid;
+    protected $role;
+    protected $xmlresponse;
+    protected $customcss;
+    protected $asjson;
+    protected $peermarkid;
+    protected $skipsetup;
+    protected $studentlist;
 
     /**
      * @ignore
@@ -121,7 +121,7 @@ class TiiLTI extends TiiForm {
     /**
      * @ignore
      */
-    const CREATEASSIGNMENTENDPOINT       = '/api/lti/1p0/assignment/create';
+    const CREATEASSIGNMENTENDPOINT     = '/api/lti/1p0/assignment/create';
     /**
      * @ignore
      */
@@ -129,7 +129,7 @@ class TiiLTI extends TiiForm {
     /**
      * @ignore
      */
-    const ASSIGNMENTINBOXENDPOINT       = '/api/lti/1p0/assignment/inbox';
+    const ASSIGNMENTINBOXENDPOINT      = '/api/lti/1p0/assignment/inbox';
 
     /**
      * @ignore
@@ -367,3 +367,5 @@ class TiiLTI extends TiiForm {
     }
 
 }
+
+//?>

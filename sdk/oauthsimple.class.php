@@ -14,10 +14,10 @@
  */
 class OAuthSimple {
 
-    private $_secrets;
-    private $_default_signature_method;
-    private $_action;
-    private $_nonce_chars;
+    protected $_secrets;
+    protected $_default_signature_method;
+    protected $_action;
+    protected $_nonce_chars;
 
     /**
      * Constructor
@@ -461,7 +461,7 @@ class OAuthSimple {
 }
 
 /**
- * @ignore 
+ * @ignore
  */
 class OAuthSimpleException extends Exception {
 
@@ -484,3 +484,5 @@ class OAuthSimpleException extends Exception {
     }
 
 }
+
+//?>

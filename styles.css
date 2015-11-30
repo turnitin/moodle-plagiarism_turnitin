@@ -41,6 +41,7 @@
 
 .tii_links_container .row_rubric_view i {
     line-height: 1 !important;
+    margin-right: 16px;
 }
 
 .tii_links_container .rubric_view_pp_launch {
@@ -301,7 +302,7 @@ button.pp-resubmit-files {
     margin-top: 10px;
 }
 
-.tii_checkagainstnote {
+.tii_checkagainstnote, .tii_anonblindmarkingnote, .tii_genspeednote {
     border: 1px solid #6FCAFF;
     background: #BBE6FF;
     padding: 10px;

@@ -137,3 +137,5 @@ class MembershipSoap extends Soap {
     }
 
 }
+
+//?>

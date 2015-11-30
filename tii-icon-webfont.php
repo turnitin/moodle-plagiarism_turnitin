@@ -18,7 +18,7 @@ echo '<style type="text/css">
   font-weight: normal;
   font-style: normal;
 }
-.icon {
+.tiiicon {
   display: inline-block;
   font: normal normal normal 14px/1 TiiIconFont;
   font-size: inherit;

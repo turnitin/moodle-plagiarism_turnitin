@@ -1931,6 +1931,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                     // Only process submissions up to the processing limit.
                     if ($i >= PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {
+                        mtrace(get_string('ppcronsubmissionlimitreached', 'turnitintooltwo',
+                                                    PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT));
                         return false;
                     }
                     $i++;

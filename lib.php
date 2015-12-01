@@ -789,7 +789,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         // Can grade and feedback be released to this student yet?
-                        $released = ($gradesreleased && (!is_null($plagiarismfile->grade) || isset($currentgradequery->grade)));
+                        $released = ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || isset($currentgradequery->grade)));
 
                         // Show link to open grademark.
                         if ($config->usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))
@@ -1090,7 +1090,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $updaterequired = false;
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
-                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read')) {
+                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback')) {
             $plagiarismfile = new object();
             $plagiarismfile->id = $submissiondata->id;
             $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ?
@@ -1103,6 +1103,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
             $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
 
+            $plagiarismfile->gm_feedback = $tiisubmission->getFeebackExists();
+
             //Update feedback timestamp.
             $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ?
                                     strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
@@ -1113,7 +1115,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
                         $submissiondata->grade != $plagiarismfile->grade ||
                         $submissiondata->orcapable != $plagiarismfile->orcapable || 
-                        $submissiondata->student_read != $plagiarismfile->student_read) {
+                        $submissiondata->student_read != $plagiarismfile->student_read ||
+                        $submissiondata->gm_feedback != $plagiarismfile->gm_feedback) {
                     $updaterequired = true;
                 }
             }

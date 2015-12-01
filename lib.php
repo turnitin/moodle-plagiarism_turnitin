@@ -315,7 +315,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      *
      * Initially only being used if a student is logged in before checking whether they have accepted the EULA.
      */
-    public function test_turnitin_connection() {
+    public function test_turnitin_connection($workflowcontext = 'site') {
         $turnitincomms = new turnitin_comms();
         $tiiapi = $turnitincomms->initialise_api();
 
@@ -327,6 +327,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         } catch (Exception $e) {
             $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
+            if ($workflowcontext == 'cron') {
+                mtrace(get_string('ppeventsfailedconnection', 'turnitintooltwo'));
+            }
             return false;
         }
     }
@@ -1897,7 +1900,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         static $tiiconnection;
         if (empty($tiiconnection)) {
-            if (!$tiiconnection = $this->test_turnitin_connection()) {
+            if (!$tiiconnection = $this->test_turnitin_connection('cron')) {
                 return false;
             }
         }

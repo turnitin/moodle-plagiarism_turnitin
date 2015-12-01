@@ -1883,7 +1883,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function event_handler($eventdata) {
         global $DB, $CFG;
 
-        $cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid);
+        // Remove the event if the course module no longer exists.
+        if (!$cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid)) {
+            return true;
+        }
 
         // Initialise module settings.
         $plagiarismsettings = $this->get_settings($eventdata->cmid);

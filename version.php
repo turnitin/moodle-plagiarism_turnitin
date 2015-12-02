@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-$plugin->version =  2015040110;
+$plugin->version =  2015040112;
 $plugin->release = "2.3+";
 $plugin->requires =  2012062500.00;
 $plugin->cron     = 300;

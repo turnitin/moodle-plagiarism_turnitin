@@ -175,6 +175,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015040110, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2015040112) {
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('gm_feedback', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, true, false, 0, 'student_read');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+    }
+
     return $result;
 }
 

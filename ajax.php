@@ -97,16 +97,19 @@ switch ($action) {
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
-            if (!$tiiassignment) {
+            if ($tiiassignment) {
+                $tiiassignmentid = $tiiassignment->value;
+            } else {
                 // Create the module as an assignment in Turnitin.
-                $tiiassignment->value = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                $tiiassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+                $tiiassignmentid = $tiiassignment->tiiassignmentid;
             }
 
             $user = new turnitintooltwo_user($USER->id, "Instructor");
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_manager',
-                                                        'Instructor', $tiiassignment->value),
+                                                        'Instructor', $tiiassignmentid),
                                                         array("class" => "launch_form", "style" => "display:none;"));
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();

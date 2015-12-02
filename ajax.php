@@ -102,7 +102,7 @@ switch ($action) {
             } else {
                 // Create the module as an assignment in Turnitin.
                 $tiiassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
-                $tiiassignmentid = $tiiassignment->tiiassignmentid;
+                $tiiassignmentid = $tiiassignment['tiiassignmentid'];
             }
 
             $user = new turnitintooltwo_user($USER->id, "Instructor");

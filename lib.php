@@ -1123,7 +1123,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
             $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
 
-            $plagiarismfile->gm_feedback = $tiisubmission->getFeebackExists();
+            $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
 
             //Update feedback timestamp.
             $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ?

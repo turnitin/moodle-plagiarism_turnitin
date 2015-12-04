@@ -807,8 +807,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= $OUTPUT->box_end(true);
                         }
 
+                        //Check if blind marking is on and revealidentities is not set yet.
+                        $blindon = (!empty($moduledata->blindmarking) && empty($moduledata->revealidentities));
+
                         // Can grade and feedback be released to this student yet?
-                        $released = ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || isset($currentgradequery->grade)));
+                        $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || isset($currentgradequery->grade))));
 
                         // Show link to open grademark.
                         if ($config->usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))

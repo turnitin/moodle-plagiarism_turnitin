@@ -1942,16 +1942,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT per cron run.
                 static $i;
                 if (empty($i)) {
-                    $i = 0;
+                    $i = 1;
                 }
 
                 // Only process submissions up to the processing limit.
-                if ($i >= PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {
-                    mtrace(get_string('ppcronsubmissionlimitreached', 'turnitintooltwo',
-                                                PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT));
+                if ($i > PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {
                     return false;
                 }
-                $i++;
 
                 $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                 if ($cm->modname != 'assign') {
@@ -2102,6 +2099,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
                 }
+
+                // Output warning that no further submissions will be processed as processing limit has been reached.
+                if ($i == PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT) {
+                    mtrace(get_string('ppcronsubmissionlimitreached', 'turnitintooltwo',
+                                            PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT));
+                }
+                $i++;
 
                 break;
         }

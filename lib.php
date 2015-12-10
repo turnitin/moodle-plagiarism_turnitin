@@ -1898,6 +1898,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function event_handler($eventdata) {
         global $DB, $CFG;
 
+        STATIC $ppDisplayCount = 0;
+
+        if (!$ppDisplayCount) {
+            $numEvents = $DB->count_records_sql("SELECT count(*) FROM {events_queue} q 
+            LEFT JOIN {events_queue_handlers} h ON (h.queuedeventid = q.id)
+            LEFT JOIN {events_handlers} e ON (h.handlerid = e.id)
+            WHERE e.eventname IN ('assessable_file_uploaded', 'assessable_files_done', 'assessable_content_uploaded', 'assessable_submitted') AND component = 'plagiarism_turnitin'");
+
+            mtrace(get_string("ppqueuesize", 'turnitintooltwo').': '. $numEvents);
+            $ppDisplayCount = 1;
+        }
+
         $result = true;
         // Remove the event if the course module no longer exists.
         if (!$cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid)) {

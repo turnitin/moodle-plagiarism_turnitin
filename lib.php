@@ -1989,13 +1989,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $author = $moduleobject->get_author($eventdata->itemid);
                 $author = (!empty($author)) ? $author : $eventdata->userid;
 
-                // Join User to course.
-                $user = new turnitintooltwo_user($author, 'Learner');
-                $user->join_user_to_class($coursedata->turnitin_cid);
+                $errorcode = "";
+
+                try {
+                    // Join User to course.
+                    $user = new turnitintooltwo_user($author, 'Learner');
+                    $user->join_user_to_class($coursedata->turnitin_cid);
+                } catch (Exception $e) {
+                    $user = new turnitintooltwo_user($author, 'Learner', 'false', 'cron', 'false');
+
+                    $errorcode = 7;
+                }
 
                 $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
+
                 // Cron errorcode needs to be passed to submission function.
-                $cronerror = (empty($syncassignment['errorcode'])) ? '' : $syncassignment['errorcode'];
+                if (!empty($syncassignment['errorcode'])) {
+                    $cronerror = $syncassignment['errorcode'];
+                } elseif (!empty($errorcode)) {
+                    $cronerror = $errorcode;
+                } else {
+                    $cronerror = "";
+                }
 
                 // Get actual text content and files to be submitted for draft submissions
                 // as this won't be present in eventdata for certain event types.

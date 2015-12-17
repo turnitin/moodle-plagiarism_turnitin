@@ -1591,6 +1591,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = strtotime('+1 day');
         }
 
+        // Enter a section here that updates the db field if the due date has passed within the last twenty four hours.
+
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
@@ -1691,6 +1693,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
         return true;
     }
+
+/* Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
+ Add this as a second parameter to cron, thus the set of submissions to process are determined outside of the cron updater rather than by it.
+ Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
+ [current_logic] AND ([current_logic] OR [flag set to true]) */
 
     /**
      * Update simliarity scores.
@@ -1901,7 +1908,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         STATIC $ppDisplayCount = 0;
 
         if (!$ppDisplayCount) {
-            $numEvents = $DB->count_records_sql("SELECT count(*) FROM {events_queue} q 
+            $numEvents = $DB->count_records_sql("SELECT count(*) FROM {events_queue} q
             LEFT JOIN {events_queue_handlers} h ON (h.queuedeventid = q.id)
             LEFT JOIN {events_handlers} e ON (h.handlerid = e.id)
             WHERE e.eventname IN ('assessable_file_uploaded', 'assessable_files_done', 'assessable_content_uploaded', 'assessable_submitted') AND component = 'plagiarism_turnitin'");

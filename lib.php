@@ -1591,7 +1591,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = strtotime('+1 day');
         }
 
-        // Enter a section here that updates the db field if the due date has passed within the last twenty four hours.
+        // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
+        $now = strtotime('now');
+        if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
+            $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value')
+        }
 
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));

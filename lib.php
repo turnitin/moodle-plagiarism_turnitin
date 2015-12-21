@@ -1696,7 +1696,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             try {
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                " (statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL )) AND ( (statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL )) OR duedate_report_refresh = 1 )",
                 array('success', $submissiontype, 1), 'externalid DESC');
                 $this->cron_update_scores($submissiontype, $submissions);
             } catch (Exception $ex) {
@@ -1710,7 +1710,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /*  Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
         Add this as a second parameter to cron_update_scores, thus the set of submissions to process are determined outside of the cron updater rather than by it.
         Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
-        [current_logic] AND ([current_logic] OR [flag set to true])
+        [current_logic] AND ([current_logic] OR [flag set to true]) -- done
     */
 
     /**

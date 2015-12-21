@@ -1594,7 +1594,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
         $now = strtotime('now');
         if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
-            $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value')
+            $udpate_data = new stdClass();
+            $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value'); // Gets me an ID.
+            $update_data->duedate_report_refresh = 1;
+            $DB->update_record('duedate_report_refresh', $update_data);
         }
 
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
@@ -1685,11 +1688,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
+        global $DB, $CFG;
+
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
         foreach ($submissiontypes as $submissiontype) {
             try {
-                $this->cron_update_scores($submissiontype);
+                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
+                $submissions = $DB->get_records_select('plagiarism_turnitin_files',
+                " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                array('success', $submissiontype, 1), 'externalid DESC');
+                $this->cron_update_scores($submissiontype, $submissions);
             } catch (Exception $ex) {
                 error_log("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
                 mtrace("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
@@ -1698,23 +1707,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
-/* Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
- Add this as a second parameter to cron, thus the set of submissions to process are determined outside of the cron updater rather than by it.
- Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
- [current_logic] AND ([current_logic] OR [flag set to true]) */
+    /* Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
+     Add this as a second parameter to cron_update_scores, thus the set of submissions to process are determined outside of the cron updater rather than by it.
+     Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
+     [current_logic] AND ([current_logic] OR [flag set to true]) */
 
     /**
      * Update simliarity scores.
-     *
+     * @param array $submissions - the submissions to be processed
      * @return boolean
      */
-    public function cron_update_scores($submissiontype = 'file') {
+    public function cron_update_scores($submissiontype = 'file', $submissions) {
         global $DB, $CFG;
 
-        $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
-        $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                        " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
-                                        array('success', $submissiontype, 1), 'externalid DESC');
         $submissionids = array();
         $reportsexpected = array();
 

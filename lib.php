@@ -1595,7 +1595,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $now = strtotime('now');
         if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
             $udpate_data = new stdClass();
-            $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value'); // Gets me an ID.
+            $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value');
             $update_data->duedate_report_refresh = 1;
             $DB->update_record('duedate_report_refresh', $update_data);
         }
@@ -1707,10 +1707,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
-    /* Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
-     Add this as a second parameter to cron_update_scores, thus the set of submissions to process are determined outside of the cron updater rather than by it.
-     Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
-     [current_logic] AND ([current_logic] OR [flag set to true]) */
+    /*  Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
+        Add this as a second parameter to cron_update_scores, thus the set of submissions to process are determined outside of the cron updater rather than by it.
+        Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
+        [current_logic] AND ([current_logic] OR [flag set to true])
+    */
 
     /**
      * Update simliarity scores.

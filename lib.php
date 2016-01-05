@@ -1591,15 +1591,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = strtotime('+1 day');
         }
 
-        // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-        $now = strtotime('now');
-        if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
-            $udpate_data = new stdClass();
-            $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value');
-            $update_data->duedate_report_refresh = 1;
-            $DB->update_record('duedate_report_refresh', $update_data);
-        }
-
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
@@ -1726,8 +1717,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
+
             // Only add the submission to the request if the module still exists.
             if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
+
+                // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
+                $now = strtotime('now');
+                if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
+                    $udpate_data = new stdClass();
+                    $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value');
+                    $update_data->duedate_report_refresh = 1;
+                    $DB->update_record('plagiarism_turnitin_files', $update_data);
+                }
+
                 if (!isset($reportsexpected[$cm->id])) {
                     $plagiarismsettings = $this->get_settings($cm->id);
                     $reportsexpected[$cm->id] = 1;

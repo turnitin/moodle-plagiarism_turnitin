@@ -1592,6 +1592,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
+
+        // If the duedate is in the future then set any submission duedate_report_refresh flags that are 2 to 1 to make sure they are re-examined in the next cron run
+        $now = strtotime('now')
+        if ($assignment->getDueDate() > $now) {
+            $DB->set_field('plagiarism_turnitin_files', 'duedate_report_refresh', 2, array('cm' => $cm->id));
+        }
+
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         // Erater settings.
@@ -1687,7 +1694,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             try {
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                " (statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL )) AND ( (statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL )) OR duedate_report_refresh = 1 )",
+                " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
                 array('success', $submissiontype, 1), 'externalid DESC');
                 $this->cron_update_scores($submissiontype, $submissions);
             } catch (Exception $ex) {
@@ -1698,11 +1705,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
-    /*  Move the $submissions variable assignment from inside the cron_update_scores and into cron() within the try statement.
-        Add this as a second parameter to cron_update_scores, thus the set of submissions to process are determined outside of the cron updater rather than by it.
-        Finally, add an extension of logic to the $submissions variable to include the items where your syncreport flag is true. Logic should look like:
-        [current_logic] AND ([current_logic] OR [flag set to true]) -- done
-    */
+    public function set_duedate_report_refresh($id, $newValue) {
+        $udpate_data = new stdClass();
+        $update_data->id = $id
+        $update_data->duedate_report_refresh = $newValue;
+        $DB->update_record('plagiarism_turnitin_files', $update_data);
+    }
 
     /**
      * Update simliarity scores.
@@ -1722,12 +1730,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
 
                 // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
+                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                 $now = strtotime('now');
+                $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
                 if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
-                    $udpate_data = new stdClass();
-                    $update_data->id = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value');
-                    $update_data->duedate_report_refresh = 1;
-                    $DB->update_record('plagiarism_turnitin_files', $update_data);
+                    set_duedate_report_refresh($tiisubmission->id, 1);
                 }
 
                 if (!isset($reportsexpected[$cm->id])) {
@@ -1819,6 +1826,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
                     // Do not return false if a batch fails - another one might work.
                 }
+            }
+        }
+
+        // Sets the duedate_report_refresh flag for each processed submission to 2 to prevent them being processed again in the next cron run
+        foreach ($submissions as $tiisubmission) {
+            if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
+                set_duedate_report_refresh($tiisubmission->id, 2);
             }
         }
 

@@ -157,10 +157,6 @@ class turnitinplugin_view {
 
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/plagiarism/turnitin/css/font-awesome.min.css');
-            $PAGE->requires->css($cssurl);
-            $cssurl = new moodle_url('/plagiarism/turnitin/css/tii-icon-webfont.css');
-            $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
                 $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'),
@@ -177,13 +173,11 @@ class turnitinplugin_view {
                 // If assignment has submissions then show a refresh grades button
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
                 if ($numsubs > 0) {
-                    $refreshgrades = html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-refresh fa-2x',
-                                                    'title' => get_string('turnitinrefreshsubmissions', 'turnitintooltwo'))).
+                    $refreshgrades = html_writer::tag('div', $OUTPUT->pix_icon('refresh', get_string('turnitinrefreshsubmissions', 'turnitintooltwo'), 'plagiarism_turnitin').
                                                 html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'turnitintooltwo')),
                                                                     array('class' => 'plagiarism_turnitin_refresh_grades'));
 
-                    $refreshgrades .= html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-spinner fa-spin fa-2x',
-                                                    'title' => get_string('turnitinrefreshingsubmissions', 'turnitintooltwo'))).
+                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading', get_string('turnitinrefreshingsubmissions', 'turnitintooltwo'), 'plagiarism_turnitin').
                                                 html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'turnitintooltwo')),
                                                                     array('class' => 'plagiarism_turnitin_refreshing_grades'));
                 }
@@ -195,7 +189,6 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
-                                                html_writer::tag('i', '', array('class' => 'tiiicon icon-quickmarks icon-lg icon_margin')).
                                                 get_string('launchquickmarkmanager', 'turnitintooltwo'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                     'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
@@ -214,7 +207,6 @@ class turnitinplugin_view {
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
-                                                    html_writer::tag('i', '', array('class' => 'tiiicon icon-settings icon-lg icon_margin icon_peermark_manager')).
                                                     get_string('launchpeermarkmanager', 'turnitintooltwo'),
                                                     array('class' => 'peermark_manager_launch',
                                                             'id' => 'peermark_manager_'.$cmid,
@@ -328,7 +320,6 @@ class turnitinplugin_view {
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
-                                                    html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg icon_margin')).
                                                     get_string('launchrubricmanager', 'turnitintooltwo'),
                                                     array('class' => 'rubric_manager_launch',
                                                         'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).

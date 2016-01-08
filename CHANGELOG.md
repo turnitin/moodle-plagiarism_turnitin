@@ -6,7 +6,6 @@
 - Output successful submission message in cron.
 - Ensure filename to be sent to Turnitin is UTF-8 encoded
 - Unnecessary addition of user being updated in Turnitin and submission inbox being viewed removed from plugin activity logs.
-- Moodle's cron will update OR scores if necessary after the due date has passed.
 - Use recordset on viewreport in datadump to avoid memory issues (Thanks to aolley).
 - Use default values if user has no firstname or lastname.
 - Fixes:

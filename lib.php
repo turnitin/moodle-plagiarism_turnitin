@@ -47,13 +47,13 @@ require_once($CFG->dirroot.'/plagiarism/lib.php');
 // Require classes from mod/turnitintooltwo
 require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
-require_once($CFG->dirroot.'/mod/turnitintooltwo/classes/digitalreceipt/receipt_message.php');
 
 // Include plugin classes
 require_once(__DIR__."/turnitinplugin_view.class.php");
 require_once(__DIR__.'/classes/turnitin_class.class.php');
 require_once(__DIR__.'/classes/turnitin_submission.class.php');
 require_once(__DIR__.'/classes/turnitin_comms.class.php');
+require_once(__DIR__.'/classes/digitalreceipt/pp_receipt_message.php');
 
 // Include supported module specific code
 require_once(__DIR__.'/classes/modules/turnitin_assign.class.php');
@@ -2587,7 +2587,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Send a message to the user's Moodle inbox with the digital receipt.
-            $receipt = new receipt_message();
+            $receipt = new pp_receipt_message();
             $input = array(
                 'firstname' => $user->firstname,
                 'lastname' => $user->lastname,

@@ -1679,6 +1679,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
+        // Only run if on an old version of Moodle that doesn't
+        // support scheduled tasks
+        if (class_exists('\core\task\manager')) {
+            return;
+        }
+
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
         foreach ($submissiontypes as $submissiontype) {
@@ -1901,7 +1907,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         STATIC $ppDisplayCount = 0;
 
         if (!$ppDisplayCount) {
-            $numEvents = $DB->count_records_sql("SELECT count(*) FROM {events_queue} q 
+            $numEvents = $DB->count_records_sql("SELECT count(*) FROM {events_queue} q
             LEFT JOIN {events_queue_handlers} h ON (h.queuedeventid = q.id)
             LEFT JOIN {events_handlers} e ON (h.handlerid = e.id)
             WHERE e.eventname IN ('assessable_file_uploaded', 'assessable_files_done', 'assessable_content_uploaded', 'assessable_submitted') AND component = 'plagiarism_turnitin'");

@@ -1705,6 +1705,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
+    /**
+    * Updates the database field duedate_report_refresh for any given submission ID.
+    * @param int $id - the ID of the submission to update.
+    * @param int $newValue - the value to which the field should be set.
+    */
     public function set_duedate_report_refresh($id, $newValue) {
         $udpate_data = new stdClass();
         $update_data->id = $id

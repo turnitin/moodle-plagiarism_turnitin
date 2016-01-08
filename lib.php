@@ -2196,7 +2196,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Clean up previous file submissions.
      * Moodle will remove any old files or drafts during cron execution and file submission.
      */
-    private function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier) {
+    private function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier, $user) {
         global $DB, $CFG;
         $currentfiles = array();
         $deletestr = '';
@@ -2236,7 +2236,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     foreach ($oldfiles as $oldfile) {
                         // Delete submission from Turnitin if we have an external id.
                         if (!is_null($oldfile->externalid)) {
-                            $this->delete_tii_submission($oldfile->externalid);
+                            $this->delete_tii_submission($cm, $oldfile->externalid, $user);
                         }
                         $deletestr .= $oldfile->id.', ';
                     }
@@ -2314,7 +2314,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Clean up old Turnitin submission files.
         if ($itemid != 0 && $submissiontype == 'file' && $cm->modname != 'forum') {
-            $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
+            $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier, $user);
         }
 
         // Work out submission method.
@@ -2398,7 +2398,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         // Delete old text content submissions from Turnitin if not replacing.
                         if ($settings["plagiarism_report_gen"] == 0 && !is_null($previoussubmission->externalid)) {
-                            $this->delete_tii_submission($previoussubmission->externalid);
+                            $this->delete_tii_submission($cm, $previoussubmission->externalid, $user);
                         }
 
                         $this->reset_tii_submission($cm, $user, $identifier, $previoussubmission, $submissiontype);
@@ -2410,7 +2410,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Remove any old text submissions here if there are any as there is only one per submission
                 if ($itemid != 0 && $submissiontype == "text_content") {
-                    $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
+                    $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier, $user);
                 }
 
                 break;
@@ -2652,7 +2652,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Delete a submission from Turnitin
      */
-    private function delete_tii_submission($submissionid) {
+    private function delete_tii_submission($cm, $submissionid, $user) {
+        global $CFG;
 
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
@@ -2664,7 +2665,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         try {
             $response = $turnitincall->deleteSubmission($submission);
         } catch (Exception $e) {
-            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror');
+            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror', false);
+
+            mtrace('-------------------------');
+            mtrace(get_string('turnitindeletionerror', 'turnitintooltwo').': '.$e->getMessage());
+            mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+            mtrace('Course Module: '.$cm->id.'');
+            mtrace('-------------------------');
         }
     }
 }

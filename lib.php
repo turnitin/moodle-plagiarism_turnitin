@@ -2473,17 +2473,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // Any errors from cron processing take prioirity.
-        if (!empty($cronerror)) {
-            $errorcode = $cronerror;
-        }
-
-        // Save failed submission and don't process any further.
-        if ($errorcode != 0) {
-            return $this->save_failed_submission($cm, $user, $submissionid, $identifier,
-                        $submissiontype, $errorcode, $previoussubmission);
-        }
-
         // Read the stored file/content into a temp file for submitting.
         $submission_title = explode('.', $title);
 
@@ -2503,7 +2492,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $file_string = array_merge($user_details, $file_string);
         }
 
-        $tempfile = turnitintooltwo_tempfile($file_string, $filename);
+        try {
+            $tempfile = turnitintooltwo_tempfile($file_string, $filename);
+        } catch (Exception $e) {
+            $errorcode = 8;
+        }
+
+        // Any errors from cron processing take prioirity.
+        if (!empty($cronerror)) {
+            $errorcode = $cronerror;
+        }
+
+        // Save failed submission and don't process any further.
+        if ($errorcode != 0) {
+            return $this->save_failed_submission($cm, $user, $submissionid, $identifier,
+                        $submissiontype, $errorcode, $previoussubmission);
+        }
+
         $fh = fopen($tempfile, "w");
         fwrite($fh, $textcontent);
         fclose($fh);

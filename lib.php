@@ -1588,8 +1588,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
 
         // If the duedate is in the future then set any submission duedate_report_refresh flags that are 2 to 1 to make sure they are re-examined in the next cron run
-        $now = strtotime('now')
-        if ($assignment->getDueDate() > $now) {
+        if ($assignment->getDueDate() > time()) {
             $DB->set_field('plagiarism_turnitin_files', 'duedate_report_refresh', 1, array('cm' => $cm->id, 'duedate_report_refresh' => 2));
         }
 

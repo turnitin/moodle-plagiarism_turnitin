@@ -185,7 +185,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2016011102) {
         $table = new xmldb_table('plagiarism_turnitin_files');
-        $field = new xmldb_field('duedate_report_refresh', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, true, false 0,'gm_feedback');
+        $field = new xmldb_field('duedate_report_refresh', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, true, false, 0,'gm_feedback');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }

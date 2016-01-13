@@ -1828,7 +1828,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Sets the duedate_report_refresh flag for each processed submission to 2 to prevent them being processed again in the next cron run
         foreach ($submissions as $tiisubmission) {
             if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
-                set_duedate_report_refresh($tiisubmission->id, 2);
+                $this->set_duedate_report_refresh($tiisubmission->id, 2);
             }
         }
 

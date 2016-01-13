@@ -2340,6 +2340,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function tii_submission($cm, $tiiassignmentid, $user, $submitter, $identifier, $submissiontype, $itemid = 0,
                                     $title = '', $textcontent = '', $cronerror = '') {
         global $CFG, $DB, $USER, $turnitinacceptedfiles;
+        // Instantiate error code
+        $errorcode = 0;
 
         // Get config, module and course settings that we need.
         $config = turnitintooltwo_admin_config();
@@ -2369,7 +2371,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $title = $file->get_filename();
                     $timemodified = $file->get_timemodified();
                     $filename = $file->get_filename();
-                    $textcontent = $file->get_content();
+                    if (empty($textcontent = $file->get_content())) {
+                        $errorcode = 9;
+                    }
                 } else {
                     // Check when text submission was last modified.
                     switch ($cm->modname) {
@@ -2479,8 +2483,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 break;
         }
 
-        // Take care of any errors from plugin side.
-        $errorcode = 0;
 
         // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
         $content = explode(' ', $textcontent);

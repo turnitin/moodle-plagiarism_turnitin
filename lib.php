@@ -368,11 +368,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return '';
         }
 
-        // Required for font icons.
-        require_once(__DIR__.'/font-awesome.php');
-        require_once(__DIR__.'/tii-icon-webfont.php');
-        $this->load_page_components();
-
         // Show agreement.
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
@@ -428,13 +423,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                     $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
                                                                     '&action=rubricview&view_context=box',
-                                                    html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg icon_margin blue')).
                                                     get_string('launchrubricview', 'turnitintooltwo'),
                                                     array('class' => 'rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                             'title' => get_string('launchrubricview', 'turnitintooltwo'))).
                                                                 html_writer::tag('span', '',
                                                                 array('class' => 'launch_form', 'id' => 'rubric_view_form')),
                                                     array('class' => 'row_rubric_view'));
+
             $output .= html_writer::tag('div', $rubricviewlink, array('class' => 'tii_links_container tii_disclosure_links'));
         }
 
@@ -500,10 +495,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $PAGE, $USER;
-
-        // Required for font icons.
-        require_once(__DIR__.'/font-awesome.php');
-        require_once(__DIR__.'/tii-icon-webfont.php');
 
         // Don't show links for certain file types as they won't have been submitted to Turnitin.
         if (!empty($linkarray["file"])) {
@@ -819,7 +810,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Output grademark icon.
                             $output .= $OUTPUT->box_start('grade_icon', '');
-                            $output .= html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-pencil fa-lg blue')),
+                            $output .= html_writer::tag('div', $OUTPUT->pix_icon('icon-edit',
+                                                                get_string('grademark', 'turnitintooltwo'), 'plagiarism_turnitin'),
                                                     array('title' => get_string('grademark', 'turnitintooltwo'),
                                                         'class' => 'pp_grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
                                                                         '_'.$linkarray["cmid"],
@@ -842,10 +834,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 if ($studentread > 0) {
                                     $output .= $OUTPUT->pix_icon('icon-student-read',
                                                         get_string('student_read', 'turnitintooltwo').' '.userdate($studentread),
-                                                        'mod_turnitintooltwo', array("class" => "student_read_icon"));
+                                                        'plagiarism_turnitin', array("class" => "student_read_icon"));
                                 } else {
                                     $output .= $OUTPUT->pix_icon('icon-dot', get_string('student_notread', 'turnitintooltwo'),
-                                                        'mod_turnitintooltwo', array("class" => "student_read_icon"));
+                                                        'plagiarism_turnitin', array("class" => "student_read_icon"));
                                 }
                             } else {
                                 $output .= "--";
@@ -859,8 +851,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $rubricviewlink = html_writer::tag('div', html_writer::link(
                                                             $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                    '&action=rubricview&view_context=box',
-                                                            html_writer::tag('i', '', array('class' => 'tiiicon icon-rubric icon-lg blue')),
+                                                                    '&action=rubricview&view_context=box', '&nbsp;',
                                                             array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
                                                                     'title' => get_string('launchrubricview', 'turnitintooltwo'))).
                                                                         html_writer::tag('span', '',
@@ -897,8 +888,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             (!$istutor && $peermarksactive)) {
                                     $peermarkreviewslink = $OUTPUT->box_start('row_peermark_reviews', '');
                                     $peermarkreviewslink .= html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                '&action=peermarkreviews&view_context=box',
-                                                                html_writer::tag('i', '', array('class' => 'tiiicon icon-peermark icon-lg')),
+                                                                '&action=peermarkreviews&view_context=box', '',
                                                                 array('title' => get_string('launchpeermarkreviews', 'turnitintooltwo'),
                                                                     'class' => 'peermark_reviews_pp_launch tii_tooltip'));
                                     $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',
@@ -930,7 +920,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
                         }
 
-                        $erroricon = html_writer::tag('i', '', array('class' => 'fa fa-times-circle fa-lg red'));
+                        $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'), 
+                                                                array('title' => $errorstring, 
+                                                                        'class' => 'tii_tooltip tii_error_icon'));
 
                         // Attach error text or resubmit link after icon depending on whether user is a student/teacher.
                         // Don't attach resubmit link if the user has not accepted the EULA.
@@ -944,9 +936,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 'id' => 'pp_resubmit_'.$plagiarismfile->id));
 
                             $output .= html_writer::tag('div',
-                                                        html_writer::tag('i', '', array('class' => 'fa fa-spinner fa-spin fa-lg')).' '.
+                                                        $OUTPUT->pix_icon('loading', $errorstring, 'plagiarism_turnitin').' '.
                                                         get_string('resubmitting', 'turnitintooltwo'),
                                                         array('class' => 'pp_resubmitting hidden'));
+
                             // Pending status for after resubmission.
                             $statusstr = get_string('turnitinstatus', 'turnitintooltwo').': '.get_string('pending', 'turnitintooltwo');
                             $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
@@ -986,8 +979,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
                                 if ($user->user_agreement_accepted != 1) {
-                                    $erroricon = html_writer::tag('div', html_writer::tag('i', '', array('class' => 'fa fa-exclamation-triangle fa-lg red')),
-                                                                            array('title' => get_string('errorcode3', 'turnitintooltwo'),
+                                    $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('notacceptedeula', 'turnitintooltwo'), 
+                                                                            'plagiarism_turnitin'), 
+                                                                            array('title' => get_string('errorcode3', 'turnitintooltwo'), 
                                                                                     'class' => 'tii_tooltip tii_error_icon'));
                                     $eulaerror = html_writer::tag('div', $erroricon, array('class' => 'clear'));
                                 }

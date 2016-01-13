@@ -127,19 +127,10 @@ if ($do == "errors") {
     if ($CFG->branch <= 25) {
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.dataTables.plugins.js');
-        $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
         $PAGE->requires->js($jsurl);
-
-        $cssurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/css/jquery.dataTables.css');
-        $PAGE->requires->css($cssurl);
     } else {
         $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('plagiarism-dataTables', 'plagiarism_turnitin');
-        $PAGE->requires->jquery_plugin('plagiarism-dataTables_plugins', 'plagiarism_turnitin');
         $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
     }
 }
@@ -189,7 +180,7 @@ switch ($do) {
 
             $output .= "== ".$table." ==\r\n\r\n";
 
-            if ($data = $DB->get_records($table)) {
+            if ($data = $DB->get_recordset($table)) {
 
                 $headers = array_keys(get_object_vars(current($data)));
                 $columnwidth = 25;
@@ -244,6 +235,7 @@ switch ($do) {
         break;
 
     case "errors":
+        $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
         echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
@@ -259,7 +251,7 @@ switch ($do) {
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
-        echo $turnitinpluginview->show_file_errors_table();
+        echo $turnitinpluginview->show_file_errors_table($page);
 
         echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));

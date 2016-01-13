@@ -537,7 +537,8 @@ class LTI extends OAuthSimple {
 
             // CURL uploading with @ has been deprecated in PHP 5.5
             if (class_exists('CURLFile')) {
-                $mimetype = mime_content_type( $submission->getSubmissionDataPath() );
+                $finfo = new finfo( FILEINFO_MIME );
+                $mimetype = $finfo->file( $submission->getSubmissionDataPath() );
                 $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimetype);
             } else {
                 $params_merge['custom_submission_data'] = '@'.$submission->getSubmissionDataPath();
@@ -568,7 +569,8 @@ class LTI extends OAuthSimple {
         } else if ( is_null( $submission->getSubmissionDataUrl() ) ) {
             // CURL uploading with @ has been deprecated in PHP 5.5
             if (class_exists('CURLFile')) {
-                $mimetype = mime_content_type( $submission->getSubmissionDataPath() );
+                $finfo = new finfo( FILEINFO_MIME );
+                $mimetype = $finfo->file( $submission->getSubmissionDataPath() );
                 $params_merge['custom_submission_data'] = new CurlFile($submission->getSubmissionDataPath(), $mimetype);
             } else {
                 $params_merge['custom_submission_data'] = '@'.$submission->getSubmissionDataPath();

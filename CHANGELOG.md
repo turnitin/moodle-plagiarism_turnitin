@@ -1,3 +1,23 @@
+### Date:       2016-January-12
+### Release:    v2016011101
+
+- Output a message when the submission limit has been reached for a single cron run.
+- Output cron backlog count.
+- Output successful submission message in cron.
+- Ensure filename to be sent to Turnitin is UTF-8 encoded
+- Unnecessary addition of user being updated in Turnitin and submission inbox being viewed removed from plugin activity logs.
+- Use recordset on viewreport in datadump to avoid memory issues (Thanks to aolley).
+- Use default values if user has no firstname or lastname.
+- Fixes:
+	- Grademark icon visibility now dependent on whether GradeMark feedback exists rather than a grade.
+	- Cron now records a submissions as errored and continues processing the events queue if Turnitin assignment creation fails.
+	- Cron now records a submissions as errored and continues processing the events queue if Turnitin user creation fails.
+	- Don't show GradeMark icon to student if anonymised.
+	- Paginate submission errors table
+	- Replace deprecated mime_content_type function in submission to Turnitin process.
+
+---
+
 ### Date:       2015-November-30
 ### Release:    v2015040111
 
@@ -332,7 +352,7 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 - Error indicators and rollover messages now displayed in inbox.
 - Error messages saved and displayed in settings area.
 - EULA moved to submission declaration and submission form hidden.
-- Turnitin Paper Id now shown next to submission to show that paper has been submitted. 
+- Turnitin Paper Id now shown next to submission to show that paper has been submitted.
 - Fixes:
 	- Long assignment titles are now truncated.
 	- Link to a file in Assignment Summary now renders correctly.
@@ -366,7 +386,7 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 - User creation removed from restore procedure.
 - Additonal indexes added to database tables
 - Extra permission checks added for migration tool
-- Error message now shown if ajax request to get submissions times out 
+- Error message now shown if ajax request to get submissions times out.
 - Improved CSS to scope only to plugins and files added to jQuery plugin organisation
 - Forum posts are now submitted to Turnitin when posted
 - Database dump added to PP settings page
@@ -408,10 +428,10 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 - Submissions in Plagiarism plugin stopped if there has been 5 unsuccessful attempts.
 - Link removed for Originality Report if there is no score.
 - Fixes:
-	- Incorrect links to GradeMark and Originality Report for students have been hidden. 
+	- Incorrect links to GradeMark and Originality Report for students have been hidden.
 	- Conflicts with Bootstrap theme for tooltips and fixed grademark link position.
 	- Incorrect settings link in the Plagiarism plugin.
-	- Timestamp was being incorrectly set preventing more than 1 batch of submissions updating from Turnitin. 
+	- Timestamp was being incorrectly set preventing more than 1 batch of submissions updating from Turnitin.
 	- Student is now enrolled on the class when checking EULA acceptance to ensure they are on account.
 
 ---
@@ -444,10 +464,10 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 ###Release:    v2014012401
 
 - File type limit removed.
-- Ability to accept no file added so that marks / grades can be allocated to non file submissions 
+- Ability to accept no file added so that marks / grades can be allocated to non file submissions.
 - Dependencies added to plagiarism plugin and blocks
 - Fixes:
-	- Error occurring in course reset 
+	- Error occurring in course reset.
 
 ---
 

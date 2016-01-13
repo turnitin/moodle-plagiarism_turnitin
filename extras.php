@@ -71,13 +71,16 @@ switch ($cmd) {
 
         // Edit assignment in Turnitin in case any changes have been made that would affect DV.
         $pluginturnitin = new plagiarism_plugin_turnitin();
-        $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+        $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-        echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
+        if ($syncassignment['success']) {
+            echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
                                                                                 array("class" => "launch_form"));
-        echo html_writer::script("<!--
+            echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
+        }
+
         exit;
         break;
 

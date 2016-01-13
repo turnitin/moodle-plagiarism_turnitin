@@ -202,8 +202,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get Course module id and values.
             $cmid = optional_param('update', 0, PARAM_INT);
 
-            // Only 2.4+ passes in the modulename so in 2.3 when adding a module
-            // we can not differentiate whether plugin is enabled by module.
+            // Check if plagiarism plugin is enabled for this module if provided.
             if (!empty($modulename)) {
                 $moduletiienabled = $this->get_config_settings($modulename);
                 if (empty($moduletiienabled)) {
@@ -675,7 +674,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // If it's a group submission then other users in the group should be able to see the originality score
             // They can not open the DV though.
             $submissionusers = array($linkarray["userid"]);
-            if ($cm->modname == "assign" && $CFG->branch > 23) {
+            if ($cm->modname == "assign") {
                 if ($moduledata->teamsubmission) {
                     $assignment = new assign($context, $cm, null);
                     if ($group = $assignment->get_submission_group($linkarray["userid"])) {
@@ -720,7 +719,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
 
                     // Give Marking workflow higher priority than gradebook hidden date.
-                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                    if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                         $gradesreleased = $DB->record_exists(
                                                     'assign_user_flags',
                                                     array(
@@ -1139,7 +1138,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
             // Don't update grademark if the submission is not part of the latest attempt.
             $gbupdaterequired = $updaterequired;
-            if ($cm->modname == "assign" && $CFG->branch >= 25) {
+            if ($cm->modname == "assign") {
                 if ($submissiondata->submissiontype == "file") {
                     $fs = get_file_storage();
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
@@ -1236,7 +1235,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // If it's a group submission we will update the grade for everyone in the group.
             // Note: This will not work if the submitting user is in multiple groups.
             $userids = array($userid);
-            if ($cm->modname == "assign" && $CFG->branch > 23) {
+            if ($cm->modname == "assign") {
                 $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
                 if ($moduledata->teamsubmission) {
                     require_once($CFG->dirroot . '/mod/assign/locallib.php');
@@ -1259,12 +1258,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Query grades based on attempt number.
                         $gradesquery = array('userid' => $userid, 'assignment' => $cm->instance);
                         $attemptnumber = 0;
-                        if ($CFG->branch >= 25) {
-                            $usersubmissions = $DB->get_records('assign_submission', $gradesquery, 'attemptnumber DESC', 'attemptnumber', 0, 1);
-                            $usersubmission = current($usersubmissions);
-                            $attemptnumber = $usersubmission->attemptnumber;
-                            $gradesquery['attemptnumber'] = $attemptnumber;
-                        }
+
+                        $usersubmissions = $DB->get_records('assign_submission', $gradesquery, 'attemptnumber DESC', 'attemptnumber', 0, 1);
+                        $usersubmission = current($usersubmissions);
+                        $attemptnumber = $usersubmission->attemptnumber;
+                        $gradesquery['attemptnumber'] = $attemptnumber;
 
                         $currentgrades = $DB->get_records('assign_grades', $gradesquery, 'id DESC');
                         $currentgrade = current($currentgrades);
@@ -1314,7 +1312,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $grades->rawgrade = $grade->grade;
 
                     // Check marking workflow state for assignments and only update gradebook if released.
-                    if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                    if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                         $gradesreleased = $DB->record_exists('assign_user_flags',
                                                                 array(
                                                                     'userid' => $userid,
@@ -1537,7 +1535,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     case 0:
                         $dtpost = $dtstart;
                         // If any grades have been released early via marking workflow, set post date to current time.
-                        if ($CFG->branch >= 26 && $cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
+                        if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                             $gradesreleased = $DB->record_exists('assign_user_flags',
                                                             array('assignment' => $cm->instance,
                                                                     'workflowstate' => 'released'));
@@ -1705,7 +1703,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     */
     public function set_duedate_report_refresh($id, $newValue) {
         $udpate_data = new stdClass();
-        $update_data->id = $id
+        $update_data->id = $id;
         $update_data->duedate_report_refresh = $newValue;
         $DB->update_record('plagiarism_turnitin_files', $update_data);
     }
@@ -2001,10 +1999,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $moduledata->submissiondrafts = 0;
                 }
 
-                // If draft submissions are turned on then only submit to Turnitin if using newer than 2.3 and
-                // the Turnitin draft submit setting is set.
-                if ($moduledata->submissiondrafts && $CFG->branch > 23 &&
-                    $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
+                // If draft submissions are turned on then only send to Turnitin if the draft submit setting is set.
+                if ($moduledata->submissiondrafts && $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
                     ($eventdata->event_type == 'file_uploaded' || $eventdata->event_type == 'content_uploaded')) {
                     return true;
                 }

@@ -68,7 +68,7 @@ class turnitinplugin_view {
         $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'turnitintooltwo'), '', array(0, 1));
 
         // Enable Turnitin for specific modules
-        $supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array();
+        $supported_mods = array('assign', 'forum', 'workshop');
         foreach ($supported_mods as $mod) {
             $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod), '',
                                 '', '', '', array('turnitin_use', '==', 1));
@@ -136,24 +136,11 @@ class turnitinplugin_view {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'turnitintooltwo'));
 
             // Add in custom Javascript and CSS.
-            if ($CFG->branch <= 25) {
-                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
-                $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
-                $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/plagiarism/turnitin/jquery/turnitin_module.js');
-                $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery-ui-1.10.4.custom.min.js');
-                $PAGE->requires->js($jsurl, true);
-                $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.colorbox.js');
-                $PAGE->requires->js($jsurl, true);
-            } else {
-                $PAGE->requires->jquery();
-                $PAGE->requires->jquery_plugin('ui');
-                $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
-                $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-                $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
-            }
+            $PAGE->requires->jquery();
+            $PAGE->requires->jquery_plugin('ui');
+            $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
+            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+            $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
 
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);

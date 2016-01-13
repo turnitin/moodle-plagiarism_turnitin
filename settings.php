@@ -40,7 +40,7 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array('assign');
+$supported_mods = array('assign', 'forum', 'workshop');
 
 // Get plugin config.
 $pluginconfig = array();
@@ -63,7 +63,7 @@ if (!empty($action)) {
 
             // Allow Turnitin to be on for Individual modules.
             foreach ($supported_mods as $mod) {
-                $turnitinuse = ($CFG->branch > 23) ? optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT) : 1;
+                $turnitinuse = optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT);
                 $turnitinuse = ($turnitinoveralluse == 0) ? 0 : $turnitinuse;
 
                 set_config('turnitin_use_mod_'.$mod, $turnitinuse, 'plagiarism');
@@ -124,15 +124,8 @@ if (!empty($action)) {
 
 // Include Javascript & CSS.
 if ($do == "errors") {
-    if ($CFG->branch <= 25) {
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
-        $PAGE->requires->js($jsurl);
-    } else {
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
-    }
+    $PAGE->requires->jquery();
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
 }
 
 if ($do != "savereport") {

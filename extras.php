@@ -86,18 +86,11 @@ switch ($cmd) {
 
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
-        if ($CFG->branch <= 25) {
-            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-ui-1.10.4.custom.min.js');
-            $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
-            $PAGE->requires->js($jsurl);
-        } else {
-            $PAGE->requires->jquery();
-            $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-        }
+
+        $PAGE->requires->jquery();
+        $PAGE->requires->jquery_plugin('ui');
+        $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+
         $user = new turnitintooltwo_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');

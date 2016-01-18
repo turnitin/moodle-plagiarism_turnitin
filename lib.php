@@ -1702,7 +1702,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     * @param int $newValue - the value to which the field should be set.
     */
     public function set_duedate_report_refresh($id, $newValue) {
-        $udpate_data = new stdClass();
+        global $DB;
+
+        $update_data = new stdClass();
         $update_data->id = $id;
         $update_data->duedate_report_refresh = $newValue;
         $DB->update_record('plagiarism_turnitin_files', $update_data);
@@ -1730,7 +1732,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $now = strtotime('now');
                 $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
                 if ($now >= $dtdue && $now < strtotime('+1 day',$dtdue)) {
-                    set_duedate_report_refresh($tiisubmission->id, 1);
+                    $this->set_duedate_report_refresh($tiisubmission->id, 1);
                 }
 
                 if (!isset($reportsexpected[$cm->id])) {

@@ -1586,7 +1586,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
 
         // If the duedate is in the future then set any submission duedate_report_refresh flags that are 2 to 1 to make sure they are re-examined in the next cron run
-        if ($assignment->getDueDate() > time()) {
+        if ($dtdue > time()) {
             $DB->set_field('plagiarism_turnitin_files', 'duedate_report_refresh', 1, array('cm' => $cm->id, 'duedate_report_refresh' => 2));
         }
 
@@ -1685,7 +1685,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             try {
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                 $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                " statuscode = ? AND ".$typefield." = ? AND similarityscore IS NULL AND ( orcapable = ? OR orcapable IS NULL ) ",
+                " statuscode = ? AND ".$typefield." = ?
+                  AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
+                  AND ( orcapable = ? OR orcapable IS NULL ) ",
                 array('success', $submissiontype, 1), 'externalid DESC');
                 $this->cron_update_scores($submissiontype, $submissions);
             } catch (Exception $ex) {

@@ -48,7 +48,7 @@ class pp_receipt_message {
         $message->submission_date = $input['submission_date'];
         $message->submission_id = $input['submission_id'];
 
-        return get_string('digital_receipt_message', 'turnitintooltwo', $message);
+        return get_string('pp_digital_receipt_message', 'turnitintooltwo', $message);
     }
 
     /**

@@ -366,6 +366,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (empty($plagiarismsettings['use_turnitin'])) {
             return '';
         }
+        
+        $this->load_page_components();
 
         // Show agreement.
         if (!empty($config->agreement)) {

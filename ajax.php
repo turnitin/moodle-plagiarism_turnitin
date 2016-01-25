@@ -67,8 +67,7 @@ switch ($action) {
             $turnitintooltwoview = new turnitintooltwo_view();
             $return = html_writer::tag("div",
                                         $turnitintooltwoview->output_dv_launch_form($dvtype, $submissionid, $user->tii_user_id,
-                                                                    $userrole, ''),
-                                        array('class' => 'dv_form'));
+                                                                    $userrole, ''), array('style' => 'display: none'));
         }
         break;
 

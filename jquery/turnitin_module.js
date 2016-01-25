@@ -193,6 +193,11 @@ jQuery(document).ready(function($) {
     // Open the DV in a new window in such a way as to not be blocked by popups.
     function openDV(dvtype, submissionid, coursemoduleid, url) {
         dvWindow = window.open('', '_blank');
+        var loading = '<div style="text-align:center;">';
+        loading += '<img src="'+M.cfg.wwwroot+'/plagiarism/turnitin/pix/tiiIcon.svg" style="width:100px; height: 100px">';
+        loading += '<p style="font-family: Arial, Helvetica, sans-serif;">'+M.str.turnitintooltwo.loadingdv+'</p>';
+        loading += '</div>';
+        $(dvWindow.document.body).html(loading);
 
         // Get html to launch DV
         $.ajax({
@@ -202,7 +207,7 @@ jQuery(document).ready(function($) {
             data: {action: "get_dv_html", submissionid: submissionid, dvtype: dvtype,
                     cmid: coursemoduleid, sesskey: M.cfg.sesskey},
             success: function(data) {
-                $(dvWindow.document.body).html(data);
+                $(dvWindow.document.body).html(loading+data);
                 dvWindow.document.forms[0].submit();
                 dvWindow.document.close();
 

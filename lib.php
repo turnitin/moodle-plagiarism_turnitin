@@ -455,6 +455,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js($jsurl);
 
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+        $PAGE->requires->string_for_js('loadingdv', 'turnitintooltwo');
     }
 
     /**

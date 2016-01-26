@@ -1,3 +1,11 @@
+### Date:       2016-January-25
+### Release:    v2016011102
+
+- Fixes:
+	- Reworked DV launchers to remove cross domain iframe problem preventing opening in Safari.
+
+---
+
 ### Date:       2016-January-12
 ### Release:    v2016011101
 

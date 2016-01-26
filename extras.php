@@ -31,11 +31,6 @@ $turnitintooltwoview = new turnitintooltwo_view();
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
 
-// If opening DV then $viewcontext needs to be set to box
-if ($cmd == "origreport" || $cmd == "grademark") {
-    $viewcontext = "box";
-}
-
 // Initialise variables.
 $output = "";
 $jsrequired = false;
@@ -59,31 +54,6 @@ $PAGE->set_context(context_system::instance());
 require_login();
 
 switch ($cmd) {
-    case "origreport":
-    case "grademark":
-        $submissionid = required_param('submissionid', PARAM_INT);
-        $user = new turnitintooltwo_user($USER->id, $userrole);
-        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
-
-        if ($userrole == 'Instructor') {
-            $user->join_user_to_class($coursedata->turnitin_cid);
-        }
-
-        // Edit assignment in Turnitin in case any changes have been made that would affect DV.
-        $pluginturnitin = new plagiarism_plugin_turnitin();
-        $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
-
-        if ($syncassignment['success']) {
-            echo html_writer::tag("div", $turnitintooltwoview->output_dv_launch_form($cmd, $submissionid, $user->tii_user_id, $userrole, ''),
-                                                                                array("class" => "launch_form"));
-            echo html_writer::script("<!--
-                                    window.document.forms[0].submit();
-                                    //-->");
-        }
-
-        exit;
-        break;
-
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
 

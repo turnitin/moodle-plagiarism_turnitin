@@ -28,6 +28,19 @@ if( !empty( $cmid ) ){
     $cm = get_coursemodule_from_id('', $cmid);
     $context = context_course::instance($cm->course);
 }
+
+// Work out user role.
+$userrole = '';
+switch ($cm->modname) {
+    case "forum":
+    case "workshop":
+        $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
+        break;
+    default:
+        $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
+        break;
+}
+
 $pathnamehash = optional_param('pathnamehash', "", PARAM_ALPHANUM);
 $submissiontype = optional_param('submission_type', "", PARAM_ALPHAEXT);
 $return = array();
@@ -36,6 +49,28 @@ $return = array();
 $pluginturnitin = new plagiarism_plugin_turnitin();
 
 switch ($action) {
+    case "get_dv_html":
+        $submissionid = required_param('submissionid', PARAM_INT);
+        $dvtype = optional_param('dvtype', 'default', PARAM_ALPHAEXT);
+        $user = new turnitintooltwo_user($USER->id, $userrole);
+        $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+
+        if ($userrole == 'Instructor') {
+            $user->join_user_to_class($coursedata->turnitin_cid);
+        }
+
+        // Edit assignment in Turnitin in case any changes have been made that would affect DV.
+        $pluginturnitin = new plagiarism_plugin_turnitin();
+        $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
+        if ($syncassignment['success']) {
+            $turnitintooltwoview = new turnitintooltwo_view();
+            $return = html_writer::tag("div",
+                                        $turnitintooltwoview->output_dv_launch_form($dvtype, $submissionid, $user->tii_user_id,
+                                                                    $userrole, ''), array('style' => 'display: none'));
+        }
+        break;
+
     case "update_grade":
         if (!confirm_sesskey()) {
             throw new moodle_exception('invalidsesskey', 'error');

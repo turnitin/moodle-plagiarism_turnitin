@@ -191,26 +191,39 @@ jQuery(document).ready(function($) {
     }
 
     // Open the DV in a new window in such a way as to not be blocked by popups.
-    function openDV(dvtype, submission_id, coursemoduleid, url) {
-        var url = url+'&viewcontext=box&cmd='+dvtype+'&submissionid='+submission_id+'&sesskey='+M.cfg.sesskey;
+    function openDV(dvtype, submissionid, coursemoduleid, url) {
+        dvWindow = window.open('', '_blank');
+        var loading = '<div style="text-align:center;">';
+        loading += '<img src="'+M.cfg.wwwroot+'/plagiarism/turnitin/pix/tiiIcon.svg" style="width:100px; height: 100px">';
+        loading += '<p style="font-family: Arial, Helvetica, sans-serif;">'+M.str.turnitintooltwo.loadingdv+'</p>';
+        loading += '</div>';
+        $(dvWindow.document.body).html(loading);
 
-        var dvWindow = window.open('about:blank', 'dv_'+submission_id);
-        var width = $(window).width();
-        var height = $(window).height();
-        dvWindow.document.write('<title>Document Viewer</title>');
-        dvWindow.document.write('<style>html, body { margin: 0; padding: 0; border: 0; }</style>');
-        dvWindow.document.write('<frameset><frame id="dvWindow" name="dvWindow"></frame></frameset>');
-        dvWindow.document.getElementById('dvWindow').src = url;
-        dvWindow.document.close();
-        if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-            // beforeunload event does not work in Safari.
-            $(dvWindow).bind('unload', function() {
-                refreshScores(submission_id, coursemoduleid);
-            });
+        // Get html to launch DV
+        $.ajax({
+            type: "POST",
+            url: M.cfg.wwwroot+"/plagiarism/turnitin/ajax.php",
+            dataType: "json",
+            data: {action: "get_dv_html", submissionid: submissionid, dvtype: dvtype,
+                    cmid: coursemoduleid, sesskey: M.cfg.sesskey},
+            success: function(data) {
+                $(dvWindow.document.body).html(loading+data);
+                dvWindow.document.forms[0].submit();
+                dvWindow.document.close();
+
+                checkDVClosed(submissionid, coursemoduleid);
+            }
+        });
+    }
+
+    // Check whether the DV is still open, refresh the opening window when it closes.
+    function checkDVClosed(submissionid, coursemoduleid) {
+        if (window.dvWindow.closed) {
+            refreshScores(submissionid, coursemoduleid);
         } else {
-            $(dvWindow).bind('beforeunload', function() {
-                refreshScores(submission_id, coursemoduleid);
-            });
+            setTimeout( function(){
+                            checkDVClosed(submissionid, coursemoduleid);
+                        }, 500);
         }
     }
 

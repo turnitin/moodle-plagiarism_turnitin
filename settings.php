@@ -114,8 +114,7 @@ if (!empty($action)) {
 
         case "deletefile":
             $id = optional_param('id', 0, PARAM_INT);
-            $DB->delete_records('plagiarism_turnitin_files', array('id' => $id));
-
+            $DB->update_record('plagiarism_turnitin_files', array('id' => $id, 'statuscode' => "deleted"));
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'errors')));
             exit;
             break;

@@ -15,7 +15,7 @@ class pp_receipt_message {
         $eventdata = new stdClass();
         $eventdata->component         = 'plagiarism_turnitin'; //your component name
         $eventdata->name              = 'submission'; //this is the message name from messages.php
-        $eventdata->userfrom          = get_admin();
+        $eventdata->userfrom          = \core_user::get_noreply_user();
         $eventdata->userto            = $userid;
         $eventdata->subject           = $subject;
         $eventdata->fullmessage       = $message;
@@ -88,7 +88,7 @@ class pp_receipt_message {
         $eventdata = new stdClass();
         $eventdata->component         = 'plagiarism_turnitin'; //your component name
         $eventdata->name              = 'submission'; //this is the message name from messages.php
-        $eventdata->userfrom          = get_admin();
+        $eventdata->userfrom          = \core_user::get_noreply_user();
         $eventdata->subject           = $subject;
         $eventdata->fullmessage       = $message;
         $eventdata->fullmessageformat = FORMAT_HTML;

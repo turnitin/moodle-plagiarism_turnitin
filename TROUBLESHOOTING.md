@@ -1,5 +1,4 @@
 #Moodle Direct V2 Troubleshooting
---------------------------------
 
 1) You may need to ensure that within your designated moodledata directory; the turnitintooltwo subdirectory and the subsequent logs subdirectory have the correct permissions to be able to create directories and files.
 
@@ -10,7 +9,6 @@
 4) There have been very isolated reports of the settings not showing for the Plagiarism plugin despite it being enabled, this is due to it not showing in Moodle cache. The solution is for an administrator to purge all caches and it should then appear.
 
 ##Required PHP Extensions
------------------------
 
 In order for the module to work correctly you must enable the following PHP extensions:
 
@@ -49,7 +47,6 @@ In order for the module to work correctly you must enable the following PHP exte
 >For further information see http://php.net/manual/en/fileinfo.installation.php.
 
 ##cURL Connectivity
-----
 
 If you encounter connectivity issues (error: Turnitin API Base URL incorrect or unavailable) this could be related to a CA certificate being unavailable to cURL.
 
@@ -62,8 +59,7 @@ Information for Linux environments: http://docs.moodle.org/26/en/SSL_certificate
 
 Information for Windows environments: http://curl.haxx.se/docs/sslcerts.html
 
-WSDL
-----
+##WSDL
 
 We have had reported issues with users not being able to parse the WSDL files that the API requires. The relevant error message starts “PHP Fatal error:  SOAP-ERROR: Parsing WSDL: ….”
 

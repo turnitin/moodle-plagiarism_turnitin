@@ -157,3 +157,9 @@ $string['errorcode6'] = 'This file has not been submitted to Turnitin because th
 $string['errorcode7'] = 'This file has not been submitted to Turnitin because there is a problem creating the user in Turnitin which is preventing submissions, please consult your API logs for further information';
 $string['errorcode8'] = 'This file has not been submitted to Turnitin because there is a problem creating the temp file. The most likely cause is an invalid file name. Please rename the file and re-upload using Edit Submission.';
 $string['errorcode9'] = 'The file cannot be submitted as there is no accessible content in the file pool to submit.';
+
+
+// Javascript
+$string['closebutton'] = 'Close';
+$string['loadingdv'] = 'Loading Turnitin Document Viewer...';
+$string['changerubricwarning'] = 'Changing or detaching a rubric will remove all existing rubric scoring from papers in this assignment, including scorecards which have previously been marked. Overall grades for previously graded papers will remain.';

@@ -217,7 +217,7 @@ class turnitinplugin_view {
 
             $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
-            $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'turnitintooltwo');
+            $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'plagiarism_turnitin');
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
                 $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"),
@@ -230,7 +230,7 @@ class turnitinplugin_view {
 
             $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
-            $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
+            $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
             $suboptions = array(0 => get_string('norepository', 'plagiarism_turnitin'),
                                 1 => get_string('standardrepository', 'plagiarism_turnitin'));
@@ -291,7 +291,7 @@ class turnitinplugin_view {
                 $mform->addElement('text', 'plagiarism_locked_message', get_string("locked_message", "turnitintooltwo"), 'maxlength="50" size="50"' );
                 $mform->setType('plagiarism_locked_message', PARAM_TEXT);
                 $mform->setDefault('plagiarism_locked_message', get_string("locked_message_default", "turnitintooltwo") );
-                $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'turnitintooltwo');
+                $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'plagiarism_turnitin');
             }
 
             if ($location == "activity" && $config->usegrademark) {
@@ -408,7 +408,7 @@ class turnitinplugin_view {
         $cells = array();
         $selectall = html_writer::checkbox('errors_select_all', false, false, '', array("class" => "select_all_checkbox"));
         $cells["checkbox"] = new html_table_cell($selectall);
-        $cells["id"] = new html_table_cell(get_string('id', 'turnitintooltwo'));
+        $cells["id"] = new html_table_cell(get_string('id', 'plagiarism_turnitin'));
         $cells["user"] = new html_table_cell(get_string('student', 'plagiarism_turnitin'));
         $cells["user"]->attributes['class'] = 'left';
         $cells["course"] = new html_table_cell(get_string('course', 'plagiarism_turnitin'));

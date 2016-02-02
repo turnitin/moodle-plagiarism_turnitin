@@ -177,7 +177,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $optionfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                  (array('cm' => $data->coursemodule, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
-                        turnitintooltwo_print_error('defaultupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                        turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 } else {
                     if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
@@ -1911,7 +1911,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (!$insertid = $DB->$method('turnitintooltwo_courses', $turnitincourse)) {
             if ($workflowcontext != "cron") {
-                turnitintooltwo_print_error('classupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                turnitintooltwo_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             }
         }
@@ -2623,7 +2623,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if (!$currentconfigfield = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                  (array('cm' => $cm->id, 'name' => 'submitted')))) {
                 if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
-                    turnitintooltwo_print_error('defaultupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                    turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 }
             }
 

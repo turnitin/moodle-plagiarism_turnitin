@@ -33,15 +33,15 @@ class turnitinplugin_view {
 
         $tabs = array();
         $tabs[] = new tabobject('turnitinsettings', 'settings.php',
-                        get_string('config', 'turnitintooltwo'), get_string('config', 'turnitintooltwo'), false);
+                        get_string('config', 'plagiarism_turnitin'), get_string('config', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
-                        get_string('defaults', 'turnitintooltwo'), get_string('defaults', 'turnitintooltwo'), false);
+                        get_string('defaults', 'plagiarism_turnitin'), get_string('defaults', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitinshowusage', 'settings.php?do=viewreport',
-                        get_string('showusage', 'turnitintooltwo'), get_string('showusage', 'turnitintooltwo'), false);
+                        get_string('showusage', 'plagiarism_turnitin'), get_string('showusage', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
-                        get_string('saveusage', 'turnitintooltwo'), get_string('saveusage', 'turnitintooltwo'), false);
+                        get_string('saveusage', 'plagiarism_turnitin'), get_string('saveusage', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',
-                        get_string('errors', 'turnitintooltwo'), get_string('errors', 'turnitintooltwo'), false);
+                        get_string('errors', 'plagiarism_turnitin'), get_string('errors', 'plagiarism_turnitin'), false);
         print_tabs(array($tabs), $currenttab);
 
         if (!is_null($notice)) {
@@ -62,19 +62,19 @@ class turnitinplugin_view {
         // Populate elements array which will generate the form elements
         // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).
         $elements = array();
-        $elements[] = array('header', 'config', get_string('turnitinconfig', 'turnitintooltwo'));
-        $elements[] = array('html', get_string('tiiexplain', 'turnitintooltwo'));
+        $elements[] = array('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
+        $elements[] = array('html', get_string('tiiexplain', 'plagiarism_turnitin'));
 
-        $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'turnitintooltwo'), '', array(0, 1));
+        $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', array(0, 1));
 
         // Enable Turnitin for specific modules
         $supported_mods = array('assign', 'forum', 'workshop');
         foreach ($supported_mods as $mod) {
-            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'turnitintooltwo', $mod), '',
+            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
                                 '', '', '', array('turnitin_use', '==', 1));
         }
 
-        $elements[] = array('html', get_string('pp_configuredesc', 'turnitintooltwo', $CFG->wwwroot));
+        $elements[] = array('html', get_string('pp_configuredesc', 'plagiarism_turnitin', $CFG->wwwroot));
 
         $elements[] = array('hidden', 'action', 'config');
         $customdata["elements"] = $elements;
@@ -99,8 +99,8 @@ class turnitinplugin_view {
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
-        $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
-        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+        $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
+        $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
         $rubrics = array();
@@ -121,19 +121,19 @@ class turnitinplugin_view {
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
-        $genoptions = array(0 => get_string('genimmediately1', 'turnitintooltwo'),
-                            1 => get_string('genimmediately2', 'turnitintooltwo'),
-                            2 => get_string('genduedate', 'turnitintooltwo'));
-        $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'turnitintooltwo'),
-                            2 => get_string('excludepercent', 'turnitintooltwo'));
+        $genoptions = array(0 => get_string('genimmediately1', 'plagiarism_turnitin'),
+                            1 => get_string('genimmediately2', 'plagiarism_turnitin'),
+                            2 => get_string('genduedate', 'plagiarism_turnitin'));
+        $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
+                            2 => get_string('excludepercent', 'plagiarism_turnitin'));
 
         if ($location == "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'turnitintooltwo'));
+            $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
             $mform->addElement('html', get_string("defaultsdesc", "turnitintooltwo"));
         }
 
         if ($location != "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'turnitintooltwo'));
+            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery();
@@ -146,7 +146,7 @@ class turnitinplugin_view {
             $PAGE->requires->css($cssurl);
 
             if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
-                $config_warning = html_writer::tag('div', get_string('configureerror', 'turnitintooltwo'),
+                $config_warning = html_writer::tag('div', get_string('configureerror', 'plagiarism_turnitin'),
                                                     array('class' => 'library_not_present_warning'));
             }
 
@@ -160,12 +160,12 @@ class turnitinplugin_view {
                 // If assignment has submissions then show a refresh grades button
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
                 if ($numsubs > 0) {
-                    $refreshgrades = html_writer::tag('div', $OUTPUT->pix_icon('refresh', get_string('turnitinrefreshsubmissions', 'turnitintooltwo'), 'plagiarism_turnitin').
-                                                html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'turnitintooltwo')),
+                    $refreshgrades = html_writer::tag('div', $OUTPUT->pix_icon('refresh', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
+                                                html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refresh_grades'));
 
-                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading', get_string('turnitinrefreshingsubmissions', 'turnitintooltwo'), 'plagiarism_turnitin').
-                                                html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'turnitintooltwo')),
+                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
+                                                html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refreshing_grades'));
                 }
             }
@@ -176,9 +176,9 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
-                                                get_string('launchquickmarkmanager', 'turnitintooltwo'),
+                                                get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
-                                                    'title' => get_string('launchquickmarkmanager', 'turnitintooltwo')));
+                                                    'title' => get_string('launchquickmarkmanager', 'plagiarism_turnitin')));
                 $quickmarkmanagerlink .= html_writer::tag('span', '',
                                                 array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
                 $quickmarkmanagerlink .= $OUTPUT->box_end(true);
@@ -194,10 +194,10 @@ class turnitinplugin_view {
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
-                                                    get_string('launchpeermarkmanager', 'turnitintooltwo'),
+                                                    get_string('launchpeermarkmanager', 'plagiarism_turnitin'),
                                                     array('class' => 'peermark_manager_launch',
                                                             'id' => 'peermark_manager_'.$cmid,
-                                                            'title' => get_string('launchpeermarkmanager', 'turnitintooltwo')));
+                                                            'title' => get_string('launchpeermarkmanager', 'plagiarism_turnitin')));
                     $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',
                                                                             'id' => 'peermark_manager_form'));
                     $peermarkmanagerlink .= $OUTPUT->box_end(true);
@@ -232,17 +232,17 @@ class turnitinplugin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'turnitintooltwo');
 
-            $suboptions = array(0 => get_string('norepository', 'turnitintooltwo'),
-                                1 => get_string('standardrepository', 'turnitintooltwo'));
+            $suboptions = array(0 => get_string('norepository', 'plagiarism_turnitin'),
+                                1 => get_string('standardrepository', 'plagiarism_turnitin'));
             switch ($config->repositoryoption) {
                 case 0; // Standard options
-                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
+                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
                 case 1; // Standard options + Allow Instituional Repository
-                    $suboptions[2] = get_string('institutionalrepository', 'turnitintooltwo');
+                    $suboptions[2] = get_string('institutionalrepository', 'plagiarism_turnitin');
 
-                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'turnitintooltwo'), $suboptions);
+                    $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
                 case 2; // Force Standard Repository
@@ -255,7 +255,7 @@ class turnitinplugin_view {
                     break;
             }
 
-            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'turnitintooltwo'),
+            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'plagiarism_turnitin'),
                                                                                 array('class' => 'tii_checkagainstnote')));
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
@@ -267,13 +267,13 @@ class turnitinplugin_view {
 
             if ($config->repositoryoption == 1) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
-                                                get_string('compareinstitution', 'turnitintooltwo'), $options);
+                                                get_string('compareinstitution', 'plagiarism_turnitin'), $options);
                 $this->lock($mform, $location, $locks);
             }
 
             $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions);
             $this->lock($mform, $location, $locks);
-            $mform->addElement('html', html_writer::tag('div', get_string('genspeednote', 'turnitintooltwo'), array('class' => 'tii_genspeednote')));
+            $mform->addElement('html', html_writer::tag('div', get_string('genspeednote', 'plagiarism_turnitin'), array('class' => 'tii_genspeednote')));
             $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);
@@ -296,20 +296,20 @@ class turnitinplugin_view {
 
             if ($location == "activity" && $config->usegrademark) {
                 // Populate Rubric options.
-                $rubricoptions = array('' => get_string('norubric', 'turnitintooltwo')) + $rubrics;
+                $rubricoptions = array('' => get_string('norubric', 'plagiarism_turnitin')) + $rubrics;
                 if (!empty($currentrubric)) {
                     $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
-                                    $rubricoptions[$currentrubric] : get_string('otherrubric', 'turnitintooltwo');
+                                    $rubricoptions[$currentrubric] : get_string('otherrubric', 'plagiarism_turnitin');
                 }
 
-                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'turnitintooltwo'), $rubricoptions);
+                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubricoptions);
 
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
-                                                    get_string('launchrubricmanager', 'turnitintooltwo'),
+                                                    get_string('launchrubricmanager', 'plagiarism_turnitin'),
                                                     array('class' => 'rubric_manager_launch',
-                                                        'title' => get_string('launchrubricmanager', 'turnitintooltwo'))).
+                                                        'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'))).
                                                     html_writer::tag('span', '', array('class' => 'launch_form',
                                                                                     'id' => 'rubric_manager_form')));
                 $mform->setDefault('plagiarism_rubric', '');
@@ -317,7 +317,7 @@ class turnitinplugin_view {
                 $mform->addElement('hidden', 'rubric_warning_seen', '');
                 $mform->setType('rubric_warning_seen', PARAM_RAW);
 
-                $mform->addElement('static', 'rubric_note', '', get_string('attachrubricnote', 'turnitintooltwo'));
+                $mform->addElement('static', 'rubric_note', '', get_string('attachrubricnote', 'plagiarism_turnitin'));
             } else {
                 $mform->addElement('hidden', 'plagiarism_rubric', '');
                 $mform->setType('plagiarism_rubric', PARAM_RAW);
@@ -325,50 +325,50 @@ class turnitinplugin_view {
 
             if (!empty($config->useerater)) {
                 $handbookoptions = array(
-                                            1 => get_string('erater_handbook_advanced', 'turnitintooltwo'),
-                                            2 => get_string('erater_handbook_highschool', 'turnitintooltwo'),
-                                            3 => get_string('erater_handbook_middleschool', 'turnitintooltwo'),
-                                            4 => get_string('erater_handbook_elementary', 'turnitintooltwo'),
-                                            5 => get_string('erater_handbook_learners', 'turnitintooltwo')
+                                            1 => get_string('erater_handbook_advanced', 'plagiarism_turnitin'),
+                                            2 => get_string('erater_handbook_highschool', 'plagiarism_turnitin'),
+                                            3 => get_string('erater_handbook_middleschool', 'plagiarism_turnitin'),
+                                            4 => get_string('erater_handbook_elementary', 'plagiarism_turnitin'),
+                                            5 => get_string('erater_handbook_learners', 'plagiarism_turnitin')
                                         );
 
                 $dictionaryoptions = array(
-                                            'en_US' => get_string('erater_dictionary_enus', 'turnitintooltwo'),
-                                            'en_GB' => get_string('erater_dictionary_engb', 'turnitintooltwo'),
-                                            'en'    => get_string('erater_dictionary_en', 'turnitintooltwo')
+                                            'en_US' => get_string('erater_dictionary_enus', 'plagiarism_turnitin'),
+                                            'en_GB' => get_string('erater_dictionary_engb', 'plagiarism_turnitin'),
+                                            'en'    => get_string('erater_dictionary_en', 'plagiarism_turnitin')
                                         );
-                $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'turnitintooltwo'), $options);
+                $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'plagiarism_turnitin'), $options);
                 $mform->setDefault('plagiarism_erater', 0);
 
-                $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook', 'turnitintooltwo'),
+                $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook', 'plagiarism_turnitin'),
                                                 $handbookoptions);
                 $mform->setDefault('plagiarism_erater_handbook', 2);
                 $mform->disabledIf('plagiarism_erater_handbook', 'plagiarism_erater', 'eq', 0);
 
-                $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary', 'turnitintooltwo'),
+                $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary', 'plagiarism_turnitin'),
                                                 $dictionaryoptions);
                 $mform->setDefault('plagiarism_erater_dictionary', 'en_US');
                 $mform->disabledIf('plagiarism_erater_dictionary', 'plagiarism_erater', 'eq', 0);
 
-                $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories', 'turnitintooltwo'),
-                                                " ".get_string('erater_spelling', 'turnitintooltwo'));
+                $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories', 'plagiarism_turnitin'),
+                                                " ".get_string('erater_spelling', 'plagiarism_turnitin'));
                 $mform->disabledIf('plagiarism_erater_spelling', 'plagiarism_erater', 'eq', 0);
 
-                $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar', 'turnitintooltwo'));
+                $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar', 'plagiarism_turnitin'));
                 $mform->disabledIf('plagiarism_erater_grammar', 'plagiarism_erater', 'eq', 0);
 
-                $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage', 'turnitintooltwo'));
+                $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage', 'plagiarism_turnitin'));
                 $mform->disabledIf('plagiarism_erater_usage', 'plagiarism_erater', 'eq', 0);
 
                 $mform->addElement('checkbox', 'plagiarism_erater_mechanics', '', " ".
-                                                get_string('erater_mechanics', 'turnitintooltwo'));
+                                                get_string('erater_mechanics', 'plagiarism_turnitin'));
                 $mform->disabledIf('plagiarism_erater_mechanics', 'plagiarism_erater', 'eq', 0);
 
-                $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'turnitintooltwo'));
+                $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'plagiarism_turnitin'));
                 $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
             }
 
-            $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'turnitintooltwo'),
+            $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
                                                                                 array('class' => 'tii_anonblindmarkingnote')));
 
             if ($config->transmatch) {
@@ -409,10 +409,10 @@ class turnitinplugin_view {
         $selectall = html_writer::checkbox('errors_select_all', false, false, '', array("class" => "select_all_checkbox"));
         $cells["checkbox"] = new html_table_cell($selectall);
         $cells["id"] = new html_table_cell(get_string('id', 'turnitintooltwo'));
-        $cells["user"] = new html_table_cell(get_string('student', 'turnitintooltwo'));
+        $cells["user"] = new html_table_cell(get_string('student', 'plagiarism_turnitin'));
         $cells["user"]->attributes['class'] = 'left';
-        $cells["course"] = new html_table_cell(get_string('course', 'turnitintooltwo'));
-        $cells["module"] = new html_table_cell(get_string('module', 'turnitintooltwo'));
+        $cells["course"] = new html_table_cell(get_string('course', 'plagiarism_turnitin'));
+        $cells["module"] = new html_table_cell(get_string('module', 'plagiarism_turnitin'));
         $cells["file"] = new html_table_cell(get_string('file'));
         $cells["error"] = new html_table_cell(get_string('error'));
         $cells["delete"] = new html_table_cell('&nbsp;');
@@ -426,7 +426,7 @@ class turnitinplugin_view {
 
         if (count($files) == 0) {
             $cells = array();
-            $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
+            $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'plagiarism_turnitin'));
             $cells["checkbox"]->colspan = 8;
             $cells["checkbox"]->attributes['class'] = 'centered_cell';
             $rows[0] = new html_table_row($cells);
@@ -459,7 +459,7 @@ class turnitinplugin_view {
                                                     $OUTPUT->pix_icon('fileicon', 'open '.$file->get_filename(), 'plagiarism_turnitin').
                                                         " ".$file->get_filename()));
                         } else {
-                            $cells["file"] = get_string('filedoesnotexist', 'turnitintooltwo');
+                            $cells["file"] = get_string('filedoesnotexist', 'plagiarism_turnitin');
                         }
                     } else {
                         $cells["file"] = str_replace('_', ' ', ucfirst($v->submissiontype));
@@ -479,7 +479,7 @@ class turnitinplugin_view {
                     // Show error message if there is one.
                     $errormsg = $v->errormsg;
                     if ($errorcode == 0) {
-                        $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'turnitintooltwo') : $errormsg;
+                        $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'plagiarism_turnitin') : $errormsg;
                     } else {
                         $errorstring = get_string('errorcode'.$v->errorcode,
                                             'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
@@ -488,12 +488,12 @@ class turnitinplugin_view {
 
                     $fnd = array("\n", "\r");
                     $rep = array('\n', '\r');
-                    $string = str_replace($fnd, $rep, get_string('deleteconfirm', 'turnitintooltwo'));
+                    $string = str_replace($fnd, $rep, get_string('deleteconfirm', 'plagiarism_turnitin'));
 
                     $attributes["onclick"] = "return confirm('".$string."');";
                     $cells["delete"] = new html_table_cell(html_writer::link($CFG->wwwroot.
                                             '/plagiarism/turnitin/settings.php?do=errors&action=deletefile&id='.$k,
-                                            $OUTPUT->pix_icon('delete', get_string('deletesubmission', 'turnitintooltwo'),
+                                            $OUTPUT->pix_icon('delete', get_string('deletesubmission', 'plagiarism_turnitin'),
                                                 'plagiarism_turnitin'), $attributes));
                     $cells["delete"]->attributes['class'] = 'centered_cell';
 
@@ -504,7 +504,7 @@ class turnitinplugin_view {
 
             if ($i == 0) {
                 $cells = array();
-                $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'turnitintooltwo'));
+                $cells["checkbox"] = new html_table_cell(get_string('semptytable', 'plagiarism_turnitin'));
                 $cells["checkbox"]->colspan = 8;
                 $cells["checkbox"]->attributes['class'] = 'centered_cell';
                 $rows[0] = new html_table_row($cells);

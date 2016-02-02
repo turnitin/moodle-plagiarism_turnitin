@@ -69,7 +69,7 @@ if (!empty($action)) {
                 set_config('turnitin_use_mod_'.$mod, $turnitinuse, 'plagiarism');
             }
 
-            $_SESSION['notice']['message'] = get_string('configupdated', 'turnitintooltwo');
+            $_SESSION['notice']['message'] = get_string('configupdated', 'plagiarism_turnitin');
             redirect(new moodle_url('/plagiarism/turnitin/settings.php'));
             exit;
             break;
@@ -107,7 +107,7 @@ if (!empty($action)) {
                 }
             }
 
-            $_SESSION['notice']['message'] = get_string('defaultupdated', 'turnitintooltwo');
+            $_SESSION['notice']['message'] = get_string('defaultupdated', 'plagiarism_turnitin');
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'defaults')));
             exit;
             break;
@@ -213,7 +213,7 @@ switch ($do) {
                 }
                 $output .= "\r\n\r\n";
             } else {
-                $output .= get_string('notavailableyet', 'turnitintooltwo')."\r\n";
+                $output .= get_string('notavailableyet', 'plagiarism_turnitin')."\r\n";
             }
 
         }
@@ -231,22 +231,22 @@ switch ($do) {
         $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
-        echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
+        echo html_writer::tag("p", get_string('pperrorsdesc', 'plagiarism_turnitin'));
 
         if ($resubmitted == "success") {
-            echo html_writer::tag("div", get_string('pperrorssuccess', 'turnitintooltwo'),
+            echo html_writer::tag("div", get_string('pperrorssuccess', 'plagiarism_turnitin'),
                                             array('class' => 'pp_errors_success'));
         } else if ($resubmitted == "errors") {
-            echo html_writer::tag("div", get_string('pperrorsfail', 'turnitintooltwo'),
+            echo html_writer::tag("div", get_string('pperrorsfail', 'plagiarism_turnitin'),
                                             array('class' => 'pp_errors_warning'));
         }
 
-        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+        echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
         echo $turnitinpluginview->show_file_errors_table($page);
 
-        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+        echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
         break;
 }

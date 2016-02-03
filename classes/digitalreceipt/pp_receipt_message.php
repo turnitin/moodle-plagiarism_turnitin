@@ -10,7 +10,7 @@ class pp_receipt_message {
      */
     public function send_message($userid, $message) {
 
-        $subject = get_string('digital_receipt_subject', 'turnitintooltwo');
+        $subject = get_string('digital_receipt_subject', 'plagiarism_turnitin');
 
         $eventdata = new stdClass();
         $eventdata->component         = 'plagiarism_turnitin'; //your component name
@@ -48,7 +48,7 @@ class pp_receipt_message {
         $message->submission_date = $input['submission_date'];
         $message->submission_id = $input['submission_id'];
 
-        return get_string('pp_digital_receipt_message', 'turnitintooltwo', $message);
+        return get_string('pp_digital_receipt_message', 'plagiarism_turnitin', $message);
     }
 
     /**
@@ -71,7 +71,7 @@ class pp_receipt_message {
         $message->submission_date = $input['submission_date'];
         $message->submission_id = $input['submission_id'];
 
-        return get_string('receipt_instructor_copy', 'turnitintooltwo', $message);
+        return get_string('receipt_instructor_copy', 'plagiarism_turnitin', $message);
     }
 
     /**
@@ -83,7 +83,7 @@ class pp_receipt_message {
      */
     public function send_instructor_message($instructors, $message)
     {
-        $subject = get_string('receipt_instructor_copy_subject', 'turnitintooltwo');
+        $subject = get_string('receipt_instructor_copy_subject', 'plagiarism_turnitin');
 
         $eventdata = new stdClass();
         $eventdata->component         = 'plagiarism_turnitin'; //your component name

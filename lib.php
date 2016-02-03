@@ -740,6 +740,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Display links to OR, GradeMark and show relevant errors.
                 if ($plagiarismfile) {
+
                     if ($plagiarismfile->statuscode == 'success') {
                         if ($istutor || $linkarray["userid"] == $USER->id) {
                             $output .= html_writer::tag('div',
@@ -964,13 +965,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             array('class' => 'hidden', 'id' => 'forumdata_'.$plagiarismfile->id));
                             }
                         }
+                    } else if ($plagiarismfile->statuscode == 'deleted'){
+                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('deleted', 'plagiarism_turnitin');
+                        $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
+                            array('class' => 'turnitin_status'));
+
                     } else {
                         $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('pending', 'plagiarism_turnitin');
                         $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
                                                     array('class' => 'turnitin_status'));
                     }
 
-                } else {
+                }
+                else {
                     // Add Error if the user has not accepted EULA for submissions made before instant submission was removed.
                     $eulaerror = "";
                     if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {

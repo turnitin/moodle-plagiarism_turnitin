@@ -105,7 +105,6 @@ $string['course'] = 'Course';
 $string['module'] = 'Module';
 
 // Grade book/View assignment page
-$string['turnitin:viewsimilarityscore'] = 'View Similarity Score';
 $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';
 $string['turnitinppulapost'] = 'Your file has not been submitted to Turnitin. Please click here to accept our EULA.';

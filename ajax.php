@@ -80,7 +80,7 @@ switch ($action) {
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        $istutor = ($cm->modname == "assign") ? $istutor = has_capability('mod/'.$cm->modname.':grade', $context) :
+        $istutor = ($cm->modname == "assign") ? has_capability('mod/'.$cm->modname.':grade', $context) :
                                                         has_capability('plagiarism/turnitin:viewfullreport', $context);
 
         if ($istutor && $cm->modname == "assign") {

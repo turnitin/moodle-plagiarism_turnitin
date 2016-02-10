@@ -96,9 +96,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param int $cm_id  the course module id, if this is 0 the default settings will be retrieved
      * @return array of Turnitin settings for a module
      */
-    public function get_settings($cmid = 0) {
+    public function get_settings($cmid = null) {
         global $DB;
-        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => 0),     '', 'name,value');
+        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => null),     '', 'name,value');
         $settings = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => $cmid), '', 'name,value');
 
         // Enforce site wide config locking.

@@ -160,20 +160,11 @@ switch ($action) {
         break;
 
     case "peermarkreviews":
-        switch ($cm->modname) {
-            case "forum":
-            case "workshop":
-                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
-                break;
-            default:
-                $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
-                break;
-        }
 
         $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
 
-        if ($istutor || $isstudent) {
+        if ($userrole == 'Instructor' || $isstudent) {
             $role = ($istutor) ? 'Instructor' : 'Learner';
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));

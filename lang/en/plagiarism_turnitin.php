@@ -163,3 +163,4 @@ $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Rece
 $string['turnitinstatus'] = 'Turnitin status';
 $string['deleted'] = 'Deleted';
 $string['pending'] = 'Pending';
+$string['because'] = 'This was because an administrator deleted the pending assignment and aborted the submission to Turnitin. Please see below for any error codes.';

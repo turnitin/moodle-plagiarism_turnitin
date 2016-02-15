@@ -80,10 +80,7 @@ switch ($action) {
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        $istutor = ($cm->modname == "assign") ? $istutor = has_capability('mod/'.$cm->modname.':grade', $context) :
-                                                        has_capability('plagiarism/turnitin:viewfullreport', $context);
-
-        if ($istutor && $cm->modname == "assign") {
+        if ($userrole == 'Instructor' && $cm->modname == "assign") {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();
@@ -116,17 +113,8 @@ switch ($action) {
         break;
 
     case "peermarkmanager":
-        switch ($cm->modname) {
-            case "forum":
-            case "workshop":
-                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
-                break;
-            default:
-                $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
-                break;
-        }
 
-        if ($istutor) {
+        if ($userrole == 'Instructor') {
             $plagiarism_plugin_turnitin = new plagiarism_plugin_turnitin();
             $coursedata = $plagiarism_plugin_turnitin->get_course_data($cm->id, $cm->course);
 
@@ -172,20 +160,11 @@ switch ($action) {
         break;
 
     case "peermarkreviews":
-        switch ($cm->modname) {
-            case "forum":
-            case "workshop":
-                $istutor = has_capability('plagiarism/turnitin:viewfullreport', $context);
-                break;
-            default:
-                $istutor = has_capability('mod/'.$cm->modname.':grade', $context);
-                break;
-        }
 
         $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
 
-        if ($istutor || $isstudent) {
+        if ($userrole == 'Instructor' || $isstudent) {
             $role = ($istutor) ? 'Instructor' : 'Learner';
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));

@@ -366,7 +366,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (empty($plagiarismsettings['use_turnitin'])) {
             return '';
         }
-        
+
         $this->load_page_components();
 
         // Show agreement.
@@ -923,8 +923,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
                         }
 
-                        $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'), 
-                                                                array('title' => $errorstring, 
+                        $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'),
+                                                                array('title' => $errorstring,
                                                                         'class' => 'tii_tooltip tii_error_icon'));
 
                         // Attach error text or resubmit link after icon depending on whether user is a student/teacher.
@@ -966,7 +966,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             }
                         }
                     } else if ($plagiarismfile->statuscode == 'deleted'){
-                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('deleted', 'plagiarism_turnitin');
+                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('deleted', 'plagiarism_turnitin').'\n'.;
+                        $statusstr .= get_string('because', 'plagiarism_plugin').'\n'.$errorstring;
                         $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
                             array('class' => 'turnitin_status'));
 

@@ -165,3 +165,4 @@ $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Rece
 $string['turnitinstatus'] = 'Turnitin status';
 $string['deleted'] = 'Deleted';
 $string['pending'] = 'Pending';
+$string['because'] = 'This was because an administrator deleted the pending assignment from the processing queue and aborted the submission to Turnitin.<br /><strong>The file still exists in Moodle.</strong> Please see below for any error codes:';

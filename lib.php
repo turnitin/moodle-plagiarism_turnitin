@@ -1721,7 +1721,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
 
                     // Don't add the submission to the request if module settings mean we will not get a report back.
-                    if ($plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
+                    if (array_key_exists('plagiarism_compare_student_papers', $plagiarismsettings) &&
+                        $plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_institution'] == 0) {

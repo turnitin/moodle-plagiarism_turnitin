@@ -5,6 +5,7 @@
 - The presentation of activity logs has been improved.
 - Settings for the Turnitin digital receipt have been separated from Moodle Direct V2 so that a different setting can be set for each.
 - Changed roles to plagiarism specific roles.
+- Allow emails to be sent from the noreply address.
 - Fixes:
 	- Cron now records a deletion as errored and continues processing the events queue if Turnitin submission deletion fails.
 	- Removed font awesome to fix styling conflict with Moodle theme.

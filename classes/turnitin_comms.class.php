@@ -43,7 +43,7 @@ class turnitin_comms {
         $this->tiisecretkey = is_null($accountshared) ? $config->secretkey : $accountshared;
 
         if (empty($this->tiiaccountid) || empty($this->tiiapiurl) || empty($this->tiisecretkey)) {
-            turnitintooltwo_print_error( 'configureerror', 'turnitintooltwo' );
+            turnitintooltwo_print_error( 'configureerror', 'plagiarism_turnitin' );
         }
 
         $this->diagnostic = $config->enablediagnostic;
@@ -100,10 +100,10 @@ class turnitin_comms {
 
         // Offline mode provided by Androgogic
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
-            turnitintooltwo_print_error('turnitintoolofflineerror', 'turnitintooltwo');
+            turnitintooltwo_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setIsTestingConnection($istestingconnection);
-        $api->setPerflog(new turnitintooltwo_perflog());
+        $api->setTestingConnection($istestingconnection);
+        $api->setPerformanceLog(new turnitintooltwo_performancelog());
 
         return $api;
     }
@@ -118,14 +118,14 @@ class turnitin_comms {
     public static function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
         $errorstr = "";
         if (!empty($tterrorstr)) {
-            $errorstr = get_string($tterrorstr, 'turnitintooltwo')."<br/><br/>";
+            $errorstr = get_string($tterrorstr, 'plagiarism_turnitin')."<br/><br/>";
             if ($embedded == true) {
-                $errorstr .= get_string('tii_submission_failure', 'turnitintooltwo')."<br/><br/>";
+                $errorstr .= get_string('tii_submission_failure', 'plagiarism_turnitin')."<br/><br/>";
             }
         }
 
         if (is_callable(array($e, 'getFaultCode'))) {
-            $errorstr .= get_string('faultcode', 'turnitintooltwo').": ".$e->getFaultCode()." | ";
+            $errorstr .= get_string('faultcode', 'plagiarism_turnitin').": ".$e->getFaultCode()." | ";
         }
 
         if (is_callable(array($e, 'getFile'))) {
@@ -133,15 +133,15 @@ class turnitin_comms {
         }
 
         if (is_callable(array($e, 'getLine'))) {
-            $errorstr .= get_string('line', 'turnitintooltwo').": ".$e->getLine()." | ";
+            $errorstr .= get_string('line', 'plagiarism_turnitin').": ".$e->getLine()." | ";
         }
 
         if (is_callable(array($e, 'getMessage'))) {
-            $errorstr .= get_string('message', 'turnitintooltwo').": ".$e->getMessage()." | ";
+            $errorstr .= get_string('message', 'plagiarism_turnitin').": ".$e->getMessage()." | ";
         }
 
         if (is_callable(array($e, 'getCode'))) {
-            $errorstr .= get_string('code', 'turnitintooltwo').": ".$e->getCode();
+            $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
         turnitintooltwo_activitylog($errorstr, "API_ERROR");

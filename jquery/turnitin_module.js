@@ -165,7 +165,7 @@ jQuery(document).ready(function($) {
     }
 
     function lightBoxCloseButton(closeBtnText) {
-        $('body').append('<div id="tii_close_bar"><a href="#" onclick="$.colorbox.close(); return false;">' + M.str.turnitintooltwo.closebutton + '</a></div>');
+        $('body').append('<div id="tii_close_bar"><a href="#" onclick="$.colorbox.close(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
     }
 
     function getLoadingGif() {
@@ -195,7 +195,7 @@ jQuery(document).ready(function($) {
         dvWindow = window.open('', '_blank');
         var loading = '<div style="text-align:center;">';
         loading += '<img src="'+M.cfg.wwwroot+'/plagiarism/turnitin/pix/tiiIcon.svg" style="width:100px; height: 100px">';
-        loading += '<p style="font-family: Arial, Helvetica, sans-serif;">'+M.str.turnitintooltwo.loadingdv+'</p>';
+        loading += '<p style="font-family: Arial, Helvetica, sans-serif;">'+M.str.plagiarism_turnitin.loadingdv+'</p>';
         loading += '</div>';
         $(dvWindow.document.body).html(loading);
 

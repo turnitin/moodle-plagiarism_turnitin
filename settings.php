@@ -40,7 +40,7 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$supported_mods = ($CFG->branch > 23) ? array('assign', 'forum', 'workshop') : array('assign');
+$supported_mods = array('assign', 'forum', 'workshop');
 
 // Get plugin config.
 $pluginconfig = array();
@@ -63,13 +63,13 @@ if (!empty($action)) {
 
             // Allow Turnitin to be on for Individual modules.
             foreach ($supported_mods as $mod) {
-                $turnitinuse = ($CFG->branch > 23) ? optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT) : 1;
+                $turnitinuse = optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT);
                 $turnitinuse = ($turnitinoveralluse == 0) ? 0 : $turnitinuse;
 
                 set_config('turnitin_use_mod_'.$mod, $turnitinuse, 'plagiarism');
             }
 
-            $_SESSION['notice']['message'] = get_string('configupdated', 'turnitintooltwo');
+            $_SESSION['notice']['message'] = get_string('configupdated', 'plagiarism_turnitin');
             redirect(new moodle_url('/plagiarism/turnitin/settings.php'));
             exit;
             break;
@@ -98,24 +98,23 @@ if (!empty($action)) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                 (array('cm' => 0, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
-                        turnitintooltwo_print_error('defaultupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                        turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 } else {
                     if (!$DB->insert_record('plagiarism_turnitin_config', $defaultfield)) {
-                        turnitintooltwo_print_error('defaultinserterror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                        turnitintooltwo_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 }
             }
 
-            $_SESSION['notice']['message'] = get_string('defaultupdated', 'turnitintooltwo');
+            $_SESSION['notice']['message'] = get_string('defaultupdated', 'plagiarism_turnitin');
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'defaults')));
             exit;
             break;
 
         case "deletefile":
             $id = optional_param('id', 0, PARAM_INT);
-            $DB->delete_records('plagiarism_turnitin_files', array('id' => $id));
-
+            $DB->update_record('plagiarism_turnitin_files', array('id' => $id, 'statuscode' => "deleted"));
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'errors')));
             exit;
             break;
@@ -124,15 +123,8 @@ if (!empty($action)) {
 
 // Include Javascript & CSS.
 if ($do == "errors") {
-    if ($CFG->branch <= 25) {
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_settings.js');
-        $PAGE->requires->js($jsurl);
-    } else {
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
-    }
+    $PAGE->requires->jquery();
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
 }
 
 if ($do != "savereport") {
@@ -220,7 +212,7 @@ switch ($do) {
                 }
                 $output .= "\r\n\r\n";
             } else {
-                $output .= get_string('notavailableyet', 'turnitintooltwo')."\r\n";
+                $output .= get_string('notavailableyet', 'plagiarism_turnitin')."\r\n";
             }
 
         }
@@ -238,22 +230,22 @@ switch ($do) {
         $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
         $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
-        echo html_writer::tag("p", get_string('pperrorsdesc', 'turnitintooltwo'));
+        echo html_writer::tag("p", get_string('pperrorsdesc', 'plagiarism_turnitin'));
 
         if ($resubmitted == "success") {
-            echo html_writer::tag("div", get_string('pperrorssuccess', 'turnitintooltwo'),
+            echo html_writer::tag("div", get_string('pperrorssuccess', 'plagiarism_turnitin'),
                                             array('class' => 'pp_errors_success'));
         } else if ($resubmitted == "errors") {
-            echo html_writer::tag("div", get_string('pperrorsfail', 'turnitintooltwo'),
+            echo html_writer::tag("div", get_string('pperrorsfail', 'plagiarism_turnitin'),
                                             array('class' => 'pp_errors_warning'));
         }
 
-        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+        echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
         echo $turnitinpluginview->show_file_errors_table($page);
 
-        echo html_writer::tag("button", get_string('resubmitselected', 'turnitintooltwo'),
+        echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
         break;
 }

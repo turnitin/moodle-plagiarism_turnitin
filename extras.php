@@ -39,17 +39,6 @@ $cmid = required_param('cmid', PARAM_INT);
 $cm = get_coursemodule_from_id('', $cmid);
 $context = context_course::instance($cm->course);
 
-// Work out user role.
-switch ($cm->modname) {
-    case "forum":
-    case "workshop":
-        $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
-        break;
-    default:
-        $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
-        break;
-}
-
 $PAGE->set_context(context_system::instance());
 require_login();
 

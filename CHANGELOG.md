@@ -1,3 +1,14 @@
+### Date:       2016-February-23
+### Release:    v2016011104
+
+- Fixes:
+	- EULA acceptance problem due to lack of module context.
+	- Missing noscript EULA string added.
+	- Incorrect version number in upgrade db script for adding due_date_refresh field.
+	- Split collated empty function for pre PHP 5.5 environments.
+
+---
+
 ### Date:       2016-February-22
 ### Release:    v2016011103
 

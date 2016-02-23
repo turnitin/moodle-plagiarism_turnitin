@@ -72,6 +72,7 @@ $string['sharedrubric'] = 'Shared Rubric';
 $string['turnitinrefreshsubmissions'] = 'Refresh Submissions';
 $string['turnitinrefreshingsubmissions'] = 'Refreshing Submissions';
 $string['turnitinppulapre'] = 'To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept.';
+$string['noscriptula'] = '(As you do not have javascript enabled you will have to manually refresh this page before you can make a submission after accepting the Turnitin User Agreement)';
 $string['filedoesnotexist'] = 'File has been deleted';
 
 

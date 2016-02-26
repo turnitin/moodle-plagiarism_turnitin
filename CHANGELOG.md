@@ -1,3 +1,30 @@
+### Date:       2016-February-23
+### Release:    v2016011104
+
+- Fixes:
+	- EULA acceptance problem due to lack of module context.
+	- Missing noscript EULA string added.
+	- Incorrect version number in upgrade db script for adding due_date_refresh field.
+	- Split collated empty function for pre PHP 5.5 environments.
+
+---
+
+### Date:       2016-February-22
+### Release:    v2016011103
+
+- The originality score is now refreshed in the assignment inbox after the due date has passed.
+- The presentation of activity logs has been improved.
+- Settings for the Turnitin digital receipt have been separated from Moodle Direct V2 so that a different setting can be set for each.
+- Changed roles to plagiarism specific roles.
+- Allow emails to be sent from the noreply address.
+- Fixes:
+	- Cron now records a deletion as errored and continues processing the events queue if Turnitin submission deletion fails.
+	- Removed font awesome to fix styling conflict with Moodle theme.
+	- Fixed an issue where the file name would be appending multiple times if the temp file can't be created.
+	- Fixed cron warning message regarding REQUEST_URI (Thanks to AviMoto)
+
+---
+
 ### Date:       2016-January-25
 ### Release:    v2016011102
 

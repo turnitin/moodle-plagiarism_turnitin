@@ -27,18 +27,18 @@ $itemid = optional_param('itemid', 0, PARAM_INT);
 if( !empty( $cmid ) ){
     $cm = get_coursemodule_from_id('', $cmid);
     $context = context_course::instance($cm->course);
-}
 
-// Work out user role.
-$userrole = '';
-switch ($cm->modname) {
-    case "forum":
-    case "workshop":
-        $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
-        break;
-    default:
-        $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
-        break;
+    // Work out user role.
+    $userrole = '';
+    switch ($cm->modname) {
+        case "forum":
+        case "workshop":
+            $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
+            break;
+        default:
+            $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
+            break;
+    }
 }
 
 $pathnamehash = optional_param('pathnamehash', "", PARAM_ALPHANUM);

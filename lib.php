@@ -443,8 +443,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function load_page_components() {
         global $CFG, $PAGE;
 
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
-        $PAGE->requires->js($jsurl);
+        // Only load jQuery library for moodle 25 or lower. Otherwise borrow Moodle's.
+        if ($CFG->branch <= 25) {
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
+            $PAGE->requires->js($jsurl);
+        } else {
+            // This seems to generate minor error messages in the submission inbox, although the correct jQuery still loads. Weird.
+            $PAGE->requires->jquery();
+        }
+
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');

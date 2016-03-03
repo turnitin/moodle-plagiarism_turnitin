@@ -2498,18 +2498,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
 
-        // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
-        $content = explode(' ', $textcontent);
-        if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
-                (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
-            $errorcode = 1;
-        }
-
         // Check file is less than maximum allowed size.
         if ($submissiontype == 'file') {
             if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
                 $errorcode = 2;
             }
+        }
+
+        // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
+        $content = explode(' ', $textcontent);
+        if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
+                (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
+            $errorcode = 1;
         }
 
         // Don't submit if a user has not accepted the eula.

@@ -1588,11 +1588,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = strtotime('+1 year');
         }
 
-        // If a cut-off date has been set, use that as the Turnitin due date.
-        if (!empty($moduledata->cutoffdate)) {
-            $dtdue = $moduledata->cutoffdate;
-        }
-
         // Ensure due date can't be before start date
         if ($dtdue <= $dtstart) {
             $dtdue = strtotime('+1 month', $dtstart);

@@ -112,6 +112,7 @@ $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';
 $string['turnitinppulapost'] = 'Your file has not been submitted to Turnitin. Please click here to accept our EULA.';
 $string['ppsubmissionerrorseelogs'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
+$string['ppsubmissionerrorstudent'] = 'This file has not been submitted to Turnitin, please consult your tutor for further details';
 
 // Receipts
 $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Receipt notifications';

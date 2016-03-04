@@ -99,8 +99,11 @@ class turnitinplugin_view {
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
+        // Include JS strings (closebutton is needed from both plugins).
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
+        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
+
         $config = turnitintooltwo_admin_config();
         $config_warning = '';
         $rubrics = array();

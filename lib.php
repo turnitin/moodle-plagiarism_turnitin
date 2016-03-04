@@ -1994,7 +1994,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             case "mod_created":
             case "mod_updated":
                 $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                return $syncassignment['success'];
+                return true;
                 break;
 
             case "file_uploaded":

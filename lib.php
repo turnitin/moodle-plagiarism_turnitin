@@ -1694,7 +1694,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
-        global $DB, $CFG;
+        global $DB, $CFG, $PLAGIARISM_TURNITIN_TASKCALL;
+
+        // 2.7 onwards we would like to be called from task calls.
+        if ( $CFG->version > 2014051200 AND !$PLAGIARISM_TURNITIN_TASKCALL ){
+            mtrace("[Turnitin Plagiarism Plugin] Aborted Cron call because of active task mode");
+            return;
+        }
+
+        // Reset task call flag.
+        if ( $PLAGIARISM_TURNITIN_TASKCALL ) {
+            $PLAGIARISM_TURNITIN_TASKCALL = false;
+        }
 
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');

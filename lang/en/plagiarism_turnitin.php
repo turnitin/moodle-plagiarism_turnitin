@@ -9,7 +9,7 @@
 $string['pluginname'] = 'Turnitin plagiarism plugin';
 $string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
-
+$string['task_name'] = 'Turnitin Plagiarism Plugin Task';
 
 // Assignment Settings
 $string['turnitin:enable'] = 'Enable Turnitin';

@@ -67,6 +67,7 @@ $string['compareinstitution'] = 'Compare submitted files with papers submitted w
 $string['reportgenspeed'] = 'Report Generation Speed';
 $string['genspeednote'] = 'Note: Originality Report generation for resubmissions is subject to a twenty-four hour delay.';
 $string['locked_message'] = 'Locked message';
+$string['locked_message_help'] = 'If any settings are locked, this message is shown to say why.';
 $string['locked_message_default'] = 'This setting is locked at the site level';
 $string['sharedrubric'] = 'Shared Rubric';
 $string['turnitinrefreshsubmissions'] = 'Refresh Submissions';

@@ -291,9 +291,9 @@ class turnitinplugin_view {
             $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
 
             if ($location == 'defaults'){
-                $mform->addElement('text', 'plagiarism_locked_message', get_string("locked_message", "turnitintooltwo"), 'maxlength="50" size="50"' );
+                $mform->addElement('text', 'plagiarism_locked_message', get_string("locked_message", "plagiarism_turnitin"), 'maxlength="50" size="50"' );
                 $mform->setType('plagiarism_locked_message', PARAM_TEXT);
-                $mform->setDefault('plagiarism_locked_message', get_string("locked_message_default", "turnitintooltwo") );
+                $mform->setDefault('plagiarism_locked_message', get_string("locked_message_default", "plagiarism_turnitin") );
                 $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'plagiarism_turnitin');
             }
 
@@ -485,7 +485,7 @@ class turnitinplugin_view {
                         $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'plagiarism_turnitin') : $errormsg;
                     } else {
                         $errorstring = get_string('errorcode'.$v->errorcode,
-                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                                            'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
                     }
                     $cells["error"] = $errorstring;
 

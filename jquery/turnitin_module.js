@@ -131,9 +131,10 @@ jQuery(document).ready(function($) {
         return false;
     });
 
-    $(document).on('click', '.pp_turnitin_eula_link', function() {
-        $(this).colorbox({
-            open:true,iframe:true, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
+    // Open an iframe light box containing the EULA View
+    if ($('.pp_turnitin_eula_link').length > 0) {
+        $('.pp_turnitin_eula_link').colorbox({
+            iframe:true, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
             onLoad: function() { getLoadingGif(); },
             onComplete: function() {
                 $(window).on("message", function(ev) {
@@ -151,8 +152,7 @@ jQuery(document).ready(function($) {
             },
             onCleanup: function() { hideLoadingGif(); }
         });
-        return false;
-    });
+    }
 
     // Hide the submission form if the user has never accepted or declined the Turnitin EULA.
     if ($(".pp_turnitin_ula_ignored").length > 0) {

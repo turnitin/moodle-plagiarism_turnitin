@@ -191,6 +191,11 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2016011105) {
+        // Update 0 to null for defaults.
+        $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET cm = NULL WHERE cm = 0");
+    }
+
     return $result;
 }
 

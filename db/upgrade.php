@@ -23,7 +23,7 @@
  * @return bool
  */
 function xmldb_plagiarism_turnitin_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
     $result = true;

@@ -23,9 +23,8 @@ class plagiarism_turnitin_task extends \core\task\scheduled_task {
         global $CFG, $PLAGIARISM_TURNITIN_TASKCALL;
 
         // Call plagiarism turnitin cron function.
-        require_once("{$CFG->dirroot}/plagiarism/turnitin/lib.php");
+        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
         $PLAGIARISM_TURNITIN_TASKCALL = true;
-        $pluginturnitin = new plagiarism_plugin_turnitin();
-        $pluginturnitin->cron();
+        plagiarism_turnitin_cron();
     }
 }

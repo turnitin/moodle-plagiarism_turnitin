@@ -2837,3 +2837,11 @@ function plagiarism_turnitin_event_content_uploaded($eventdata) {
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
 }
+
+/**
+ * Handle cron call from scheduled task
+ */
+function plagiarism_turnitin_cron() {
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->cron();
+}

@@ -185,15 +185,30 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2016011104) {
         $table = new xmldb_table('plagiarism_turnitin_files');
-        $field = new xmldb_field('duedate_report_refresh', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, true, false, 0,'gm_feedback');
+        $field = new xmldb_field('duedate_report_refresh', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, true, false, 0, 'gm_feedback');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
     }
 
     if ($oldversion < 2016011105) {
+        $table = new xmldb_table('plagiarism_turnitin_config');
+
+        // Drop cm key so that we can modify the field to allow null values.
+        $key = new xmldb_key('cm', XMLDB_KEY_FOREIGN, array('cm'), 'course_modules', array('id'));
+        $dbman->drop_key($table, $key);
+
+        // Alter cm to allow null values.
+        $field = new xmldb_field('cm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, null, 'id');
+        $dbman->change_field_notnull($table, $field);
+
         // Update 0 to null for defaults.
         $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET cm = NULL WHERE cm = 0");
+
+        // Re-add foreign key for cm field.
+        $dbman->add_key($table, $key);
+
+        upgrade_plugin_savepoint(true, 2016011105, 'plagiarism', 'turnitin');
     }
 
     return $result;

@@ -1,6 +1,7 @@
 ### Date:       2016-April-11
 ### Release:    v2016011105
 
+- Added support form to contact Tii support directly from the plugin.
 - Removed cut-off date from due-date calculation.
 - Added a message to activity logs detailing whether or not a EULA was accepted.
 - Cron functionality has been moved to scheduled tasks.

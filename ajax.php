@@ -194,8 +194,10 @@ switch ($action) {
         $eula_user->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {
             $eula_user->user_agreement_accepted = 1;
+            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitin_user->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
             $eula_user->user_agreement_accepted = -1;
+            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitin_user->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
         }
 
         // Update the user using the above object

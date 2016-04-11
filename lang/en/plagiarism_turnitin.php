@@ -9,7 +9,8 @@
 $string['pluginname'] = 'Turnitin plagiarism plugin';
 $string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
-
+$string['task_name'] = 'Turnitin Plagiarism Plugin Task';
+$string['connecttesterror'] = 'There was an error connecting to Turnitin the return error message is below:<br />';
 
 // Assignment Settings
 $string['turnitin:enable'] = 'Enable Turnitin';
@@ -67,6 +68,7 @@ $string['compareinstitution'] = 'Compare submitted files with papers submitted w
 $string['reportgenspeed'] = 'Report Generation Speed';
 $string['genspeednote'] = 'Note: Originality Report generation for resubmissions is subject to a twenty-four hour delay.';
 $string['locked_message'] = 'Locked message';
+$string['locked_message_help'] = 'If any settings are locked, this message is shown to say why.';
 $string['locked_message_default'] = 'This setting is locked at the site level';
 $string['sharedrubric'] = 'Shared Rubric';
 $string['turnitinrefreshsubmissions'] = 'Refresh Submissions';
@@ -74,7 +76,6 @@ $string['turnitinrefreshingsubmissions'] = 'Refreshing Submissions';
 $string['turnitinppulapre'] = 'To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept.';
 $string['noscriptula'] = '(As you do not have javascript enabled you will have to manually refresh this page before you can make a submission after accepting the Turnitin User Agreement)';
 $string['filedoesnotexist'] = 'File has been deleted';
-
 
 // Plugin settings
 $string['config'] = 'Configuration';
@@ -112,12 +113,13 @@ $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';
 $string['turnitinppulapost'] = 'Your file has not been submitted to Turnitin. Please click here to accept our EULA.';
 $string['ppsubmissionerrorseelogs'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
+$string['ppsubmissionerrorstudent'] = 'This file has not been submitted to Turnitin, please consult your tutor for further details';
 
 // Receipts
 $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Receipt notifications';
 $string['digitalreceipt'] = 'Digital Receipt';
 $string['digital_receipt_subject'] = 'This is your Turnitin Digital Receipt';
-$string['pp_digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from from the print/download button in the Document Viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
+$string['pp_digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from the print/download button in the Document Viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
 
 // Paper statuses
 $string['turnitinid'] = 'Turnitin ID';

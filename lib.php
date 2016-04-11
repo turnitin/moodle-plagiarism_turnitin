@@ -96,9 +96,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param int $cm_id  the course module id, if this is 0 the default settings will be retrieved
      * @return array of Turnitin settings for a module
      */
-    public function get_settings($cmid = 0) {
+    public function get_settings($cmid = null) {
         global $DB;
-        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => 0),     '', 'name,value');
+        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => null),     '', 'name,value');
         $settings = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => $cmid), '', 'name,value');
 
         // Enforce site wide config locking.
@@ -454,6 +454,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
         $PAGE->requires->js($jsurl);
 
+        // Include JS strings (closebutton is needed from both plugins).
+        $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');
     }
@@ -920,7 +922,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                 get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
-                                            'turnitintooltwo', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                                            'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
                         }
 
                         $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'),
@@ -1588,11 +1590,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtdue = strtotime('+1 year');
         }
 
-        // If a cut-off date has been set, use that as the Turnitin due date.
-        if (!empty($moduledata->cutoffdate)) {
-            $dtdue = $moduledata->cutoffdate;
-        }
-
         // Ensure due date can't be before start date
         if ($dtdue <= $dtstart) {
             $dtdue = strtotime('+1 month', $dtstart);
@@ -1697,7 +1694,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Call functions to be run by cron
      */
     public function cron() {
-        global $DB, $CFG;
+        global $DB, $CFG, $PLAGIARISM_TURNITIN_TASKCALL;
+
+        // 2.7 onwards we would like to be called from task calls.
+        if ( $CFG->version > 2014051200 AND !$PLAGIARISM_TURNITIN_TASKCALL ){
+            mtrace("[Turnitin Plagiarism Plugin] Aborted Cron call because of active task mode");
+            return;
+        }
+
+        // Reset task call flag.
+        if ( $PLAGIARISM_TURNITIN_TASKCALL ) {
+            $PLAGIARISM_TURNITIN_TASKCALL = false;
+        }
 
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
@@ -1766,7 +1774,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
 
                     // Don't add the submission to the request if module settings mean we will not get a report back.
-                    if ($plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
+                    if (array_key_exists('plagiarism_compare_student_papers', $plagiarismsettings) &&
+                        $plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_institution'] == 0) {
@@ -1999,7 +2008,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             case "mod_created":
             case "mod_updated":
                 $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
-                return $syncassignment['success'];
+                return true;
                 break;
 
             case "file_uploaded":
@@ -2263,9 +2272,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                     'assignment' => $cm->instance,
                                                                     'userid' => $userid
                                                                     ), '', 'id');
-                list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
-                $itemidsinsql = ' itemid '.$itemidsinsql;
-                $params = array_merge(array($moduleobject->filecomponent, $userid), $itemidsparams);
+
+                // Only proceed if we have item ids.
+                if (empty($itemids)) {
+                    return true;
+                } else {
+                    list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
+                    $itemidsinsql = ' itemid '.$itemidsinsql;
+                    $params = array_merge(array($moduleobject->filecomponent, $userid), $itemidsparams);
+                }
+
             } else {
                 $itemidsinsql = ' itemid = ? ';
                 $params = array($moduleobject->filecomponent, $userid, $itemid);
@@ -2498,18 +2514,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
 
-        // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
-        $content = explode(' ', $textcontent);
-        if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
-                (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
-            $errorcode = 1;
-        }
-
         // Check file is less than maximum allowed size.
         if ($submissiontype == 'file') {
             if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
                 $errorcode = 2;
             }
+        }
+
+        // Do not submit if we're not accepting anything and content is less than 20 words or 100 characters.
+        $content = explode(' ', $textcontent);
+        if (($settings['plagiarism_allow_non_or_submissions'] != 1 &&
+                (strlen($textcontent) < 100 || count($content) < 20)) || empty($textcontent)) {
+            $errorcode = 1;
         }
 
         // Don't submit if a user has not accepted the eula.
@@ -2827,4 +2843,12 @@ function plagiarism_turnitin_event_content_uploaded($eventdata) {
     $eventdata->event_type = 'content_uploaded';
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Handle cron call from scheduled task
+ */
+function plagiarism_turnitin_cron() {
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->cron();
 }

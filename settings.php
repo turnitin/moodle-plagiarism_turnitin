@@ -86,7 +86,7 @@ if (!empty($action)) {
 
             foreach ($settingsfields as $field) {
                 $defaultfield = new object();
-                $defaultfield->cm = 0;
+                $defaultfield->cm = null;
                 $defaultfield->name = $field;
                 if ($field == 'plagiarism_locked_message'){
                     $defaultfield->value = optional_param($field, '', PARAM_TEXT);
@@ -96,7 +96,7 @@ if (!empty($action)) {
 
                 if (isset($plugindefaults[$field])) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
-                                                (array('cm' => 0, 'name' => $field)));
+                                                (array('cm' => null, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
                         turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }

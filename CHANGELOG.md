@@ -1,3 +1,20 @@
+### Date:       2016-April-11
+### Release:    v2016011105
+
+- Removed cut-off date from due-date calculation.
+- Added a message to activity logs detailing whether or not a EULA was accepted.
+- Cron functionality has been moved to scheduled tasks.
+- Created warning on config page for the customer to check whether translated matching and ETS are configured at account level
+- Fixes:
+	- Added check for empty array to fix bug #115
+	- Plugin now checks file-size before checking word-count. This closes #85.
+	- Fixed issue where EULA sometimes appeared multiple times on-screen.
+	- fixed issue in JS that prevented Rubric Manager and Quickmark loading. This fixes #101
+	- Increased foreign key support and fixed cron index error (#92). (Thanks to AviMoto)
+
+
+---
+
 ### Date:       2016-February-23
 ### Release:    v2016011104
 

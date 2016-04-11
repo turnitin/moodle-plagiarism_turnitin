@@ -2272,9 +2272,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                     'assignment' => $cm->instance,
                                                                     'userid' => $userid
                                                                     ), '', 'id');
-                list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
-                $itemidsinsql = ' itemid '.$itemidsinsql;
-                $params = array_merge(array($moduleobject->filecomponent, $userid), $itemidsparams);
+
+                // Only proceed if we have item ids.
+                if (empty($itemids)) {
+                    return true;
+                } else {
+                    list($itemidsinsql, $itemidsparams) = $DB->get_in_or_equal(array_keys($itemids));
+                    $itemidsinsql = ' itemid '.$itemidsinsql;
+                    $params = array_merge(array($moduleobject->filecomponent, $userid), $itemidsparams);
+                }
+
             } else {
                 $itemidsinsql = ' itemid = ? ';
                 $params = array($moduleobject->filecomponent, $userid, $itemid);

@@ -157,6 +157,7 @@ $string['errorcode6'] = 'This file has not been submitted to Turnitin because th
 $string['errorcode7'] = 'This file has not been submitted to Turnitin because there is a problem creating the user in Turnitin which is preventing submissions, please consult your API logs for further information';
 $string['errorcode8'] = 'This file has not been submitted to Turnitin because there is a problem creating the temp file. The most likely cause is an invalid file name. Please rename the file and re-upload using Edit Submission.';
 $string['errorcode9'] = 'The file cannot be submitted as there is no accessible content in the file pool to submit.';
+$string['notinqueue'] = 'File has not been added to Turnitin queue';
 
 // Javascript
 $string['closebutton'] = 'Close';

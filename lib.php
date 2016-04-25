@@ -2530,7 +2530,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
         if (!$acceptanyfiletype && $submissiontype == 'file') {
             $filenameparts = explode('.', $filename);
-            $fileext = end($filenameparts);
+            $fileext = strtolower(end($filenameparts));
             if (!in_array(".".$fileext, $turnitinacceptedfiles)) {
                 $errorcode = 4;
             }

@@ -42,6 +42,10 @@ if (isset($_SESSION["notice"])) {
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
 $supported_mods = array('assign', 'forum', 'workshop');
 
+if ($DB->record_exists('modules',array('name'=>'coursework','visible'=>1))) {
+    $supported_mods[]   =   'coursework';
+}
+
 // Get plugin config.
 $pluginconfig = array();
 $pluginconfig['turnitin_use'] = get_config('plagiarism', 'turnitin_use');
@@ -86,7 +90,7 @@ if (!empty($action)) {
 
             foreach ($settingsfields as $field) {
                 $defaultfield = new object();
-                $defaultfield->cm = null;
+                $defaultfield->cm = 0;
                 $defaultfield->name = $field;
                 if ($field == 'plagiarism_locked_message'){
                     $defaultfield->value = optional_param($field, '', PARAM_TEXT);
@@ -96,7 +100,7 @@ if (!empty($action)) {
 
                 if (isset($plugindefaults[$field])) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
-                                                (array('cm' => null, 'name' => $field)));
+                                                (array('cm' => 0, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
                         turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }

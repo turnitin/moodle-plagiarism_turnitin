@@ -59,6 +59,8 @@ require_once(__DIR__.'/classes/digitalreceipt/pp_receipt_message.php');
 require_once(__DIR__.'/classes/modules/turnitin_assign.class.php');
 require_once(__DIR__.'/classes/modules/turnitin_forum.class.php');
 require_once(__DIR__.'/classes/modules/turnitin_workshop.class.php');
+require_once(__DIR__.'/classes/modules/turnitin_coursework.class.php');
+
 
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
@@ -689,6 +691,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+
+            // Group originality score for Coursework module
+            // Check whether submission is a group submission
+            // If it's a group submission then other users in the group should be able to see the originality score
+            // They can not open the DV though.
+            if ($cm->modname == "coursework") {
+                if ($moduledata->use_groups) {
+
+                    $coursework = new \mod_coursework\models\coursework($moduledata->id);
+
+                    $user = $DB->get_record('user', array('id' => $linkarray["userid"]));
+                    $user = mod_coursework\models\user::find($user);
+                    if ($group = $coursework->get_student_group($user)) {
+                        $users = groups_get_members($group->id);
+                        $submissionusers = array_keys($users);
+                    }
+                }
+            }
+
+
+
+
             // Proceed to displaying links for submissions.
             if ($istutor || in_array($USER->id, $submissionusers)) {
 
@@ -1187,6 +1211,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            if ($cm->modname == "coursework") {
+                // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
+                $updaterequired =   false;
+            }
+
+
             // Only update as necessary.
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
@@ -1574,6 +1604,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If blind marking is being used and identities have not been revealed then push out post date.
         if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+            $dtpost = strtotime('+6 months');
+        }
+
+        // If blind marking is being used for coursework then push out post date.
+        if ($cm->modname == 'coursework' && !empty($moduledata->blindmarking)) {
             $dtpost = strtotime('+6 months');
         }
 

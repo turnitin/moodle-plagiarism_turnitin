@@ -69,6 +69,11 @@ class turnitinplugin_view {
 
         // Enable Turnitin for specific modules
         $supported_mods = array('assign', 'forum', 'workshop');
+		
+        if ($DB->record_exists('modules',array('name'=>'coursework','visible'=>1))) {
+            $supported_mods[]   =   'coursework';
+        }
+
         foreach ($supported_mods as $mod) {
             $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
                                 '', '', '', array('turnitin_use', '==', 1));

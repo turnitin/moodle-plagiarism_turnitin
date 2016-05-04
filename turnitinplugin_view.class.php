@@ -57,7 +57,7 @@ class turnitinplugin_view {
      * @return output
      */
     public function show_config_form($pluginconfig) {
-        global $CFG, $OUTPUT;
+        global $CFG, $DB, $OUTPUT;
 
         // Populate elements array which will generate the form elements
         // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).

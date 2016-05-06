@@ -80,7 +80,7 @@ switch ($action) {
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        if ($userrole == 'Instructor' && $cm->modname == "assign") {
+        if ($userrole == 'Instructor') {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();

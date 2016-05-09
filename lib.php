@@ -200,7 +200,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
-            $cmid = optional_param('update', 0, PARAM_INT);
+            $cmid = optional_param('update', null, PARAM_INT);
 
             // Check if plagiarism plugin is enabled for this module if provided.
             if (!empty($modulename)) {

@@ -12,7 +12,7 @@ $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
 
 global $CFG;
-if ($CFG->version > 2014051200) {
+if (!empty($CFG->version) && $CFG->version > 2014051200) {
 	$plugin->cron = 0;
 }else{
 	$plugin->cron = 300;

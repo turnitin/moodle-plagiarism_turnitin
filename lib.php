@@ -28,8 +28,9 @@ define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 50);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
-$turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx', '.pdf',
-                                '.txt', '.htm', '.html', '.hwp', '.odt', '.wpd', '.ps', '.rtf');
+$turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx',
+                                '.pdf', '.txt', '.htm', '.html', '.hwp', '.odt',
+                                '.wpd', '.ps', '.rtf', '.xls', '.xlsx');
 
 global $tiipp;
 $tiipp = new stdClass();

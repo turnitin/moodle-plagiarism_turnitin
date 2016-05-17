@@ -212,7 +212,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $plagiarismvalues = $this->get_settings($cmid);
             $plagiarismelements = $this->get_settings_fields();
-
+            $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => null),     '', 'name,value');
             $turnitinpluginview = new turnitinplugin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ?
                                                                 $plagiarismvalues["plagiarism_rubric"] : 0;
@@ -237,10 +237,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Set the default value for each option as the value we have stored.
-            foreach ($plagiarismelements as $element) {
-                if (isset($plagiarismvalues[$element])) {
-                    $mform->setDefault($element, $plagiarismvalues[$element]);
+            foreach($defaults as $name => $value){
+                foreach ($plagiarismelements as $element) {
+                    if (isset($plagiarismvalues[$element])) {
+                        $mform->setDefault($element, $plagiarismvalues[$element]);
+                    }
+                    else{
+                        $mform->setDefault($name,$value);
+                    }
                 }
+
             }
         }
     }

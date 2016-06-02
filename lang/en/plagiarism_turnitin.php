@@ -10,6 +10,7 @@ $string['pluginname'] = 'Turnitin plagiarism plugin';
 $string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
 $string['connecttesterror'] = 'There was an error connecting to Turnitin the return error message is below:<br />';
+$string['tiinotice'] = 'Turnitin notice';
 
 // Assignment Settings
 $string['turnitin:enable'] = 'Enable Turnitin';
@@ -106,6 +107,7 @@ $string['id'] = 'Id';
 $string['student'] = 'Student';
 $string['course'] = 'Course';
 $string['module'] = 'Module';
+$string['usehovernotice'] = 'Display notices as a popup on hover';
 
 // Grade book/View assignment page
 $string['turnitin:viewfullreport'] = 'View Originality Report';
@@ -145,6 +147,7 @@ $string['faultcode'] = 'Fault Code';
 $string['line'] = 'Line';
 $string['message'] = 'Message';
 $string['code'] = 'Code';
+$string['tiiassignmentgeterror'] = 'There was an error when trying to get an assignment from Turnitin';
 $string['tiisubmissionsgeterror'] = 'There was an error when trying to get submissions for this assignment from Turnitin';
 $string['errorcode0'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
 $string['errorcode1'] = 'This file has not been sent to Turnitin as it does not have enough content to produce an Originality Report.';

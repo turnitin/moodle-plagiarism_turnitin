@@ -974,7 +974,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Show error message if there is one.
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (isset($plagiarismfile->errormsg)) ?
+                            $errorstring = (!isset($plagiarismfile->errormsg)) ?
                                                 get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
@@ -1027,7 +1027,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (isset($plagiarismfile->errormsg)) ?
+                            $errorstring = (!isset($plagiarismfile->errormsg)) ?
                                                 get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
@@ -2784,4 +2784,94 @@ function plagiarism_turnitin_send_queued_submissions() {
             mtrace('-------------------------');
         }
     }
+}
+
+/**
+ * Submit assesable content to Turnitin after student confirms their submission.
+ *
+ * This event is not fired by 2.3, as a workaround we submit everything to Turnitin.
+ * In 2.4+ we don't submit the drafts, until submission is confirmed.
+ *
+ *
+ * @param type $eventdata
+ * @return boolean
+ */
+function plagiarism_turnitin_event_assessable_submitted($eventdata) {
+    $eventdata->event_type = 'assessable_submitted';
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Submit all files to Turnitin after student confirms their submission.
+ *
+ * This event is not fired by 2.3, as a workaround we submit everything to Turnitin.
+ * In 2.4+ we don't submit the drafts, until submission is confirmed.
+ *
+ * @param type $eventdata
+ * @return boolean
+ */
+function plagiarism_turnitin_event_files_done($eventdata) {
+    $eventdata->event_type = 'files_done';
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Create the module within Turnitin
+ *
+ * @param type $eventdata
+ * @return boolean
+ */
+function plagiarism_turnitin_event_mod_created($eventdata) {
+    $eventdata->event_type = 'mod_created';
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Update the module within Turnitin
+ *
+ * @param type $eventdata
+ * @return boolean
+ */
+function plagiarism_turnitin_event_mod_updated($eventdata) {
+    $eventdata->event_type = 'mod_updated';
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Remove submission data and config settings for module.
+ *
+ * @param type $eventdata
+ * @return boolean true
+ */
+function plagiarism_turnitin_event_mod_deleted($eventdata) {
+    global $DB;
+
+    $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata->cmid));
+    $DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata->cmid));
+
+    return true;
+}
+
+/**
+ * Upload content to Turnitin
+ *
+ * @param type $eventdata
+ * @return type
+ */
+function plagiarism_turnitin_event_content_uploaded($eventdata) {
+    $eventdata->event_type = 'content_uploaded';
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->event_handler($eventdata);
+}
+
+/**
+ * Handle cron call from scheduled task
+ */
+function plagiarism_turnitin_cron() {
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+    return $pluginturnitin->cron();
 }

@@ -85,7 +85,7 @@ if (!empty($action)) {
             array_push($settingsfields, 'plagiarism_locked_message');
 
             foreach ($settingsfields as $field) {
-                $defaultfield = new object();
+                $defaultfield = new stdClass();
                 $defaultfield->cm = null;
                 $defaultfield->name = $field;
                 if ($field == 'plagiarism_locked_message'){

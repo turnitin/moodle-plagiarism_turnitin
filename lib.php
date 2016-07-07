@@ -169,7 +169,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         foreach ($settingsfields as $field) {
             if (isset($data->$field)) {
-                $optionfield = new object();
+                $optionfield = new stdClass();
                 $optionfield->cm = $data->coursemodule;
                 $optionfield->name = $field;
                 $optionfield->value = $data->$field;
@@ -1130,7 +1130,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
                                                  'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback')) {
-            $plagiarismfile = new object();
+            $plagiarismfile = new stdClass();
             $plagiarismfile->id = $submissiondata->id;
             $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ?
                                                     $tiisubmission->getOverallSimilarity() : null;
@@ -1424,7 +1424,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $peermarkassignments = $readassignment->getPeermarkAssignments();
             if ($peermarkassignments) {
                 foreach ($peermarkassignments as $peermarkassignment) {
-                    $peermark = new object();
+                    $peermark = new stdClass();
                     $peermark->tiiassignid = $peermarkassignment->getAssignmentId();
                     $peermark->parent_tii_assign_id = $readassignment->getAssignmentId();
                     $peermark->dtstart = strtotime($peermarkassignment->getStartDate());
@@ -1821,7 +1821,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                                                     'id, cm, externalid, userid');
                             if ($cm = get_coursemodule_from_id('', $currentsubmission->cm)) {
 
-                                $plagiarismfile = new object();
+                                $plagiarismfile = new stdClass();
                                 $plagiarismfile->id = $currentsubmission->id;
                                 $plagiarismfile->externalid = $tiisubmissionid;
                                 $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ?
@@ -1922,7 +1922,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function migrate_previous_course($coursedata, $turnitincid, $workflowcontext = "site") {
         global $DB, $USER;
 
-        $turnitincourse = new object();
+        $turnitincourse = new stdClass();
         $turnitincourse->courseid = $coursedata->id;
         $turnitincourse->ownerid = $USER->id;
         $turnitincourse->turnitin_cid = $turnitincid;
@@ -2211,7 +2211,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private function create_new_tii_submission($cm, $user, $identifier, $submissiontype) {
         global $DB;
 
-        $plagiarismfile = new object();
+        $plagiarismfile = new stdClass();
         $plagiarismfile->cm = $cm->id;
         $plagiarismfile->userid = $user->id;
         $plagiarismfile->identifier = $identifier;
@@ -2236,7 +2236,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private function reset_tii_submission($cm, $user, $identifier, $currentsubmission, $submissiontype) {
         global $DB;
 
-        $plagiarismfile = new object();
+        $plagiarismfile = new stdClass();
         $plagiarismfile->id = $currentsubmission->id;
         $plagiarismfile->identifier = $identifier;
         $plagiarismfile->statuscode = "pending";
@@ -2330,7 +2330,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             $errorcode, $previoussubmission) {
         global $DB;
 
-        $plagiarismfile = new object();
+        $plagiarismfile = new stdClass();
         if ($submissionid != 0) {
             $plagiarismfile->id = $submissionid;
         }
@@ -2609,7 +2609,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $newsubmission = $response->getSubmission();
             $newsubmissionid = $newsubmission->getSubmissionId();
 
-            $plagiarismfile = new object();
+            $plagiarismfile = new stdClass();
             if ($apimethod == "replaceSubmission" || $submissionid != 0) {
                 $plagiarismfile->id = $submissionid;
             }
@@ -2643,7 +2643,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Add config field to show submissions have been made which we use to lock anonymous marking setting
-            $configfield = new object();
+            $configfield = new stdClass();
             $configfield->cm = $cm->id;
             $configfield->name = 'submitted';
             $configfield->value = 1;
@@ -2681,7 +2681,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } catch (Exception $e) {
             $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
 
-            $plagiarismfile = new object();
+            $plagiarismfile = new stdClass();
             if ($submissionid != 0) {
                 $plagiarismfile->id = $submissionid;
             }

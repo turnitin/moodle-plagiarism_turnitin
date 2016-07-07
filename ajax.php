@@ -189,7 +189,7 @@ switch ($action) {
         $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
 
         // Build user object for update
-        $eula_user = new object();
+        $eula_user = new stdClass();
         $eula_user->id = $turnitin_user->id;
         $eula_user->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {

@@ -165,12 +165,14 @@ switch ($action) {
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
 
         if ($userrole == 'Instructor' || $isstudent) {
-            $role = ($istutor) ? 'Instructor' : 'Learner';
-
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
+            $user = new turnitintooltwo_user($USER->id, $userrole);
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $user->join_user_to_class($coursedata->turnitin_cid);
+
             echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_reviews',
-                                                        $role, $tiiassignment->value),
+                                                        $userrole, $tiiassignment->value),
                                                         array("class" => "launch_form", "style" => "display:none;"));
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();

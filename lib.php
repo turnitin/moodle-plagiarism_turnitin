@@ -2176,6 +2176,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             turnitintooltwo_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
                             $result = true;
                             continue;
+                        } else {
+                            try {
+                                $file->get_content();
+                            } catch (Exception $e) {
+                                turnitintooltwo_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
+                                mtrace($e);
+                                mtrace('File content not found. pathnamehash: '.$pathnamehash);
+                                $result = true;
+                                continue;
+                            }
                         }
 
                         if ($file->get_filename() === '.') {

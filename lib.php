@@ -2411,8 +2411,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $title = $file->get_filename();
                     $timemodified = $file->get_timemodified();
                     $filename = $file->get_filename();
-                    $textcontent = $file->get_content();
-                    if (empty($textcontent)) {
+
+                    try {
+                        $textcontent = $file->get_content();
+                    } catch (Exception $e) {
+                        turnitintooltwo_activitylog('File content not found on submission: '.$pathnamehash, 'PP_NO_FILE');
+                        mtrace($e);
+                        mtrace('File content not found on submission. pathnamehash: '.$pathnamehash);
                         $errorcode = 9;
                     }
                 } else {

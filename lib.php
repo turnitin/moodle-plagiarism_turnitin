@@ -2054,7 +2054,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 try {
                     // Join User to course.
-                    $user = new turnitintooltwo_user($author, 'Learner');
+                    $user = new turnitintooltwo_user($author, 'Learner', true, 'cron');
                     $user->join_user_to_class($coursedata->turnitin_cid);
                 } catch (Exception $e) {
                     $user = new turnitintooltwo_user($author, 'Learner', 'false', 'cron', 'false');

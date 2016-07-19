@@ -1373,9 +1373,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $capability = $moduleobject->get_tutor_capability();
         if (!empty($cmid)) {
-            $tutors = get_users_by_capability(context_module::instance($cmid), $capability, 'u.id', 'u.id');
+            $tutors = get_enrolled_users(context_module::instance($cmid), $capability, 0, 'u.id', 'u.id');
         } else {
-            $tutors = get_users_by_capability(context_course::instance($coursedata->id), $capability, 'u.id', 'u.id');
+            $tutors = get_enrolled_users(context_course::instance($coursedata->id), $capability, 0, 'u.id', 'u.id');
         }
 
         $ownerid = $USER->id;

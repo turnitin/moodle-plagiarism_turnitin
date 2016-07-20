@@ -24,7 +24,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
-define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 50);
+define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;

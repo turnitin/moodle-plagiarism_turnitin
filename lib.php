@@ -203,6 +203,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get Course module id and values.
             $cmid = optional_param('update', null, PARAM_INT);
 
+            // Check Turnitin is configured.
+            $config = turnitintooltwo_admin_config();
+            if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
+                return;
+            }
+
             // Check if plagiarism plugin is enabled for this module if provided.
             if (!empty($modulename)) {
                 $moduletiienabled = $this->get_config_settings($modulename);

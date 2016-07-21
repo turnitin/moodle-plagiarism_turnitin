@@ -6,6 +6,7 @@
 - Added .xls and .xlsx to accepted filetypes.
 - Increase submission processing limit in cron to 100.
 - Fixes:
+ 	- Module can still be used if Turnitin account is not configured.
 	- Check $CFG exists before using in version.php (Thanks to @micaherne).
 	- Ensure file extension is lowercase when checking accepted files.
 	- Ensure refresh submissions link works for workshop and forums.

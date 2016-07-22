@@ -1354,6 +1354,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
 
+                    // Prevent grades being passed to gradebook before identities have been revealed when blind marking is on.
+                    if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+                        $grades->rawgrade = null;
+                    }
+
                     $params['idnumber'] = $cm->idnumber;
 
                     // Update gradebook - Grade update returns 1 on failure and 0 if successful.

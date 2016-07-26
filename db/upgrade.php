@@ -76,7 +76,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             if ($turnitinsetting->value == 1) {
                 $supported_mods = array('assign', 'forum', 'workshop');
                 foreach ($supported_mods as $mod) {
-                    $configfield = new object();
+                    $configfield = new stdClass();
                     $configfield->value = 1;
                     $configfield->plugin = 'plagiarism';
                     $configfield->name = 'turnitin_use_mod_'.$mod;

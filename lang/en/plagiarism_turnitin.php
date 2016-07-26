@@ -157,6 +157,17 @@ $string['errorcode6'] = 'This file has not been submitted to Turnitin because th
 $string['errorcode7'] = 'This file has not been submitted to Turnitin because there is a problem creating the user in Turnitin which is preventing submissions, please consult your API logs for further information';
 $string['errorcode8'] = 'This file has not been submitted to Turnitin because there is a problem creating the temp file. The most likely cause is an invalid file name. Please rename the file and re-upload using Edit Submission.';
 $string['errorcode9'] = 'The file cannot be submitted as there is no accessible content in the file pool to submit.';
+$string['coursegeterror'] = 'Could not get course data';
+$string['configureerror'] = 'You must configure this module fully as Administrator before using it within a course. Please contact your Moodle administrator.';
+$string['turnitintoolofflineerror'] = 'We are experiencing a temporary problem. Please try again shortly.';
+$string['defaultinserterror'] = 'There was an error when trying to insert a default setting value into the database';
+$string['defaultupdateerror'] = 'There was an error when trying to update a default setting value in the database';
+$string['tiiassignmentgeterror'] = 'There was an error when trying to get an assignment from Turnitin';
+$string['assigngeterror'] = 'Could not get turnitintooltwo data';
+$string['classupdateerror'] = 'Could not update Turnitin Class data';
+$string['pp_createsubmissionerror'] = 'There was an error trying to create the submission in Turnitin';
+$string['pp_updatesubmissionerror'] = 'There was an error trying to resubmit your submission to Turnitin';
+$string['tiisubmissiongeterror'] = 'There was an error when trying to get a submission from Turnitin';
 
 // Javascript
 $string['closebutton'] = 'Close';

@@ -1,5 +1,5 @@
-### Date: 		TBC
-### Release:	vTBC01
+### Date: 		2016-July-26
+### Release:	v2016072601
 
 - Verified against Moodle 3.1.
 - Removed word count check before submission.
@@ -15,8 +15,15 @@
 	- Added missing and changed incorrect error language strings.
 	- All uses of object() changed to stdClass().
 	- PeerMark Reviews launcher now enrols user correctly in Turnitin class.
-	- Catch exception if can not get file content when making a submission Thanks to @kenneth-hendricks).
+	- Catch exception if can not get file content when making a submission (Thanks to @kenneth-hendricks).
 	- Ignore inherited roles when looking for instructors on Turnitin class creation.
+	- Ensure activity edit page does not break if plugin is not fully configured. (Thanks to @mhughes2k).
+	- Fixed an issue where submission notifications would be sent to instructors even with instructor digital receipt notifications turned off.
+	- Fixed a bug that led to error and stack trace upon data dump generation.
+	- Grades are no longer sent to the gradebook before anonymity is lifted when blind marking is enabled.
+	- Fixed an issue where the EULA link would be broken post-submission if the student originally declined the EULA. (Thanks to @pauln)
+	- Added missing error language strings to the language string file.
+	- Fixed an issue where a submission could be stuck in pending if the user is not found.
 
 ---
 

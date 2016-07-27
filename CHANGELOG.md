@@ -12,6 +12,7 @@
 	- Ensure refresh submissions link works for workshop and forums.
 	- Change recordset to records in data dump as recordset wasn't working for PostgreSQL.
 	- Assignment default settings are now applied when creating assignment (Thanks to @danmarsden).
+		- Admins - please ensure that plugin settings match account settings. 
 	- Added missing and changed incorrect error language strings.
 	- All uses of object() changed to stdClass().
 	- PeerMark Reviews launcher now enrols user correctly in Turnitin class.

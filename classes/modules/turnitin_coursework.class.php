@@ -58,9 +58,9 @@ class turnitin_coursework {
 
 
 
-	/*public function create_file_event($params) {
-		return \assignsubmission_file\event\assessable_uploaded::create($params);
-	}*/
+	public function create_file_event($params) {
+		return \mod_coursework\event\assessable_uploaded::create($params);
+	}
 
 
 	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {

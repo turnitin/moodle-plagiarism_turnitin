@@ -1211,16 +1211,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            if ($cm->modname == "coursework") {
-                // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
-                $updaterequired =   false;
-            }
-
-
             // Only update as necessary.
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
 
+                if ($cm->modname == "coursework") {
+                    // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
+                    return true;
+                }
                 $gradeitem = $DB->get_record('grade_items',
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
                                             'courseid' => $cm->course, 'itemnumber' => 0));

@@ -80,7 +80,7 @@ switch ($action) {
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
-        if ($userrole == 'Instructor' && $cm->modname == "assign") {
+        if ($userrole == 'Instructor') {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();
@@ -165,12 +165,14 @@ switch ($action) {
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
 
         if ($userrole == 'Instructor' || $isstudent) {
-            $role = ($istutor) ? 'Instructor' : 'Learner';
-
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
+            $user = new turnitintooltwo_user($USER->id, $userrole);
+            $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
+            $user->join_user_to_class($coursedata->turnitin_cid);
+
             echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_reviews',
-                                                        $role, $tiiassignment->value),
+                                                        $userrole, $tiiassignment->value),
                                                         array("class" => "launch_form", "style" => "display:none;"));
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();
@@ -189,7 +191,7 @@ switch ($action) {
         $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
 
         // Build user object for update
-        $eula_user = new object();
+        $eula_user = new stdClass();
         $eula_user->id = $turnitin_user->id;
         $eula_user->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {

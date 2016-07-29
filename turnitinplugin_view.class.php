@@ -153,15 +153,6 @@ class turnitinplugin_view {
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
-            if (empty($config->accountid) || empty($config->secretkey) || empty($config->apiurl)) {
-                $config_warning = html_writer::tag('div', get_string('configureerror', 'plagiarism_turnitin'),
-                                                    array('class' => 'library_not_present_warning'));
-            }
-
-            if ($config_warning != '') {
-                $mform->addElement('html', $config_warning);
-            }
-
             // Refresh Grades
             $refreshgrades = '';
             if ($cmid != 0) {
@@ -217,7 +208,7 @@ class turnitinplugin_view {
             }
         }
 
-        $locks  = $DB->get_records_sql("SELECT name,value FROM {plagiarism_turnitin_config} WHERE cm = 0");
+        $locks = $DB->get_records_sql("SELECT name,value FROM {plagiarism_turnitin_config} WHERE cm = 0");
 
         if (empty($config_warning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);

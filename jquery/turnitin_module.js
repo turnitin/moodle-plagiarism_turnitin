@@ -133,24 +133,27 @@ jQuery(document).ready(function($) {
 
     // Open an iframe light box containing the EULA View
     if ($('.pp_turnitin_eula_link').length > 0) {
-        $('.pp_turnitin_eula_link').colorbox({
-            iframe:true, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
-            onLoad: function() { getLoadingGif(); },
-            onComplete: function() {
-                $(window).on("message", function(ev) {
-                    var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;
+        $(document).on('click', '.pp_turnitin_eula_link', function(e) {
+            e.preventDefault();
+            $.colorbox({
+                iframe:true, href:this.href, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
+                onOpen: function() { getLoadingGif(); },
+                onComplete: function() {
+                    $(window).on("message", function(ev) {
+                        var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;
 
-                    $.ajax({
-                        type: "POST",
-                        url: M.cfg.wwwroot +"/plagiarism/turnitin/ajax.php",
-                        dataType: "json",
-                        data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey},
-                        success: function(data) { window.location.reload(); },
-                        error: function(data) { window.location.reload(); }
+                        $.ajax({
+                            type: "POST",
+                            url: M.cfg.wwwroot +"/plagiarism/turnitin/ajax.php",
+                            dataType: "json",
+                            data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey},
+                            success: function(data) { window.location.reload(); },
+                            error: function(data) { window.location.reload(); }
+                        });
                     });
-                });
-            },
-            onCleanup: function() { hideLoadingGif(); }
+                },
+                onCleanup: function() { hideLoadingGif(); }
+            });
         });
     }
 

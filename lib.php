@@ -150,6 +150,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * This function is called from the inbox in mod assign.
+     * This plugin doesn't use it as it would impact negatively on the page loading.
+     *
+     * @param $course - Course the module is part of
+     * @param $cm - Course module
+     * @return string
+     */
+    public function update_status($course, $cm) {
+        return '';
+    }
+
+    /**
      * Save the form data associated with the plugin
      *
      * @global type $DB
@@ -1354,11 +1366,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
 
-                    // Prevent grades being passed to gradebook before identities have been revealed when blind marking is on.
-                    if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
-                        $grades->rawgrade = null;
-                    }
-
                     $params['idnumber'] = $cm->idnumber;
 
                     // Update gradebook - Grade update returns 1 on failure and 0 if successful.
@@ -1828,8 +1835,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         try {
                             $tiisubmissionid = (int)$readsubmission->getSubmissionId();
 
-                            $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid),
-                                                                                                    'id, cm, externalid, userid');
+                            $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid), 'id, cm, externalid, userid');
                             if ($cm = get_coursemodule_from_id('', $currentsubmission->cm)) {
 
                                 $plagiarismfile = new stdClass();

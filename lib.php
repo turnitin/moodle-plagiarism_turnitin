@@ -1276,17 +1276,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // If it's a group submission we will update the grade for everyone in the group.
             // Note: This will not work if the submitting user is in multiple groups.
             $userids = array($userid);
-            if ($cm->modname == "assign") {
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                if ($moduledata->teamsubmission) {
-                    require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                    $context = context_course::instance($cm->course);
-                    $assignment = new assign($context, $cm, null);
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+            if ($cm->modname == "assign" && !empty($moduledata->teamsubmission)) {
+                require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                $context = context_course::instance($cm->course);
+                $assignment = new assign($context, $cm, null);
 
-                    if ($group = $assignment->get_submission_group($userid)) {
-                        $users = groups_get_members($group->id);
-                        $userids = array_keys($users);
-                    }
+                if ($group = $assignment->get_submission_group($userid)) {
+                    $users = groups_get_members($group->id);
+                    $userids = array_keys($users);
                 }
             }
 
@@ -1369,8 +1367,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $params['idnumber'] = $cm->idnumber;
 
                     // Update gradebook - Grade update returns 1 on failure and 0 if successful.
-                    if (grade_update('mod/'.$cm->modname, $cm->course, 'mod', $cm->modname, $cm->instance, 0, $grades, $params)) {
-                        $return = false;
+                    $gradeupdate = $cm->modname."_grade_item_update";
+                    require_once($CFG->dirroot . '/mod/' . $cm->modname . '/lib.php');
+                    if (is_callable($gradeupdate)) {
+                        $moduledata->cmidnumber = $cm->id;
+                        $return = ($gradeupdate($moduledata, $grades)) ? false : true;
                     }
                 }
             }

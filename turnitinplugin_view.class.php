@@ -203,7 +203,7 @@ class turnitinplugin_view {
             }
         }
 
-        $locks = $DB->get_records_sql("SELECT name,value FROM {plagiarism_turnitin_config} WHERE cm = 0");
+        $locks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
 
         if (empty($config_warning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);

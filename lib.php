@@ -94,23 +94,29 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get the Turnitin settings for a module
      *
-     * @param int $cm_id  the course module id, if this is 0 the default settings will be retrieved
+     * @param int $cm_id - the course module id, if this is 0 the default settings will be retrieved
+     * @param bool $uselockedvalues - use locked values in place of saved values
      * @return array of Turnitin settings for a module
      */
-    public function get_settings($cmid = null) {
+    public function get_settings($cmid = null, $uselockedvalues = true) {
         global $DB;
         $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => null),     '', 'name,value');
         $settings = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => $cmid), '', 'name,value');
 
+        // Don't overwrite settings with locked values (only relevant on inital module creation).
+        if ($uselockedvalues == false) {
+            return $settings;
+        }
+
         // Enforce site wide config locking.
         foreach ($defaults as $key => $value){
-            if (substr($key,-5) !== '_lock'){
+            if (substr($key, -5) !== '_lock'){
                 continue;
             }
             if ($value != 1){
                 continue;
             }
-            $setting = substr($key,0,-5);
+            $setting = substr($key, 0, -5);
             $settings[$setting] = $defaults[$setting];
         }
 
@@ -177,7 +183,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $settingsfields = $this->get_settings_fields();
         // Get current values.
-        $plagiarismvalues = $this->get_settings($data->coursemodule);
+        $plagiarismvalues = $this->get_settings($data->coursemodule, false);
 
         foreach ($settingsfields as $field) {
             if (isset($data->$field)) {

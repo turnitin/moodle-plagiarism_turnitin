@@ -237,7 +237,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            // Get assignment settings, use default settings on assignment creation.
             $plagiarismvalues = $this->get_settings($cmid);
+
+            /* If Turnitin is disabled and we don't have settings (we're editing an existing assignment that was created without Turnitin enabled)
+             * Then we pass NULL for the $cmid to ensure we have the default settings should they enable Turnitin.
+             */
+            if (empty($plagiarismvalues["use_turnitin"]) && count($plagiarismvalues) <= 2) {
+                $savedvalues = $plagiarismvalues;
+                $plagiarismvalues = $this->get_settings(NULL);
+
+                // Ensure we reuse the saved setting for use Turnitin.
+                if (isset($savedvalues["use_turnitin"])) {
+                    $plagiarismvalues["use_turnitin"] = $savedvalues["use_turnitin"];
+                }
+            }
+
             $plagiarismelements = $this->get_settings_fields();
 
             $turnitinpluginview = new turnitinplugin_view();

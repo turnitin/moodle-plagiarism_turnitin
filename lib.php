@@ -247,12 +247,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $savedvalues = $plagiarismvalues;
                 $plagiarismvalues = $this->get_settings(NULL);
 
-                // Ensure we reuse the two saved settings that did exist.
+                // Ensure we reuse the saved setting for use Turnitin.
                 if (isset($savedvalues["use_turnitin"])) {
                     $plagiarismvalues["use_turnitin"] = $savedvalues["use_turnitin"];
-                }
-                if (isset($savedvalues["plagiarism_transmatch"])) {
-                    $plagiarismvalues["plagiarism_transmatch"] = $savedvalues["plagiarism_transmatch"];
                 }
             }
 

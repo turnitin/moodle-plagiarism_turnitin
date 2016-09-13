@@ -1,10 +1,11 @@
-### Date:		2016-xxx-xx
-### Release:	v2016xxxx01
+### Date:		2016-September-14
+### Release:	v2016091401
 
 - Support added for ULCC's coursework module.
 - Blank update_status function added for consistency.
 - Fixes:
 	- Locked default settings are now observed.
+	- Default settings are now used when enabling Turnitin on an assignment which didn't previously have it enabled.
 	- Use each module's specific grade item update instead of calling grade_update directly.
 
 ---

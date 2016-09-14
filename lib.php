@@ -60,6 +60,8 @@ require_once(__DIR__.'/classes/digitalreceipt/pp_receipt_message.php');
 require_once(__DIR__.'/classes/modules/turnitin_assign.class.php');
 require_once(__DIR__.'/classes/modules/turnitin_forum.class.php');
 require_once(__DIR__.'/classes/modules/turnitin_workshop.class.php');
+require_once(__DIR__.'/classes/modules/turnitin_coursework.class.php');
+
 
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
@@ -94,23 +96,29 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get the Turnitin settings for a module
      *
-     * @param int $cm_id  the course module id, if this is 0 the default settings will be retrieved
+     * @param int $cm_id - the course module id, if this is 0 the default settings will be retrieved
+     * @param bool $uselockedvalues - use locked values in place of saved values
      * @return array of Turnitin settings for a module
      */
-    public function get_settings($cmid = null) {
+    public function get_settings($cmid = null, $uselockedvalues = true) {
         global $DB;
         $defaults = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => null),     '', 'name,value');
         $settings = $DB->get_records_menu('plagiarism_turnitin_config', array('cm' => $cmid), '', 'name,value');
 
+        // Don't overwrite settings with locked values (only relevant on inital module creation).
+        if ($uselockedvalues == false) {
+            return $settings;
+        }
+
         // Enforce site wide config locking.
         foreach ($defaults as $key => $value){
-            if (substr($key,-5) !== '_lock'){
+            if (substr($key, -5) !== '_lock'){
                 continue;
             }
             if ($value != 1){
                 continue;
             }
-            $setting = substr($key,0,-5);
+            $setting = substr($key, 0, -5);
             $settings[$setting] = $defaults[$setting];
         }
 
@@ -150,6 +158,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * This function is called from the inbox in mod assign.
+     * This plugin doesn't use it as it would impact negatively on the page loading.
+     *
+     * @param $course - Course the module is part of
+     * @param $cm - Course module
+     * @return string
+     */
+    public function update_status($course, $cm) {
+        return '';
+    }
+
+    /**
      * Save the form data associated with the plugin
      *
      * @global type $DB
@@ -165,7 +185,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $settingsfields = $this->get_settings_fields();
         // Get current values.
-        $plagiarismvalues = $this->get_settings($data->coursemodule);
+        $plagiarismvalues = $this->get_settings($data->coursemodule, false);
 
         foreach ($settingsfields as $field) {
             if (isset($data->$field)) {
@@ -217,7 +237,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
+            // Get assignment settings, use default settings on assignment creation.
             $plagiarismvalues = $this->get_settings($cmid);
+
+            /* If Turnitin is disabled and we don't have settings (we're editing an existing assignment that was created without Turnitin enabled)
+             * Then we pass NULL for the $cmid to ensure we have the default settings should they enable Turnitin.
+             */
+            if (empty($plagiarismvalues["use_turnitin"]) && count($plagiarismvalues) <= 2) {
+                $savedvalues = $plagiarismvalues;
+                $plagiarismvalues = $this->get_settings(NULL);
+
+                // Ensure we reuse the saved setting for use Turnitin.
+                if (isset($savedvalues["use_turnitin"])) {
+                    $plagiarismvalues["use_turnitin"] = $savedvalues["use_turnitin"];
+                }
+            }
+
             $plagiarismelements = $this->get_settings_fields();
 
             $turnitinpluginview = new turnitinplugin_view();
@@ -695,6 +730,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 }
             }
+
+
+            // Group originality score for Coursework module
+            // Check whether submission is a group submission
+            // If it's a group submission then other users in the group should be able to see the originality score
+            // They can not open the DV though.
+            if ($cm->modname == "coursework") {
+                if ($moduledata->use_groups) {
+
+                    $coursework = new \mod_coursework\models\coursework($moduledata->id);
+
+                    $user = $DB->get_record('user', array('id' => $linkarray["userid"]));
+                    $user = mod_coursework\models\user::find($user);
+                    if ($group = $coursework->get_student_group($user)) {
+                        $users = groups_get_members($group->id);
+                        $submissionusers = array_keys($users);
+                    }
+                }
+            }
+
+
+
 
             // Proceed to displaying links for submissions.
             if ($istutor || in_array($USER->id, $submissionusers)) {
@@ -1198,6 +1255,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
 
+                if ($cm->modname == "coursework") {
+                    // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
+                    return true;
+                }
                 $gradeitem = $DB->get_record('grade_items',
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
                                             'courseid' => $cm->course, 'itemnumber' => 0));
@@ -1264,17 +1325,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // If it's a group submission we will update the grade for everyone in the group.
             // Note: This will not work if the submitting user is in multiple groups.
             $userids = array($userid);
-            if ($cm->modname == "assign") {
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                if ($moduledata->teamsubmission) {
-                    require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                    $context = context_course::instance($cm->course);
-                    $assignment = new assign($context, $cm, null);
+            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+            if ($cm->modname == "assign" && !empty($moduledata->teamsubmission)) {
+                require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                $context = context_course::instance($cm->course);
+                $assignment = new assign($context, $cm, null);
 
-                    if ($group = $assignment->get_submission_group($userid)) {
-                        $users = groups_get_members($group->id);
-                        $userids = array_keys($users);
-                    }
+                if ($group = $assignment->get_submission_group($userid)) {
+                    $users = groups_get_members($group->id);
+                    $userids = array_keys($users);
                 }
             }
 
@@ -1354,16 +1413,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
 
-                    // Prevent grades being passed to gradebook before identities have been revealed when blind marking is on.
-                    if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
-                        $grades->rawgrade = null;
-                    }
-
                     $params['idnumber'] = $cm->idnumber;
 
                     // Update gradebook - Grade update returns 1 on failure and 0 if successful.
-                    if (grade_update('mod/'.$cm->modname, $cm->course, 'mod', $cm->modname, $cm->instance, 0, $grades, $params)) {
-                        $return = false;
+                    $gradeupdate = $cm->modname."_grade_item_update";
+                    require_once($CFG->dirroot . '/mod/' . $cm->modname . '/lib.php');
+                    if (is_callable($gradeupdate)) {
+                        $moduledata->cmidnumber = $cm->id;
+                        $return = ($gradeupdate($moduledata, $grades)) ? false : true;
                     }
                 }
             }
@@ -1586,6 +1643,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If blind marking is being used and identities have not been revealed then push out post date.
         if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+            $dtpost = strtotime('+6 months');
+        }
+
+        // If blind marking is being used for coursework then push out post date.
+        if ($cm->modname == 'coursework' && !empty($moduledata->blindmarking)) {
             $dtpost = strtotime('+6 months');
         }
 
@@ -1828,8 +1890,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         try {
                             $tiisubmissionid = (int)$readsubmission->getSubmissionId();
 
-                            $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid),
-                                                                                                    'id, cm, externalid, userid');
+                            $currentsubmission = $DB->get_record('plagiarism_turnitin_files', array('externalid' => $tiisubmissionid), 'id, cm, externalid, userid');
                             if ($cm = get_coursemodule_from_id('', $currentsubmission->cm)) {
 
                                 $plagiarismfile = new stdClass();

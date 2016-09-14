@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-$plugin->version =  2016072601;
+$plugin->version =  2016091401;
 $plugin->release = "2.6+";
 $plugin->requires =  2013111800;
 $plugin->component = 'plagiarism_turnitin';
@@ -18,6 +18,6 @@ if (!empty($CFG->version)) {
 }
 
 $plugin->dependencies = array(
-	'mod_turnitintooltwo' => 2016011104,
+	'mod_turnitintooltwo' => 2016091401,
     'mod_assign' => 2013110500
 );

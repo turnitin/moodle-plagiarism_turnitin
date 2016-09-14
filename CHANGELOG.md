@@ -1,3 +1,15 @@
+### Date:		2016-September-14
+### Release:	v2016091401
+
+- Support added for ULCC's coursework module (Thanks to @aferenz).
+- Blank update_status function added for consistency.
+- Fixes:
+	- Locked default settings are now observed.
+	- Default settings are now used when enabling Turnitin on an assignment which didn't previously have it enabled.
+	- Use each module's specific grade item update instead of calling grade_update directly.
+
+---
+
 ### Date: 		2016-July-26
 ### Release:	v2016072601
 
@@ -12,7 +24,7 @@
 	- Ensure refresh submissions link works for workshop and forums.
 	- Change recordset to records in data dump as recordset wasn't working for PostgreSQL.
 	- Assignment default settings are now applied when creating assignment (Thanks to @danmarsden).
-		- Admins - please ensure that plugin settings match account settings. 
+		- Admins - please ensure that plugin settings match account settings.
 	- Added missing and changed incorrect error language strings.
 	- All uses of object() changed to stdClass().
 	- PeerMark Reviews launcher now enrols user correctly in Turnitin class.
@@ -409,8 +421,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-September-04
-###Release:    v2014012407
+### Date:       2014-September-04
+### Release:    v2014012407
 
 - Remove Grademark settings if GradeMark is disabled. (Thanks to Alex Rowe)
 - Date handling reconfigured in PP to prevent erros (Thanks to Dan Marsden)
@@ -424,8 +436,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-August-19
-###Release:    v2014012406
+### Date:       2014-August-19
+### Release:    v2014012406
 
 - Error reporting added for files that are too large, small submissions and any other submission errors.
 - Error reporting added to cron.
@@ -445,8 +457,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-June-11
-###Release:    v2014012405
+### Date:       2014-June-11
+### Release:    v2014012405
 
 - Course reset functionality added to remove Turnitin data when a class/module is reset.
 - Ability added to enable/disable Turnitin in individual modules.
@@ -493,15 +505,15 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-June-11
-###Release:    v2014012404
+### Date:       2014-June-11
+### Release:    v2014012404
 
 - EULA acceptance is now stored locally for submissions.
 
 ---
 
-###Date:       2014-April-17
-###Release:    v2014012403
+### Date:       2014-April-17
+### Release:    v2014012403
 
 - Grademark link removed for student if a grade has not been set in Plagiarism Plugin.
 - Feedback release date changed on forum with plagiarism plugin to be the same as start date.
@@ -518,8 +530,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-February-26
-###Release:    v2014012402
+### Date:       2014-February-26
+### Release:    v2014012402
 
 - Vietnamese Language pack added.
 - Option to send draft submissions to Turnitin in Plagiarism Plugin reinstated.
@@ -542,8 +554,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date:       2014-January-24
-###Release:    v2014012401
+### Date:       2014-January-24
+### Release:    v2014012401
 
 - File type limit removed.
 - Ability to accept no file added so that marks / grades can be allocated to non file submissions.
@@ -553,8 +565,8 @@ Releases prior to version 2015040106 will refer to changes made to the Turnitin'
 
 ---
 
-###Date: 		2013-December-18
-###Release:	v2013121801
+### Date: 		2013-December-18
+### Release:	v2013121801
 
 - Supports Turnitin Originality Checking, GradeMark and PeerMark
 - Allows access to the Rubric Manager and Quickmark Manager from within the Moodle environment

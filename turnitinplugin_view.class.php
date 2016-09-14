@@ -57,7 +57,7 @@ class turnitinplugin_view {
      * @return output
      */
     public function show_config_form($pluginconfig) {
-        global $CFG, $OUTPUT;
+        global $CFG, $DB, $OUTPUT;
 
         // Populate elements array which will generate the form elements
         // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).
@@ -69,6 +69,11 @@ class turnitinplugin_view {
 
         // Enable Turnitin for specific modules
         $supported_mods = array('assign', 'forum', 'workshop');
+		
+        if ($DB->record_exists('modules',array('name'=>'coursework','visible'=>1))) {
+            $supported_mods[]   =   'coursework';
+        }
+
         foreach ($supported_mods as $mod) {
             $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
                                 '', '', '', array('turnitin_use', '==', 1));
@@ -203,7 +208,7 @@ class turnitinplugin_view {
             }
         }
 
-        $locks = $DB->get_records_sql("SELECT name,value FROM {plagiarism_turnitin_config} WHERE cm = 0");
+        $locks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
 
         if (empty($config_warning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);

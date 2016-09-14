@@ -1,7 +1,7 @@
 ### Date:		2016-September-14
 ### Release:	v2016091401
 
-- Support added for ULCC's coursework module.
+- Support added for ULCC's coursework module (Thanks to @aferenz.
 - Blank update_status function added for consistency.
 - Fixes:
 	- Locked default settings are now observed.

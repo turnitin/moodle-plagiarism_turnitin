@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-require_once( 'soap.class.php' );
-require_once( 'tiiclass.class.php' );
-require_once( 'response.class.php' );
-require_once( 'sdkexception.class.php' );
+require_once( __DIR__.'soap.class.php' );
+require_once( __DIR__.'tiiclass.class.php' );
+require_once( __DIR__.'response.class.php' );
+require_once( __DIR__.'sdkexception.class.php' );
 
 /**
  * @ignore

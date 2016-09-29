@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-require_once( 'sdkexception.class.php' );
-require_once( 'tiilti.class.php' );
-require_once( 'response.class.php' );
+require_once( __DIR__.'sdkexception.class.php' );
+require_once( __DIR__.'tiilti.class.php' );
+require_once( __DIR__.'response.class.php' );
 
 /**
  * @ignore

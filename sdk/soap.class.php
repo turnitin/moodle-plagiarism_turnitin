@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 
-require_once( 'oauthsimple.class.php' );
-require_once( 'log.class.php' );
+require_once( __DIR__.'oauthsimple.class.php' );
+require_once( __DIR__.'log.class.php' );
 
 /**
  * @ignore

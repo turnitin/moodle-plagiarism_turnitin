@@ -269,7 +269,7 @@ jQuery(document).ready(function($) {
             },
             onClosed:function() {
                 var idStr = $(this).attr("id").split("_");
-                refreshPeermarkAssignments(idStr[2], 1);
+                refreshPPPeermarkAssignments(idStr[2], 1);
             }
         });
     }

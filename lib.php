@@ -1724,7 +1724,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $moduleconfigvalue->value = $turnitinassignid;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
 
-                $return = array('success' => true, 'tiiassignmentid' => $assignment->getAssignmentId());
+                $return = array('success' => true, 'tiiassignmentid' => $turnitinassignid);
             }
 
             return $return;

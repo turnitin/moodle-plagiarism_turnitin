@@ -294,9 +294,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param type $eventdata
      * @return boolean
      */
-    public static function course_reset(\core\event\course_reset_ended $event) {
+    public static function course_reset($eventdata) {
         global $DB;
-        $eventdata = $event->get_data();
         $courseid = (int)$eventdata['courseid'];
         $resetcourse = true;
 
@@ -2047,14 +2046,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $result = true;
         // Remove the event if the course module no longer exists.
-        if (!$cm = get_coursemodule_from_id($eventdata->modulename, $eventdata->cmid)) {
+        if (!$cm = get_coursemodule_from_id($eventdata['other']['modulename'], $eventdata['contextinstanceid'])) {
             return true;
         }
 
         // Initialise module settings.
-        $plagiarismsettings = $this->get_settings($eventdata->cmid);
-        $moduletiienabled = $this->get_config_settings('mod_'.$eventdata->modulename);
-        if ($eventdata->modulename == 'assign') {
+        $plagiarismsettings = $this->get_settings($eventdata['contextinstanceid']);
+        $moduletiienabled = $this->get_config_settings('mod_'.$eventdata['other']['modulename']);
+        if ($eventdata['other']['modulename'] == 'assign') {
             $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ?
                                                                 $plagiarismsettings["plagiarism_draft_submit"] : 0;
         }
@@ -2077,7 +2076,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return false;
         }
 
-        switch ($eventdata->event_type) {
+        switch ($eventdata['eventtype']) {
             case "mod_created":
             case "mod_updated":
                 $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
@@ -2087,7 +2086,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             case "file_uploaded":
             case "assessable_submitted":
             case "content_uploaded":
-            case "files_done":
                 // Initialise counter, limit submission events processing to
                 // PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT per cron run.
                 static $i;
@@ -2107,27 +2105,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // If draft submissions are turned on then only send to Turnitin if the draft submit setting is set.
                 if ($moduledata->submissiondrafts && $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
-                    ($eventdata->event_type == 'file_uploaded' || $eventdata->event_type == 'content_uploaded')) {
+                    ($eventdata['eventtype'] == 'file_uploaded' || $eventdata['eventtype'] == 'content_uploaded')) {
                     return true;
                 }
 
-                // Get correct user. In assignments from Moodle 2.7, instructors could submit on behalf of students
-                // but the eventdata->userid is still the user who made the submission.
-                $submitter = $eventdata->userid;
-
-                // Create module object.
-                $moduleclass = "turnitin_".$cm->modname;
-                $moduleobject = new $moduleclass;
-
-                $author = $moduleobject->get_author($eventdata->itemid);
-                $author = (!empty($author)) ? $author : $eventdata->userid;
-
-                $errorcode = "";
+                // Set the author and submitter
+                $submitter = $eventdata['userid'];
+                $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
 
                 try {
                     // Join User to course.
                     $user = new turnitintooltwo_user($author, 'Learner', true, 'cron');
                     $user->join_user_to_class($coursedata->turnitin_cid);
+
+                    $errorcode = "";
                 } catch (Exception $e) {
                     $user = new turnitintooltwo_user($author, 'Learner', 'false', 'cron', 'false');
 
@@ -2137,34 +2128,31 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
 
                 // Cron errorcode needs to be passed to submission function.
+                $cronerror = "";
                 if (!empty($syncassignment['errorcode'])) {
                     $cronerror = $syncassignment['errorcode'];
                 } elseif (!empty($errorcode)) {
                     $cronerror = $errorcode;
-                } else {
-                    $cronerror = "";
                 }
 
                 // Get actual text content and files to be submitted for draft submissions
                 // as this won't be present in eventdata for certain event types.
-                if ($eventdata->modulename == 'assign' &&
-                    ($eventdata->event_type == "files_done" || $eventdata->event_type == "assessable_submitted")) {
-
+                if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
                     // Get content.
                     $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                                'userid' => $author, 'id' => $eventdata->itemid), 'id');
+                                                'userid' => $author, 'id' => $eventdata['objectid']), 'id');
                     if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                                 array('submission' => $moodlesubmission->id), 'onlinetext')) {
-                        $eventdata->content = $moodletextsubmission->onlinetext;
+                        $eventdata['other']['content'] = $moodletextsubmission->onlinetext;
                     }
 
                     // Get Files.
-                    $eventdata->pathnamehashes = array();
+                    $eventdata['other']['pathnamehashes'] = array();
                     $filesconditions = array('component' => 'assignsubmission_file',
                                             'itemid' => $moodlesubmission->id, 'userid' => $author);
                     if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
                         foreach ($moodlefiles as $moodlefile) {
-                            $eventdata->pathnamehashes[] = $moodlefile->pathnamehash;
+                            $eventdata['other']['pathnamehashes'][] = $moodlefile->pathnamehash;
                         }
                     }
                 }
@@ -2172,16 +2160,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Attempt to submit text content to Turnitin.
                 // If there was an error when creating the assignment then still attempt to process the submission so it can
                 // be saved as failed and therefore doesn't cause the cron to get stuck.
-                if (($eventdata->event_type == "content_uploaded" || $eventdata->event_type == "files_done" ||
-                        $eventdata->event_type == "assessable_submitted")
-                        && !empty($eventdata->content)) {
+                if (in_array($eventdata['eventtype'], array("content_uploaded", "assessable_submitted"))
+                        && !empty($eventdata['other']['content'])) {
 
                     // Get extra data for text content submissions and remove unneeded events.
-                    switch ($eventdata->modulename) {
+                    switch ($eventdata['other']['modulename']) {
                         case "assign":
                             if ($contentsubmission = $DB->get_record('assign_submission', array('userid' => $user->id,
                                                                         'assignment' => $moduledata->id,
-                                                                        'id' => $eventdata->itemid))) {
+                                                                        'id' => $eventdata['objectid']))) {
                                 $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                 $submissiontype = 'text_content';
                             } else {
@@ -2192,9 +2179,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             break;
 
                         case "forum":
-                            if ($contentsubmission = $DB->get_record('forum_posts', array('id' => $eventdata->itemid))) {
+                            if ($contentsubmission = $DB->get_record('forum_posts', array('id' => $eventdata['objectid']))) {
                                 $tempfilename = 'forumpost_'.$user->id."_".$cm->id."_".
-                                                    $moduledata->id."_".$eventdata->itemid.'.txt';
+                                                    $moduledata->id."_".$eventdata['objectid'].'.txt';
                                 $submissiontype = 'forum_post';
                             } else {
                                 // Content has been deleted but event not removed.
@@ -2204,10 +2191,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         case 'workshop':
                             if ($moodlesubmission = $DB->get_record('workshop_submissions',
-                                            array('id' => $eventdata->itemid))) {
+                                            array('id' => $eventdata['objectid']))) {
                                 $tempfilename = 'onlinetext_'.$user->id."_".$cm->id."_".$moduledata->id.'.txt';
                                 $submissiontype = 'text_content';
-                                $eventdata->content = $moodlesubmission->content;
+                                $eventdata['other']['content'] = $moodlesubmission->content;
                             } else {
                                 // Content has been deleted but event not removed.
                                 return true;
@@ -2215,7 +2202,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             break;
                     }
 
-                    $identifier = sha1($eventdata->content);
+                    $identifier = sha1($eventdata['other']['content']);
 
                     // Get previous text content details if it has been submitted previously.
                     $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', array('userid' => $user->id, 'cm' => $cm->id,
@@ -2225,22 +2212,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Only submit if this content hasn't been submitted successfuly before.
                         if ($plagiarismfile->statuscode != "success") {
                             $result = $this->tii_submission($cm, $syncassignment['tiiassignmentid'], $user, $submitter,
-                                                                $identifier, $submissiontype, $eventdata->itemid,
-                                                                $tempfilename, $eventdata->content, $cronerror);
+                                                                $identifier, $submissiontype, $eventdata['objectid'],
+                                                                $tempfilename, $eventdata['other']['content'], $cronerror);
                         } else {
                             return true;
                         }
                     } else {
                         $result = $this->tii_submission($cm, $syncassignment['tiiassignmentid'], $user, $submitter,
-                                                            $identifier, $submissiontype, $eventdata->itemid,
-                                                            $tempfilename, $eventdata->content, $cronerror);
+                                                            $identifier, $submissiontype, $eventdata['objectid'],
+                                                            $tempfilename, $eventdata['other']['content'], $cronerror);
                     }
                 }
 
                 // Attempt to submit files to Turnitin.
                 $result = $result && true;
-                if (!empty($eventdata->pathnamehashes)) {
-                    foreach ($eventdata->pathnamehashes as $pathnamehash) {
+                if (!empty($eventdata['other']['pathnamehashes'])) {
+                    foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
                         $fs = get_file_storage();
                         $file = $fs->get_file_by_hash($pathnamehash);
 
@@ -2266,7 +2253,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         if ($this->check_if_submitting($cm, $author, $pathnamehash, 'file')) {
                             $result = $result && $this->tii_submission($cm, $syncassignment['tiiassignmentid'], $user, $submitter,
-                                                                        $pathnamehash, 'file', $eventdata->itemid, '', '', $cronerror);
+                                                                        $pathnamehash, 'file', $eventdata['objectid'], '', '', $cronerror);
                         } else {
                             $result = $result && true;
                         }
@@ -2830,100 +2817,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             mtrace('-------------------------');
         }
     }
-}
-
-/**
- * Submit file to Turnitin
- *
- * @param type $eventdata
- * @return type
- */
-function plagiarism_turnitin_event_file_uploaded($eventdata) {
-    $eventdata->event_type = 'file_uploaded';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
-}
-
-/**
- * Submit assesable content to Turnitin after student confirms their submission.
- *
- * This event is not fired by 2.3, as a workaround we submit everything to Turnitin.
- * In 2.4+ we don't submit the drafts, until submission is confirmed.
- *
- *
- * @param type $eventdata
- * @return boolean
- */
-function plagiarism_turnitin_event_assessable_submitted($eventdata) {
-    $eventdata->event_type = 'assessable_submitted';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
-}
-
-/**
- * Submit all files to Turnitin after student confirms their submission.
- *
- * This event is not fired by 2.3, as a workaround we submit everything to Turnitin.
- * In 2.4+ we don't submit the drafts, until submission is confirmed.
- *
- * @param type $eventdata
- * @return boolean
- */
-function plagiarism_turnitin_event_files_done($eventdata) {
-    $eventdata->event_type = 'files_done';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
-}
-
-/**
- * Create the module within Turnitin
- *
- * @param type $eventdata
- * @return boolean
- */
-function plagiarism_turnitin_event_mod_created($eventdata) {
-    $eventdata->event_type = 'mod_created';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
-}
-
-/**
- * Update the module within Turnitin
- *
- * @param type $eventdata
- * @return boolean
- */
-function plagiarism_turnitin_event_mod_updated($eventdata) {
-    $eventdata->event_type = 'mod_updated';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
-}
-
-/**
- * Remove submission data and config settings for module.
- *
- * @param type $eventdata
- * @return boolean true
- */
-function plagiarism_turnitin_event_mod_deleted($eventdata) {
-    global $DB;
-
-    $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata->cmid));
-    $DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata->cmid));
-
-    return true;
-}
-
-/**
- * Upload content to Turnitin
- *
- * @param type $eventdata
- * @return type
- */
-function plagiarism_turnitin_event_content_uploaded($eventdata) {
-    $eventdata->event_type = 'content_uploaded';
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->event_handler($eventdata);
 }
 
 /**

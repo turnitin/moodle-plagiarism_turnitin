@@ -211,6 +211,22 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016011105, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2016091402) {
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field1 = new xmldb_field('externalstatus');
+        $field2 = new xmldb_field('apimd5');
+        $field3 = new xmldb_field('legacyteacher');
+        if ($dbman->field_exists($table, $field1)) {
+            $dbman->drop_field($table, $field1);
+        }
+        if ($dbman->field_exists($table, $field2)) {
+            $dbman->drop_field($table, $field2);
+        }
+        if ($dbman->field_exists($table, $field3)) {
+            $dbman->drop_field($table, $field3);
+        }
+    }
+
     return $result;
 }
 

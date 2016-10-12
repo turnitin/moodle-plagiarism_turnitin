@@ -225,6 +225,10 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if ($dbman->field_exists($table, $field3)) {
             $dbman->drop_field($table, $field3);
         }
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'externalid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
     }
 
     return $result;

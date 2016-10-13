@@ -181,5 +181,6 @@ $string['pending'] = 'Pending';
 $string['because'] = 'This was because an administrator deleted the pending assignment from the processing queue and aborted the submission to Turnitin.<br /><strong>The file still exists in Moodle, please contact your instructor.</strong><br />Please see below for any error codes:';
 
 $string['errorcode10'] = 'This file has not been submitted to Turnitin because there is a problem creating the class in Turnitin which is preventing submissions, please consult your API logs for further information';
+$string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';

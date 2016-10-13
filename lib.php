@@ -716,41 +716,34 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            // Check whether submission is a group submission - only applicable to assignment module.
+            // Check whether submission is a group submission - only applicable to assignment and coursework module.
             // If it's a group submission then other users in the group should be able to see the originality score
             // They can not open the DV though.
             $submissionusers = array($linkarray["userid"]);
-            if ($cm->modname == "assign") {
-                if ($moduledata->teamsubmission) {
-                    $assignment = new assign($context, $cm, null);
-                    if ($group = $assignment->get_submission_group($linkarray["userid"])) {
-                        $users = groups_get_members($group->id);
-                        $submissionusers = array_keys($users);
+            switch ($cm->modname) {
+                case "assign":
+                    if ($moduledata->teamsubmission) {
+                        $assignment = new assign($context, $cm, null);
+                        if ($group = $assignment->get_submission_group($linkarray["userid"])) {
+                            $users = groups_get_members($group->id);
+                            $submissionusers = array_keys($users);
+                        }
                     }
-                }
-            }
+                    break;
 
+                case "coursework":
+                    if ($moduledata->use_groups) {
+                        $coursework = new \mod_coursework\models\coursework($moduledata->id);
 
-            // Group originality score for Coursework module
-            // Check whether submission is a group submission
-            // If it's a group submission then other users in the group should be able to see the originality score
-            // They can not open the DV though.
-            if ($cm->modname == "coursework") {
-                if ($moduledata->use_groups) {
-
-                    $coursework = new \mod_coursework\models\coursework($moduledata->id);
-
-                    $user = $DB->get_record('user', array('id' => $linkarray["userid"]));
-                    $user = mod_coursework\models\user::find($user);
-                    if ($group = $coursework->get_student_group($user)) {
-                        $users = groups_get_members($group->id);
-                        $submissionusers = array_keys($users);
+                        $user = $DB->get_record('user', array('id' => $linkarray["userid"]));
+                        $user = mod_coursework\models\user::find($user);
+                        if ($group = $coursework->get_student_group($user)) {
+                            $users = groups_get_members($group->id);
+                            $submissionusers = array_keys($users);
+                        }
                     }
-                }
+
             }
-
-
-
 
             // Proceed to displaying links for submissions.
             if ($istutor || in_array($USER->id, $submissionusers)) {
@@ -1030,7 +1023,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             array('class' => 'hidden', 'id' => 'forumdata_'.$plagiarismfile->id));
                             }
                         }
-                    } else if ($plagiarismfile->statuscode == 'deleted'){
+                    } else if ($plagiarismfile->statuscode == 'deleted') {
                         $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
@@ -1051,8 +1044,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                     array('class' => 'turnitin_status'));
                     }
 
-                }
-                else {
+                } else if ($plagiarismfile->statuscode == 'queued'){
+                    $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('queued', 'plagiarism_turnitin');
+                    $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
+                                                    array('class' => 'turnitin_status'));
+                } else {
                     // Add Error if the user has not accepted EULA for submissions made before instant submission was removed.
                     $eulaerror = "";
                     if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {
@@ -1076,10 +1072,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Show Turnitin Pending status or EULA error.
                     if (!empty($eulaerror)) {
                         $output .= $eulaerror;
-                    } else {
-                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('pending', 'plagiarism_turnitin');
-                        $output .= html_writer::tag('div', $OUTPUT->pix_icon('tiiIcon', $statusstr, 'plagiarism_turnitin', array('class' => 'icon_size')).$statusstr,
-                                                    array('class' => 'turnitin_status'));
                     }
                 }
 

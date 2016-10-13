@@ -2168,291 +2168,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Send queued files to Turnitin.
-     */
-    public function send_files_to_turnitin() {
-        global $DB;
-        $config = turnitintooltwo_admin_config();
-
-        $queueditems = $DB->get_records('plagiarism_turnitin_files', array('statuscode' => 'queued'),
-                            '', '*', $limitfrom = 0, $limitnum = PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);
-
-        // Submit each file individually to Turnitin.
-        foreach ($queueditems as $queueditem) {
-
-            // Get various settings that we need.
-            $errorcode = 0;
-            $cm = get_coursemodule_from_id('', $queueditem->cm);
-            $settings = $this->get_settings($cm->id);
-            $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-
-            // Get course data.
-            $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
-            if (empty($coursedata->turnitin_cid)) {
-                // Save failed submission if class can not be created.
-                $savesubmission = new stdClass();
-                $savesubmission->id = $queueditem->id;
-                $savesubmission->statuscode = 'error';
-                $savesubmission->attempt = $queueditem->attempt + 1;
-                $savesubmission->errorcode = 10;
-
-                $DB->update_record('plagiarism_turnitin_files', $savesubmission);
-                break;
-            }
-
-            // Join User to course.
-            try {
-                $user = new turnitintooltwo_user($queueditem->userid, 'Learner', true, 'cron');
-                $user->edit_tii_user();
-                $user->join_user_to_class($coursedata->turnitin_cid);
-            } catch (Exception $e) {
-                $user = new turnitintooltwo_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
-                $errorcode = 7;
-            }
-
-            $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
-
-            // Any errorcode from assignment sync needs to be saved.
-            if (!empty($syncassignment['errorcode'])) {
-                $errorcode = $syncassignment['errorcode'];
-            }
-
-            // Don't submit if a user has not accepted the eula.
-            if ($queueditem->userid == $queueditem->submitter
-                && $user->user_agreement_accepted != 1) {
-                $errorcode = 3;
-            }
-
-            if (!empty($errorcode)) {
-                // Save failed submission if user can not be joined to class or there was an error with the assignment.
-                $savesubmission = new stdClass();
-                $savesubmission->id = $queueditem->id;
-                $savesubmission->statuscode = 'error';
-                $savesubmission->attempt = $queueditem->attempt + 1;
-                $savesubmission->errorcode = $errorcode;
-
-                $DB->update_record('plagiarism_turnitin_files', $savesubmission);
-                break;
-            }
-
-            // Clean up old Turnitin submission files.
-            if ($queueditem->itemid != 0 && $queueditem->submissiontype == 'file' && $cm->modname != 'forum') {
-                $this->clean_old_turnitin_submissions($cm, $user->id, $queueditem->itemid, $queueditem->submissiontype,
-                                                        $queueditem->identifier);
-            }
-
-            // Get more Submission Details as required.
-            switch ($queueditem->submissiontype) {
-                case 'file':
-                case 'text_content':
-
-                    // Get file data or prepare text submission.
-                    if ($submissiontype == 'file') {
-                        $fs = get_file_storage();
-                        $file = $fs->get_file_by_hash($queueditem->identifier);
-
-                        $title = $file->get_filename();
-                        $filename = $file->get_filename();
-
-                        try {
-                            $textcontent = $file->get_content();
-                        } catch (Exception $e) {
-                            turnitintooltwo_activitylog('File content not found on submission: '.$pathnamehash, 'PP_NO_FILE');
-                            mtrace($e);
-                            mtrace('File content not found on submission. pathnamehash: '.$pathnamehash);
-                            $errorcode = 9;
-                        }
-                    } else {
-                        // Get the actual text content for a submission.
-                        switch ($cm->modname) {
-                            case 'assign':
-                                $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                                'userid' => $queueditem->author, 'id' => $queueditem->itemid), 'id');
-                                $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                                array('submission' => $moodlesubmission->id), 'onlinetext');
-                                $textcontent = $moodletextsubmission->onlinetext;
-                                break;
-
-                            case 'workshop':
-                                $moodlesubmission = $DB->get_record('workshop_submissions',
-                                                            array('id' => $queueditem->itemid), 'content');
-                                $textcontent = $moodlesubmission->content;
-                                break;
-                        }
-
-                        $title = 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
-                        $filename = $title;
-                        $textcontent = strip_tags($textcontent);
-                    }
-
-                    // Use Replace submission method if resubmissions are allowed or create if we have no Turnitin Id.
-                    if (is_null($queueditem->externalid)) {
-                        $apimethod = "createSubmission";
-                    } else {
-                        $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
-                        // Delete old text content submissions from Turnitin if not replacing.
-                        if ($settings["plagiarism_report_gen"] == 0 && $submissiontype == 'text_content') {
-                            $this->delete_tii_submission($cm, $queueditem->externalid, $queueditem->author);
-                        }
-                    }
-
-                    // Remove any old text submissions from Moodle DB if there are any as there is only one per submission.
-                    if ($itemid != 0 && $submissiontype == "text_content") {
-                        $this->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
-                    }
-
-                    break;
-
-                case 'forum_post':
-                    if (is_null($queueditem->externalid)) {
-                        $apimethod = "createSubmission";
-                    } else {
-                        $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
-                    }
-
-                    $forum_post = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $queueditem->itemid));
-                    $textcontent = strip_tags($forum_post->message);
-
-                    $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
-                    $filename = $title;
-                    break;
-            }
-
-            // Read the stored file/content into a temp file for submitting.
-            $submission_title = explode('.', $title);
-
-            // Compile file string array for naming the file.
-            $file_string = array(
-                $submission_title[0],
-                $cm->id
-            );
-
-            // Only include user's name and id if we're not using blind marking and student privacy.
-            if ( empty($moduledata->blindmarking) && empty($config->enablepseudo) ) {
-                $user_details = array(
-                    $user->id,
-                    $user->firstname,
-                    $user->lastname
-                );
-
-                $file_string = array_merge($user_details, $file_string);
-            }
-
-            try {
-                $tempfile = turnitintooltwo_tempfile($file_string, $filename);
-            } catch (Exception $e) {
-                $errorcode = 8;
-            }
-
-            // Save failed submission and don't process any further.
-            if ($errorcode != 0) {
-                return $this->save_submission($cm, $queueditem->author, $submissionid, $queueditem->identifier, 'error', $queueditem->externalid,
-                                                $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
-                                                $queueditem->attempt, $errorcode);
-            }
-
-            $fh = fopen($tempfile, "w");
-            fwrite($fh, $textcontent);
-            fclose($fh);
-
-            // Create submission object.
-            $submission = new TiiSubmission();
-            $submission->setAssignmentId($syncassignment['tiiassignmentid']);
-            if ($apimethod == "replaceSubmission") {
-                $submission->setSubmissionId($queueditem->externalid);
-            }
-            $submission->setTitle($title);
-            $submission->setAuthorUserId($user->tii_user_id);
-
-            // Account for submission by teacher in assignment module.
-            if ($queueditem->userid == $queueditem->$submitter) {
-                $submission->setSubmitterUserId($user->tii_user_id);
-                $submission->setRole('Learner');
-            } else {
-                $instructor = new turnitintooltwo_user($queueditem->submitter, 'Instructor');
-                $instructor->edit_tii_user();
-
-                $submission->setSubmitterUserId($instructor->tii_user_id);
-                $submission->setRole('Instructor');
-            }
-
-            $submission->setSubmissionDataPath($tempfile);
-
-            // Initialise Comms Object.
-            $turnitincomms = new turnitin_comms();
-            $turnitincall = $turnitincomms->initialise_api();
-
-            try {
-                $response = $turnitincall->$apimethod($submission);
-                $newsubmission = $response->getSubmission();
-                $tiisubmissionid = $newsubmission->getSubmissionId();
-
-                $this->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'success', $tiisubmissionid,
-                                        $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype, $queueditem->attempt);
-
-                // Delete the tempfile.
-                if (!is_null($tempfile)) {
-                    unlink($tempfile);
-                }
-
-                // Add config field to show submissions have been made which we use to lock anonymous marking setting
-                $configfield = new stdClass();
-                $configfield->cm = $cm->id;
-                $configfield->name = 'submitted';
-                $configfield->value = 1;
-
-                if (!$currentconfigfield = $DB->get_field('plagiarism_turnitin_config', 'id',
-                                                     (array('cm' => $cm->id, 'name' => 'submitted')))) {
-                    if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
-                        turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
-                    }
-                }
-
-                // Send a message to the user's Moodle inbox with the digital receipt.
-                $receipt = new pp_receipt_message();
-                $input = array(
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'submission_title' => $title,
-                    'assignment_name' => $moduledata->name,
-                    'course_fullname' => $coursedata->turnitin_ctl,
-                    'submission_date' => date('d-M-Y h:iA'),
-                    'submission_id' => $tiisubmissionid
-                );
-
-                $message = $receipt->build_message($input);
-                $receipt->send_message($user->id, $message);
-
-                // Output a message in the cron for successfull submission to Turnitin.
-                $outputvars = new stdClass();
-                $outputvars->title = $title;
-                $outputvars->submissionid = $tiisubmissionid;
-                $outputvars->assignmentname = $moduledata->name;
-                $outputvars->coursename = $coursedata->turnitin_ctl;
-
-                mtrace(get_string('cronsubmittedsuccessfully', 'plagiarism_turnitin', $outputvars));
-            } catch (Exception $e) {
-
-                // Save that submission errored.
-                $submissionerrormsg = get_string('pp_submission_error', 'plagiarism_turnitin').' '.$e->getMessage();
-                $this->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'error', null,
-                                        $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
-                                        $queueditem->attempt, 0, $submissionerrormsg);
-
-                $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
-                $turnitincomms->handle_exceptions($e, $errorstring, false);
-
-                // Output error in the cron.
-                mtrace('-------------------------');
-                mtrace(get_string('pp_submission_error', 'plagiarism_turnitin').': '.$e->getMessage());
-                mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
-                mtrace('Course Module: '.$cm->id.'');
-                mtrace('-------------------------');
-            }
-        }
-    }
-
-    /**
      * Amalgamated handler for Moodle cron events.
      *
      * @param object $eventdata
@@ -2798,9 +2513,295 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 }
 
 /**
- * Handle cron call from scheduled task
+ * Handle Scheduled Task to Update Report Scores from Turnitin.
  */
-function plagiarism_turnitin_cron() {
+function plagiarism_turnitin_update_reports() {
     $pluginturnitin = new plagiarism_plugin_turnitin();
     return $pluginturnitin->cron();
+}
+
+/**
+ * Handle Scheduled Task to Send Queued Submissions to Turnitin.
+ */
+function plagiarism_turnitin_send_queued_submissions() {
+    global $DB;
+    $config = turnitintooltwo_admin_config();
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+
+    $queueditems = $DB->get_records('plagiarism_turnitin_files', array('statuscode' => 'queued'),
+                        '', '*', $limitfrom = 0, $limitnum = PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);
+
+    // Submit each file individually to Turnitin.
+    foreach ($queueditems as $queueditem) {
+
+        // Get various settings that we need.
+        $errorcode = 0;
+        $cm = get_coursemodule_from_id('', $queueditem->cm);
+        $settings = $pluginturnitin->get_settings($cm->id);
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+
+        // Get course data.
+        $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course, 'cron');
+        if (empty($coursedata->turnitin_cid)) {
+            // Save failed submission if class can not be created.
+            $savesubmission = new stdClass();
+            $savesubmission->id = $queueditem->id;
+            $savesubmission->statuscode = 'error';
+            $savesubmission->attempt = $queueditem->attempt + 1;
+            $savesubmission->errorcode = 10;
+
+            $DB->update_record('plagiarism_turnitin_files', $savesubmission);
+            break;
+        }
+
+        // Join User to course.
+        try {
+            $user = new turnitintooltwo_user($queueditem->userid, 'Learner', true, 'cron');
+            $user->edit_tii_user();
+            $user->join_user_to_class($coursedata->turnitin_cid);
+        } catch (Exception $e) {
+            $user = new turnitintooltwo_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
+            $errorcode = 7;
+        }
+
+        $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
+
+        // Any errorcode from assignment sync needs to be saved.
+        if (!empty($syncassignment['errorcode'])) {
+            $errorcode = $syncassignment['errorcode'];
+        }
+
+        // Don't submit if a user has not accepted the eula.
+        if ($queueditem->userid == $queueditem->submitter
+            && $user->user_agreement_accepted != 1) {
+            $errorcode = 3;
+        }
+
+        if (!empty($errorcode)) {
+            // Save failed submission if user can not be joined to class or there was an error with the assignment.
+            $savesubmission = new stdClass();
+            $savesubmission->id = $queueditem->id;
+            $savesubmission->statuscode = 'error';
+            $savesubmission->attempt = $queueditem->attempt + 1;
+            $savesubmission->errorcode = $errorcode;
+
+            $DB->update_record('plagiarism_turnitin_files', $savesubmission);
+            break;
+        }
+
+        // Clean up old Turnitin submission files.
+        if ($queueditem->itemid != 0 && $queueditem->submissiontype == 'file' && $cm->modname != 'forum') {
+            $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $queueditem->itemid, $queueditem->submissiontype,
+                                                    $queueditem->identifier);
+        }
+
+        // Get more Submission Details as required.
+        switch ($queueditem->submissiontype) {
+            case 'file':
+            case 'text_content':
+
+                // Get file data or prepare text submission.
+                if ($submissiontype == 'file') {
+                    $fs = get_file_storage();
+                    $file = $fs->get_file_by_hash($queueditem->identifier);
+
+                    $title = $file->get_filename();
+                    $filename = $file->get_filename();
+
+                    try {
+                        $textcontent = $file->get_content();
+                    } catch (Exception $e) {
+                        turnitintooltwo_activitylog('File content not found on submission: '.$pathnamehash, 'PP_NO_FILE');
+                        mtrace($e);
+                        mtrace('File content not found on submission. pathnamehash: '.$pathnamehash);
+                        $errorcode = 9;
+                    }
+                } else {
+                    // Get the actual text content for a submission.
+                    switch ($cm->modname) {
+                        case 'assign':
+                            $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
+                                            'userid' => $queueditem->author, 'id' => $queueditem->itemid), 'id');
+                            $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                                            array('submission' => $moodlesubmission->id), 'onlinetext');
+                            $textcontent = $moodletextsubmission->onlinetext;
+                            break;
+
+                        case 'workshop':
+                            $moodlesubmission = $DB->get_record('workshop_submissions',
+                                                        array('id' => $queueditem->itemid), 'content');
+                            $textcontent = $moodlesubmission->content;
+                            break;
+                    }
+
+                    $title = 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
+                    $filename = $title;
+                    $textcontent = strip_tags($textcontent);
+                }
+
+                // Use Replace submission method if resubmissions are allowed or create if we have no Turnitin Id.
+                if (is_null($queueditem->externalid)) {
+                    $apimethod = "createSubmission";
+                } else {
+                    $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
+                    // Delete old text content submissions from Turnitin if not replacing.
+                    if ($settings["plagiarism_report_gen"] == 0 && $submissiontype == 'text_content') {
+                        $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->author);
+                    }
+                }
+
+                // Remove any old text submissions from Moodle DB if there are any as there is only one per submission.
+                if ($itemid != 0 && $submissiontype == "text_content") {
+                    $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
+                }
+
+                break;
+
+            case 'forum_post':
+                if (is_null($queueditem->externalid)) {
+                    $apimethod = "createSubmission";
+                } else {
+                    $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
+                }
+
+                $forum_post = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $queueditem->itemid));
+                $textcontent = strip_tags($forum_post->message);
+
+                $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
+                $filename = $title;
+                break;
+        }
+
+        // Read the stored file/content into a temp file for submitting.
+        $submission_title = explode('.', $title);
+
+        // Compile file string array for naming the file.
+        $file_string = array(
+            $submission_title[0],
+            $cm->id
+        );
+
+        // Only include user's name and id if we're not using blind marking and student privacy.
+        if ( empty($moduledata->blindmarking) && empty($config->enablepseudo) ) {
+            $user_details = array(
+                $user->id,
+                $user->firstname,
+                $user->lastname
+            );
+
+            $file_string = array_merge($user_details, $file_string);
+        }
+
+        try {
+            $tempfile = turnitintooltwo_tempfile($file_string, $filename);
+        } catch (Exception $e) {
+            $errorcode = 8;
+        }
+
+        // Save failed submission and don't process any further.
+        if ($errorcode != 0) {
+            return $pluginturnitin->save_submission($cm, $queueditem->author, $submissionid, $queueditem->identifier, 'error', $queueditem->externalid,
+                                            $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
+                                            $queueditem->attempt, $errorcode);
+        }
+
+        $fh = fopen($tempfile, "w");
+        fwrite($fh, $textcontent);
+        fclose($fh);
+
+        // Create submission object.
+        $submission = new TiiSubmission();
+        $submission->setAssignmentId($syncassignment['tiiassignmentid']);
+        if ($apimethod == "replaceSubmission") {
+            $submission->setSubmissionId($queueditem->externalid);
+        }
+        $submission->setTitle($title);
+        $submission->setAuthorUserId($user->tii_user_id);
+
+        // Account for submission by teacher in assignment module.
+        if ($queueditem->userid == $queueditem->$submitter) {
+            $submission->setSubmitterUserId($user->tii_user_id);
+            $submission->setRole('Learner');
+        } else {
+            $instructor = new turnitintooltwo_user($queueditem->submitter, 'Instructor');
+            $instructor->edit_tii_user();
+
+            $submission->setSubmitterUserId($instructor->tii_user_id);
+            $submission->setRole('Instructor');
+        }
+
+        $submission->setSubmissionDataPath($tempfile);
+
+        // Initialise Comms Object.
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+
+        try {
+            $response = $turnitincall->$apimethod($submission);
+            $newsubmission = $response->getSubmission();
+            $tiisubmissionid = $newsubmission->getSubmissionId();
+
+            $pluginturnitin->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'success', $tiisubmissionid,
+                                    $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype, $queueditem->attempt);
+
+            // Delete the tempfile.
+            if (!is_null($tempfile)) {
+                unlink($tempfile);
+            }
+
+            // Add config field to show submissions have been made which we use to lock anonymous marking setting
+            $configfield = new stdClass();
+            $configfield->cm = $cm->id;
+            $configfield->name = 'submitted';
+            $configfield->value = 1;
+
+            if (!$currentconfigfield = $DB->get_field('plagiarism_turnitin_config', 'id',
+                                                 (array('cm' => $cm->id, 'name' => 'submitted')))) {
+                if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
+                    turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                }
+            }
+
+            // Send a message to the user's Moodle inbox with the digital receipt.
+            $receipt = new pp_receipt_message();
+            $input = array(
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'submission_title' => $title,
+                'assignment_name' => $moduledata->name,
+                'course_fullname' => $coursedata->turnitin_ctl,
+                'submission_date' => date('d-M-Y h:iA'),
+                'submission_id' => $tiisubmissionid
+            );
+
+            $message = $receipt->build_message($input);
+            $receipt->send_message($user->id, $message);
+
+            // Output a message in the cron for successfull submission to Turnitin.
+            $outputvars = new stdClass();
+            $outputvars->title = $title;
+            $outputvars->submissionid = $tiisubmissionid;
+            $outputvars->assignmentname = $moduledata->name;
+            $outputvars->coursename = $coursedata->turnitin_ctl;
+
+            mtrace(get_string('cronsubmittedsuccessfully', 'plagiarism_turnitin', $outputvars));
+        } catch (Exception $e) {
+
+            // Save that submission errored.
+            $submissionerrormsg = get_string('pp_submission_error', 'plagiarism_turnitin').' '.$e->getMessage();
+            $pluginturnitin->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'error', null,
+                                    $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
+                                    $queueditem->attempt, 0, $submissionerrormsg);
+
+            $errorstring = (empty($previoussubmission->externalid)) ? "pp_createsubmissionerror" : "pp_updatesubmissionerror";
+            $turnitincomms->handle_exceptions($e, $errorstring, false);
+
+            // Output error in the cron.
+            mtrace('-------------------------');
+            mtrace(get_string('pp_submission_error', 'plagiarism_turnitin').': '.$e->getMessage());
+            mtrace('User:  '.$user->id.' - '.$user->firstname.' '.$user->lastname.' ('.$user->email.')');
+            mtrace('Course Module: '.$cm->id.'');
+            mtrace('-------------------------');
+        }
+    }
 }

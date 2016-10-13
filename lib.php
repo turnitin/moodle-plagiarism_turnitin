@@ -317,6 +317,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         foreach ($supportedmods as $supportedmod) {
             $module = $DB->get_record('modules', array('name' => $supportedmod));
+            if ($module === false) {
+                continue;
+            }
 
             // Get all the course modules that have Turnitin enabled
             $sql = "SELECT cm.id

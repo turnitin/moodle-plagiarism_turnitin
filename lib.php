@@ -1069,7 +1069,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
                     }
 
-                    // Show Turnitin Pending status or EULA error.
+                    // Show EULA error.
                     if (!empty($eulaerror)) {
                         $output .= $eulaerror;
                     }

@@ -213,6 +213,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2016091402) {
         $table = new xmldb_table('plagiarism_turnitin_files');
+        // Remove fields no longer needed.
         $field1 = new xmldb_field('externalstatus');
         $field2 = new xmldb_field('apimd5');
         $field3 = new xmldb_field('legacyteacher');
@@ -225,6 +226,8 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if ($dbman->field_exists($table, $field3)) {
             $dbman->drop_field($table, $field3);
         }
+
+        // Add new itemid field.
         $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'externalid');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);

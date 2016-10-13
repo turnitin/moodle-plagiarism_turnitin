@@ -2376,7 +2376,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Clean up previous file submissions.
      * Moodle will remove any old files or drafts during cron execution and file submission.
      */
-    private function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier) {
+    public function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier) {
         global $DB, $CFG;
         $currentfiles = array();
         $deletestr = '';
@@ -2601,7 +2601,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             case 'text_content':
 
                 // Get file data or prepare text submission.
-                if ($submissiontype == 'file') {
+                if ($queueditem->submissiontype == 'file') {
                     $fs = get_file_storage();
                     $file = $fs->get_file_by_hash($queueditem->identifier);
 
@@ -2621,7 +2621,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                     switch ($cm->modname) {
                         case 'assign':
                             $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                            'userid' => $queueditem->author, 'id' => $queueditem->itemid), 'id');
+                                            'userid' => $queueditem->userid, 'id' => $queueditem->itemid), 'id');
                             $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             array('submission' => $moodlesubmission->id), 'onlinetext');
                             $textcontent = $moodletextsubmission->onlinetext;
@@ -2651,8 +2651,9 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 // Remove any old text submissions from Moodle DB if there are any as there is only one per submission.
-                if ($itemid != 0 && $submissiontype == "text_content") {
-                    $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $itemid, $submissiontype, $identifier);
+                if (!empty($queueditem->itemid) && $queueditem->submissiontype == "text_content") {
+                    $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $queueditem->itemid,
+                                                                    $queueditem->submissiontype, $queueditem->identifier);
                 }
 
                 break;
@@ -2700,7 +2701,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // Save failed submission and don't process any further.
         if ($errorcode != 0) {
-            return $pluginturnitin->save_submission($cm, $queueditem->author, $submissionid, $queueditem->identifier, 'error', $queueditem->externalid,
+            return $pluginturnitin->save_submission($cm, $queueditem->author, $queueditem->id, $queueditem->identifier, 'error', $queueditem->externalid,
                                             $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
                                             $queueditem->attempt, $errorcode);
         }
@@ -2719,7 +2720,7 @@ function plagiarism_turnitin_send_queued_submissions() {
         $submission->setAuthorUserId($user->tii_user_id);
 
         // Account for submission by teacher in assignment module.
-        if ($queueditem->userid == $queueditem->$submitter) {
+        if ($queueditem->userid == $queueditem->submitter) {
             $submission->setSubmitterUserId($user->tii_user_id);
             $submission->setRole('Learner');
         } else {
@@ -2741,7 +2742,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $newsubmission = $response->getSubmission();
             $tiisubmissionid = $newsubmission->getSubmissionId();
 
-            $pluginturnitin->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'success', $tiisubmissionid,
+            $pluginturnitin->save_submission($cm, $user->id, $queueditem->id, $queueditem->identifier, 'success', $tiisubmissionid,
                                     $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype, $queueditem->attempt);
 
             // Delete the tempfile.
@@ -2789,7 +2790,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
             // Save that submission errored.
             $submissionerrormsg = get_string('pp_submission_error', 'plagiarism_turnitin').' '.$e->getMessage();
-            $pluginturnitin->save_submission($cm, $user->id, $submissionid, $queueditem->identifier, 'error', null,
+            $pluginturnitin->save_submission($cm, $user->id, $queueditem->id, $queueditem->identifier, 'error', null,
                                     $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
                                     $queueditem->attempt, 0, $submissionerrormsg);
 

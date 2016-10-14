@@ -36,14 +36,6 @@ $observers = array (
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_submitted'
     ),
     array(
-        'eventname' => '\core\event\course_module_created',
-        'callback'  => 'plagiarism_turnitin_observer::course_module_created'
-    ),
-    array(
-        'eventname' => '\core\event\course_module_updated',
-        'callback'  => 'plagiarism_turnitin_observer::course_module_updated'
-    ),
-    array(
         'eventname' => '\core\event\course_module_deleted',
         'callback'  => 'plagiarism_turnitin_observer::course_module_deleted'
     ),

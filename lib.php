@@ -2188,128 +2188,109 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        // Process events. Module events will need to call Turnitin straightaway to keep assignments, etc in sync.
-        switch ($eventdata['eventtype']) {
-            case "mod_created":
-            case "mod_updated":
-                // Get course data, return false if there is a problem creating it.
-                $coursedata = $this->get_course_data($cm->id, $cm->course, 'cron');
-                if (empty($coursedata->turnitin_cid)) {
-                    return false;
-                }
+        // Get module data
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        if ($cm->modname != 'assign') {
+            $moduledata->submissiondrafts = 0;
+        }
 
-                $syncassignment = $this->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron");
+        // If draft submissions are turned on then only send to Turnitin if the draft submit setting is set.
+        if ($moduledata->submissiondrafts && $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
+            ($eventdata['eventtype'] == 'file_uploaded' || $eventdata['eventtype'] == 'content_uploaded')) {
+            return true;
+        }
+
+        // Set the author and submitter
+        $submitter = $eventdata['userid'];
+        $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
+
+        // Get actual text content and files to be submitted for draft submissions
+        // as this won't be present in eventdata for certain event types.
+        if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
+            // Get content.
+            $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
+                                        'userid' => $author, 'id' => $eventdata['objectid']), 'id');
+            if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                                        array('submission' => $moodlesubmission->id), 'onlinetext')) {
+                $eventdata['other']['content'] = $moodletextsubmission->onlinetext;
+            }
+
+            // Get Files.
+            $eventdata['other']['pathnamehashes'] = array();
+            $filesconditions = array('component' => 'assignsubmission_file',
+                                    'itemid' => $moodlesubmission->id, 'userid' => $author);
+            if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
+                foreach ($moodlefiles as $moodlefile) {
+                    $eventdata['other']['pathnamehashes'][] = $moodlefile->pathnamehash;
+                }
+            }
+        }
+
+        // Queue text content to send to Turnitin.
+        // If there was an error when creating the assignment then still queue the submission so it can be saved as failed.
+        if (in_array($eventdata['eventtype'], array("content_uploaded", "assessable_submitted"))
+                && !empty($eventdata['other']['content'])) {
+
+            $submissiontype = ($eventdata['other']['modulename'] == 'forum') ? 'forum_post' : 'text_content';
+
+            // TODO: Check eventdata to see if content is included correctly. If so, this can be removed.
+            if ($eventdata['other']['modulename'] == 'workshop') {
+                $moodlesubmission = $DB->get_record('workshop_submissions', array('id' => $eventdata['objectid']));
+                $eventdata['other']['content'] = $moodlesubmission->content;
+            }
+
+            $identifier = sha1($eventdata['other']['content']);
+
+            // Check if text content has been submitted previously. Remove if so.
+            list($insql, $inparams) = $DB->get_in_or_equal(array('success', 'queued'), SQL_PARAMS_QM, 'param', false);
+            $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
+            $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
+                                                            " AND identifier AND ".$typefield." = ? ".$insql,
+                                                array_merge(array($author, $cm->id, $identifier), $inparams));
+
+            if ($plagiarismfiles) {
                 return true;
-                break;
+            } else {
+                $result = $this->queue_submission_to_turnitin(
+                                            $cm, $author, $submitter, $identifier, $submissiontype, $eventdata['objectid']);
+            }
+        }
 
-            case "file_uploaded":
-            case "assessable_submitted":
-            case "content_uploaded":
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                if ($cm->modname != 'assign') {
-                    $moduledata->submissiondrafts = 0;
-                }
+        // Queue files to submit to Turnitin.
+        $result = $result && true;
+        if (!empty($eventdata['other']['pathnamehashes'])) {
+            foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
+                $fs = get_file_storage();
+                $file = $fs->get_file_by_hash($pathnamehash);
 
-                // If draft submissions are turned on then only send to Turnitin if the draft submit setting is set.
-                if ($moduledata->submissiondrafts && $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
-                    ($eventdata['eventtype'] == 'file_uploaded' || $eventdata['eventtype'] == 'content_uploaded')) {
-                    return true;
-                }
-
-                // Set the author and submitter
-                $submitter = $eventdata['userid'];
-                $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
-
-                // Get actual text content and files to be submitted for draft submissions
-                // as this won't be present in eventdata for certain event types.
-                if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
-                    // Get content.
-                    $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                                'userid' => $author, 'id' => $eventdata['objectid']), 'id');
-                    if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                                array('submission' => $moodlesubmission->id), 'onlinetext')) {
-                        $eventdata['other']['content'] = $moodletextsubmission->onlinetext;
-                    }
-
-                    // Get Files.
-                    $eventdata['other']['pathnamehashes'] = array();
-                    $filesconditions = array('component' => 'assignsubmission_file',
-                                            'itemid' => $moodlesubmission->id, 'userid' => $author);
-                    if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
-                        foreach ($moodlefiles as $moodlefile) {
-                            $eventdata['other']['pathnamehashes'][] = $moodlefile->pathnamehash;
-                        }
+                if (!$file) {
+                    turnitintooltwo_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
+                    $result = true;
+                    continue;
+                } else {
+                    try {
+                        $file->get_content();
+                    } catch (Exception $e) {
+                        turnitintooltwo_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
+                        mtrace($e);
+                        mtrace('File content not found. pathnamehash: '.$pathnamehash);
+                        $result = true;
+                        continue;
                     }
                 }
 
-                // Queue text content to send to Turnitin.
-                // If there was an error when creating the assignment then still queue the submission so it can be saved as failed.
-                if (in_array($eventdata['eventtype'], array("content_uploaded", "assessable_submitted"))
-                        && !empty($eventdata['other']['content'])) {
-
-                    $submissiontype = ($eventdata['other']['modulename'] == 'forum') ? 'forum_post' : 'text_content';
-
-                    // TODO: Check eventdata to see if content is included correctly. If so, this can be removed.
-                    if ($eventdata['other']['modulename'] == 'workshop') {
-                        $moodlesubmission = $DB->get_record('workshop_submissions', array('id' => $eventdata['objectid']));
-                        $eventdata['other']['content'] = $moodlesubmission->content;
-                    }
-
-                    $identifier = sha1($eventdata['other']['content']);
-
-                    // Check if text content has been submitted previously. Remove if so.
-                    list($insql, $inparams) = $DB->get_in_or_equal(array('success', 'queued'), SQL_PARAMS_QM, 'param', false);
-                    $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
-                    $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
-                                                                    " AND identifier AND ".$typefield." = ? ".$insql,
-                                                        array_merge(array($author, $cm->id, $identifier), $inparams));
-
-                    if ($plagiarismfiles) {
-                        return true;
-                    } else {
-                        $result = $this->queue_submission_to_turnitin(
-                                                    $cm, $author, $submitter, $identifier, $submissiontype, $eventdata['objectid']);
-                    }
+                if ($file->get_filename() === '.') {
+                    continue;
                 }
 
-                // Queue files to submit to Turnitin.
-                $result = $result && true;
-                if (!empty($eventdata['other']['pathnamehashes'])) {
-                    foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
-                        $fs = get_file_storage();
-                        $file = $fs->get_file_by_hash($pathnamehash);
-
-                        if (!$file) {
-                            turnitintooltwo_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
-                            $result = true;
-                            continue;
-                        } else {
-                            try {
-                                $file->get_content();
-                            } catch (Exception $e) {
-                                turnitintooltwo_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
-                                mtrace($e);
-                                mtrace('File content not found. pathnamehash: '.$pathnamehash);
-                                $result = true;
-                                continue;
-                            }
-                        }
-
-                        if ($file->get_filename() === '.') {
-                            continue;
-                        }
-
-                        if ($this->check_if_submitting($cm, $author, $pathnamehash, 'file')) {
-                            $result = $result && $this->queue_submission_to_turnitin(
-                                                        $cm, $author, $submitter, $pathnamehash, 'file',
-                                                        $eventdata['objectid'], '');
-                        } else {
-                            $result = $result && true;
-                        }
-                    }
+                if ($this->check_if_submitting($cm, $author, $pathnamehash, 'file')) {
+                    $result = $result && $this->queue_submission_to_turnitin(
+                                                $cm, $author, $submitter, $pathnamehash, 'file',
+                                                $eventdata['objectid'], '');
+                } else {
+                    $result = $result && true;
                 }
-
-                break;
+            }
         }
 
         return $result;

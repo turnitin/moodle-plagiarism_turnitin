@@ -22,32 +22,6 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 class plagiarism_turnitin_observer {
 	/**
-	 * Handle the course_module_created event.
-	 * @param \core\event\course_module_created $event
-	 */
-	public static function course_module_created(
-        \core\event\course_module_created $event) {
-		$eventdata = $event->get_data();
-        $eventdata['eventtype'] = 'mod_created';
-
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
-	}
-
-	/**
-	 * Handle the course_module_updated event.
-	 * @param \core\event\course_module_updated $event
-	 */
-	public static function course_module_updated(
-        \core\event\course_module_updated $event) {
-		$eventdata = $event->get_data();
-        $eventdata['eventtype'] = 'mod_updated';
-
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
-	}
-
-	/**
 	 * Handle the course_module_deleted event.
 	 * @param \core\event\course_module_deleted $event
 	 */

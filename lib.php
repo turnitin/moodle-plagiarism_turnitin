@@ -2260,11 +2260,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Check if text content has been submitted previously. Remove if so.
                     list($insql, $inparams) = $DB->get_in_or_equal(array('success', 'queued'), SQL_PARAMS_QM, 'param', false);
                     $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
-                    $oldfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
+                    $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
                                                                     " AND identifier AND ".$typefield." = ? ".$insql,
                                                         array_merge(array($author, $cm->id, $identifier), $inparams));
 
-                    if ($plagiarismfile) {
+                    if ($plagiarismfiles) {
                         return true;
                     } else {
                         $result = $this->queue_submission_to_turnitin(

@@ -93,7 +93,7 @@ class plagiarism_turnitin_observer {
     public static function forum_file_uploaded(
         \mod_forum\event\assessable_uploaded $event) {
         $eventdata = $event->get_data();
-        $eventdata['eventtype'] = 'file_uploaded';
+        $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'forum';
 
         $plugin = new plagiarism_plugin_turnitin();
@@ -107,7 +107,7 @@ class plagiarism_turnitin_observer {
     public static function workshop_file_uploaded(
         \mod_workshop\event\assessable_uploaded $event) {
         $eventdata = $event->get_data();
-        $eventdata['eventtype'] = 'file_uploaded';
+        $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'workshop';
 
         $plugin = new plagiarism_plugin_turnitin();

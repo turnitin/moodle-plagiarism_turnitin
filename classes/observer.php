@@ -28,6 +28,7 @@ class plagiarism_turnitin_observer {
 	public static function course_module_deleted(
         \core\event\course_module_deleted $event) {
 		global $DB;
+        $eventdata = $event->get_data();
 
 	    $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata['contextinstanceid']));
     	$DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata['contextinstanceid']));

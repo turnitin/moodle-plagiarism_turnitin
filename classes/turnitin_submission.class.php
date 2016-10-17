@@ -174,7 +174,7 @@ class turnitin_submission {
 
         $submissiondata = new stdClass();
         $submissiondata->id = $this->id;
-        $submissiondata->statuscode = 'pending';
+        $submissiondata->statuscode = 'queued';
 
         return $DB->update_record('plagiarism_turnitin_files', $submissiondata);
 	}

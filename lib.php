@@ -1250,6 +1250,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
                     return true;
                 }
+
                 $gradeitem = $DB->get_record('grade_items',
                                     array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
                                             'courseid' => $cm->course, 'itemnumber' => 0));
@@ -1402,6 +1403,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!$gradesreleased) {
                             $grades->rawgrade = null;
                         }
+                    }
+
+                    // Prevent grades being passed to gradebook before identities have been revealed when blind marking is on.
+                    if ($cm->modname == 'assign' && !empty($moduledata->blindmarking) && empty($moduledata->revealidentities)) {
+                        return false;
                     }
 
                     $params['idnumber'] = $cm->idnumber;

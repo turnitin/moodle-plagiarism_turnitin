@@ -3,7 +3,11 @@
  * and open the template in the editor.
  */
 
+var plagiarism_turnitin_jquery = null;
+
 jQuery(document).ready(function($) {
+    plagiarism_turnitin_jquery = $;
+
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
         return false;
@@ -168,7 +172,7 @@ jQuery(document).ready(function($) {
     }
 
     function lightBoxCloseButton(closeBtnText) {
-        $('body').append('<div id="tii_close_bar"><a href="#" onclick="$.colorbox.close(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
+        $('body').append('<div id="tii_close_bar"><a href="#" onclick="plagiarism_turnitin_jquery.colorbox.close(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
     }
 
     function getLoadingGif() {

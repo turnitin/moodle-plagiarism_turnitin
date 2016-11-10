@@ -211,6 +211,13 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016011105, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2016111100) {
+        $DB->delete_records('events_handlers', array('component' => 'plagiarism_turnitin'));
+        events_update_definition("plagiarism_turnitin");
+
+        upgrade_plugin_savepoint(true, 2016111100, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }
 

@@ -14,48 +14,43 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$handlers = array(
-    'assessable_file_uploaded' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_file_uploaded',
-        'schedule'          => 'cron'
-    ),
-    'assessable_files_done' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_files_done',
-        'schedule'          => 'cron'
-    ),
-    'assessable_content_uploaded' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_content_uploaded',
-        'schedule'          => 'cron'
-    ),
-    'assessable_submitted' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_assessable_submitted',
-        'schedule'          => 'cron'
-    ),
-    'mod_created' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_mod_created',
-        'schedule'          => 'cron'
-    ),
-    'mod_updated' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_mod_updated',
-        'schedule'          => 'cron'
-    ),
-    'mod_deleted' => array(
-        'handlerfile'       => '/plagiarism/turnitin/lib.php',
-        'handlerfunction'   => 'plagiarism_turnitin_event_mod_deleted',
-        'schedule'          => 'cron'
-    )
-);
+/*
+ * Events that don't exist anymore:
+ *  - files_done
+ *  - content_uploaded
+ */
+
+$handlers = array();
 
 $observers = array(
     array(
         'eventname'   => '\core\event\course_reset_ended',
         'callback'    => 'plagiarism_plugin_turnitin::course_reset',
         'includefile' => '/plagiarism/turnitin/lib.php'
-    )
+    ),
+    array(
+        'eventname'   => '\core\event\assessable_uploaded',
+        'callback'    => 'plagiarism_turnitin_event_file_uploaded',
+        'includefile' => '/plagiarism/turnitin/lib.php'
+    ),
+    array(
+        'eventname'   => '\core\event\assessable_submitted',
+        'callback'    => 'plagiarism_turnitin_event_assessable_submitted',
+        'includefile' => '/plagiarism/turnitin/lib.php'
+    ),
+    array(
+        'eventname' => '\core\event\course_module_created',
+        'callback'    => 'plagiarism_turnitin_event_mod_created',
+        'includefile' => '/plagiarism/turnitin/lib.php'
+    ),
+    array(
+        'eventname' => '\core\event\course_module_updated',
+        'callback'    => 'plagiarism_turnitin_event_mod_updated',
+        'includefile' => '/plagiarism/turnitin/lib.php'
+    ),
+    array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback'    => 'plagiarism_turnitin_event_mod_deleted',
+        'includefile' => '/plagiarism/turnitin/lib.php'
+    ),
 );

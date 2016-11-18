@@ -296,13 +296,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public static function course_reset($eventdata) {
         global $DB;
-        $courseid = (int)$eventdata['courseid'];
+        $data = $eventdata->get_data();
+        $courseid = (int)$data['other']['reset_options']['courseid'];
         $resetcourse = true;
 
-        $resetassign = (isset($eventdata['other']['reset_options']['reset_assign_submissions'])) ?
-                            $eventdata['other']['reset_options']['reset_assign_submissions'] : 0;
-        $resetforum = (isset($eventdata['other']['reset_options']['reset_forum_all'])) ?
-                            $eventdata['other']['reset_options']['reset_forum_all'] : 0;
+        $resetassign = (isset($data['other']['reset_options']['reset_assign_submissions'])) ?
+                            $data['other']['reset_options']['reset_assign_submissions'] : 0;
+        $resetforum = (isset($data['other']['reset_options']['reset_forum_all'])) ?
+                            $data['other']['reset_options']['reset_forum_all'] : 0;
 
         // Get the modules that support the Plagiarism plugin by whether they have a class file.
         $supportedmods = array();

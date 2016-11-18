@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-$plugin->version =  2016101101;
+$plugin->version =  2016101103;
 $plugin->release = "2.6+";
 $plugin->requires =  2013111800;
 $plugin->component = 'plagiarism_turnitin';

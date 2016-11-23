@@ -2471,7 +2471,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Delete a submission from Turnitin
      */
     private function delete_tii_submission($cm, $submissionid, $userid) {
-        global $CFG;
+        global $CFG, $DB;
         $user = $DB->get_record('user', array('id' => $userid));
 
         // Initialise Comms Object.

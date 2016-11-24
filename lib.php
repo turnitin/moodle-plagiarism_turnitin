@@ -1550,8 +1550,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $title .= " (Moodle PP)";
         $assignment->setTitle( $title );
 
-        $assignment->setSubmitPapersTo(isset($modulepluginsettings["plagiarism_submitpapersto"]) ?
-                                            $modulepluginsettings["plagiarism_submitpapersto"] : 1);
+        // Configure repository setting.
+        $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ?
+                        $modulepluginsettings["plagiarism_submitpapersto"] : 1;
+
+        // Override if necessary when admin is forcing standard/no repository.
+        switch ($config->repositoryoption) {
+            case 2; // Standard repository being forced.
+                $reposetting = 1;
+                break;
+            case 3; // No repository being forced.
+                $reposetting = 0;
+                break;
+        }
+
+        $assignment->setSubmitPapersTo($reposetting);
         $assignment->setSubmittedDocumentsCheck($modulepluginsettings["plagiarism_compare_student_papers"]);
         $assignment->setInternetCheck($modulepluginsettings["plagiarism_compare_internet"]);
         $assignment->setPublicationsCheck($modulepluginsettings["plagiarism_compare_journals"]);

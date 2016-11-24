@@ -1551,19 +1551,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setTitle( $title );
 
         // Configure repository setting.
-        $reposetting = 1;
-        if (isset($modulepluginsettings["plagiarism_submitpapersto"])) {
-            $reposetting = $modulepluginsettings["plagiarism_submitpapersto"];
+        $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ?
+                        $modulepluginsettings["plagiarism_submitpapersto"] : 1;
 
-            // Override if necessary when admin is forcing standard/no repository.
-            switch ($config->repositoryoption) {
-                case 2; // Standard repository being forced.
-                    $reposetting = 1;
-                    break;
-                case 3; // No repository being forced.
-                    $reposetting = 0;
-                    break;
-            }
+        // Override if necessary when admin is forcing standard/no repository.
+        switch ($config->repositoryoption) {
+            case 2; // Standard repository being forced.
+                $reposetting = 1;
+                break;
+            case 3; // No repository being forced.
+                $reposetting = 0;
+                break;
         }
 
         $assignment->setSubmitPapersTo($reposetting);

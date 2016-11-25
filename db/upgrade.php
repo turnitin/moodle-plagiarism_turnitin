@@ -243,7 +243,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $field = new xmldb_field('submitter', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'userid');
         $dbman->change_field_notnull($table, $field);
         // Alter student_read to allow null values.
-        $field = new xmldb_field('student_read', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'userid');
+        $field = new xmldb_field('student_read', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'errormsg');
         $dbman->change_field_notnull($table, $field);
 
         // Update fields to NULL as per default if necessary.

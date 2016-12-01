@@ -426,7 +426,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
-            $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
+            $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
 
             if ($eulaaccepted != 1) {
                 // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
@@ -440,7 +440,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                             'data-userid' => $user->id));
 
                 $noscriptula = html_writer::tag('noscript',
-                                turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id,
+                                turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tiiuserid,
                                     "Learner", get_string('turnitinppulapre', 'plagiarism_turnitin'), false)." ".
                                         get_string('noscriptula', 'plagiarism_turnitin'),
                                             array('class' => 'warning turnitin_ula_noscript'));
@@ -689,7 +689,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                     // $success is false if there is no Turnitin connection and null if user has previously been enrolled.
                     if ((is_null($success) || $success === true) && $eulashown == false) {
-                        $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
+                        $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
                         $userid = $linkarray["userid"];
 
                         if ($eulaaccepted != 1) {
@@ -1062,7 +1062,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // We need to check for security that the user is actually on the course.
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
-                                if ($user->user_agreement_accepted != 1) {
+                                if ($user->useragreementaccepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('errorcode3', 'plagiarism_turnitin'),
                                                                             'plagiarism_turnitin'),
                                                                             array('title' => get_string('errorcode3', 'plagiarism_turnitin'),
@@ -2568,8 +2568,7 @@ function plagiarism_turnitin_send_queued_submissions() {
         }
 
         // Don't submit if a user has not accepted the eula.
-        if ($queueditem->userid == $queueditem->submitter
-            && $user->user_agreement_accepted != 1) {
+        if ($queueditem->userid == $queueditem->submitter && $user->useragreementaccepted != 1) {
             $errorcode = 3;
         }
 
@@ -2713,17 +2712,17 @@ function plagiarism_turnitin_send_queued_submissions() {
             $submission->setSubmissionId($queueditem->externalid);
         }
         $submission->setTitle($title);
-        $submission->setAuthorUserId($user->tii_user_id);
+        $submission->setAuthorUserId($user->tiiuserid);
 
         // Account for submission by teacher in assignment module.
         if ($queueditem->userid == $queueditem->submitter) {
-            $submission->setSubmitterUserId($user->tii_user_id);
+            $submission->setSubmitterUserId($user->tiiuserid);
             $submission->setRole('Learner');
         } else {
             $instructor = new turnitintooltwo_user($queueditem->submitter, 'Instructor');
             $instructor->edit_tii_user();
 
-            $submission->setSubmitterUserId($instructor->tii_user_id);
+            $submission->setSubmitterUserId($instructor->tiiuserid);
             $submission->setRole('Instructor');
         }
 

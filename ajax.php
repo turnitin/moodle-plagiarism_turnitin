@@ -66,7 +66,7 @@ switch ($action) {
         if ($syncassignment['success']) {
             $turnitintooltwoview = new turnitintooltwo_view();
             $return = html_writer::tag("div",
-                                        $turnitintooltwoview->output_dv_launch_form($dvtype, $submissionid, $user->tii_user_id,
+                                        $turnitintooltwoview->output_dv_launch_form($dvtype, $submissionid, $user->tiiuserid,
                                                                     $userrole, ''), array('style' => 'display: none'));
         }
         break;

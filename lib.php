@@ -390,9 +390,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB, $OUTPUT, $USER, $PAGE, $CFG;
 
         static $tiiconnection;
-        if (empty($tiiconnection)) {
-            $tiiconnection = $this->test_turnitin_connection();
-        }
 
         $config = turnitintooltwo_admin_config();
         $output = '';
@@ -421,6 +418,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Show EULA if necessary and we have a connection to Turnitin.
+        if (empty($tiiconnection)) {
+            $tiiconnection = $this->test_turnitin_connection();
+        }
         if ($tiiconnection) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
 

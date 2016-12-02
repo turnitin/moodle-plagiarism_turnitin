@@ -2631,7 +2631,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                     $title = 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
                     $filename = $title;
-                    $textcontent = strip_tags($textcontent);
+                    $textcontent = content_to_text($textcontent, FORMAT_MOODLE);
                 }
 
                 // Use Replace submission method if resubmissions are allowed or create if we have no Turnitin Id.

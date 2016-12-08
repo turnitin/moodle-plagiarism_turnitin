@@ -61,7 +61,7 @@ class turnitin_workshop {
 		$onlinetextdata = new stdClass();
 		$onlinetextdata->itemid = $submission->id;
 		$onlinetextdata->onlinetext = $submission->content;
-		$onlinetextdata->onlineformat = $moodletextsubmission->contentformat;
+		$onlinetextdata->onlineformat = $submission->contentformat;
 
 		return $onlinetextdata;
 	}

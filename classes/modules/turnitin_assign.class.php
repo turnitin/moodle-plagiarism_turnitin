@@ -55,8 +55,6 @@ class turnitin_assign {
 	}
 
 	public function set_content($linkarray, $cm) {
-		global $DB;
-
 		$onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
 
 		return (empty($onlinetextdata->onlinetext)) ? '' : $onlinetextdata->onlinetext;

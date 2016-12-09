@@ -214,6 +214,9 @@ class turnitinplugin_view {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
 
+            $mform->addElement('select', 'plagiarism_use_hover_notice', get_string('usehovernotice', 'plagiarism_turnitin'), $options);
+            $this->lock($mform, $location, $locks);
+
             $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'plagiarism_turnitin');

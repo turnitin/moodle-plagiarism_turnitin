@@ -1913,7 +1913,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     mtrace("File updated: ".$plagiarismfile->id);
                                 }
 
-                                if (!is_null($plagiarismfile->grade)) {
+                                // at the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow
+                                if (!is_null($plagiarismfile->grade) && $cm->modname != "coursework") {
                                     $this->update_grade($cm, $readsubmission, $currentsubmission->userid);
                                 }
                             }

@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class update_reports extends \core\task\scheduled_task {
 
-	public function get_name() {
+    public function get_name() {
         return get_string('updatereportscores', 'plagiarism_turnitin');
     }
 

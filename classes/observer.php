@@ -21,30 +21,30 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 class plagiarism_turnitin_observer {
-	/**
-	 * Handle the course_module_deleted event.
-	 * @param \core\event\course_module_deleted $event
-	 */
-	public static function course_module_deleted(
+    /**
+     * Handle the course_module_deleted event.
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function course_module_deleted(
         \core\event\course_module_deleted $event) {
-		global $DB;
+        global $DB;
         $eventdata = $event->get_data();
 
-	    $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata['contextinstanceid']));
-    	$DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata['contextinstanceid']));
-	}
+        $DB->delete_records('plagiarism_turnitin_files', array('cm' => $eventdata['contextinstanceid']));
+        $DB->delete_records('plagiarism_turnitin_config', array('cm' => $eventdata['contextinstanceid']));
+    }
 
-	/**
-	 * Handle the course_module_deleted event.
-	 * @param \core\event\course_module_deleted $event
-	 */
-	public static function course_reset(
-		\core\event\course_reset_ended $event) {
-		$eventdata = $event->get_data();
+    /**
+     * Handle the course_module_deleted event.
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function course_reset(
+        \core\event\course_reset_ended $event) {
+        $eventdata = $event->get_data();
 
         $plugin = new plagiarism_plugin_turnitin();
         $plugin->course_reset($eventdata);
-	}
+    }
 
 
     /**

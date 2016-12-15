@@ -30,15 +30,15 @@ class turnitin_class {
     public $sharedrubrics;
 
     public function __construct($id) {
-    	global $DB;
+        global $DB;
 
-    	$this->id = $id;
+        $this->id = $id;
 
-    	if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
+        if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
                                 array("courseid" => $id, "course_type" => "PP"))) {
-    		$this->turnitinid = $turnitincourse->turnitin_cid;
+            $this->turnitinid = $turnitincourse->turnitin_cid;
             $this->turnitintitle = $turnitincourse->turnitin_ctl;
-    	}
+        }
     }
 
     /**
@@ -47,21 +47,21 @@ class turnitin_class {
      * @return
      */
     public function read_class_from_tii() {
-    	// Initialise Comms Object.
+        // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $tiiclass = new TiiClass();
 
         try {
-        	$tiiclass->setClassId($this->turnitinid);
+            $tiiclass->setClassId($this->turnitinid);
             $response = $turnitincall->readClass($tiiclass);
             $readclass = $response->getClass();
 
             $rubrics = $readclass->getSharedRubrics();
-			$rubricarray = array();
-        	foreach ($rubrics as $rubric) {
-            	$rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()." [".get_string('sharedrubric', 'plagiarism_turnitin')."]";
+            $rubricarray = array();
+            foreach ($rubrics as $rubric) {
+                $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()." [".get_string('sharedrubric', 'plagiarism_turnitin')."]";
             }
 
             $this->sharedrubrics = $rubricarray;
@@ -70,4 +70,4 @@ class turnitin_class {
             $turnitincomms->handle_exceptions($e, 'coursegeterror', false);
         }
     }
-} 
+}

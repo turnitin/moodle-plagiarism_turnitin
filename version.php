@@ -14,10 +14,10 @@ $plugin->maturity  = MATURITY_STABLE;
 global $CFG;
 $plugin->cron = 0;
 if (!empty($CFG->version)) {
-	$plugin->cron = ($CFG->version > 2014051200) ? 0 : 300;
+    $plugin->cron = ($CFG->version > 2014051200) ? 0 : 300;
 }
 
 $plugin->dependencies = array(
-	'mod_turnitintooltwo' => 2016091401,
+    'mod_turnitintooltwo' => 2016091401,
     'mod_assign' => 2013110500
 );

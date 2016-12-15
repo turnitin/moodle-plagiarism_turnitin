@@ -39,9 +39,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $record_exists = $DB->record_exists('turnitintooltwo_courses', array('turnitin_cid' => $data->turnitin_cid, 'course_type' => 'PP'));
+            $recordexists = $DB->record_exists('turnitintooltwo_courses',
+                array('turnitin_cid' => $data->turnitin_cid, 'course_type' => 'PP'));
 
-            if (!$record_exists) {
+            if (!$recordexists) {
                 $data = (object)$data;
                 $data->courseid = $this->task->get_courseid();
 
@@ -71,10 +72,12 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $record_exists = ($data->name == 'turnitin_assign') ? $DB->record_exists('plagiarism_turnitin_config', array('name' => 'turnitin_assign', 'value' => $data->value)) : false;
-            $record_exists = ($data->name == 'turnitin_assignid') ? $DB->record_exists('plagiarism_turnitin_config', array('name' => 'turnitin_assignid', 'value' => $data->value)) : $record_exists;
+            $recordexists = ($data->name == 'turnitin_assign') ? $DB->record_exists('plagiarism_turnitin_config',
+                array('name' => 'turnitin_assign', 'value' => $data->value)) : false;
+            $recordexists = ($data->name == 'turnitin_assignid') ? $DB->record_exists('plagiarism_turnitin_config',
+                array('name' => 'turnitin_assignid', 'value' => $data->value)) : $recordexists;
 
-            if (!$record_exists) {
+            if (!$recordexists) {
                 $data = (object)$data;
                 $data->name = ($data->name == 'turnitin_assign') ? 'turnitin_assignid' : $data->name;
                 $data->cm = $this->task->get_moduleid();
@@ -94,9 +97,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $record_exists = (!empty($data->externalid)) ? $DB->record_exists('plagiarism_turnitin_files', array('externalid'=>$data->externalid)) : false;
+            $recordexists = (!empty($data->externalid)) ? $DB->record_exists('plagiarism_turnitin_files',
+                array('externalid'=>$data->externalid)) : false;
 
-            if (!$record_exists) {
+            if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();
                 $data->userid = $this->get_mappingid('user', $data->userid);
 

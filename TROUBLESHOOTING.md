@@ -1,4 +1,4 @@
-Travis#Moodle Direct V2 Troubleshooting
+#Moodle Direct V2 Troubleshooting
 
 1) You may need to ensure that within your designated moodledata directory; the turnitintooltwo subdirectory and the subsequent logs subdirectory have the correct permissions to be able to create directories and files.
 

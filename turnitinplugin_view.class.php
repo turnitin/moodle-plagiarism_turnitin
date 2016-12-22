@@ -59,7 +59,7 @@ class turnitinplugin_view {
     public function show_config_form($pluginconfig) {
         global $CFG, $DB;
 
-        // Populate elements array which will generate the form elements
+        // Populate elements array which will generate the form elements.
         // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).
         $elements = array();
         $elements[] = array('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
@@ -67,16 +67,17 @@ class turnitinplugin_view {
 
         $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', array(0, 1));
 
-        // Enable Turnitin for specific modules
-        $supported_mods = array('assign', 'forum', 'workshop');
+        // Enable Turnitin for specific modules.
+        $supportedmods = array('assign', 'forum', 'workshop');
 
-        if ($DB->record_exists('modules',array('name'=>'coursework','visible'=>1))) {
-            $supported_mods[]   =   'coursework';
+        if ($DB->record_exists('modules',array('name' => 'coursework','visible' => 1))) {
+            $supportedmods[] = 'coursework';
         }
 
-        foreach ($supported_mods as $mod) {
-            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod, get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
-                                '', '', '', array('turnitin_use', '==', 1));
+        foreach ($supportedmods as $mod) {
+            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod,
+                get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
+                '', '', '', array('turnitin_use', '==', 1));
         }
 
         $elements[] = array('html', get_string('pp_configuredesc', 'plagiarism_turnitin', $CFG->wwwroot));
@@ -110,7 +111,7 @@ class turnitinplugin_view {
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
 
         $config = turnitintooltwo_admin_config();
-        $config_warning = '';
+        $configwarning = '';
         $rubrics = array();
 
         if ($location == "activity") {
@@ -153,10 +154,10 @@ class turnitinplugin_view {
             $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
-            // Refresh Grades
+            // Refresh Grades.
             $refreshgrades = '';
             if ($cmid != 0) {
-                // If assignment has submissions then show a refresh grades button
+                // If assignment has submissions then show a refresh grades button.
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
                 if ($numsubs > 0) {
                     $refreshgrades = html_writer::tag('div', $OUTPUT->pix_icon('refresh', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
@@ -183,11 +184,11 @@ class turnitinplugin_view {
                 $quickmarkmanagerlink .= $OUTPUT->box_end(true);
             }
 
-            $use_turnitin = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'use_turnitin'));
+            $useturnitin = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'use_turnitin'));
 
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if (!empty($config->enablepeermark) && !empty($use_turnitin->value)) {
+            if (!empty($config->enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
                     $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
@@ -210,7 +211,7 @@ class turnitinplugin_view {
 
         $locks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
 
-        if (empty($config_warning)) {
+        if (empty($configwarning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
 
@@ -234,21 +235,21 @@ class turnitinplugin_view {
             $suboptions = array(0 => get_string('norepository', 'plagiarism_turnitin'),
                                 1 => get_string('standardrepository', 'plagiarism_turnitin'));
             switch ($config->repositoryoption) {
-                case 0; // Standard options
+                case 0; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
-                case 1; // Standard options + Allow Instituional Repository
+                case 1; // Standard options + Allow Instituional Repository.
                     $suboptions[2] = get_string('institutionalrepository', 'plagiarism_turnitin');
 
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
-                case 2; // Force Standard Repository
+                case 2; // Force Standard Repository.
                     $mform->addElement('hidden', 'plagiarism_submitpapersto', 1);
                     $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
                     break;
-                case 3; // Force No Repository
+                case 3; // Force No Repository.
                     $mform->addElement('hidden', 'plagiarism_submitpapersto', 0);
                     $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
                     break;
@@ -286,7 +287,7 @@ class turnitinplugin_view {
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
             $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
 
-            if ($location == 'defaults'){
+            if ($location == 'defaults') {
                 $mform->addElement('text', 'plagiarism_locked_message', get_string("locked_message", "plagiarism_turnitin"), 'maxlength="50" size="50"' );
                 $mform->setType('plagiarism_locked_message', PARAM_TEXT);
                 $mform->setDefault('plagiarism_locked_message', get_string("locked_message_default", "plagiarism_turnitin") );
@@ -523,13 +524,13 @@ class turnitinplugin_view {
     public function lock($mform, $location, $locks) {
 
         $field = end($mform->_elements)->_attributes['name'];
-        if ($location == 'defaults'){
-            // If we are on the site config level, show the lock UI
+        if ($location == 'defaults') {
+            // If we are on the site config level, show the lock UI.
             $mform->addElement('advcheckbox', $field . '_lock', '', get_string('locked', 'admin'), array('group' => 1) );
 
         } else {
 
-            // If we are at the plugin level, and we are locked then freeze
+            // If we are at the plugin level, and we are locked then freeze.
             $locked = (isset($locks[$field.'_lock']->value)) ? $locks[$field.'_lock']->value : 0;
             if ($locked) {
                 $mform->freeze($field);

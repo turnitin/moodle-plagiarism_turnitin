@@ -45,7 +45,7 @@ class turnitin_workshop {
     }
 
     public function get_author($itemid) {
-        return ;
+        return;
     }
 
     public function set_content($linkarray, $moduleid) {

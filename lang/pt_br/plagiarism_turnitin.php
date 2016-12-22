@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Plugin de plágio Turnitin';
 $string['turnitintooltwo'] = 'Ferramenta Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tarefa do Plugin de Plágio Turnitin';
 $string['connecttesterror'] = 'Ocorreu um erro ao se conectar no Turnitin, a mensagem de erro de retorno está abaixo:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Habilitar o Turnitin';
 $string['excludebiblio'] = 'Excluir Bibliografia';
 $string['excludequoted'] = 'Excluir Material Citado';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Para enviar um arquivo ao Turnitin, primeiro voc�
 $string['noscriptula'] = '(Como você não tem o JavaScript ativado, você terá que atualizar manualmente esta página antes de poder fazer um envio após aceitar o Acordo de Usuário Turnitin)';
 $string['filedoesnotexist'] = 'O arquivo foi excluído';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Configurações';
 $string['defaults'] = 'Configurações Padrão';
 $string['showusage'] = 'Mostrar Dados do Despejo';
@@ -108,20 +108,20 @@ $string['student'] = 'Aluno';
 $string['course'] = 'Curso';
 $string['module'] = 'Módulo';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Visualizar o Relatório de Originalidade';
 $string['launchrubricview'] = 'Visualizar a rubrica usada para avaliação';
 $string['turnitinppulapost'] = 'Seu arquivo não foi enviado ao Turnitin. Clique aqui para aceitar nosso Contrato de Licença do Usuário Final.';
 $string['ppsubmissionerrorseelogs'] = 'Esse arquivo não foi enviado ao Turnitin. Consulte o administrador do sistema';
 $string['ppsubmissionerrorstudent'] = 'Esse arquivo não foi enviado ao Turnitin. Consulte seu tutor para obter mais detalhes.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Notificações de Recebimento Digital do Plugin de Plágio Turnitin';
 $string['digitalreceipt'] = 'Recibo Digital';
 $string['digital_receipt_subject'] = 'Esse é o seu Recibo Digital Turnitin';
 $string['pp_digital_receipt_message'] = 'Prezado(a) {$a->firstname} {$a->lastname},<br /><br />Você enviou com sucesso o arquivo <strong>{$a->submission_title}</strong> para o trabalho <strong>{$a->assignment_name}{$a->assignment_part}</strong> na aula <strong>{$a->course_fullname}</strong> sobre <strong>{$a->submission_date}</strong>. A identificação do seu envio é <strong>{$a->submission_id}</strong>. Seu recibo digital completo pode ser visualizado e impresso a partir do botão imprimir/baixar no Visualizador de Documentos.<br /><br />Obrigado por usar o Turnitin,<br /><br />A Equipe Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Identificação Turnitin';
 $string['turnitinstatus'] = 'Status Turnitin';
 $string['pending'] = 'Pendente';
@@ -132,7 +132,7 @@ $string['student_read'] = 'O aluno visualizou o documento em:';
 $string['student_notread'] = 'O aluno não visualizou esse documento.';
 $string['launchpeermarkreviews'] = 'Iniciar as Revisões PeerMark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Número de eventos na fila de eventos do Plugin de Plágio';
 $string['ppcronsubmissionlimitreached'] = 'Nenhum outro envio será feito para o Turnitin por esta execução de cron, uma vez que são processados apenas {$a} por operação.';
 $string['cronsubmittedsuccessfully'] = 'Envio: {$a->title} (TII ID: {$a->submissionid}) para o trabalho {$a->assignmentname} no curso {$a->coursename} foi enviado com sucesso ao Turnitin.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'O Turnitin retornou um erro com o seu envio:';
 $string['turnitindeletionerror'] = 'Falha ao excluir o envio Turnitin. A cópia local do Moodle foi removida, mas o envio no Turnitin não pôde ser excluído.';
 $string['ppeventsfailedconnection'] = 'Nenhum evento será processado pelo plugin de plágio Turnitin por essa execução do cron, já que a conexão ao Turnitin não pode ser estabelecida.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Consulte seu tutor ou o administrador do sistema para obter mais detalhes';
 $string['faultcode'] = 'Código de falha';
 $string['line'] = 'Linha';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Ocorreu um erro ao tentar criar o envio n
 $string['pp_updatesubmissionerror'] = 'Ocorreu um erro ao tentar reenviar seus envios ao Turnitin';
 $string['tiisubmissiongeterror'] = 'Ocorreu um erro ao tentar obter um envio a partir do Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Fechar';
 $string['loadingdv'] = 'Carregando Visualizador de Documentos Turnitin...';
 $string['changerubricwarning'] = 'Ao alterar ou separar uma rubrica irá remover todas as pontuações de rubricas existentes dos documentos nesse trabalho, incluindo os cartões de pontuação que foram pontuados anteriormente . As notas gerais para trabalhos avaliados anteriormente serão mantidas.';
 $string['messageprovider:submission'] = 'Notificações de Recebimento Digital do Plugin de Plágio Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Status Turnitin';
 $string['deleted'] = 'Excluído';
 $string['pending'] = 'Pendente';

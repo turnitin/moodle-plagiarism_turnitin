@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'المكون الإضافي الخاص بسرقة محتوى Turnitin';
 $string['turnitintooltwo'] = 'أداة Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'وظيفة المكون الإضافي الخاص بسرقة محتوى Turnitin';
 $string['connecttesterror'] = 'حدث خطأ أثناء الاتصال بـ Turnitin وهذه رسالة الخطأ:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'تمكين Turnitin';
 $string['excludebiblio'] = 'استثناء المراجع';
 $string['excludequoted'] = 'استثناء نصوص الاقتباسات';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'لإرسال ملف إلى Turnitin، عليك أ
 $string['noscriptula'] = '"(لأن Javascript غير مفعل لديك سيتوجب عليك تحديث هذه الصفحة يدويًا قبل أن تتمكن من الإرسال و بعد الموافقة على اتفاقية المستخدم لـ Turnitin)"';
 $string['filedoesnotexist'] = 'تم حذف الملف';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'التكوين';
 $string['defaults'] = 'الإعدادات الافتراضية';
 $string['showusage'] = 'إظهار النسخة الاحتياطية للبيانات';
@@ -108,20 +108,20 @@ $string['student'] = 'طالب';
 $string['course'] = 'الدرس';
 $string['module'] = 'نموذج';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'عرض تقرير الاصالة';
 $string['launchrubricview'] = 'مشاهدة المعيار القياسي المستخدم لتحديد العلامات';
 $string['turnitinppulapost'] = 'لم يتم إرسال ملفك إلى Turnitin. الرجاء النقر هنا لقبول اتفاقية ترخيص المستخدم النهائي.';
 $string['ppsubmissionerrorseelogs'] = 'لم يتم إرسال هذا الملف إلى Turnitin، يُرجى استشارة مسؤول المدرسة لديك.';
 $string['ppsubmissionerrorstudent'] = 'لم يُرسل هذا الملف إلى Turnitin، يُرجى استشارة المدرس للحصول على مزيد من التفاصيل.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'إشعارات الإيصال الرقمي للمكون الإضافي الخاص بسرقة محتوى Turnitin';
 $string['digitalreceipt'] = 'إيصال رقمي';
 $string['digital_receipt_subject'] = 'هذا هو الإيصال الرقمي الخاص بك';
 $string['pp_digital_receipt_message'] = 'عزيزي {$a->firstname} {$a->lastname}،<br /><br />لقد أرسلت بنجاح ملف <strong>{$a->submission_title}</strong> إلى مهمة <strong>{$a->assignment_name}{$a->assignment_part}</strong> في الفصل الدراسي <strong>{$a->course_fullname}</strong> في <strong>{$a->submission_date}</strong>. معرف الإرسال هو <strong>{$a->submission_id}</strong>. يمكن رؤية الإيصال الرقمي الكامل الخاص بك وطباعته من زر الطباعة/التنزيل في عارض الوثائق.<br /><br />شكرًا لاستخدامك Turnitin،<br /><br />فريق Turnitin.';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'معرف Turnitin ';
 $string['turnitinstatus'] = 'حالة Turnitin ';
 $string['pending'] = 'قيد الانتظار';
@@ -132,7 +132,7 @@ $string['student_read'] = 'قام الطالب بعرض هذا المستند ف
 $string['student_notread'] = 'لم يقم الطالب بعرض هذا المستند.';
 $string['launchpeermarkreviews'] = 'ابدأ تشغيل مراجعات Peermark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'عدد الأحداث في قائمة أحداث المكون الإضافي الخاص بسرقة المحتوى';
 $string['ppcronsubmissionlimitreached'] = 'لن يتم إرسال إرسالات إضافية إلى Turnitin من خلال تنفيذ هذا الكرون، حيث يتم معالجة {$a} فقط لكل تشغيل.';
 $string['cronsubmittedsuccessfully'] = 'إرسال: تم إرسال{$a->title} (معرف TII: {$a->submissionid}) للمهمة {$a->assignmentname} على الدرس {$a->coursename} بنجاح إلى Turnitin.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'أعادت Turnitin خطأ يتعلق بإرس
 $string['turnitindeletionerror'] = 'فشل في حذف ارسال Turnitin. تك حذف نسخة Moodle المحلية لكن الإرسال إلى Turnitin لم يمكن حذفه.';
 $string['ppeventsfailedconnection'] = 'لن يتم معالجة أي أحداث بواسطة المكون الإضافي الخاص بسرقة محتويات Turnitin من خلال تنفيذ هذا الكرون، حيث يتعذر إنشاء اتصال بـ Turnitin.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'يرجى التشاور مع معلمك أو مسؤول النظام للحصول على مزيد من التفاصيل.';
 $string['faultcode'] = 'رمز الخطأ';
 $string['line'] = 'خط';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'حدث خطأ عند محاولة إنش�
 $string['pp_updatesubmissionerror'] = 'حدث خطأ عند محاولة إعادة تسليم ما قمت بتسليمه الى Turnitin';
 $string['tiisubmissiongeterror'] = 'حدث خطأ عند محاولة خلق المهمة في Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'إغلاق';
 $string['loadingdv'] = 'جاري تحميل عارض وثائق Turnitin ...';
 $string['changerubricwarning'] = 'سيؤدي تغيير أو إزالة أي معيار قياسي إلى إزالة جميع الدرجات القياسية الحالية من المستندات في هذه المهمة، التي تشتمل على بطاقات الدرجات التي تم تعليمها مسبقًا. ستظل الدرجات الإجمالية للمستندات المعلمة مسبقًا كما هي.';
 $string['messageprovider:submission'] = 'إشعارات الإيصال الرقمي للمكون الإضافي الخاص بسرقة محتوى Turnitin ';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'حالة Turnitin';
 $string['deleted'] = 'تم حذف';
 $string['pending'] = 'قيد الانتظار';

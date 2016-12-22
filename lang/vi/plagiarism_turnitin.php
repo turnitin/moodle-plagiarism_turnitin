@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Phần bổ trợ chống đạo văn của Turnitin';
 $string['turnitintooltwo'] = 'Công cụ Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tác vụ của Phần bổ trợ Chống đạo văn của Turnitin';
 $string['connecttesterror'] = 'Xảy ra lỗi khi kết nối với Turnitin, thông báo lỗi như sau:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Cho phép Turnitin';
 $string['excludebiblio'] = 'Loại trừ Mục lục tham khảo';
 $string['excludequoted'] = 'Loại trừ Tài liệu Trích dẫn';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Để nộp tập tin cho Turnitin, trước tiê
 $string['noscriptula'] = '(Do bạn không cho phép Javascript, bạn sẽ phải làm mới một cách thủ công trang này để có thể thực hiện nộp bài sau khi đã chấp nhận Thỏa thuận Người Dùng Turnitin)';
 $string['filedoesnotexist'] = 'Tập tin đã được xóa';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Cấu hình';
 $string['defaults'] = 'Cài đặt Mặc định';
 $string['showusage'] = 'Hiển thị Kết xuất Dữ liệu';
@@ -108,20 +108,20 @@ $string['student'] = 'Học sinh';
 $string['course'] = 'Khóa học';
 $string['module'] = 'Mô-đun';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Xem Báo cáo Độc Sáng';
 $string['launchrubricview'] = 'Xem Thang đánh giá dùng để chấm điểm';
 $string['turnitinppulapost'] = 'Tập tin của bạn chưa được nộp vào Turnitin. Vui lòng nhấp vào đây để chấp thuận EULA của chúng tôi.';
 $string['ppsubmissionerrorseelogs'] = 'Tập tin này chưa được nộp cho Turnitin, vui lòng tư vấn quản trị viên hệ thống của bạn';
 $string['ppsubmissionerrorstudent'] = 'Tập tin này chưa được nộp vào Turnitin, vui lòng tư vấn trợ giảng của bạn để biết thêm chi tiết';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Thông báo về Biên lai Điện tử trong Phần bổ trợ Chống đạo văn của Turnitin';
 $string['digitalreceipt'] = 'Biên lai Điện tử';
 $string['digital_receipt_subject'] = 'Đây là Biên lai Điện tử Turnitin của bạn';
 $string['pp_digital_receipt_message'] = '{$a->firstname} {$a->lastname} thân mến!<br /><br />Bạn đã nộp thành công tập tin <strong>{$a->submission_title}</strong> cho bài tập <strong>{$a->assignment_name}{$a->assignment_part}</strong> trong lớp <strong>{$a->course_fullname}</strong> trên <strong>{$a->submission_date}</strong>. Id bài nộp của bạn là <strong>{$a->submission_id}</strong>. Bạn có thể xem và in biên lai điện tử của mình từ nút in/tải về trong Trình xem Tài liệu.<br /><br />Cảm ơn bạn đã sử dụng Turnitin!<br /><br />Nhóm Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'ID Turnitin';
 $string['turnitinstatus'] = 'Trạng thái Turnitin';
 $string['pending'] = 'Đang chờ';
@@ -132,7 +132,7 @@ $string['student_read'] = 'Học sinh đã xem bài vào:';
 $string['student_notread'] = 'Học sinh vẫn chưa xem bài này.';
 $string['launchpeermarkreviews'] = 'Mở Bình duyệt Peermark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Số lượng sự kiện trong hàng đợi sự kiện của Phần bổ trợ Chống đạo văn';
 $string['ppcronsubmissionlimitreached'] = 'Sẽ không có thêm bài nộp nào được gửi tới Turnitin bằng lệnh thực thi cron này vì chỉ có {$a} được xử lý trên mỗi lần chạy';
 $string['cronsubmittedsuccessfully'] = 'Bài nộp: {$a->title} (ID TII: {$a->submissionid}) cho bài tập {$a->assignmentname} trên khóa học {$a->coursename} đã được nộp thành công cho Turnitin.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Turnitin đã trả về một lỗi với bà
 $string['turnitindeletionerror'] = 'Xóa bài nộp Turnitin không thành công. Bản lưu cục bộ trong Moodle đã được gỡ bỏ nhưng không thể xóa bài nộp trong Turnitin.';
 $string['ppeventsfailedconnection'] = 'Sẽ không có sự kiện nào được phần bổ trợ chống đạo văn của Turnitin xử lý bằng lệnh thực thi cron này vì không thể thiết lập kết nối tới Turnitin.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Vui lòng tư vấn trợ giảng hoặc quản trị viên hệ thống của bạn để biết thêm chi tiết';
 $string['faultcode'] = 'Mã Lỗi';
 $string['line'] = 'Dòng';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng tạ
 $string['pp_updatesubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng nộp lại bài nộp trên Turnitin';
 $string['tiisubmissiongeterror'] = 'Xảy ra lỗi khi đang cố gắng lấy bài nộp từ Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Đóng';
 $string['loadingdv'] = 'Đang tải Trình xem Tài liệu Turnitin...';
 $string['changerubricwarning'] = 'Thay đổi hoặc hủy đính kèm một thang đánh giá sẽ gỡ bỏ tất cả điểm đánh giá hiện có theo thang đánh giá đó khỏi các bài nộp trong bài tập này, kể cả các thẻ điểm đã được chấm trước đây. Điểm tổng quát cho những bài đã chấm trước đây sẽ được duy trì.';
 $string['messageprovider:submission'] = 'Thông báo về Biên lai Điện tử trong Phần bổ trợ Chống đạo văn của Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Trạng thái Turnitin';
 $string['deleted'] = 'Đã xóa';
 $string['pending'] = 'Đang chờ';

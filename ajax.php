@@ -24,7 +24,7 @@ require_login();
 $action = required_param('action', PARAM_ALPHAEXT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);
-if( !empty( $cmid ) ){
+if( !empty( $cmid ) ) {
     $cm = get_coursemodule_from_id('', $cmid);
     $context = context_course::instance($cm->course);
 
@@ -115,8 +115,8 @@ switch ($action) {
     case "peermarkmanager":
 
         if ($userrole == 'Instructor') {
-            $plagiarism_plugin_turnitin = new plagiarism_plugin_turnitin();
-            $coursedata = $plagiarism_plugin_turnitin->get_course_data($cm->id, $cm->course);
+            $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
+            $coursedata = $plagiarismpluginturnitin->get_course_data($cm->id, $cm->course);
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
@@ -187,23 +187,23 @@ switch ($action) {
 
         $message = optional_param('message', '', PARAM_ALPHAEXT);
 
-        // Get the id from the turnitintooltwo_users table so we can update
-        $turnitin_user = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
+        // Get the id from the turnitintooltwo_users table so we can update.
+        $turnitinuser = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
 
-        // Build user object for update
-        $eula_user = new stdClass();
-        $eula_user->id = $turnitin_user->id;
-        $eula_user->user_agreement_accepted = 0;
+        // Build user object for update.
+        $eulauser = new stdClass();
+        $eulauser->id = $turnitinuser->id;
+        $eulauser->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {
-            $eula_user->user_agreement_accepted = 1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitin_user->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
+            $eulauser->user_agreement_accepted = 1;
+            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
-            $eula_user->user_agreement_accepted = -1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitin_user->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
+            $eulauser->user_agreement_accepted = -1;
+            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
         }
 
-        // Update the user using the above object
-        $DB->update_record('turnitintooltwo_users', $eula_user, $bulk=false);
+        // Update the user using the above object.
+        $DB->update_record('turnitintooltwo_users', $eulauser, $bulk = false);
         break;
 
     case "resubmit_event":

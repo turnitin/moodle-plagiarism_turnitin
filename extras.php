@@ -61,7 +61,7 @@ switch ($cmd) {
                                     window.document.forms[0].submit();
                                     //-->");
         exit;
-    	break;
+        break;
 }
 
 // Build page.

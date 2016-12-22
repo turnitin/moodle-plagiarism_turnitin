@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin 剽竊 Plugin';
 $string['turnitintooltwo'] = 'Turnitin 工具';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 剽竊 Plugin 工作';
 $string['connecttesterror'] = '連線至 Turnitin 時發生錯誤，傳回的錯誤訊息如下：<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = '啟用 Turnitin';
 $string['excludebiblio'] = '不含參考書目';
 $string['excludequoted'] = '不含引用資料內容';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = '若要將檔案提交至 Turnitin，您必須先�
 $string['noscriptula'] = '(因為您並未啟用 Javascript，在接受 Turnitin 使用者協議後，您必須手動更新此頁面，然後才能提交物件)';
 $string['filedoesnotexist'] = '檔案已遭到刪除';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = '配置';
 $string['defaults'] = '預設設定';
 $string['showusage'] = '顯示資料傾印';
@@ -108,20 +108,20 @@ $string['student'] = '學生';
 $string['course'] = '課程';
 $string['module'] = '單元';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = '檢視原創性報告';
 $string['launchrubricview'] = '檢視標示用的評分表';
 $string['turnitinppulapost'] = '並未將您的檔案提交至 Turnitin。請按一下這裡，以接受我們的 EULA。';
 $string['ppsubmissionerrorseelogs'] = '這個檔案並未提交至 Turnitin，請連絡您的系統管理員';
 $string['ppsubmissionerrorstudent'] = '這個檔案並未提交至 Turnitin，請連絡您的指導教師，以取得更多詳細資料';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin 剽竊 Plugin 電子回條通知';
 $string['digitalreceipt'] = '電子回條';
 $string['digital_receipt_subject'] = '這是您的 Turnitin 電子回條';
 $string['pp_digital_receipt_message'] = '{$a->firstname} {$a->lastname} 您好：<br /><br />您已在 <strong>{$a->submission_date}</strong> 上成功將檔案 <strong>{$a->submission_title}</strong> 提交至課程 <strong>{$a->course_fullname}</strong> 中的作業 <strong>{$a->assignment_name}{$a->assignment_part}</strong>。您的提交 ID 為 <strong>{$a->submission_id}</strong>。您可以從文件檢視工具列印/下載按鈕，來檢視或列印完整的電子回條。<br /><br />感謝您使用 Turnitin，<br /><br />Turnitin 團隊敬上';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin ID';
 $string['turnitinstatus'] = 'Turnitin 狀態';
 $string['pending'] = '等待中';
@@ -132,7 +132,7 @@ $string['student_read'] = '學生檢視報告於：';
 $string['student_notread'] = '學生尚未檢視此報告。';
 $string['launchpeermarkreviews'] = '啟動 Peermark 評論';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = '剽竊 Plugin 事件佇列中的事件數';
 $string['ppcronsubmissionlimitreached'] = '因為每次執行這個 Corn，只能處理 {$a} 個，所以不會再將提交物件傳送至 Turnitin。';
 $string['cronsubmittedsuccessfully'] = '課程 {$a->coursename} 上作業 {$a->assignmentname} 的提交物件：{$a->title} (TII ID：{$a->submissionid}) 已成功提交至 Turnitin。';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Turnitin 已傳回有關提交物件的錯誤�
 $string['turnitindeletionerror'] = 'Turnitin 提交物件刪除失敗。本機的 Moodle 複本已遭到移除，但無法刪除 Turnitin 內的提交物件。';
 $string['ppeventsfailedconnection'] = '因為無法與 Turnitin 建立連接，所以執行此 Cron，Turnitin 剽竊 Plugin 也不會處理任何事件。';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = '請連絡您的指導教師或系統管理員，以取得更多詳細資料';
 $string['faultcode'] = '錯誤代號';
 $string['line'] = '列';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = '嘗試在 Turnitin 內建立提交物件�
 $string['pp_updatesubmissionerror'] = '嘗試將您的提交物件重新提交至 Turnitin 時發生錯誤';
 $string['tiisubmissiongeterror'] = '嘗試從 Turnitin 內取得提交物件時發生錯誤';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = '關閉';
 $string['loadingdv'] = '正在載入 Turnitin 文件檢視工具...';
 $string['changerubricwarning'] = '變更或分離評語，會將從此作業內的報告中移除現有的所有評語分數，包括之前標示的計分卡。之前已評分報告的整體成績則會予以保留。';
 $string['messageprovider:submission'] = 'Turnitin 剽竊 Plugin 電子回條通知';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin 狀態';
 $string['deleted'] = '已刪除';
 $string['pending'] = '等待中';

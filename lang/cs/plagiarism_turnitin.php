@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Plugin plagiátorství Turnitin';
 $string['turnitintooltwo'] = 'Nástroj Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Úloha pluginu plagiátorství Turnitin';
 $string['connecttesterror'] = 'Došlo k chybě během připojení k Turnitin. Následuje chybové hlášení níže:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Povolit Turnitin';
 $string['excludebiblio'] = 'Nezahrnout bibliografii';
 $string['excludequoted'] = 'Nezahrnout citovaný materiál';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Chcete-li odevzdat soubor do služby Turnitin, mu
 $string['noscriptula'] = '(Jelikož nemáte zapnutý jazyk Javascript, budete muset tuto stránku ručně obnovit předtím, než budete moci provést odevzdání své práce, a to až po přijetí Podmínek pro uživatele Turnitin)';
 $string['filedoesnotexist'] = 'Soubor byl smazán.';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Konfigurace';
 $string['defaults'] = 'Výchozí nastavení';
 $string['showusage'] = 'Zobrazit výpis dat';
@@ -108,20 +108,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Kurz';
 $string['module'] = 'Modul';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Zobrazit zprávu o původnosti';
 $string['launchrubricview'] = 'Zobrazit rubriku použitou ke známkování';
 $string['turnitinppulapost'] = 'Váš soubory nebyl odevzdán do systému Turnitin. Kliknutím zde přijmete naši smlouvu EULA.';
 $string['ppsubmissionerrorseelogs'] = 'Soubor nebyl odevzdán do systému Turnitin. Poraďte se se správcem systému.';
 $string['ppsubmissionerrorstudent'] = 'Soubor nebyl předán do systému Turnitin. Další informace vám podá váš vyučující.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Oznámení digitálního příjmu pluginu plagiátorství Turnitin';
 $string['digitalreceipt'] = 'Digitální doklad';
 $string['digital_receipt_subject'] = 'Toto je váš digitální doklad Turnitin';
 $string['pp_digital_receipt_message'] = 'Vážený {$a->firstname} {$a->lastname},<br /><br />úspěšně jste odevzdal/a soubor <strong>{$a->submission_title}</strong> do přiřazení <strong>{$a->assignment_name}{$a->assignment_part}</strong> v kurzu <strong>{$a->course_fullname}</strong> na <strong>{$a->submission_date}</strong>. Vaše ID odevzdání je <strong>{$a->submission_id}</strong>. Váš digitální doklad lze zobrazit a vytisknout pomocí tlačítka tisk/stáhnout v Prohlížeči dokumentů.<br /><br />Děkujeme, že používáte systém Turnitin,<br /><br />Tým Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'ID Turnitin';
 $string['turnitinstatus'] = 'Stav systému Turnitin';
 $string['pending'] = 'Probíhá';
@@ -132,7 +132,7 @@ $string['student_read'] = 'Student si práci prohlédl dne:';
 $string['student_notread'] = 'Student si tuto práci neprohlédl.';
 $string['launchpeermarkreviews'] = 'Spustit Posudky Peermark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Počet událostí ve frontě pluginu plagiátorství';
 $string['ppcronsubmissionlimitreached'] = 'Do systému Turnitin nebyly odeslány žádné další odevzdání tímto spuštěním cron, jelikož na spuštění bylo zpracováno pouze {$a}';
 $string['cronsubmittedsuccessfully'] = 'Odevzdání: {$a->title} (TII ID: {$a->submissionid}) pro přiřazení {$a->assignmentname} v kurzu {$a->coursename} bylo úspěšně odevzdáno do systému Turnitin.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Systém Turnitin vrátil s odevzdáním chybu:
 $string['turnitindeletionerror'] = 'Smazání odevzdaných prací Turnitin se nezdařilo. Místní kopie Moodle byla odstraněna, ale odevzdané práce v systému Turnitin nebylo možné smazat.';
 $string['ppeventsfailedconnection'] = 'V rámci tohoto spuštění cron nebudou pluginem plagiátorství Turnitin zpracovány žádné události, jelikož připojení k systému Turnitin nelze navázat.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Další informace vám podá váš vyučující nebo správce systému.';
 $string['faultcode'] = 'Chybný kód';
 $string['line'] = 'Řádek';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Došlo k chybě při tvoření odevzdán�
 $string['pp_updatesubmissionerror'] = 'Došlo k chybě při opětovném odeslání vaší odevzdané práce do systému Turnitin';
 $string['tiisubmissiongeterror'] = 'Došlo k chybě při získávání odevzdané práce ze systému Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Zavřít';
 $string['loadingdv'] = 'Načítá se Prohlížeč dokumentů Turnitin...';
 $string['changerubricwarning'] = 'Úprava nebo odpojení rubriky odstraní všechna existující bodování rubrik u prací v tomto úkolu včetně bodovacích karet, které byly předtím oznámkované. U dříve ohodnocených prací zůstane celkové hodnocení zachováno.';
 $string['messageprovider:submission'] = 'Oznámení digitálního příjmu pluginu plagiátorství Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Stav systému Turnitin';
 $string['deleted'] = 'Smazáno';
 $string['pending'] = 'Probíhá';

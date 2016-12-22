@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Plugin de detectare a plagiatului Turnitin';
 $string['turnitintooltwo'] = 'Instrument Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Procesul plugin de detectare a plagiatului Turnitin';
 $string['connecttesterror'] = 'Eroare la conectarea la Turnitin. S-a returnat mesajul de eroare de mai jos:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Activare Turnitin';
 $string['excludebiblio'] = 'Excluderea bibliografiei';
 $string['excludequoted'] = 'Excluderea citatelor';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Pentru a putea depune un fișier în Turnitin, tr
 $string['noscriptula'] = '(Întrucât nu aveți Javascript activat, va trebui să reîncărcați manual această pagină pentru a putea depune o lucrare după acceptarea Acordului de utilizator Turnitin)';
 $string['filedoesnotexist'] = 'Fișierul a fost șters';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Configurație';
 $string['defaults'] = 'Setări implicite';
 $string['showusage'] = 'Afișarea conținutului bazei de date';
@@ -108,20 +108,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Curs';
 $string['module'] = 'Modul';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Vizualizarea Raportului privind originalitatea';
 $string['launchrubricview'] = 'Vizualizarea baremului folosit pentru însemnări';
 $string['turnitinppulapost'] = 'Fișierul nu a fost depus în Turnitin. Faceți clic aici pentru a accepta EULA.';
 $string['ppsubmissionerrorseelogs'] = 'Acest fișier nu a fost depus în Turnitin, consultați administratorul de sistem';
 $string['ppsubmissionerrorstudent'] = 'Acest fișier nu a fost depus în Turnitin, consultați-vă îndrumătorul pentru mai multe detalii';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Notificări privind confirmările digitale din pluginul de detectare a plagiatului Turnitin';
 $string['digitalreceipt'] = 'Confirmare digitală';
 $string['digital_receipt_subject'] = 'Aceasta este Confirmarea digitală Turnitin';
 $string['pp_digital_receipt_message'] = 'Stimate/Stimată {$a->firstname} {$a->lastname},<br /><br />Ați depus cu succes fișierul <strong>{$a->submission_title}</strong> cu tema <strong>{$a->assignment_name}{$a->assignment_part}</strong> din cursul <strong>{$a->course_fullname}</strong>, pe data de <strong>{$a->submission_date}</strong>. ID-ul depunerii este <strong>{$a->submission_id}</strong>. Confirmarea digitală completă se poate vizualiza și imprima prin intermediul butonului de imprimare/descărcare din vizualizatorul de documente.<br /><br />Vă mulțumim pentru utilizarea Turnitin,<br /><br />Echipa Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'ID Turnitin';
 $string['turnitinstatus'] = 'Stare Turnitin';
 $string['pending'] = 'În așteptare';
@@ -132,7 +132,7 @@ $string['student_read'] = 'Studentul a văzut lucrarea la:';
 $string['student_notread'] = 'Studentul nu a văzut această lucrare.';
 $string['launchpeermarkreviews'] = 'Lansare evaluări Peermark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Numărul evenimentelor din coada de evenimente a pluginului de detectare a plagiatului';
 $string['ppcronsubmissionlimitreached'] = 'La această executare a lucrării cron nu se mai trimit în Turnitin alte depuneri, deoarece la o executare se procesează cel mult {$a}';
 $string['cronsubmittedsuccessfully'] = 'Lucrarea: {$a->title} (ID TII: {$a->submissionid}) pentru tema {$a->assignmentname} din cursul {$a->coursename} a fost depusă cu succes în Turnitin.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Turnitin a returnat o eroare legată de depune
 $string['turnitindeletionerror'] = 'Ștergerea depunerii Turnitin nu a reușit. Copia locală Moodle a fost înlăturată, dar depunerea din Turnitin nu a putut fi ștearsă.';
 $string['ppeventsfailedconnection'] = 'La această executare a lucrării cron nu se vor procesa alte evenimente cu pluginul de detectare a plagiatului Turnitin, deoarece nu se poate stabili conexiunea cu Turnitin.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Consultați-vă îndrumătorul sau administratorul de sistem pentru mai multe detalii';
 $string['faultcode'] = 'Cod de eroare';
 $string['line'] = 'Linie';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Eroare la încercarea de a crea depunerea
 $string['pp_updatesubmissionerror'] = 'Eroare la încercarea de a redepune lucrarea în Turnitin';
 $string['tiisubmissiongeterror'] = 'Eroare la încercarea de a obține o depunere de la Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Închidere';
 $string['loadingdv'] = 'Se încarcă vizualizatorul de documente Turnitin...';
 $string['changerubricwarning'] = 'Modificarea sau detașarea unui barem va înlătura din lucrările cu această temă toate punctajele acordate pe baza baremului, inclusiv grilele de notare punctate anterior. Notele generale ale lucrărilor notate anterior se vor păstra.';
 $string['messageprovider:submission'] = 'Notificări privind confirmările digitale din pluginul de detectare a plagiatului Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Stare Turnitin';
 $string['deleted'] = 'Șters';
 $string['pending'] = 'În așteptare';

@@ -98,7 +98,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
         if ($this->task->is_samesite()) {
             $data = (object)$data;
             $recordexists = (!empty($data->externalid)) ? $DB->record_exists('plagiarism_turnitin_files',
-                array('externalid'=>$data->externalid)) : false;
+                array('externalid' => $data->externalid)) : false;
 
             if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();

@@ -1,18 +1,18 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin-Plugin zur Plagiarismuserkennung';
 $string['turnitintooltwo'] = 'Turnitin-Tool';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin-Plugin zur Plagiarismuserkennung – Aufgabe';
 $string['connecttesterror'] = 'Bei der Verbindung mit Turnitin ist ein Fehler aufgetreten, siehe Fehlermeldung:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Turnitin aktivieren';
 $string['excludebiblio'] = 'Bibliografie ausschließen';
 $string['excludequoted'] = 'Zitiertes Material ausschließen';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Vor der Übermittung einer Datei an Turnitin müsse
 $string['noscriptula'] = '(Da Sie Javascript nicht aktiviert haben, müssen Sie diese Seite manuell aktualisieren, ehe Sie nach dem Akzeptieren der Nutzungsbedingungen von Turnitin eine Übermittlung vornehmen können)';
 $string['filedoesnotexist'] = 'Datei wurde gelöscht';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Konfiguration';
 $string['defaults'] = 'Standardeinstellungen';
 $string['showusage'] = 'Datenspeicher anzeigen';
@@ -108,20 +108,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Kurs';
 $string['module'] = 'Module';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Echtheitsbericht anzeigen';
 $string['launchrubricview'] = 'Die für das Markieren verwendete Rubik anzeigen';
 $string['turnitinppulapost'] = 'Ihre Datei wurde nicht an Turnitin übermittelt. Klicken Sie hier, um unsere EULA zu akzeptieren.';
 $string['ppsubmissionerrorseelogs'] = 'Diese Datei wurde nicht an Turnitin übermittelt; wenden Sie sich an Ihren Systemadministrator.';
 $string['ppsubmissionerrorstudent'] = 'Diese Datei wurde nicht an Turnitin übermittelt, für zusätzliche Details kontaktieren Sie bitte Ihren Tutor';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin-Plugin zur Plagiarismuserkennung – Benachrichtigungen zum digitalen Beleg';
 $string['digitalreceipt'] = 'Digitaler Beleg';
 $string['digital_receipt_subject'] = 'Dies ist Ihr digitaler Beleg von Turnitin.';
 $string['pp_digital_receipt_message'] = 'Sehr geehrte/r {$a->firstname} {$a->lastname},<br /><br />Sie haben die Datei <strong>{$a->submission_title}</strong> für die Aufgabe <strong>{$a->assignment_name}{$a->assignment_part}</strong> in Kurs <strong>{$a->course_fullname}</strong> am <strong>{$a->submission_date}</strong> erfolgreich hochgeladen. Ihre Übermittlungs-ID lautet <strong>{$a->submission_id}</strong>. Ihren vollständigen digitalen Beleg können Sie über die Schaltfläche „Drucken/Download“ in der Dokumentenansicht anzeigen und drucken.<br /><br />Vielen Dank, dass Sie Turnitin verwenden,<br /><br />das Turnitin-Team';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin-ID';
 $string['turnitinstatus'] = 'Turnitin-Status';
 $string['pending'] = 'Ausstehend';
@@ -132,7 +132,7 @@ $string['student_read'] = 'Der Student hat die Arbeit aufgerufen über:';
 $string['student_notread'] = 'Der Student hat die Arbeit nicht aufgerufen.';
 $string['launchpeermarkreviews'] = 'PeerMark-Reviews starten';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Anzahl der Ereignisse in der Ereigniswarteschlange des Plugin zur Plagiarismuserkennung';
 $string['ppcronsubmissionlimitreached'] = 'Von diesem Cron-Ausdruck werden keine weiteren Übermittlungen mehr an Turnitin gesendet, da nur {$a} pro Ausführung verarbeitet werden.';
 $string['cronsubmittedsuccessfully'] = 'Übermittlung: {$a->title} (TII-ID: {$a->submissionid}) für die Aufgabe {$a->assignmentname} in Kurs {$a->coursename} wurde erfolgreich an Turnitin übermittelt.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Turnitin hat einen Fehler für Ihre Übermittlun
 $string['turnitindeletionerror'] = 'Die Löschung der Turnitin-Übermittlung ist fehlgeschlagen. Die lokale Moodle-Kopie wurde entfernt, die Übermittlung bei Turnitin konnte jedoch nicht gelöscht werden.';
 $string['ppeventsfailedconnection'] = 'In dieser Cron-Ausführung werden vom Turnitin-Plugin zur Plagiarismuserkennung keine Ereignisse verarbeitet, da keine Verbindung mit Turnitin hergestellt werden kann.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Weitere Informationen erhalten Sie von Ihrem Tutor oder dem Systemadministrator.';
 $string['faultcode'] = 'Fehlercode';
 $string['line'] = 'Linie';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Beim Versuch, eine Übermittlung zu Turnit
 $string['pp_updatesubmissionerror'] = 'Beim Versuch, Ihre Übermittlung zu Turnitin erneut vorzunehmen, ist ein Fehler aufgetreten.';
 $string['tiisubmissiongeterror'] = 'Beim Versuch, eine Übermittlung vom Turnitin zu erhalten, ist ein Fehler aufgetreten.';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Schließen';
 $string['loadingdv'] = 'Turnitin-Dokumentenansicht wird geladen...';
 $string['changerubricwarning'] = 'Durch das Ändern oder Entfernen einer Rubrik werden alle vorhandenen Rubrikbewertungen der Arbeiten zu dieser Aufgabe entfernt, einschließlich ausgefüllter Bewertungskarten. Gesamtnoten für zuvor bewertete Arbeiten bleiben erhalten.';
 $string['messageprovider:submission'] = 'Turnitin-Plugin zur Plagiarismuserkennung – Benachrichtigungen zum digitalen Beleg';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin-Status';
 $string['deleted'] = 'Gelöscht';
 $string['pending'] = 'Ausstehend';

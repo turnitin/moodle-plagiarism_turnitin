@@ -1,18 +1,18 @@
 ﻿<?php
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin 표절 플러그인';
 $string['turnitintooltwo'] = 'Turnitin 도구';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 표절 플러그인 작업';
 $string['connecttesterror'] = 'Turnitin에 연결하는 데 오류가 생겼습니다. 오류 메시지가 아래에 있습니다.<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Turnitin 활성화 하기';
 $string['excludebiblio'] = '참고 문헌 제외';
 $string['excludequoted'] = '인용 자료 제외';
@@ -77,7 +77,7 @@ $string['turnitinppulapre'] = 'Turnitin에 파일을 제출하려면 먼저 당�
 $string['noscriptula'] = '(Javascript가 활성화되지 않았으므로 Turnitin 사용자 동의서에 동의하고 본 페이지를 수동적으로 새로고침한 후 제출을 하여야 합니다)';
 $string['filedoesnotexist'] = '파일이 삭제되었습니다.';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = '구성';
 $string['defaults'] = '기본 환경';
 $string['showusage'] = '데이타 덤프 표시하기';
@@ -108,20 +108,20 @@ $string['student'] = '학생';
 $string['course'] = '코스';
 $string['module'] = '모듈';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = '독창성 보고서 보기';
 $string['launchrubricview'] = '채점에 사용된 채점표 보기';
 $string['turnitinppulapost'] = '귀하의 파일은 Turnitin에 제출되지 않았습니다. 당사 EULA를 수락하려면 여기를 클릭하십시오.';
 $string['ppsubmissionerrorseelogs'] = '이 파일은 Turnitin에 제출되지 않았습니다. 시스템 관리자에게 문의하십시오.';
 $string['ppsubmissionerrorstudent'] = '이 파일은 Turnitin에 제출되지 않았습니다. 자세한 내용은 담당 튜터와 상의하십시오.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin 표절 플러그인 디지털 수령 알림';
 $string['digitalreceipt'] = '디지털 수령증';
 $string['digital_receipt_subject'] = '귀하의 Turnitin 디지털 수령증입니다.';
 $string['pp_digital_receipt_message'] = '{$a->firstname} {$a->lastname}님,<br /><br /><strong>{$a->submission_date}</strong>에 수강하신 <strong>{$a->course_fullname}</strong> 클래스의 <strong>{$a->assignment_name}{$a->assignment_part}</strong> 과제에 해당하는 <strong>{$a->submission_title}</strong> 파일을 성공적으로 제출하였습니다. 제출 ID는 <strong>{$a->submission_id}</strong>입니다. 디지털 수령증은 문서보기 창의 프린트/다운로드 버튼을 눌러 확인 및 인쇄할 수 있습니다.<br /><br />Turnitin을 이용해 주셔서 감사합니다.<br /><br />Turnitin 팀';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin 아이디';
 $string['turnitinstatus'] = 'Turnitin 상태';
 $string['pending'] = '보류 중';
@@ -132,7 +132,7 @@ $string['student_read'] = '학생이 보고서를 본 날짜:';
 $string['student_notread'] = '학생이 이 보고서를 보지 않았습니다.';
 $string['launchpeermarkreviews'] = 'Peermark 평가 개시하기';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = '표절 플러그인 이벤트 queue의 이벤트 수';
 $string['ppcronsubmissionlimitreached'] = '이 cron 실행당 {$a}개의 제출물만 처리되므로 더 이상 Turnitin에 제출물이 전송되지 않습니다.';
 $string['cronsubmittedsuccessfully'] = '{$a->coursename} 코스의 {$a->assignmentname} 과제에 대한 제출물: {$a->title}(TII ID: {$a->submissionid})이(가) Turnitin에 성공적으로 제출되었습니다.';
@@ -140,7 +140,7 @@ $string['pp_submission_error'] = 'Turnitin이 귀하의 제출에 대한 오류 
 $string['turnitindeletionerror'] = 'Turnitin 제출물 삭제에 실패하였습니다.로컬 Moodle 복사본은 제거되었지만 Turnitin 상의 제출물을 삭제할 수 없었습니다.';
 $string['ppeventsfailedconnection'] = 'Turnitin에 대한 접속을 구성할 수 없기 때문에 이 cron 실행으로는 Turnitin 표절 플러그인에 의한 이벤트 처리가 불가능합니다.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = '자세한 내용은 담당 튜터나 시스템 관리자와 상의하십시오.';
 $string['faultcode'] = '착오 코드';
 $string['line'] = '열';
@@ -169,13 +169,13 @@ $string['pp_createsubmissionerror'] = 'Turnitin에서 제출물을 생성하는�
 $string['pp_updatesubmissionerror'] = 'Turnitin에 대해 제출물을 재제출하는데 오류가 발생하였습니다';
 $string['tiisubmissiongeterror'] = 'Turnitin에서 제출물을 가져오는데 오류가 발생하였습니다';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = '닫기';
 $string['loadingdv'] = 'Turnitin 문서보기 창 로드 중...';
 $string['changerubricwarning'] = '채점표를 변경하거나 분리하면 이미 채점이 된 점수카드를 포함하여 해당 과제에 있는 보고서들의 기존 채점표 채점사항이 모두 제거됩니다.';
 $string['messageprovider:submission'] = 'Turnitin 표절 플러그인 디지털 수령 알림';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin 상태';
 $string['deleted'] = '삭제됨';
 $string['pending'] = '보류 중';

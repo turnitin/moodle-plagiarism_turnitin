@@ -321,6 +321,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 continue;
             }
 
+		if (!$module){
+			#Skip module that isn't installed.
+			continue;
+		}
+
             // Get all the course modules that have Turnitin enabled
             $sql = "SELECT cm.id
                     FROM {course_modules} cm

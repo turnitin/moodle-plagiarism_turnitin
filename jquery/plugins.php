@@ -19,6 +19,8 @@
  * @copyright 2012 iParadigms LLC
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $plugins = array(
     'plagiarism-turnitin_module'        => array('files' => array('turnitin_module.js')),
     'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js'))

@@ -70,7 +70,7 @@ class turnitinplugin_view {
         // Enable Turnitin for specific modules.
         $supportedmods = array('assign', 'forum', 'workshop');
 
-        if ($DB->record_exists('modules',array('name' => 'coursework','visible' => 1))) {
+        if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
             $supportedmods[] = 'coursework';
         }
 
@@ -164,7 +164,8 @@ class turnitinplugin_view {
                                                 html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refresh_grades'));
 
-                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
+                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading',
+                        get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
                                                 html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refreshing_grades'));
                 }

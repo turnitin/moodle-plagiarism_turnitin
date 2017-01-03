@@ -42,7 +42,7 @@ if (isset($_SESSION["notice"])) {
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
 $supportedmods = array('assign', 'forum', 'workshop');
 
-if ($DB->record_exists('modules',array('name' => 'coursework', 'visible' => 1))) {
+if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
     $supportedmods[] = 'coursework';
 }
 

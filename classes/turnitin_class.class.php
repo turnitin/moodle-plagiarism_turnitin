@@ -19,6 +19,8 @@
  * @copyright 2012 iParadigms LLC *
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__.'/turnitin_comms.class.php');
 
 class turnitin_class {
@@ -61,7 +63,8 @@ class turnitin_class {
             $rubrics = $readclass->getSharedRubrics();
             $rubricarray = array();
             foreach ($rubrics as $rubric) {
-                $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()." [".get_string('sharedrubric', 'plagiarism_turnitin')."]";
+                $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()."
+                [".get_string('sharedrubric', 'plagiarism_turnitin')."]";
             }
 
             $this->sharedrubrics = $rubricarray;

@@ -19,7 +19,9 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
+defined('MOODLE_INTERNAL') || die();
+
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_forum {
 
     private $modname;

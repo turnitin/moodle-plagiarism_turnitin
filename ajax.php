@@ -24,7 +24,7 @@ require_login();
 $action = required_param('action', PARAM_ALPHAEXT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);
-if( !empty( $cmid ) ) {
+if ( !empty( $cmid ) ) {
     $cm = get_coursemodule_from_id('', $cmid);
     $context = context_course::instance($cm->course);
 

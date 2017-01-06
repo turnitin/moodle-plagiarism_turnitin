@@ -300,11 +300,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $courseid = (int)$data['other']['reset_options']['courseid'];
         $resetcourse = true;
 
-        $resetassignsubmissions = $data['other']['reset_options']['reset_assign_submissions']);
+        $resetassignsubmissions = $data['other']['reset_options']['reset_assign_submissions'];
         $resetassign = (isset($reset_assign_submissions) ? $reset_assign_submissions : 0;
 
-        $reset_forum_all = $data['other']['reset_options']['reset_forum_all']);
-        $resetforum = (isset($reset_forum_all) ? $reset_forum_all : 0;
+        $resetforumall = $data['other']['reset_options']['reset_forum_all'];
+        $resetforum = (isset($resetforumall) ? $reset_forum_all : 0;
 
         // Get the modules that support the Plagiarism plugin by whether they have a class file.
         $supportedmods = array();
@@ -1224,7 +1224,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
 
-                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 
+                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance,
                             'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
                         $item = current($submission);
 
@@ -1692,7 +1692,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         // Erater settings.
-        $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ?  $modulepluginsettings["plagiarism_erater"] : 0);
+        $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ? $modulepluginsettings["plagiarism_erater"] : 0);
         $assignment->setEraterSpelling((isset($modulepluginsettings["plagiarism_erater_spelling"])) ? $modulepluginsettings["plagiarism_erater_spelling"] : 0);
         $assignment->setEraterGrammar((isset($modulepluginsettings["plagiarism_erater_grammar"])) ? $modulepluginsettings["plagiarism_erater_grammar"] : 0);
         $assignment->setEraterUsage((isset($modulepluginsettings["plagiarism_erater_usage"])) ? $modulepluginsettings["plagiarism_erater_usage"] : 0);

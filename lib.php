@@ -301,10 +301,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $resetcourse = true;
 
         $resetassignsubmissions = $data['other']['reset_options']['reset_assign_submissions'];
-        $resetassign = (isset($reset_assign_submissions) ? $reset_assign_submissions : 0;
+        $resetassign = (isset($resetassignsubmissions)) ? $resetassignsubmissions : 0;
 
         $resetforumall = $data['other']['reset_options']['reset_forum_all'];
-        $resetforum = (isset($resetforumall) ? $reset_forum_all : 0;
+        $resetforum = (isset($resetforumall)) ? $resetforumall : 0;
 
         // Get the modules that support the Plagiarism plugin by whether they have a class file.
         $supportedmods = array();

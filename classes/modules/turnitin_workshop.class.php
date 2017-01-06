@@ -25,12 +25,12 @@ defined('MOODLE_INTERNAL') || die();
 class turnitin_workshop {
 
     private $modname;
-    public $grades_table;
+    public $gradestable;
     public $filecomponent;
 
     public function __construct() {
         $this->modname = 'workshop';
-        $this->grades_table = 'grade_grades';
+        $this->gradestable = 'grade_grades';
         $this->filecomponent = 'mod_'.$this->modname;
     }
 

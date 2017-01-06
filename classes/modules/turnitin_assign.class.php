@@ -25,12 +25,12 @@ defined('MOODLE_INTERNAL') || die();
 class turnitin_assign {
 
     private $modname;
-    public $grades_table;
+    public $gradestable;
     public $filecomponent;
 
     public function __construct() {
         $this->modname = 'assign';
-        $this->grades_table = $this->modname.'_grades';
+        $this->gradestable = $this->modname.'_grades';
         $this->filecomponent = $this->modname.'submission_file';
     }
 

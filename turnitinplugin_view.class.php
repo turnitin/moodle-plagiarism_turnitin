@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
+}
+
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 require_once(__DIR__.'/lib.php');
 
@@ -299,7 +303,7 @@ class turnitinplugin_view {
                 // Populate Rubric options.
                 $rubricoptions = array('' => get_string('norubric', 'plagiarism_turnitin')) + $rubrics;
                 if (!empty($currentrubric)) {
-                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ?
+                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ? 
                                     $rubricoptions[$currentrubric] : get_string('otherrubric', 'plagiarism_turnitin');
                 }
 

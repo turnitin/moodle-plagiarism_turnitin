@@ -141,7 +141,7 @@ switch ($action) {
         break;
 
     case "rubricview":
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
+        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) : 
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
@@ -161,7 +161,7 @@ switch ($action) {
 
     case "peermarkreviews":
 
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) :
+        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) : 
                                                 has_capability('mod/'.$cm->modname.':submit', $context);
 
         if ($userrole == 'Instructor' || $isstudent) {

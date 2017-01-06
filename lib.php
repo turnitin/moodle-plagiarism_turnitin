@@ -256,8 +256,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismelements = $this->get_settings_fields();
 
             $turnitinpluginview = new turnitinplugin_view();
-            $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? 
-                                                                $plagiarismvalues["plagiarism_rubric"] : 0;
+            $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
 
             // Create/Edit course in Turnitin and join user to class.
             $course = $this->get_course_data($cmid, $COURSE->id);
@@ -301,10 +300,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $courseid = (int)$data['other']['reset_options']['courseid'];
         $resetcourse = true;
 
-        $resetassign = (isset($data['other']['reset_options']['reset_assign_submissions'])) ? 
-                            $data['other']['reset_options']['reset_assign_submissions'] : 0;
-        $resetforum = (isset($data['other']['reset_options']['reset_forum_all'])) ? 
-                            $data['other']['reset_options']['reset_forum_all'] : 0;
+        $resetassignsubmissions = $data['other']['reset_options']['reset_assign_submissions']);
+        $resetassign = (isset($reset_assign_submissions) ? $reset_assign_submissions : 0;
+
+        $reset_forum_all = $data['other']['reset_options']['reset_forum_all']);
+        $resetforum = (isset($reset_forum_all) ? $reset_forum_all : 0;
 
         // Get the modules that support the Plagiarism plugin by whether they have a class file.
         $supportedmods = array();
@@ -934,8 +934,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 if ($_SESSION["updated_pm"][$cm->id] <= (time() - (60 * 2))) {
                                     $this->refresh_peermark_assignments($cm, $plagiarismsettings['turnitin_assignid']);
                                     $turnitintooltwoassignment = new turnitintooltwo_assignment($cm->instance, '', 'PP');
-                                    $_SESSION["peermark_assignments"][$cm->id] = 
-                                                        $turnitintooltwoassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
+                                    $_SESSION["peermark_assignments"][$cm->id] = $turnitintooltwoassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
                                     $_SESSION["updated_pm"][$cm->id] = time();
                                 }
 
@@ -981,8 +980,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Show error message if there is one.
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (isset($plagiarismfile->errormsg)) ? 
-                                                get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
+                            $errorstring = (isset($plagiarismfile->errormsg)) ? get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
                                             'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
@@ -1034,8 +1032,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
                         if ($errorcode == 0) {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = (isset($plagiarismfile->errormsg)) ? 
-                                                get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
+                            $errorstring = (isset($plagiarismfile->errormsg)) ? get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
                                             'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
@@ -1194,8 +1191,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                  'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback')) {
             $plagiarismfile = new stdClass();
             $plagiarismfile->id = $submissiondata->id;
-            $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ? 
-                                                    $tiisubmission->getOverallSimilarity() : null;
+            $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ? $tiisubmission->getOverallSimilarity() : null;
             $plagiarismfile->transmatch = 0;
             if ((int)$tiisubmission->getTranslatedOverallSimilarity() > $tiisubmission->getOverallSimilarity()) {
                 $plagiarismfile->similarityscore = $tiisubmission->getTranslatedOverallSimilarity();
@@ -1207,8 +1203,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
 
             // Update feedback timestamp.
-            $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ? 
-                                    strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
+            $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ? strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
 
             // Identify if an update is required for the similarity score and grade.
             if (!is_null($plagiarismfile->similarityscore) || !is_null($plagiarismfile->grade) ||
@@ -1229,8 +1224,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
 
-                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 'userid' => 
-                            $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
+                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance, 
+                            'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
                         $item = current($submission);
 
                         if ($item->id != $itemid) {
@@ -1554,8 +1549,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setTitle( $title );
 
         // Configure repository setting.
-        $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ? 
-                        $modulepluginsettings["plagiarism_submitpapersto"] : 1;
+        $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ? $modulepluginsettings["plagiarism_submitpapersto"] : 1;
 
         // Override if necessary when admin is forcing standard/no repository.
         switch ($config->repositoryoption) {
@@ -1572,8 +1566,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setInternetCheck($modulepluginsettings["plagiarism_compare_internet"]);
         $assignment->setPublicationsCheck($modulepluginsettings["plagiarism_compare_journals"]);
         if ($config->repositoryoption == 1) {
-            $institutioncheck = (isset($modulepluginsettings["plagiarism_compare_institution"])) ? 
-                                        $modulepluginsettings["plagiarism_compare_institution"] : 0;
+            $institutioncheck = (isset($modulepluginsettings["plagiarism_compare_institution"])) ? $modulepluginsettings["plagiarism_compare_institution"] : 0;
             $assignment->setInstitutionCheck($institutioncheck);
         }
 
@@ -1582,11 +1575,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setBibliographyExcluded($modulepluginsettings["plagiarism_exclude_biblio"]);
         $assignment->setQuotedExcluded($modulepluginsettings["plagiarism_exclude_quoted"]);
         $assignment->setSmallMatchExclusionType($modulepluginsettings["plagiarism_exclude_matches"]);
-        $modulepluginsettings["plagiarism_exclude_matches_value"] = 
-                        (!empty($modulepluginsettings["plagiarism_exclude_matches_value"])) ? 
-                                $modulepluginsettings["plagiarism_exclude_matches_value"] : 0;
-
-        $assignment->setSmallMatchExclusionThreshold($modulepluginsettings["plagiarism_exclude_matches_value"]);
+        $excludematchesval = $modulepluginsettings["plagiarism_exclude_matches_value"];
+        $excludematchesval = (!empty($excludematchesval) ? $excludematchesval : 0;
+        $assignment->setSmallMatchExclusionThreshold($excludematchesval);
 
         // Don't set anonymous marking if there have been submissions.
         $previoussubmissions = $DB->record_exists('plagiarism_turnitin_files',
@@ -1605,8 +1596,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Otherwise, the Turnitin setting is incompatible with Moodle due to multiple files and resubmission rules.
         $assignment->setLateSubmissionsAllowed(1);
         $assignment->setMaxGrade(0);
-        $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ? 
-                                        $modulepluginsettings["plagiarism_rubric"] : '');
+        $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ? $modulepluginsettings["plagiarism_rubric"] : '');
 
         if (!empty($moduledata->grade)) {
             $assignment->setMaxGrade(($moduledata->grade < 0) ? 100 : (int)$moduledata->grade);
@@ -1702,22 +1692,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         // Erater settings.
-        $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ? 
-                                                $modulepluginsettings["plagiarism_erater"] : 0);
-        $assignment->setEraterSpelling((isset($modulepluginsettings["plagiarism_erater_spelling"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_spelling"] : 0);
-        $assignment->setEraterGrammar((isset($modulepluginsettings["plagiarism_erater_grammar"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_grammar"] : 0);
-        $assignment->setEraterUsage((isset($modulepluginsettings["plagiarism_erater_usage"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_usage"] : 0);
-        $assignment->setEraterMechanics((isset($modulepluginsettings["plagiarism_erater_mechanics"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_mechanics"] : 0);
-        $assignment->setEraterStyle((isset($modulepluginsettings["plagiarism_erater_style"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_style"] : 0);
-        $assignment->setEraterSpellingDictionary((isset($modulepluginsettings["plagiarism_erater_dictionary"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_dictionary"] : 'en_US');
-        $assignment->setEraterHandbook((isset($modulepluginsettings["plagiarism_erater_handbook"])) ? 
-                                                $modulepluginsettings["plagiarism_erater_handbook"] : 0);
+        $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ?  $modulepluginsettings["plagiarism_erater"] : 0);
+        $assignment->setEraterSpelling((isset($modulepluginsettings["plagiarism_erater_spelling"])) ? $modulepluginsettings["plagiarism_erater_spelling"] : 0);
+        $assignment->setEraterGrammar((isset($modulepluginsettings["plagiarism_erater_grammar"])) ? $modulepluginsettings["plagiarism_erater_grammar"] : 0);
+        $assignment->setEraterUsage((isset($modulepluginsettings["plagiarism_erater_usage"])) ? $modulepluginsettings["plagiarism_erater_usage"] : 0);
+        $assignment->setEraterMechanics((isset($modulepluginsettings["plagiarism_erater_mechanics"])) ? $modulepluginsettings["plagiarism_erater_mechanics"] : 0);
+        $assignment->setEraterStyle((isset($modulepluginsettings["plagiarism_erater_style"])) ? $modulepluginsettings["plagiarism_erater_style"] : 0);
+        $assignment->setEraterSpellingDictionary((isset($modulepluginsettings["plagiarism_erater_dictionary"])) ? $modulepluginsettings["plagiarism_erater_dictionary"] : 'en_US');
+        $assignment->setEraterHandbook((isset($modulepluginsettings["plagiarism_erater_handbook"])) ? $modulepluginsettings["plagiarism_erater_handbook"] : 0);
 
         // If we have a turnitin id then edit the assignment otherwise create it.
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config',
@@ -1913,8 +1895,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $plagiarismfile = new stdClass();
                                 $plagiarismfile->id = $currentsubmission->id;
                                 $plagiarismfile->externalid = $tiisubmissionid;
-                                $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ? 
-                                                                                $readsubmission->getOverallSimilarity() : null;
+                                $plagiarismfile->similarityscore = (is_numeric($readsubmission->getOverallSimilarity())) ? $readsubmission->getOverallSimilarity() : null;
                                 $plagiarismfile->grade = (is_numeric($readsubmission->getGrade())) ? $readsubmission->getGrade() : null;
                                 $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
                                 $plagiarismfile->transmatch = 0;
@@ -2200,8 +2181,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismsettings = $this->get_settings($eventdata['contextinstanceid']);
         $moduletiienabled = $this->get_config_settings('mod_'.$eventdata['other']['modulename']);
         if ($eventdata['other']['modulename'] == 'assign') {
-            $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ? 
-                                                                $plagiarismsettings["plagiarism_draft_submit"] : 0;
+            $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ? $plagiarismsettings["plagiarism_draft_submit"] : 0;
         }
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.

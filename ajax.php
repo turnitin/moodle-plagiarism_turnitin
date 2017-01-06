@@ -141,8 +141,10 @@ switch ($action) {
         break;
 
     case "rubricview":
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) : 
-                                                has_capability('mod/'.$cm->modname.':submit', $context);
+        $replypost = 'mod/'.$cm->modname.':replypost';
+        $submit = 'mod/'.$cm->modname.':submit';
+        $isstudent = ($cm->modname == "forum") ? has_capability($replypost, $context) : has_capability($submit, $context);
+
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
@@ -160,9 +162,9 @@ switch ($action) {
         break;
 
     case "peermarkreviews":
-
-        $isstudent = ($cm->modname == "forum") ? has_capability('mod/'.$cm->modname.':replypost', $context) : 
-                                                has_capability('mod/'.$cm->modname.':submit', $context);
+        $replypost = 'mod/'.$cm->modname.':replypost';
+        $submit = 'mod/'.$cm->modname.':submit';
+        $isstudent = ($cm->modname == "forum") ? has_capability($replypost, $context) : has_capability($submit, $context);
 
         if ($userrole == 'Instructor' || $isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));

@@ -303,8 +303,7 @@ class turnitinplugin_view {
                 // Populate Rubric options.
                 $rubricoptions = array('' => get_string('norubric', 'plagiarism_turnitin')) + $rubrics;
                 if (!empty($currentrubric)) {
-                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ? 
-                                    $rubricoptions[$currentrubric] : get_string('otherrubric', 'plagiarism_turnitin');
+                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ? $rubricoptions[$currentrubric] : get_string('otherrubric', 'plagiarism_turnitin');
                 }
 
                 $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubricoptions);

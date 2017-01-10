@@ -1,4 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package moodlecore
+ * @subpackage backup-moodle2
+ * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
 
 class pp_receipt_message {
 
@@ -13,8 +36,8 @@ class pp_receipt_message {
         $subject = get_string('digital_receipt_subject', 'plagiarism_turnitin');
 
         $eventdata = new stdClass();
-        $eventdata->component         = 'plagiarism_turnitin'; //your component name
-        $eventdata->name              = 'submission'; //this is the message name from messages.php
+        $eventdata->component         = 'plagiarism_turnitin'; // Your component name.
+        $eventdata->name              = 'submission'; // This is the message name from messages.php.
         $eventdata->userfrom          = \core_user::get_noreply_user();
         $eventdata->userto            = $userid;
         $eventdata->subject           = $subject;
@@ -22,7 +45,7 @@ class pp_receipt_message {
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $message;
         $eventdata->smallmessage      = '';
-        $eventdata->notification      = 1; //this is only set to 0 for personal messages between users
+        $eventdata->notification      = 1; // This is only set to 0 for personal messages between users.
 
         message_send($eventdata);
     }
@@ -58,8 +81,7 @@ class pp_receipt_message {
      * @param array $input - used tob uild message
      * @return string
      */
-    public function build_instructor_message($input)
-    {
+    public function build_instructor_message($input) {
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
         if ( isset($input['assignment_part']) ) {
@@ -81,20 +103,19 @@ class pp_receipt_message {
      * @param string $message
      * @return void
      */
-    public function send_instructor_message($instructors, $message)
-    {
+    public function send_instructor_message($instructors, $message) {
         $subject = get_string('receipt_instructor_copy_subject', 'plagiarism_turnitin');
 
         $eventdata = new stdClass();
-        $eventdata->component         = 'plagiarism_turnitin'; //your component name
-        $eventdata->name              = 'submission'; //this is the message name from messages.php
+        $eventdata->component         = 'plagiarism_turnitin'; // Your component name.
+        $eventdata->name              = 'submission'; // This is the message name from messages.php.
         $eventdata->userfrom          = \core_user::get_noreply_user();
         $eventdata->subject           = $subject;
         $eventdata->fullmessage       = $message;
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $message;
         $eventdata->smallmessage      = '';
-        $eventdata->notification      = 1; //this is only set to 0 for personal messages between users
+        $eventdata->notification      = 1; // This is only set to 0 for personal messages between users.
 
         foreach ($instructors as $instructor) {
             $eventdata->userto = $instructor;

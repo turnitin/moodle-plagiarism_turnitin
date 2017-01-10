@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class send_submissions extends \core\task\scheduled_task {
 
-	public function get_name() {
+    public function get_name() {
         return get_string('sendqueuedsubmissions', 'plagiarism_turnitin');
     }
 

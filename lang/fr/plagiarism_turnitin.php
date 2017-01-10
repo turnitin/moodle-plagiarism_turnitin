@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Plugin de plagiat Turnitin';
 $string['turnitintooltwo'] = 'Outil Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tâche du plugin de plagiat Turnitin';
 $string['connecttesterror'] = 'Une erreur est survenue lors de la connexion à Turnitin. Vous trouverez le message d’erreur ci-dessous :<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Activer Turnitin';
 $string['excludebiblio'] = 'Exclure la bibliographie';
 $string['excludequoted'] = 'Exclure les citations';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'Pour envoyer un fichier à Turnitin, vous devez d
 $string['noscriptula'] = '(Comme vous n’avez pas JavaScript activé, vous devez manuellement actualiser cette page avant de pouvoir envoyer un document, et ce, après avoir accepté le contrat d’utilisateur de Turnitin)';
 $string['filedoesnotexist'] = 'Le fichier a été supprimé';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Configuration';
 $string['defaults'] = 'Réglages par défaut';
 $string['showusage'] = 'Affichez le contenu de la base de données';
@@ -108,20 +127,20 @@ $string['student'] = 'Étudiant';
 $string['course'] = 'Cours';
 $string['module'] = 'Module';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Afficher le rapport d’originalité';
 $string['launchrubricview'] = 'Voir la rubrique utilisée pour corriger';
 $string['turnitinppulapost'] = 'Votre fichier n’a pas été renvoyé à Turnitin. Veuillez cliquer ici pour accepter notre CLUF.';
 $string['ppsubmissionerrorseelogs'] = 'Le fichier n’a pas été envoyé à Turnitin, veuillez consulter votre administrateur système pour plus de renseignements';
 $string['ppsubmissionerrorstudent'] = 'Le fichier n’a pas été envoyé à Turnitin, veuillez consulter votre tuteur pour plus de renseignements';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Notifications d’accusé de réception électronique du plugin de plagiat Turnitin';
 $string['digitalreceipt'] = 'Accusé de réception électronique';
 $string['digital_receipt_subject'] = 'Voici votre accusé de réception électronique Turnitin';
 $string['pp_digital_receipt_message'] = 'Cher(e) {$a->firstname} {$a->lastname},<br /><br />Vous avez bien envoyé le fichier <strong>{$a->submission_title}</strong> pour l’exercice <strong>{$a->assignment_name}{$a->assignment_part}</strong> du cours <strong>{$a->course_fullname}</strong> le <strong>{$a->submission_date}</strong>. Votre numéro d’envoi est le <strong>{$a->submission_id}</strong>. Votre accusé de réception électronique peut être consulté dans son intégralité et imprimé à l’aide du bouton Imprimer/Télécharger dans le Visualiseur de documents.<br /><br />Merci d’utiliser Turnitin,<br /><br />L’équipe Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'N° Turnitin';
 $string['turnitinstatus'] = 'Statut de Turnitin';
 $string['pending'] = 'En attente';
@@ -132,7 +151,7 @@ $string['student_read'] = 'L’étudiant a consulté la copie le :';
 $string['student_notread'] = 'L&#39;étudiant n&#39;a pas consulté cette copie.';
 $string['launchpeermarkreviews'] = 'Démarrer les évaluations Peermark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Nombre d’éléments dans la file d’événements du plugin de plagiat';
 $string['ppcronsubmissionlimitreached'] = 'Aucun envoi additionnel ne sera adressé à Turnitin lors de cette exécution de cron, car seulement {$a} éléments sont traités par exécution';
 $string['cronsubmittedsuccessfully'] = 'Envoi : {$a->title} (n° TII : {$a->submissionid}) pour l’exercice {$a->assignmentname} du cours {$a->coursename} a bien été envoyé à Turnitin.';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Turnitin a renvoyé un message d’erreur pour
 $string['turnitindeletionerror'] = 'La suppression de la soumission a échoué. La copie locale de Moodle a été supprimée, mais pas l’envoi à Turnitin.';
 $string['ppeventsfailedconnection'] = 'Aucun événement ne sera traité par le plugin de plagiat Turnitin pour cette exécution de cron, car aucune connexion à Turnitin ne peut être établie.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Veuillez consulter votre tuteur ou l’administrateur système pour plus de détails';
 $string['faultcode'] = 'Code d’erreur';
 $string['line'] = 'Ligne';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'Une erreur est survenue en essayant d’e
 $string['pp_updatesubmissionerror'] = 'Une erreur est survenue en essayant de renvoyer votre document à Turnitin';
 $string['tiisubmissiongeterror'] = 'Une erreur est survenue en tentant d&#39;obtenir une transmission de Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Fermer';
 $string['loadingdv'] = 'Chargement du Visualiseur de Document Turnitin...';
 $string['changerubricwarning'] = 'Si vous modifiez ou supprimez une rubrique, l’ensemble des notes de rubrique des copies de cet exercice (dont les scores des fiches d’évaluation) sera effacé. Les notes globales des copies déjà évaluées resteront, quant à elles, inchangées.';
 $string['messageprovider:submission'] = 'Notifications d’accusé de réception électronique du plugin de plagiat Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Statut de Turnitin';
 $string['deleted'] = 'Supprimé';
 $string['pending'] = 'En attente';

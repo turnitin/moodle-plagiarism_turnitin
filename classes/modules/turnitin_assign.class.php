@@ -19,86 +19,86 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
+defined('MOODLE_INTERNAL') || die();
+
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_assign {
 
-	private $modname;
-	public $grades_table;
-	public $filecomponent;
+    private $modname;
+    public $gradestable;
+    public $filecomponent;
 
-	public function __construct() {
-		$this->modname = 'assign';
-		$this->grades_table = $this->modname.'_grades';
-		$this->filecomponent = $this->modname.'submission_file';
-	}
+    public function __construct() {
+        $this->modname = 'assign';
+        $this->gradestable = $this->modname.'_grades';
+        $this->filecomponent = $this->modname.'submission_file';
+    }
 
-	public function is_tutor($context) {
-		return has_capability($this->get_tutor_capability(), $context);
-	}
+    public function is_tutor($context) {
+        return has_capability($this->get_tutor_capability(), $context);
+    }
 
-	public function get_tutor_capability() {
-		return 'mod/'.$this->modname.':grade';
-	}
+    public function get_tutor_capability() {
+        return 'mod/'.$this->modname.':grade';
+    }
 
-	public function user_enrolled_on_course($context, $userid) {
-		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
-	}
+    public function user_enrolled_on_course($context, $userid) {
+        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+    }
 
-	public function get_author($itemid) {
-		global $DB;
+    public function get_author($itemid) {
+        global $DB;
 
-		if ($submission = $DB->get_record('assign_submission', array('id' => $itemid), 'userid')) {
-			return $submission->userid;
-		} else {
-			return 0;
-		}
-	}
+        if ($submission = $DB->get_record('assign_submission', array('id' => $itemid), 'userid')) {
+            return $submission->userid;
+        } else {
+            return 0;
+        }
+    }
 
-	public function set_content($linkarray, $cm) {
-		global $DB;
+    public function set_content($linkarray, $cm) {
+        $onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
 
-		$onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
+        return (empty($onlinetextdata->onlinetext)) ? '' : $onlinetextdata->onlinetext;
+    }
 
-		return (empty($onlinetextdata->onlinetext)) ? '' : $onlinetextdata->onlinetext;
-	}
+    public function get_onlinetext($userid, $cm) {
+        global $DB;
 
-	public function get_onlinetext($userid, $cm) {
-		global $DB;
+        // Get latest text content submitted as we do not have submission id.
+        $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
+                                        array($userid, $cm->instance), 'id DESC', 'id', 0, 1);
+        $submission = end($submissions);
+        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
+                                            array('submission' => $submission->id), 'onlinetext, onlineformat');
 
-		// Get latest text content submitted as we do not have submission id.
-		$submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
-										array($userid, $cm->instance), 'id DESC', 'id', 0, 1);
-		$submission = end($submissions);
-		$moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                		                    array('submission' => $submission->id), 'onlinetext, onlineformat');
+        $onlinetextdata = new stdClass();
+        $onlinetextdata->itemid = $submission->id;
+        $onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
+        $onlinetextdata->onlineformat = $moodletextsubmission->onlineformat;
 
-		$onlinetextdata = new stdClass();
-		$onlinetextdata->itemid = $submission->id;
-		$onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
-		$onlinetextdata->onlineformat = $moodletextsubmission->onlineformat;
+        return $onlinetextdata;
+    }
 
-		return $onlinetextdata;
-	}
+    public function create_file_event($params) {
+        return \assignsubmission_file\event\assessable_uploaded::create($params);
+    }
 
-	public function create_file_event($params) {
-		return \assignsubmission_file\event\assessable_uploaded::create($params);
-	}
+    public function create_text_event($params) {
+        return \assignsubmission_onlinetext\event\assessable_uploaded::create($params);
+    }
 
-	public function create_text_event($params) {
-		return \assignsubmission_onlinetext\event\assessable_uploaded::create($params);
-	}
+    public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+        global $DB;
 
-	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
-		global $DB;
-
-		$currentgradesquery = $DB->get_records('assign_grades',
-													array('userid' => $userid, 'assignment' => $moduleid),
-													'id DESC'
-												);
+        $currentgradesquery = $DB->get_records('assign_grades',
+                                                    array('userid' => $userid, 'assignment' => $moduleid),
+                                                    'id DESC'
+                                                );
         return current($currentgradesquery);
-	}
+    }
 
-	public function initialise_post_date($moduledata) {
-		return 0;
-	}
+    public function initialise_post_date($moduledata) {
+        return 0;
+    }
 }

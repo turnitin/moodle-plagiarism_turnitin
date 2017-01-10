@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Модуль Turnitin для проверки на плагиат';
 $string['turnitintooltwo'] = 'Инструмент Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Задача модуля Turnitin для проверки на плагиат';
 $string['connecttesterror'] = 'Произошла ошибка при подключении к Turnitin. Сообщение об ошибке:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Включить Turnitin';
 $string['excludebiblio'] = 'Исключить библиографию';
 $string['excludequoted'] = 'Исключить цитаты';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'Прежде чем отправить файл �
 $string['noscriptula'] = '(Поскольку в вашем браузере не включен Javascript, прежде чем отправлять работу, вам необходимо будет вручную обновить эту страницу после того, как вы примете условия пользовательского соглашения.)';
 $string['filedoesnotexist'] = 'Файл удален';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Конфигурация';
 $string['defaults'] = 'Настройки по умолчанию';
 $string['showusage'] = 'Показать запись данных';
@@ -108,20 +127,20 @@ $string['student'] = 'Студент';
 $string['course'] = 'Курс';
 $string['module'] = 'Модуль';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Просмотреть отчет об оригинальности';
 $string['launchrubricview'] = 'Просмотреть рубрику, использованную для маркировки';
 $string['turnitinppulapost'] = 'Не удалось отправить файл в Turnitin. Нажмите здесь, чтобы принять условия лицензионного соглашения с конечным пользователем.';
 $string['ppsubmissionerrorseelogs'] = 'Не удалось отправить файл в систему Turnitin. Обратитесь за дополнительной информацией к системному администратору';
 $string['ppsubmissionerrorstudent'] = 'Не удалось отправить файл в систему Turnitin. Обратитесь за дополнительной информацией к своему преподавателю';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Уведомления о цифровой квитанции модуля Turnitin для проверки на плагиат';
 $string['digitalreceipt'] = 'Цифровая квитанция';
 $string['digital_receipt_subject'] = 'Это цифровая квитанция Turnitin';
 $string['pp_digital_receipt_message'] = 'Уважаемый(-ая) {$a->firstname} {$a->lastname},<br /><br />Вы успешно отправили файл <strong>{$a->submission_title}</strong> с выполненным заданием <strong>{$a->assignment_name}{$a->assignment_part}</strong> по классу <strong>{$a->course_fullname}</strong> <strong>{$a->submission_date}</strong>. Идентификатор вашей работы — <strong>{$a->submission_id}</strong>. Цифровую квитанцию можно полностью просмотреть и напечатать, нажав на кнопку печати и загрузки в окне просмотра документов.<br /><br />Спасибо, что пользуетесь Turnitin.<br /><br />Команда Turnitin';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Идентификатор Turnitin';
 $string['turnitinstatus'] = 'Статус Turnitin';
 $string['pending'] = 'На рассмотрении';
@@ -132,7 +151,7 @@ $string['student_read'] = 'Дата последнего просмотра ст
 $string['student_notread'] = 'Студент не просмотрел эту работу.';
 $string['launchpeermarkreviews'] = 'Запустить обзоры Рееrmark';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Количество событий в очереди событий модуля для проверки на плагиат';
 $string['ppcronsubmissionlimitreached'] = 'Новые работы будут отправлены после окончания этого сеанса планировщика: во время одного сеанса можно обработать только {$a} работ';
 $string['cronsubmittedsuccessfully'] = 'Отправка работы: {$a->title} (идентификатор TII: {$a->submissionid}) файл с выполненным заданием {$a->assignmentname} по курсу {$a->coursename} успешно отправлен в Turnitin.';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Система Turnitin сообщает об 
 $string['turnitindeletionerror'] = 'При попытке удалить работу, отправленную в Turnitin, произошла ошибка. Локальная копия Moodle удалена, но не удалось удалить работу из системы Turnitin.';
 $string['ppeventsfailedconnection'] = 'Не удается установить соединение с Turnitin. Модуль Turnitin для проверки на плагиат не будет обрабатывать события до окончания этого сеанса планировщика.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Обратитесь за дополнительной информацией к своему преподавателю или системному администратору';
 $string['faultcode'] = 'Код ошибки';
 $string['line'] = 'Строка';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'При попытке отправить 
 $string['pp_updatesubmissionerror'] = 'Возникла ошибка при попытке вновь сделать представление в Turnitin';
 $string['tiisubmissiongeterror'] = 'Возникла ошибка при попытке получить представление из Тurnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Закрыть';
 $string['loadingdv'] = 'Средство просмотра документов загружается...';
 $string['changerubricwarning'] = 'При изменении или отмене назначения рубрики будут удалены все оценки работ по этому заданию, принадлежащие этой рубрике, включая уже подписанные оценочные листы. Общие оценки проверенных работ останутся без изменений.';
 $string['messageprovider:submission'] = 'Уведомления о цифровой квитанции модуля Turnitin для проверки на плагиат';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Статус Turnitin';
 $string['deleted'] = 'Удалено';
 $string['pending'] = 'На рассмотрении';

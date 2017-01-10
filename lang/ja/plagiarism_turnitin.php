@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin Plagiarismプラグイン';
 $string['turnitintooltwo'] = 'Turnitinツール';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin Plagiarismプラグインのタスク';
 $string['connecttesterror'] = 'Turnitinへの接続中にエラーが発生しました。エラーメッセージは以下の通りです。<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Turnitinを有効にする';
 $string['excludebiblio'] = '参考文献の除外';
 $string['excludequoted'] = '引用文献を除外';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'Turnitinにファイルを提出するには、EU
 $string['noscriptula'] = '（ジャバスクリプトが作動されていないため、Turnitinユーザー使用規約に承諾した後、提出する前にこのページをマニュアル操作で更新する必要があります。）';
 $string['filedoesnotexist'] = 'ファイルは削除されました';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = '設定';
 $string['defaults'] = 'デフォルト設定';
 $string['showusage'] = 'ダンプされたデータを表示';
@@ -108,20 +127,20 @@ $string['student'] = '学生';
 $string['course'] = 'コース';
 $string['module'] = 'モジュール';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'オリジナリティ レポートを閲覧';
 $string['launchrubricview'] = 'マーキングに使用された採点を閲覧する';
 $string['turnitinppulapost'] = 'あなたのファイルはTurnitinに提出されませんでした。こちらをクリックして、EULAに同意してください。';
 $string['ppsubmissionerrorseelogs'] = 'このファイルはTurnitinに提出されていません。詳しくは、システム管理者にお問い合わせください。';
 $string['ppsubmissionerrorstudent'] = 'このファイルはTurnitinに提出されていません。更なる詳細に関しては、チューターまでご相談ください。';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin Plagiarismプラグインのデジタル受領書に関する通知';
 $string['digitalreceipt'] = 'デジタル受領書';
 $string['digital_receipt_subject'] = 'これはあなたのTurnitinのデジタル受領書です';
 $string['pp_digital_receipt_message'] = '{$a->lastname} {$a->firstname}様、<br /><br />あなたは<strong>{$a->submission_date}</strong>に、<strong>{$a->course_fullname}</strong>クラスの課題<strong>{$a->assignment_name}{$a->assignment_part}</strong>にファイル<strong>{$a->submission_title}</strong>を提出しました。提出IDは<strong>{$a->submission_id}</strong>です。デジタル受領書はすべて、文書閲覧内にある印刷やダウンロードボタンを使って閲覧および印刷することができます。<br /><br />Turnitinをご利用いただき、ありがとうございます。<br /><br />Turnitinチーム一同';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin ID';
 $string['turnitinstatus'] = 'Turnitinのステータス';
 $string['pending'] = '保留中';
@@ -132,7 +151,7 @@ $string['student_read'] = 'レポートの閲覧日：';
 $string['student_notread'] = '受講生はこのレポートをまだ閲覧していません。';
 $string['launchpeermarkreviews'] = 'Peermarkレビューを起動する';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Plagiarismプラグインのイベントキューにあるイベント数';
 $string['ppcronsubmissionlimitreached'] = 'Cronは一度に{$a}件までの提出物しか処理しないので、これ以上Turnitinに提出物を送れません。';
 $string['cronsubmittedsuccessfully'] = '{$a->coursename}コースの課題{$a->assignmentname}に対して、提出物：{$a->title}（TII ID：{$a->submissionid}）が正しくTurnitinに送信されました。';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Turnitinから次の提出物についてエ�
 $string['turnitindeletionerror'] = 'Turnitinの提出物削除に失敗しました。ローカル Moodle コピーは削除されましたが、Turnitin内の提出物を削除することはできませんでした。';
 $string['ppeventsfailedconnection'] = 'Turnitinに接続していないので、Turnitin PlagiarismプラグインはCronでイベントを処理できません。';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = '詳しくは、チューターかシステム管理者にお問い合わせください。';
 $string['faultcode'] = 'フォルトコード';
 $string['line'] = 'ライン';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'Turnitinで提出物を作成する際に
 $string['pp_updatesubmissionerror'] = '提出物をTurnitinへ再提出する際にエラーが発生しました';
 $string['tiisubmissiongeterror'] = '提出物をTurnitinから入手する際にエラーが発生しました';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = '閉じる';
 $string['loadingdv'] = 'Turnitin文書閲覧を読み込み中...';
 $string['changerubricwarning'] = '採点を変更したり解除したりすると、スコアカードを含めてこの課題のレポートに既に存在する採点がすべて削除されます。以前に採点されたレポートの全体評価は残ります。';
 $string['messageprovider:submission'] = 'Turnitin Plagiarismプラグインのデジタル受領書に関する通知';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitinのステータス';
 $string['deleted'] = '削除されました';
 $string['pending'] = '保留中';

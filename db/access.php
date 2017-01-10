@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
 $capabilities = array(
     'plagiarism/turnitin:enable' => array(
         'captype' => 'write',

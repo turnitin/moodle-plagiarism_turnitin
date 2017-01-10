@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin plagiatplugin';
 $string['turnitintooltwo'] = 'Turnitin-verktyg';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Pluginuppgiften plagiat i Turnitin';
 $string['connecttesterror'] = 'Det uppstod ett fel vid försök att ansluta till Turnitin. Inkommande felmeddelande visas nedan:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Aktivera Turnitin';
 $string['excludebiblio'] = 'Exkludera källförteckning';
 $string['excludequoted'] = 'Exkludera citerat material';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'För att lämna in en fil till Turnitin måste du
 $string['noscriptula'] = 'Eftersom du inte har JavaScript aktiverat måste du manuellt uppdatera den här sidan innan du kan göra en inlämning (efter att du accepterat Turnitins Användaravtal)';
 $string['filedoesnotexist'] = 'Filen har raderats';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Konfigurering';
 $string['defaults'] = 'Standardinställningar';
 $string['showusage'] = 'Visa datadump';
@@ -108,20 +127,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Kurs';
 $string['module'] = 'Modul';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Visa Originalitetsrapport';
 $string['launchrubricview'] = 'Visa bedömningsmatrisen som används för kommentering';
 $string['turnitinppulapost'] = 'Din fil har inte lämnats in till Turnitin. Klicka här för att godkänna våra användaravtal.';
 $string['ppsubmissionerrorseelogs'] = 'Den här filen har inte skickas till Turnitin. Be din systemadministratör om hjälp.';
 $string['ppsubmissionerrorstudent'] = 'Den här filen har inte skickas till Turnitin. Be din lärare om hjälp.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Meddelanden för digitala kvitton för plagiatplugin från Turnitin';
 $string['digitalreceipt'] = 'Digitalt kvitto';
 $string['digital_receipt_subject'] = 'Det här är ditt digitala kvitto från Turnitin';
 $string['pp_digital_receipt_message'] = 'Hej {$a->firstname} {$a->lastname}!<br /><br />Du har lämnat in filen <strong>{$a->submission_title}</strong> för uppgift <strong>{$a->assignment_name}{$a->assignment_part}</strong> för kursen <strong>{$a->course_fullname}</strong> den <strong>{$a->submission_date}</strong>. Ditt inlämnings-ID är <strong>{$a->submission_id}</strong>. Ditt fullständiga digitala kvitto kan visas och skrivas ut med knappen skriv ut/ladda ner i dokumentvisaren.<br /><br />Tack för att du använder Turnitin,<br /><br />Turnitin-teamet';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin-ID';
 $string['turnitinstatus'] = 'Turnitin-status';
 $string['pending'] = 'Väntar på bekräftelse';
@@ -132,7 +151,7 @@ $string['student_read'] = 'Studenten visade uppsatsen den:';
 $string['student_notread'] = 'Studenten har inte visat denna uppsats.';
 $string['launchpeermarkreviews'] = 'Starta Peermark-recensioner';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Antal händelser i händelsekön för plagiatplugin';
 $string['ppcronsubmissionlimitreached'] = 'Inga fler inlämningar kommer att skickas till Turnitin av denna Cron-aktivitet, eftersom endast {$a} bearbetas per körning';
 $string['cronsubmittedsuccessfully'] = 'Inlämning: {$a->title} (TII ID: {$a->submissionid}) för uppgift {$a->assignmentname} på kursen {$a->coursename} har lämnats in till Turnitin.';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Ett fel har uppstått hos Turnitin i samband m
 $string['turnitindeletionerror'] = 'Radering av inlämning för Turnitin misslyckades. Den lokala Moodle-kopian har tagits bort men inlämningen i Turnitin kunde inte raderas.';
 $string['ppeventsfailedconnection'] = 'Inga händelser kommer att bearbetas av plagiatplugin i Turnitin för den här Cron-aktiviteten eftersom det inte gick att ansluta till Turnitin.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Vänd dig till din handledare eller administratör för mer information.';
 $string['faultcode'] = 'Felkod';
 $string['line'] = 'Rad';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'Det uppstod ett fel vid försök att skap
 $string['pp_updatesubmissionerror'] = 'Det uppstod ett fel vid försök att återinlämna din uppgift till Turnitin';
 $string['tiisubmissiongeterror'] = 'Det uppstod ett fel vid försök att hämta ett inlämnande från Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Stäng';
 $string['loadingdv'] = 'Laddar dokumentvisaren i Turnitin...';
 $string['changerubricwarning'] = 'Om du ändrar eller tar bort en bedömningsmatris kommer detta att avlägsna all existerande bedömningsmatris-poäng från samtliga uppsatser i denna uppgift, inklusive poängkort som har markerats tidigare. Sammanlagda betyg för tidigare betygsatta uppsatser kommer att finnas kvar.';
 $string['messageprovider:submission'] = 'Meddelanden för digitala kvitton för plagiatplugin från Turnitin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin-status';
 $string['deleted'] = 'Raderad';
 $string['pending'] = 'Väntar på bekräftelse';

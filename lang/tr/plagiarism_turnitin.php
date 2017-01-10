@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin, intihal eklentisi';
 $string['turnitintooltwo'] = 'Turnitin Aracı';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin İntihal Eklenti Görevi';
 $string['connecttesterror'] = 'Turnitin&#39;e bağlanırken bir hata oluştu. Hata aşağıda belirtilmiştir:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Turnitin&#39;i Etkinleştir';
 $string['excludebiblio'] = 'Bibliyografyayı Çıkar';
 $string['excludequoted'] = 'Alıntılanan Materyali Çıkar';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'Turnitin&#39;e dosya gönderebilmek için önce K
 $string['noscriptula'] = '(Javascript etkinleştirilmediğinden, Turnitin Kullanıcı Sözleşmesi&#39;ni kabul ettikten sonra bir ödev gönderimi yapmadan önce, sayfayı yenilemelisiniz)';
 $string['filedoesnotexist'] = 'Dosya silindi';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Yapılandırma';
 $string['defaults'] = 'Varsayılan Ayarlar';
 $string['showusage'] = 'Veri Atıklarını Göster';
@@ -108,20 +127,20 @@ $string['student'] = 'Öğrenci';
 $string['course'] = 'Kurs';
 $string['module'] = 'Modül';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Orijinallik Raporunu Görüntüle';
 $string['launchrubricview'] = 'İşaretleme için kullanılmış performans değerlendirme ölçeklerini görüntüle';
 $string['turnitinppulapost'] = 'Dosyanız Turnitin&#39;e gönderilmedi. Kullanıcı Lisans Sözleşmesi&#39;ni kabul etmek için lütfen buraya tıklayın.';
 $string['ppsubmissionerrorseelogs'] = 'Bu dosya Turnitin&#39;e gönderilmedi, lütfen sistem yöneticinize danışın';
 $string['ppsubmissionerrorstudent'] = 'Bu dosya Turnitin&#39;e gönderilmedi, lütfen daha ayrıntılı bilgi için öğretmeninize danışın';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin İntihal Eklentisi Dijital Makbuz bildirimleri';
 $string['digitalreceipt'] = 'Dijital Makbuz';
 $string['digital_receipt_subject'] = 'Bu, sizin Turnitin Dijital Makbuzunuzdur';
 $string['pp_digital_receipt_message'] = 'Sayın {$a->firstname} {$a->lastname},<br /><br /><strong>{$a->submission_title}</strong> dosyasını <strong>{$a->course_fullname}</strong> sınıfındaki <strong>{$a->assignment_name}{$a->assignment_part}</strong> ödevine <strong>{$a->submission_date}</strong> tarihinde başarıyla gönderdiniz. Gönderi numaranız <strong>{$a->submission_id}</strong>. Dijital makbuzunuz Doküman Görüntüleyicideki yazdır/indir düğmesinden görüntülenebilir ve yazdırılabilir.<br /><br />Turnitin&#39;i kullandığınız için teşekkür ederiz,<br /><br />Turnitin Ekibi';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin Numarası';
 $string['turnitinstatus'] = 'Turnitin durumu';
 $string['pending'] = 'Bekliyor';
@@ -132,7 +151,7 @@ $string['student_read'] = 'Öğrencinin ödevi görüntülediği tarih:';
 $string['student_notread'] = 'Öğrenci henüz bu ödevi görüntülemedi.';
 $string['launchpeermarkreviews'] = 'Peermark Değerlendirmelerini Yayınla';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'İntihal Eklentisi etkinlik sırasındaki etkinlik sayısı';
 $string['ppcronsubmissionlimitreached'] = 'Bir çalıştırmada yalnızca {$a} işlendiği için Turnitin&#39;e daha fazla gönderim yapılmayacak';
 $string['cronsubmittedsuccessfully'] = 'Gönderi: {$a->coursename} kursundaki {$a->assignmentname} ödevi için {$a->title} (TII Numarası: {$a->submissionid}) başarıyla Turnitin&#39;e gönderilmiştir.';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Turnitin gönderiminizle ilgili bir hata oluş
 $string['turnitindeletionerror'] = 'Turnitin gönderisi silinirken bir hata oluştu. Yerel Moodle kopyası kaldırıldı ancak Turnitin&#39; deki gönderi silinemedi.';
 $string['ppeventsfailedconnection'] = 'Turnitin ile bağlantı kurulamadığından Turnitin intihal eklentisi tarafından bir etkinlik işleme alınmayacak.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Daha ayrıntılı bilgi için lütfen öğretmeninize veya sistem yöneticinize danışın';
 $string['faultcode'] = 'Hata Kodu';
 $string['line'] = 'Satır';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'Turnitin&#39;de bir gönderi oluşturulur
 $string['pp_updatesubmissionerror'] = 'Turnitin&#39;e ödevinizi yeniden gönderirken bir sorun oluştu';
 $string['tiisubmissiongeterror'] = 'Turnitin&#39;den bir gönderi alınırken sorun oluştu';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Kapat';
 $string['loadingdv'] = 'Turnitin Doküman Görüntüleyici Yükleniyor...';
 $string['changerubricwarning'] = 'Performans değerlendirme ölçeğini değiştirmeniz veya kaldırmanız bu ödevdeki, daha önce işaretlenen skor kartları dahil, tüm performans değerlendirme ölçeği skorlarını kaldırılacaktır. Puanlanmış önceki ödevlerin toplam puanı bekleyecektir.';
 $string['messageprovider:submission'] = 'Turnitin İntihal Eklentisi Dijital Makbuz bildirimleri';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin durumu';
 $string['deleted'] = 'Silindi';
 $string['pending'] = 'Bekliyor';

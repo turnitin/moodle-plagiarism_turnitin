@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin plagiointi plugin-laajennus';
 $string['turnitintooltwo'] = 'Turnitin-työkalu';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin plagiointi plugin-tehtävä';
 $string['connecttesterror'] = 'Turnitiniin liittymisessä ilmeni virhe. Palautettu virheilmoitus on alla:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Aktivoi Turnitin';
 $string['excludebiblio'] = 'Jätä kirjallisuusluettelo pois';
 $string['excludequoted'] = 'Sulje Lainaukset Pois';
@@ -78,7 +97,7 @@ $string['turnitinppulapre'] = 'Jotta voit palauttaa tiedoston Turnitiniin, sinun
 $string['noscriptula'] = '(Joudut päivittämään tämän sivun manuaalisesti, koska sinulla ei ole JavaScriptiä käytössä, ennenkuin voit, -Turnitinin Käyttäjäsopimuksen hyväksymisen jälkeen, tehdä palautuksen)';
 $string['filedoesnotexist'] = 'Tiedosto on hävitetty';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Konfiguraatio';
 $string['defaults'] = 'Oletusarvoiset asetukset';
 $string['showusage'] = 'Näytä Data Dump';
@@ -109,20 +128,20 @@ $string['student'] = 'Opiskelija';
 $string['course'] = 'Kurssi';
 $string['module'] = 'Moduuli';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Katsele Alkuperäisyysraporttia';
 $string['launchrubricview'] = 'Katsele merkintään käytettyä Arvostelumatriisia';
 $string['turnitinppulapost'] = 'Tiedostoasi ei ole toimitettu Turnitiniin. Hyväksy käyttöoikeussopimuksemme napsauttamalla tätä.';
 $string['ppsubmissionerrorseelogs'] = 'Tätä tiedostoa ei ole toimitettu Turnitiniin. Kysyä neuvoa järjestelmäsi ylläpitäjältä';
 $string['ppsubmissionerrorstudent'] = 'Tätä tiedostoa ei ole toimitettu Turnitiniin. Pyydä lisätietoja tuutoriltasi.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin Plagiointi Plugin-lisäosa Sähköinen Kuitti ilmoitukset';
 $string['digitalreceipt'] = 'Sähköinen Kuitti';
 $string['digital_receipt_subject'] = 'Tämä on sähköinen Turnitin-kuittisi';
 $string['pp_digital_receipt_message'] = 'Hyvä {$a->firstname} {$a->lastname}!<br /><br />Olet palauttanut tiedoston <strong>{$a->submission_title}</strong> tehtävään <strong>{$a->assignment_name}{$a->assignment_part}</strong> luokassa <strong>{$a->course_fullname}</strong> <strong>{$a->submission_date}</strong>. Palautustunnus on <strong>{$a->submission_id}</strong>. Voit tarkastella sähköistä kuittiasi tai tulostaa sen Dokumenttikatselimen tulosta/lataa-painikkeella.<br /><br />Kiitos, että käytät Turnitinia.<br /><br />Turnitin-tiimi';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin-tunnusluku';
 $string['turnitinstatus'] = 'Turnitin-tila';
 $string['pending'] = 'Avoin';
@@ -133,7 +152,7 @@ $string['student_read'] = 'Opiskelija katsoi työtä:';
 $string['student_notread'] = 'Opiskelija ei ole katsonut tätä työtä.';
 $string['launchpeermarkreviews'] = 'Käynnistä Peermark Katselmukset';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Tapahtumien määrä Plagiointi Plugin-lisäosan tapahtumajonossa';
 $string['ppcronsubmissionlimitreached'] = 'Tämä cron-suoritus ei lähetä muita palautuksia Turnitiniin, sillä kerralla käsitellään vain {$a}';
 $string['cronsubmittedsuccessfully'] = 'Palautus: {$a->title} (TII-tunnus: {$a->submissionid}) tehtävään {$a->assignmentname} kurssilla {$a->coursename} palautettiin Turnitiniin.';
@@ -141,7 +160,7 @@ $string['pp_submission_error'] = 'Turnitin ilmoitti virheestä palautuksessa:';
 $string['turnitindeletionerror'] = 'Turnitiniin tehdyn palautuksen poisto epäonnistui. Paikallinen Moodle-kopio poistettiin, mutta Turnitiniin tehdyn palautuksen poisto ei onnistunut.';
 $string['ppeventsfailedconnection'] = 'Turnitin Plagiointi Plugin-lisäosa ei käsittele tapahtumia tässä cron-suorituksessa, sillä yhteyttä Turnitiniin ei voida muodostaa.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Kysy lisätietoja tutoriltasi tai järjestelmäsi ylläpitäjältä';
 $string['faultcode'] = 'Vikakoodi';
 $string['line'] = 'Rivi';
@@ -171,13 +190,13 @@ $string['pp_createsubmissionerror'] = 'Kun työn palautusta yritettiin luoda Tur
 $string['pp_updatesubmissionerror'] = 'Kun työtäsi yritettiin palauttaa uudelleen Turnitiniin, kohdattiin virhe';
 $string['tiisubmissiongeterror'] = 'Kun palautettua työtä yritettiin saada Turnitinistä, kohdattiin virhe';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Sulje';
 $string['loadingdv'] = 'Ladataan Turnitinin Dokumenttikatselinta...';
 $string['changerubricwarning'] = 'Arvostelumatriisin muuttaminen tai irrottaminen poistaa kaiken arvostelumatriisi-arvostelun tämän tehtävän töistä, kuten pistekortit, joihin on aiemmin tehty merkintöjä. Aiemmin arvosteltujen töiden yleisarvosanat jäävät koskematta.';
 $string['messageprovider:submission'] = 'Turnitin Plagiointi Plugin-lisäosa Sähköinen Kuitti ilmoitukset';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin-tila';
 $string['deleted'] = 'Poistettu';
 $string['pending'] = 'Avoin';

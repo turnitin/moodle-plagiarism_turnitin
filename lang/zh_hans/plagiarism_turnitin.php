@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin 剽窃 Plugin';
 $string['turnitintooltwo'] = 'Turnitin 工具';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 剽窃 Plugin 任务';
 $string['connecttesterror'] = '连接至 Turnitin 时出错。返回的错误消息如下：<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = '启用 Turnitin';
 $string['excludebiblio'] = '不含参考书目';
 $string['excludequoted'] = '排除引用资料';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = '要向 Turnitin 提交文件，您必须首先接
 $string['noscriptula'] = '（由于您没有启用 javascript，因此在接受 Turnitin 用户协议后，您必须手动更新此页面才能提交）';
 $string['filedoesnotexist'] = '文件已被删除';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = '配置';
 $string['defaults'] = '默认设置';
 $string['showusage'] = '显示数据转储';
@@ -108,20 +127,20 @@ $string['student'] = '学生';
 $string['course'] = '课程';
 $string['module'] = '单元';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = '查看原创性报告';
 $string['launchrubricview'] = '查看用于标记的评分表';
 $string['turnitinppulapost'] = '您的文件尚未提交至 Turnitin。请单击此处接受我们的 EULA。';
 $string['ppsubmissionerrorseelogs'] = '此文件尚未提交至 Turnitin，请咨询您的系统管理员';
 $string['ppsubmissionerrorstudent'] = '此文件尚未提交至 Turnitin，请问您的导师登记来查询更多详情';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin 剽窃 Plugin 数字回执通知';
 $string['digitalreceipt'] = '数字回执';
 $string['digital_receipt_subject'] = '这是您的 Turnitin 数字回执';
 $string['pp_digital_receipt_message'] = '尊敬的 {$a->firstname} {$a->lastname}，<br /><br />您已于 <strong>{$a->submission_date}</strong>将文件 <strong>{$a->submission_title}</strong> 成功提交至 <strong>{$a->course_fullname}</strong> 课堂的分配 <strong>{$a->assignment_name}{$a->assignment_part}</strong>。您的提交 ID 为 <strong>{$a->submission_id}</strong>。可以通过文档查看器中的“打印/下载”按钮查看并打印您的完整数字回执。<br /><br />感谢您使用 Turnitin，<br /><br />Turnitin 团队敬上';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin 代码';
 $string['turnitinstatus'] = 'Turnitin 状态';
 $string['pending'] = '未决';
@@ -132,7 +151,7 @@ $string['student_read'] = '学生查看论文的时间：';
 $string['student_notread'] = '学生尚未查看此论文。';
 $string['launchpeermarkreviews'] = '启动 Peermark 评价';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = '剽窃 Plugin 事件队列中的事件数';
 $string['ppcronsubmissionlimitreached'] = '此 cron 执行不会向 Turnitin 发送其他任何提交，因为每次运行只会处理 {$a}';
 $string['cronsubmittedsuccessfully'] = '提交：课程 {$a->coursename} 中分配 {$a->assignmentname} 的 {$a->title}（TII ID：{$a->submissionid}）已成功提交至 Turnitin。';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Turnitin 为您的提交返回了一个错误�
 $string['turnitindeletionerror'] = 'Turnitin 提交内容刪除失败。计算机上的 Moodle 副本已移除，但 Turnitin 內的提交内容无法刪除。';
 $string['ppeventsfailedconnection'] = 'Turnitin 剽窃 Plugin 的此 cron 执行不会处理任何事件，因为无法建立到 Turnitin 的连接。';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = '请咨询您的辅导或系统管理员以获得更多资讯';
 $string['faultcode'] = '错误代号';
 $string['line'] = '列';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = '尝试在 Turnitin 中创建提交内容�
 $string['pp_updatesubmissionerror'] = '尝试将提交内容重新提交至 Turnitin 时出错';
 $string['tiisubmissiongeterror'] = '尝试从 Turnitin 中获取提交内容时出错';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = '关闭';
 $string['loadingdv'] = '正在加载 Turnitin 文档查看器...';
 $string['changerubricwarning'] = '更改或分离评分表将从此作业的论文中移除所有现有的评分表分数，包括之前已标记的评分卡。之前已评分的论文的总成绩将会被保留。';
 $string['messageprovider:submission'] = 'Turnitin 剽窃 Plugin 数字回执通知';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin 状态';
 $string['deleted'] = '已删除';
 $string['pending'] = '未决';

@@ -15,8 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+/**
  * @package plagiarism_turnitin
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(

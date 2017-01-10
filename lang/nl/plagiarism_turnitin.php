@@ -1,18 +1,37 @@
-﻿<?php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin-plagiaat-plugin';
 $string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin-plagiaat-plugin-taak';
 $string['connecttesterror'] = 'Er is een fout opgetreden bij het maken van verbinding met Turnitin. De foutmelding staat hieronder:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Turnitin inschakelen';
 $string['excludebiblio'] = 'Exclusief bibliografie';
 $string['excludequoted'] = 'Exclusief citaten';
@@ -77,7 +96,7 @@ $string['turnitinppulapre'] = 'Als u een bestand wilt indienen bij Turnitin, moe
 $string['noscriptula'] = '(Aangezien u JavaScript niet hebt ingeschakeld, moet u deze pagina handmatig vernieuwen voordat u uw inzending opnieuw kunt indienen nadat u de Turnitin-gebruikersovereenkomst hebt geaccepteerd)';
 $string['filedoesnotexist'] = 'Bestand is verwijderd';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Configuratie';
 $string['defaults'] = 'Standaardinstellingen';
 $string['showusage'] = 'Gegevensdump weergeven';
@@ -108,20 +127,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Cursus';
 $string['module'] = 'Module';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'Originaliteitsrapport bekijken';
 $string['launchrubricview'] = 'Bekijk het beoordelingsschema (rubric) dat is gebruikt voor het beoordelen';
 $string['turnitinppulapost'] = 'Uw bestand is niet ingediend bij Turnitin. Klik hier om onze EULA te accepteren.';
 $string['ppsubmissionerrorseelogs'] = 'Dit bestand is niet ingediend bij Turnitin. Raadplaag uw systeembeheerder voor meer informatie.';
 $string['ppsubmissionerrorstudent'] = 'Dit bestand is niet ingediend bij Turnitin. Raadplaag uw privédocent voor meer informatie.';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Meldingen over digitaal ontvangstbewijs voor Turnitin-plagiaat-plugin';
 $string['digitalreceipt'] = 'Digitaal ontvangstbewijs';
 $string['digital_receipt_subject'] = 'Dit is uw digitaal ontvangstbewijs van Turnitin';
 $string['pp_digital_receipt_message'] = 'Beste {$a->firstname} {$a->lastname},<br /><br />U hebt het bestand <strong>{$a->submission_title}</strong> ingediend bij de opdracht <strong>{$a->assignment_name}{$a->assignment_part}</strong> in de cursus <strong>{$a->course_fullname}</strong> op <strong>{$a->submission_date}</strong>. Uw inzendings-id is <strong>{$a->submission_id}</strong>. Uw volledige digitaal ontvangstbewijs kunt u zien en afdrukken door in Document Viewer te drukken op de knop voor afdrukken/downloaden.<br /><br />Bedankt dat u Turnitin gebruikt,<br /><br />Het Turnitin-team';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin-id';
 $string['turnitinstatus'] = 'Turnitin-status';
 $string['pending'] = 'In afwachting van behandeling';
@@ -132,7 +151,7 @@ $string['student_read'] = 'De student heeft de paper bekeken op:';
 $string['student_notread'] = 'De student heeft de paper niet bekeken.';
 $string['launchpeermarkreviews'] = 'Peermark-evaluaties starten';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Aantal gebeurtenissen in de wachtrij met Plagiaat-Plugin-gebeurtenissen';
 $string['ppcronsubmissionlimitreached'] = 'Er worden verder geen inzendingen meer verzonden naar Turnitin door deze cron-uitvoering omdat er slechts {$a} per keer worden verwerkt';
 $string['cronsubmittedsuccessfully'] = 'Inzending: {$a->title} (TII-id: {$a->submissionid}) voor de opdracht {$a->assignmentname} op de cursus {$a->coursename} is ingediend bij Turnitin.';
@@ -140,7 +159,7 @@ $string['pp_submission_error'] = 'Turnitin heeft een fout geretourneerd voor uw 
 $string['turnitindeletionerror'] = 'Verwijderen van Turnitin-inzending mislukt. De lokale Moodle-kopie is verwijderd, maar de inzending in Turnitin kan niet worden verwijderd.';
 $string['ppeventsfailedconnection'] = 'Er worden geen gebeurtenissen verwerkt door de Turnitin-plagiaat-plugin als gevolg van het uitvoeren van deze cron, aangezien er geen verbinding met Turnitin tot stand kan worden gebracht.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Neem contact op met uw privédocent of systeembeheerder voor meer informatie';
 $string['faultcode'] = 'Foutcode';
 $string['line'] = 'Lijn';
@@ -169,13 +188,13 @@ $string['pp_createsubmissionerror'] = 'Er is een fout opgetreden bij een poging 
 $string['pp_updatesubmissionerror'] = 'Er is een fout opgetreden bij een poging uw inzending opnieuw in te dienen bij Turnitin';
 $string['tiisubmissiongeterror'] = 'Er is een fout opgetreden bij het ophalen van een inzending uit Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Sluiten';
 $string['loadingdv'] = 'Turnitin Document Viewer laden...';
 $string['changerubricwarning'] = 'Bij het wijzigen of losmaken van een rubric, of beoordelingsschema, worden alle bestaande rubric-scores van papers binnen deze opdracht verwijderd, met inbegrip van scorekaarten die eerder van opmerkingen zijn voorzien. De totale cijfers voor eerder gecorrigeerde papers blijven bewaard.';
 $string['messageprovider:submission'] = 'Meldingen over digitaal ontvangstbewijs voor Turnitin-plagiaat-plugin';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin-status';
 $string['deleted'] = 'Verwijderd';
 $string['pending'] = 'In afwachting van behandeling';

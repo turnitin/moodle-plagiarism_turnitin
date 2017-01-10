@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,16 +31,16 @@ defined('MOODLE_INTERNAL') || die();
  */
 class update_reports extends \core\task\scheduled_task {
 
-	public function get_name() {
+    public function get_name() {
         return get_string('updatereportscores', 'plagiarism_turnitin');
     }
 
     public function execute() {
-        global $CFG, $PLAGIARISM_TURNITIN_TASKCALL;
+        global $CFG, $pptaskcall;
 
         // Call plagiarism turnitin cron function to update report scores.
         require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-        $PLAGIARISM_TURNITIN_TASKCALL = true;
+        $pptaskcall = true;
         plagiarism_turnitin_update_reports();
     }
 }

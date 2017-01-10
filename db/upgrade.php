@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// This file keeps track of upgrades to
-// the plagiarism Turnitin module
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * @global moodle_database $DB
@@ -74,8 +78,8 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     if ($oldversion < 2014012405) {
         if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
             if ($turnitinsetting->value == 1) {
-                $supported_mods = array('assign', 'forum', 'workshop');
-                foreach ($supported_mods as $mod) {
+                $supportedmods = array('assign', 'forum', 'workshop');
+                foreach ($supportedmods as $mod) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
                     $configfield->plugin = 'plagiarism';
@@ -104,7 +108,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2014012413) {
-        // Add new indexes to tables
+        // Add new indexes to tables.
         $table = new xmldb_table('plagiarism_turnitin_files');
         $index = new xmldb_index('externalid', XMLDB_INDEX_NOTUNIQUE, array('externalid'));
         if (!$dbman->index_exists($table, $index)) {
@@ -258,11 +262,14 @@ function upgrade_dm_successful_uploads() {
     global $DB, $CFG;
 
     // Update successful submissions from Dan Marsden's plugin with incorrect statuscode.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', lastmodified = ".time()." WHERE statuscode = '51'");
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success',
+        lastmodified = ".time()." WHERE statuscode = '51'");
 
     // Update the lastmodified timestamp from all successful submissions from Dan Marsden's plugin.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET lastmodified = ".time()." WHERE statuscode = 'success' AND lastmodified = 0");
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET lastmodified = ".time()."
+        WHERE statuscode = 'success' AND lastmodified = 0");
 
     // Update error codes with submissions from Dan Marsden's plugin.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error' WHERE statuscode != 'success' AND statuscode != 'pending'");
+    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error'
+        WHERE statuscode != 'success' AND statuscode != 'pending'");
 }

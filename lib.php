@@ -2246,7 +2246,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             list($insql, $inparams) = $DB->get_in_or_equal(array('success', 'queued'), SQL_PARAMS_QM, 'param', false);
             $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
             $plagiarismfiles = $DB->get_records_select('plagiarism_turnitin_files', " userid = ? AND cm = ? ".
-                                                            " AND identifier AND ".$typefield." = ? ".$insql,
+                                                            " AND identifier = ? AND ".$typefield. " " .$insql,
                                                 array_merge(array($author, $cm->id, $identifier), $inparams));
 
             if ($plagiarismfiles) {

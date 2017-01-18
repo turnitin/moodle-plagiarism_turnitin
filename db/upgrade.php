@@ -256,7 +256,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Remove old PP event from the database if it exists.
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
-        
     }
 
     return $result;

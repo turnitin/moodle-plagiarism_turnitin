@@ -238,7 +238,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2016112401) {
+    if ($oldversion < 2017011801) {
         $table = new xmldb_table('plagiarism_turnitin_files');
 
         // Due to an inconsistency with install and upgrade scripts, some users will
@@ -253,6 +253,10 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Update fields to NULL as per default if necessary.
         $DB->set_field('plagiarism_turnitin_files', 'submitter', null, array('submitter' => 0));
         $DB->set_field('plagiarism_turnitin_files', 'student_read', null, array('student_read' => 0));
+
+        // Remove old PP event from the database if it exists.
+        $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
+        
     }
 
     return $result;

@@ -974,6 +974,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($errorcode == 0 && $submissiontype == 'file') {
                             if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
                                 $errorcode = 2;
+                                $plagiarismfile->errorcode = 2;
                             }
                         }
 

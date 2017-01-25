@@ -667,8 +667,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
             }
 
-            $output .= $OUTPUT->box_start('tii_links_container');
-
             // Show the EULA for a student if necessary.
             if ($linkarray["userid"] == $USER->id && empty($plagiarismfile->externalid)) {
                 $eula = "";
@@ -1080,7 +1078,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $output .= html_writer::tag('div', '', array('class' => 'clear'));
             }
 
-            $output .= $OUTPUT->box_end(true);
+            $output = html_writer::tag('div', $output, array('class' => 'tii_links_container'));
         }
 
         // This comment is here as it is useful for product support.

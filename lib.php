@@ -894,19 +894,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         // Indicate whether student has viewed the feedback.
                         if ($istutor) {
+                            $readicon = "--";
                             if (isset($plagiarismfile->externalid)) {
                                 $studentread = (!empty($plagiarismfile->student_read)) ? $plagiarismfile->student_read : 0;
                                 if ($studentread > 0) {
-                                    $output .= $OUTPUT->pix_icon('icon-student-read',
+                                    $readicon = $OUTPUT->pix_icon('icon-student-read',
                                                         get_string('student_read', 'plagiarism_turnitin').' '.userdate($studentread),
-                                                        'plagiarism_turnitin', array("class" => "student_read_icon"));
+                                                        'plagiarism_turnitin');
                                 } else {
-                                    $output .= $OUTPUT->pix_icon('icon-dot', get_string('student_notread', 'plagiarism_turnitin'),
-                                                        'plagiarism_turnitin', array("class" => "student_read_icon"));
+                                    $readicon = $OUTPUT->pix_icon('icon-dot', get_string('student_notread', 'plagiarism_turnitin'),
+                                                        'plagiarism_turnitin');
                                 }
-                            } else {
-                                $output .= "--";
                             }
+                            $output .= html_writer::tag('div', $readicon, array('class' => 'student_read_icon'));
                         }
 
                         // Show link to view rubric for student.

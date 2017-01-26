@@ -14,10 +14,6 @@
 	clear:both;
 }
 
-.tii_links_container .pp_grademark_open img {
-    padding-right: 8px;
-}
-
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, .tii_links_container .hidden,
 .tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
@@ -26,12 +22,16 @@
 }
 
 .tii_links_container .pp_origreport, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
-.tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews {
+.tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews, .tii_links_container .student_read_icon {
     float: left;
 }
 
-.tii_links_container .grade_icon {
-	margin-right: 8px;
+.tii_links_container .pp_grademark_open img:not(.icon) {
+    padding-right: 8px;
+}
+
+.tii_links_container .student_read_icon {
+    padding-top: 6px;
 }
 
 .tii_links_container .row_rubric_view {
@@ -304,10 +304,6 @@ button.pp-resubmit-files {
 }
 .icon_peermark_manager {
     color: #009900 !important;
-}
-
-.student_read_icon {
-    margin-top: 10px;
 }
 
 .tii_checkagainstnote, .tii_anonblindmarkingnote, .tii_genspeednote {

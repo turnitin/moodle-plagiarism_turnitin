@@ -20,7 +20,7 @@
  */
 
 $plugin->version = 2017012501;
-$plugin->release = "2.6+";
+$plugin->release = "2.7+";
 $plugin->requires = 2014051200;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;

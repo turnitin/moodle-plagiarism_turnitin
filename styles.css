@@ -36,7 +36,7 @@
 
 .tii_links_container .row_rubric_view {
     position: relative;
-    top:4px;
+    top:5px;
 }
 
 .tii_links_container .row_rubric_view i {
@@ -100,12 +100,12 @@
 }
 
 .tii_links_container .score_colour {
-    width:36px;
+    min-width:36px;
     font-size:12px;
     display:inline-block;
-    text-align: right;
+    text-align: center;
     margin-right:8px;
-    padding: 2px 2px;
+    padding: 2px 4px;
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }

@@ -241,6 +241,9 @@
 .pp_turnitin_ula {
 	display: none;
     margin-bottom:16px;
+    padding-top: 40px;
+    background:url([[pix:plagiarism_turnitin|tiiIcon]]) no-repeat 50% 6px;
+    background-size:32px;
 }
 
 noscript.turnitin_ula_noscript {

@@ -433,7 +433,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($eulaaccepted != 1) {
                 // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
                 $eulalink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cmid.'&cmd=useragreement&view_context=box_solid',
-                                        $OUTPUT->pix_icon('tiiIcon', '', 'plagiarism_turnitin', array('class' => 'icon_size_large')).'<br/>'.
                                         get_string('turnitinppulapre', 'plagiarism_turnitin'),
                                         array("class" => "pp_turnitin_eula_link"));
 
@@ -695,7 +694,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($eulaaccepted != 1) {
                             $eulalink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
                                     '&cmd=useragreement&view_context=box_solid',
-                                    $OUTPUT->pix_icon('tiiIcon', '', 'plagiarism_turnitin', array('class' => 'icon_size_large')).'<br/>'.
                                     get_string('turnitinppulapost', 'plagiarism_turnitin'),
                                     array("class" => "pp_turnitin_eula_link"));
 

@@ -200,6 +200,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 } else {
+                    $optionfield->config_hash = $optionfield->cm."_".$optionfield->name;
                     if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
                         turnitintooltwo_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
@@ -1725,6 +1726,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $moduleconfigvalue->cm = $cm->id;
                 $moduleconfigvalue->name = 'turnitin_assignid';
                 $moduleconfigvalue->value = $turnitinassignid;
+                $moduleconfigvalue->config_hash = $moduleconfigvalue->cm."_".$moduleconfigvalue->name;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
 
                 $return = array('success' => true, 'tiiassignmentid' => $turnitinassignid);
@@ -2727,6 +2729,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $configfield->cm = $cm->id;
             $configfield->name = 'submitted';
             $configfield->value = 1;
+            $configfield->config_hash = $configfield->cm."_".$configfield->name;
 
             if (!$DB->get_field('plagiarism_turnitin_config', 'id',
                                                  (array('cm' => $cm->id, 'name' => 'submitted')))) {

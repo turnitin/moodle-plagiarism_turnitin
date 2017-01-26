@@ -1,3 +1,22 @@
+### Date:		2017-January-25
+### Release:	v2017012501
+
+- The events now use Moodle's new Events 2 API, which is a requirement to support future Moodle versions. Admins should ensure the Events Queue has been cleared for Plagiarism events. Following this change to the Events API this release and future releases will no longer work on Moodle 2.6.
+- The language strings have been updated across all supported languages.
+- The unused database columns legacyteacher, apimd5 and externalstatus have been removed from the plugin's plagiarism_turnitin_files table. These were leftovers from Dan Marsden's version of the plugin that are no longer used.
+- Travis-CI has been aded to the plugin as an extra QA resource to help flag any issues with the code.
+- Fixes:
+	- The assignment edit API call no longer fails if repository settings don't match the plugin settings.
+	- JavaScript error no longer appears when closing the PeerMark manager.
+	- The & character no longer appears in TFS as &amp;.
+	- Default values for submitter and student_read columns are now consistent between upgrade and install. (Thanks to @danmarsden).
+	- The error message when submitting a file >40mb now displays correctly.
+	- Fixed an issue with anonymous marking where grades would appear in the gradebook before the assignment has been unanonymised.
+	- Fixed an issue where the first submission to an assignment would sometimes fail to send to Turnitin.
+	- Moodle's Behat unit tests will no longer fail. (Thanks to @roperto)
+
+---
+
 ### Date:		2016-September-14
 ### Release:	v2016091401
 

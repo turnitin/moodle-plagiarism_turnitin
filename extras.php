@@ -53,7 +53,7 @@ switch ($cmd) {
         $user = new turnitintooltwo_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tii_user_id, "Learner", '');
+        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tiiuserid, "Learner", '');
         $output .= $OUTPUT->box_end(true);
         echo $output;
 
@@ -61,7 +61,7 @@ switch ($cmd) {
                                     window.document.forms[0].submit();
                                     //-->");
         exit;
-    	break;
+        break;
 }
 
 // Build page.

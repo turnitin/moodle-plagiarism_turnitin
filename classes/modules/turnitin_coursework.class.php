@@ -19,69 +19,73 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
+defined('MOODLE_INTERNAL') || die();
+
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_coursework {
 
-	private $modname;
-	public $grades_table;
-	public $filecomponent;
+    private $modname;
+    public $gradestable;
+    public $filecomponent;
 
-	public function __construct() {
-		$this->modname = 'coursework';
-		$this->grades_table = $this->modname.'_feedbacks';
-		$this->filecomponent = 'mod_'.$this->modname;
-	}
+    public function __construct() {
+        $this->modname = 'coursework';
+        $this->gradestable = $this->modname.'_feedbacks';
+        $this->filecomponent = 'mod_'.$this->modname;
+    }
 
-	public function is_tutor($context) {
-		$capabilities 	=	array($this->get_tutor_capability(),'mod/coursework:addagreedgrade', 'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades');
-		return has_any_capability($capabilities,$context);
-	}
+    public function is_tutor($context) {
+        $capabilities = array($this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
+            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades');
+        return has_any_capability($capabilities, $context);
+    }
 
-	public function get_tutor_capability() {
-		return 'mod/'.$this->modname.':addinitialgrade';
-	}
+    public function get_tutor_capability() {
+        return 'mod/'.$this->modname.':addinitialgrade';
+    }
 
-	public function user_enrolled_on_course($context, $userid) {
-		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
-	}
+    public function user_enrolled_on_course($context, $userid) {
+        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+    }
 
-	public function get_author($itemid) {
-		global $DB;
+    public function get_author($itemid) {
+        global $DB;
 
-		$id = 0;
+        $id = 0;
 
-		if ($submission = $DB->get_record('coursework_submissions', array('id' => $itemid)))
-			$id =  $submission->authorid;
+        if ($submission = $DB->get_record('coursework_submissions', array('id' => $itemid))) {
+            $id = $submission->authorid;
+        }
 
-		return $id;
-	}
-
-
-
-	public function create_file_event($params) {
-		return \mod_coursework\event\assessable_uploaded::create($params);
-	}
+        return $id;
+    }
 
 
-	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
-		global $DB;
 
-		$sql	=	"SELECT			*
-					 FROM			{coursework_submissions}	cs,
-					 				{coursework_feedbacks}		cf
-					  WHERE			cs.id	=	cf.submissionid
-					  AND 			cs.authorid			=	:authorid
-					  AND 			cs.courseworkid		=	:courseworkid
-					  AND 			cf.stage_identifier	=	:stage";
+    public function create_file_event($params) {
+        return \mod_coursework\event\assessable_uploaded::create($params);
+    }
 
-		$params		=	array('stage'=>'final_agreed_1','authorid'=>$userid,'courseworkid'=>$moduleid);
 
-		$currentgradesquery =	$DB->get_record_sql($sql, $params);
+    public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+        global $DB;
 
-		return $currentgradesquery;
-	}
+        $sql = "SELECT         *
+                FROM           {coursework_submissions}    cs,
+                               {coursework_feedbacks}      cf
+                WHERE         cs.id   =   cf.submissionid
+                AND           cs.authorid         =   :authorid
+                AND           cs.courseworkid     =   :courseworkid
+                AND           cf.stage_identifier =   :stage";
 
-	public function initialise_post_date($moduledata) {
-		return 0;
-	}
+        $params = array('stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid);
+
+        $currentgradesquery = $DB->get_record_sql($sql, $params);
+
+        return $currentgradesquery;
+    }
+
+    public function initialise_post_date($moduledata) {
+        return 0;
+    }
 }

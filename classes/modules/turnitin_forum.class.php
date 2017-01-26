@@ -19,74 +19,76 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
+defined('MOODLE_INTERNAL') || die();
+
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_forum {
 
-	private $modname;
-	public $grades_table;
-	public $filecomponent;
+    private $modname;
+    public $gradestable;
+    public $filecomponent;
 
-	public function __construct() {
-		$this->modname = 'forum';
-		$this->grades_table = 'grade_grades';
-		$this->filecomponent = 'mod_'.$this->modname;
-	}
+    public function __construct() {
+        $this->modname = 'forum';
+        $this->gradestable = 'grade_grades';
+        $this->filecomponent = 'mod_'.$this->modname;
+    }
 
-	public function is_tutor($context) {
-		return has_capability($this->get_tutor_capability(), $context);
-	}
+    public function is_tutor($context) {
+        return has_capability($this->get_tutor_capability(), $context);
+    }
 
-	public function get_tutor_capability() {
-		return 'plagiarism/turnitin:viewfullreport';
-	}
+    public function get_tutor_capability() {
+        return 'plagiarism/turnitin:viewfullreport';
+    }
 
-	public function user_enrolled_on_course($context, $userid) {
-		return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
-	}
+    public function user_enrolled_on_course($context, $userid) {
+        return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
+    }
 
-	public function get_author($itemid) {
-		return ;
-	}
+    public function get_author($itemid) {
+        return;
+    }
 
-	public function set_content($linkarray, $moduleid) {
-		return $linkarray["content"];
+    public function set_content($linkarray, $moduleid) {
+        return $linkarray["content"];
     }
 
     public function create_file_event($params) {
-		return \mod_forum\event\assessable_uploaded::create($params);
-	}
+        return \mod_forum\event\assessable_uploaded::create($params);
+    }
 
-	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
-		global $DB;
+    public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+        global $DB;
 
-		$currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
         return $currentgradequery;
-	}
+    }
 
-	public function initialise_post_date($moduledata) {
-		return 0;
-	}
+    public function initialise_post_date($moduledata) {
+        return 0;
+    }
 
-	// Get the forum submission id - unfortunately this is rather complex as the db tables are strangely organised.
-	public function get_discussionid($forumdata) {
+    // Get the forum submission id - unfortunately this is rather complex as the db tables are strangely organised.
+    public function get_discussionid($forumdata) {
 
-		list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $forumdata);
+        list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $forumdata);
 
-		if (empty($discussionid)) {
-		    $parent = '';
-		    if ($reply != 0) {
-		        $parent = forum_get_post_full($reply);
-		    } else if ($edit != 0) {
-		        $parent = forum_get_post_full($edit);
-		    } else if ($delete != 0) {
-		        $parent = forum_get_post_full($delete);
-		    }
+        if (empty($discussionid)) {
+            $parent = '';
+            if ($reply != 0) {
+                $parent = forum_get_post_full($reply);
+            } else if ($edit != 0) {
+                $parent = forum_get_post_full($edit);
+            } else if ($delete != 0) {
+                $parent = forum_get_post_full($delete);
+            }
 
-		    if (!empty($parent)) {
-		        $discussionid = $parent->discussion;
-		    }
-		}
+            if (!empty($parent)) {
+                $discussionid = $parent->discussion;
+            }
+        }
 
-		return $discussionid;
-	}
+        return $discussionid;
+    }
 }

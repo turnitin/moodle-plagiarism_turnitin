@@ -1,18 +1,36 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
 
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tools | Templates.
  * and open the template in the editor.
  */
 
-// General
+// General.
 $string['pluginname'] = 'Turnitin plagiarism plugin';
 $string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
-$string['task_name'] = 'Turnitin Plagiarism Plugin Task';
 $string['connecttesterror'] = 'There was an error connecting to Turnitin the return error message is below:<br />';
 
-// Assignment Settings
+// Assignment Settings.
 $string['turnitin:enable'] = 'Enable Turnitin';
 $string['excludebiblio'] = 'Exclude Bibliography';
 $string['excludequoted'] = 'Exclude Quoted Material';
@@ -77,7 +95,7 @@ $string['turnitinppulapre'] = 'To submit a file to Turnitin you must first accep
 $string['noscriptula'] = '(As you do not have javascript enabled you will have to manually refresh this page before you can make a submission after accepting the Turnitin User Agreement)';
 $string['filedoesnotexist'] = 'File has been deleted';
 
-// Plugin settings
+// Plugin settings.
 $string['config'] = 'Configuration';
 $string['defaults'] = 'Default Settings';
 $string['showusage'] = 'Show Data Dump';
@@ -108,20 +126,20 @@ $string['student'] = 'Student';
 $string['course'] = 'Course';
 $string['module'] = 'Module';
 
-// Grade book/View assignment page
+// Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';
 $string['turnitinppulapost'] = 'Your file has not been submitted to Turnitin. Please click here to accept our EULA.';
 $string['ppsubmissionerrorseelogs'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
 $string['ppsubmissionerrorstudent'] = 'This file has not been submitted to Turnitin, please consult your tutor for further details';
 
-// Receipts
+// Receipts.
 $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Receipt notifications';
 $string['digitalreceipt'] = 'Digital Receipt';
 $string['digital_receipt_subject'] = 'This is your Turnitin Digital Receipt';
 $string['pp_digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from the print/download button in the Document Viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
 
-// Paper statuses
+// Paper statuses.
 $string['turnitinid'] = 'Turnitin ID';
 $string['turnitinstatus'] = 'Turnitin status';
 $string['pending'] = 'Pending';
@@ -132,7 +150,7 @@ $string['student_read'] = 'The student viewed the paper on:';
 $string['student_notread'] = 'The student has not viewed this paper.';
 $string['launchpeermarkreviews'] = 'Launch Peermark Reviews';
 
-// Cron
+// Cron.
 $string['ppqueuesize'] = 'Number of events in the Plagiarism Plugin events queue';
 $string['ppcronsubmissionlimitreached'] = 'No further submissions will be sent to Turnitin by this cron execution as only {$a} are processed per run';
 $string['cronsubmittedsuccessfully'] = 'Submission: {$a->title} (TII ID: {$a->submissionid}) for the assignment {$a->assignmentname} on the course {$a->coursename} was successfully submitted to Turnitin.';
@@ -140,7 +158,7 @@ $string['pp_submission_error'] = 'Turnitin has returned an error with your submi
 $string['turnitindeletionerror'] = 'Turnitin submission deletion failed. The local Moodle copy was removed but the submission in Turnitin could not be deleted.';
 $string['ppeventsfailedconnection'] = 'No events will be processed by the Turnitin plagiarism plugin by this cron execution as a connection to Turnitin can not be established.';
 
-// Error codes
+// Error codes.
 $string['tii_submission_failure'] = 'Please consult your tutor or system administrator for further details';
 $string['faultcode'] = 'Fault Code';
 $string['line'] = 'Line';
@@ -169,14 +187,19 @@ $string['pp_createsubmissionerror'] = 'There was an error trying to create the s
 $string['pp_updatesubmissionerror'] = 'There was an error trying to resubmit your submission to Turnitin';
 $string['tiisubmissiongeterror'] = 'There was an error when trying to get a submission from Turnitin';
 
-// Javascript
+// Javascript.
 $string['closebutton'] = 'Close';
 $string['loadingdv'] = 'Loading Turnitin Document Viewer...';
 $string['changerubricwarning'] = 'Changing or detaching a rubric will remove all existing rubric scoring from papers in this assignment, including scorecards which have previously been marked. Overall grades for previously graded papers will remain.';
 $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Receipt notifications';
 
-// Turnitin Submission Status
+// Turnitin Submission Status.
 $string['turnitinstatus'] = 'Turnitin status';
 $string['deleted'] = 'Deleted';
 $string['pending'] = 'Pending';
 $string['because'] = 'This was because an administrator deleted the pending assignment from the processing queue and aborted the submission to Turnitin.<br /><strong>The file still exists in Moodle, please contact your instructor.</strong><br />Please see below for any error codes:';
+
+$string['errorcode10'] = 'This file has not been submitted to Turnitin because there is a problem creating the class in Turnitin which is preventing submissions, please consult your API logs for further information';
+$string['queued'] = 'Queued';
+$string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
+$string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';

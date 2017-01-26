@@ -19,69 +19,71 @@
  * @copyright 2012 iParadigms LLC *
  */
 
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php
+defined('MOODLE_INTERNAL') || die();
+
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_workshop {
 
-	private $modname;
-	public $grades_table;
-	public $filecomponent;
+    private $modname;
+    public $gradestable;
+    public $filecomponent;
 
-	public function __construct() {
-		$this->modname = 'workshop';
-		$this->grades_table = 'grade_grades';
-		$this->filecomponent = 'mod_'.$this->modname;
-	}
+    public function __construct() {
+        $this->modname = 'workshop';
+        $this->gradestable = 'grade_grades';
+        $this->filecomponent = 'mod_'.$this->modname;
+    }
 
-	public function is_tutor($context) {
-		return has_capability($this->get_tutor_capability(), $context);
-	}
+    public function is_tutor($context) {
+        return has_capability($this->get_tutor_capability(), $context);
+    }
 
-	public function get_tutor_capability() {
-		return 'plagiarism/turnitin:viewfullreport';
-	}
+    public function get_tutor_capability() {
+        return 'plagiarism/turnitin:viewfullreport';
+    }
 
-	public function user_enrolled_on_course($context, $userid) {
-		return has_capability('mod/'.$this->modname.':submit', $context, $userid);
-	}
+    public function user_enrolled_on_course($context, $userid) {
+        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+    }
 
-	public function get_author($itemid) {
-		return ;
-	}
+    public function get_author($itemid) {
+        return;
+    }
 
-	public function set_content($linkarray, $moduleid) {
-		return $linkarray["content"];
-	}
+    public function set_content($linkarray, $moduleid) {
+        return $linkarray["content"];
+    }
 
-	public function get_onlinetext($userid, $cm) {
-		global $DB;
+    public function get_onlinetext($userid, $cm) {
+        global $DB;
 
-		$submission = $DB->get_record('workshop_submissions',
-										array('authorid' => $userid, 'workshopid' => $cm->instance));
+        $submission = $DB->get_record('workshop_submissions',
+                                        array('authorid' => $userid, 'workshopid' => $cm->instance));
 
-		$onlinetextdata = new stdClass();
-		$onlinetextdata->itemid = $submission->id;
-		$onlinetextdata->onlinetext = $submission->content;
-		$onlinetextdata->onlineformat = $moodletextsubmission->contentformat;
+        $onlinetextdata = new stdClass();
+        $onlinetextdata->itemid = $submission->id;
+        $onlinetextdata->onlinetext = $submission->content;
+        $onlinetextdata->onlineformat = $submission->contentformat;
 
-		return $onlinetextdata;
-	}
+        return $onlinetextdata;
+    }
 
-	public function create_file_event($params) {
-		return \mod_workshop\event\assessable_uploaded::create($params);
-	}
+    public function create_file_event($params) {
+        return \mod_workshop\event\assessable_uploaded::create($params);
+    }
 
-	public function create_text_event($params) {
-		return \mod_workshop\event\assessable_uploaded::create($params);
-	}
+    public function create_text_event($params) {
+        return \mod_workshop\event\assessable_uploaded::create($params);
+    }
 
-	public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
-		global $DB;
+    public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
+        global $DB;
 
-		$currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
         return $currentgradequery;
-	}
+    }
 
-	public function initialise_post_date($moduledata) {
-		return $moduledata->assessmentend;
-	}
+    public function initialise_post_date($moduledata) {
+        return $moduledata->assessmentend;
+    }
 }

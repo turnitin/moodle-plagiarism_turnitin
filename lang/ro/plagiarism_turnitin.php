@@ -1,0 +1,201 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+/*
+ * To change this template, choose Tools | Templates.
+ * and open the template in the editor.
+ */
+
+// General.
+$string['pluginname'] = 'Plugin de detectare a plagiatului Turnitin';
+$string['turnitintooltwo'] = 'Instrument Turnitin';
+$string['turnitin'] = 'Turnitin';
+$string['task_name'] = 'Procesul plugin de detectare a plagiatului Turnitin';
+$string['connecttesterror'] = 'Eroare la conectarea la Turnitin. S-a returnat mesajul de eroare de mai jos:<br />';
+
+// Assignment Settings.
+$string['turnitin:enable'] = 'Activare Turnitin';
+$string['excludebiblio'] = 'Excluderea bibliografiei';
+$string['excludequoted'] = 'Excluderea citatelor';
+$string['excludevalue'] = 'Excludere similitudini mici';
+$string['excludewords'] = 'Cuvinte';
+$string['excludepercent'] = 'Procent';
+$string['norubric'] = 'Niciun barem';
+$string['otherrubric'] = 'Utilizarea baremului unui alt profesor';
+$string['attachrubric'] = 'Atașarea unui barem la această temă';
+$string['launchrubricmanager'] = 'Lansarea Managerului de bareme';
+$string['attachrubricnote'] = 'Observație: studenții vor putea să vadă baremele atașate și conținutul lor înainte de a-și depune lucrările.';
+$string['erater_handbook_advanced'] = 'Avansat';
+$string['erater_handbook_highschool'] = 'Liceu';
+$string['erater_handbook_middleschool'] = 'Gimnaziu';
+$string['erater_handbook_elementary'] = 'Școală primară';
+$string['erater_handbook_learners'] = 'Studenți ai limbii engleze';
+$string['erater_dictionary_enus'] = 'Dicționar de engleză americană';
+$string['erater_dictionary_engb'] = 'Dicționar de engleză britanică';
+$string['erater_dictionary_en'] = 'Ambele dicționare: de engleză americană și britanică';
+$string['erater'] = 'Activarea verificării gramaticale cu e-rater';
+$string['erater_handbook'] = 'Manual ETS&copy;';
+$string['erater_dictionary'] = 'Dicționar e-rater';
+$string['erater_categories'] = 'Categorii e-rater';
+$string['erater_spelling'] = 'Ortografie';
+$string['erater_grammar'] = 'Gramatică';
+$string['erater_usage'] = 'Utilizare';
+$string['erater_mechanics'] = 'Ortografie și punctuație';
+$string['erater_style'] = 'Stil';
+$string['anonblindmarkingnote'] = 'Observație: setarea separată de însemnări anonime în Turnitin a fost eliminată. Turnitin va utiliza setarea de însemnări anonime din Moodle pentru a determina ce setare trebuie să folosească.';
+$string['transmatch'] = 'Similitudini cu traduceri';
+$string['genduedate'] = 'Generarea rapoartelor la termenul de depunere (redepunerile sunt permise până la termenul de depunere)';
+$string['genimmediately1'] = 'Generarea imediată a rapoartelor (redepunerile nu sunt permise)';
+$string['genimmediately2'] = 'Generarea imediată a rapoartelor (redepunerile sunt permise până la termenul de depunere)';
+$string['launchquickmarkmanager'] = 'Lansare Manager Quickmark';
+$string['launchpeermarkmanager'] = 'Lansare Manager Peermark';
+$string['studentreports'] = 'Afișarea Rapoartelor privind originalitatea pentru studenți';
+$string['studentreports_help'] = 'Vă permite să afișați utilizatorilor studenți rapoartele Turnitin privind originalitatea. Dacă este setat la da, rapoartele privind originalitatea generate de Turnitin pot fi văzute de către studenți.';
+$string['submitondraft'] = 'Depunere fișier la prima încărcare';
+$string['submitonfinal'] = 'Depunerea fișierului atunci când studentul trimite lucrarea pentru însemnări';
+$string['draftsubmit'] = 'Când se depune fișierul în Turnitin?';
+$string['allownonor'] = 'Se permite depunerea oricărui tip de fișier?';
+$string['allownonor_help'] = 'Această setare va permite depunerea oricărui tip de fișier. Dacă opțiunea este setată la „Da”, originalitatea depunerilor va fi verificată în limita posibilităților, depunerile vor fi disponibile pentru descărcare și instrumentele de feedback GradeMark vor fi disponibile în limita posibilităților.';
+$string['norepository'] = 'Niciun depozit';
+$string['standardrepository'] = 'Depozit standard';
+$string['submitpapersto'] = 'Stocarea lucrărilor studenților';
+$string['institutionalrepository'] = 'Depozitul instituțional (dacă este cazul)';
+$string['submitpapersto_help'] = 'Această setare oferă profesorilor posibilitatea de a stoca lucrările studenților în depozitul Turnitin. Avantajul stocării în depozit este că lucrările studenților depuse pentru o temă sunt comparate cu alte depuneri ale studenților, din cursurile prezente și trecute. Dacă selectați „niciun depozit”, lucrările studenților nu vor fi depozitate în depozitul Turnitin.';
+$string['checkagainstnote'] = 'Observație: dacă nu selectați „Da” la cel puțin una dintre opțiunile „Verificare prin comparație cu...” de mai jos, Raportul privind originalitatea NU se va genera.';
+$string['spapercheck'] = 'Verificare prin comparație cu lucrările depozitate ale studenților';
+$string['internetcheck'] = 'Verificare prin comparație cu materialele de pe internet';
+$string['journalcheck'] = 'Verificare prin comparație cu jurnale,<br />periodice și publicații';
+$string['compareinstitution'] = 'Fișierele depuse se compară cu lucrările depuse în această instituție';
+$string['reportgenspeed'] = 'Viteza generării raportului';
+$string['genspeednote'] = 'Observație: în cazul redepunerilor, Raportul privind originalitatea se generează cu o întârziere de 24 de ore.';
+$string['locked_message'] = 'Mesaj blocat';
+$string['locked_message_help'] = 'Dacă se blochează oricare dintre setări, se afișează acest mesaj pentru a explica motivul.';
+$string['locked_message_default'] = 'Această setare este blocată la nivel de site';
+$string['sharedrubric'] = 'Barem partajat';
+$string['turnitinrefreshsubmissions'] = 'Reîncărcarea depunerilor';
+$string['turnitinrefreshingsubmissions'] = 'Se reîmprospătează depunerile';
+$string['turnitinppulapre'] = 'Pentru a putea depune un fișier în Turnitin, trebuie să acceptați în prealabil EULA (Acordul de licență cu utilizatorul final). Dacă decideți să nu acceptați EULA, fișierul se va depune doar în Moodle. Faceți clic aici pentru a accepta.';
+$string['noscriptula'] = '(Întrucât nu aveți Javascript activat, va trebui să reîncărcați manual această pagină pentru a putea depune o lucrare după acceptarea Acordului de utilizator Turnitin)';
+$string['filedoesnotexist'] = 'Fișierul a fost șters';
+
+// Plugin settings.
+$string['config'] = 'Configurație';
+$string['defaults'] = 'Setări implicite';
+$string['showusage'] = 'Afișarea conținutului bazei de date';
+$string['saveusage'] = 'Salvarea conținutului bazei de date';
+$string['errors'] = 'Erori';
+$string['turnitinconfig'] = 'Configurarea pluginului de detectare a plagiatului Turnitin';
+$string['tiiexplain'] = 'Turnitin este un produs comercial și trebuie să aveți un abonament plătit pentru a folosi acest serviciu. Pentru mai multe informații citiți <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
+$string['useturnitin'] = 'Activare Turnitin';
+$string['useturnitin_mod'] = 'Activare Turnitin pentru {$a}';
+$string['pp_configuredesc'] = 'Trebuie să configurați acest modul în modulul turnitintooltwo. Faceți clic <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>aici</a> pentru a configura acest plugin';
+$string['turnitindefaults'] = 'Setările implicite ale pluginului de detectare a plagiatului Turnitin';
+$string['defaultsdesc'] = 'Următoarele setări sunt valorile implicite setate la activarea Turnitin într-un modul de activitate';
+$string['turnitinpluginsettings'] = 'Setări plugin de detectare a plagiatului Turnitin';
+$string['pperrorsdesc'] = 'Problemă la încercarea de a încărca fișierele de mai jos în Turnitin. Pentru a redepune materialul, selectați fișierele pe care doriți să le redepuneți, apoi faceți clic pe butonul de redepunere. Acestea se vor procesa la următoarea executare a lucrării cron.';
+$string['pperrorssuccess'] = 'Fișierele pe care le-ați selectat au fost redepuse și vor fi procesate de lucrarea cron.';
+$string['pperrorsfail'] = 'Problemă cu unele dintre fișierele pe care le-ați selectat, nu s-a putut crea un nou eveniment cron pentru acestea.';
+$string['resubmitselected'] = 'Redepunerea fișierelor selectate';
+$string['deleteconfirm'] = 'Sigur doriți să ștergeți această depunere?\n\nAcțiunea nu poate fi anulată.';
+$string['deletesubmission'] = 'Ștergere depunere';
+$string['semptytable'] = 'Nu s-a găsit niciun rezultat.';
+$string['configupdated'] = 'Configurație actualizată';
+$string['defaultupdated'] = 'Setările implicite Turnitin au fost actualizate';
+$string['notavailableyet'] = 'Indisponibil';
+$string['resubmittoturnitin'] = 'Redepunere în Turnitin';
+$string['resubmitting'] = 'Redepunere în curs';
+$string['id'] = 'ID';
+$string['student'] = 'Student';
+$string['course'] = 'Curs';
+$string['module'] = 'Modul';
+
+// Grade book/View assignment page.
+$string['turnitin:viewfullreport'] = 'Vizualizarea Raportului privind originalitatea';
+$string['launchrubricview'] = 'Vizualizarea baremului folosit pentru însemnări';
+$string['turnitinppulapost'] = 'Fișierul nu a fost depus în Turnitin. Faceți clic aici pentru a accepta EULA.';
+$string['ppsubmissionerrorseelogs'] = 'Acest fișier nu a fost depus în Turnitin, consultați administratorul de sistem';
+$string['ppsubmissionerrorstudent'] = 'Acest fișier nu a fost depus în Turnitin, consultați-vă îndrumătorul pentru mai multe detalii';
+
+// Receipts.
+$string['messageprovider:submission'] = 'Notificări privind confirmările digitale din pluginul de detectare a plagiatului Turnitin';
+$string['digitalreceipt'] = 'Confirmare digitală';
+$string['digital_receipt_subject'] = 'Aceasta este Confirmarea digitală Turnitin';
+$string['pp_digital_receipt_message'] = 'Stimate/Stimată {$a->firstname} {$a->lastname},<br /><br />Ați depus cu succes fișierul <strong>{$a->submission_title}</strong> cu tema <strong>{$a->assignment_name}{$a->assignment_part}</strong> din cursul <strong>{$a->course_fullname}</strong>, pe data de <strong>{$a->submission_date}</strong>. ID-ul depunerii este <strong>{$a->submission_id}</strong>. Confirmarea digitală completă se poate vizualiza și imprima prin intermediul butonului de imprimare/descărcare din vizualizatorul de documente.<br /><br />Vă mulțumim pentru utilizarea Turnitin,<br /><br />Echipa Turnitin';
+
+// Paper statuses.
+$string['turnitinid'] = 'ID Turnitin';
+$string['turnitinstatus'] = 'Stare Turnitin';
+$string['pending'] = 'În așteptare';
+$string['similarity'] = 'Similitudine';
+$string['notorcapable'] = 'Pentru acest fișier nu se poate genera un Raport privind originalitatea.';
+$string['grademark'] = 'GradeMark';
+$string['student_read'] = 'Studentul a văzut lucrarea la:';
+$string['student_notread'] = 'Studentul nu a văzut această lucrare.';
+$string['launchpeermarkreviews'] = 'Lansare evaluări Peermark';
+
+// Cron.
+$string['ppqueuesize'] = 'Numărul evenimentelor din coada de evenimente a pluginului de detectare a plagiatului';
+$string['ppcronsubmissionlimitreached'] = 'La această executare a lucrării cron nu se mai trimit în Turnitin alte depuneri, deoarece la o executare se procesează cel mult {$a}';
+$string['cronsubmittedsuccessfully'] = 'Lucrarea: {$a->title} (ID TII: {$a->submissionid}) pentru tema {$a->assignmentname} din cursul {$a->coursename} a fost depusă cu succes în Turnitin.';
+$string['pp_submission_error'] = 'Turnitin a returnat o eroare legată de depunere:';
+$string['turnitindeletionerror'] = 'Ștergerea depunerii Turnitin nu a reușit. Copia locală Moodle a fost înlăturată, dar depunerea din Turnitin nu a putut fi ștearsă.';
+$string['ppeventsfailedconnection'] = 'La această executare a lucrării cron nu se vor procesa alte evenimente cu pluginul de detectare a plagiatului Turnitin, deoarece nu se poate stabili conexiunea cu Turnitin.';
+
+// Error codes.
+$string['tii_submission_failure'] = 'Consultați-vă îndrumătorul sau administratorul de sistem pentru mai multe detalii';
+$string['faultcode'] = 'Cod de eroare';
+$string['line'] = 'Linie';
+$string['message'] = 'Mesaj';
+$string['code'] = 'Cod';
+$string['tiisubmissionsgeterror'] = 'Eroare la încercarea de a obține depunerile pentru această temă de la Turnitin';
+$string['errorcode0'] = 'Acest fișier nu a fost depus în Turnitin, consultați administratorul de sistem';
+$string['errorcode1'] = 'Acest fișier nu a fost trimis în Turnitin, deoarece conținutul este insuficient pentru generarea unui Raport privind originalitatea.';
+$string['errorcode2'] = 'Acest fișier nu se va depune în Turnitin pentru că depășește dimensiunea maximă admisă de {$a}';
+$string['errorcode3'] = 'Acest fișier nu a fost depus în Turnitin, deoarece utilizatorul nu a acceptat Acordul de licență cu utilizatorul final al Turnitin.';
+$string['errorcode4'] = 'Pentru această temă trebuie să încărcați un tip de fișier acceptat. Tipurile acceptate sunt: .doc, .docx, .ppt, .pptx, .pps, .ppsx, .pdf, .txt, .htm, .html, .hwp, .odt, .wpd, .ps și .rtf';
+$string['errorcode5'] = 'Acest fișier nu a fost depus în Turnitin din cauza unei probleme la crearea modulului în Turnitin, care împiedică depunerile, pentru informații suplimentare, consultați jurnalele API';
+$string['errorcode6'] = 'Acest fișier nu a fost depus în Turnitin din cauza unei probleme la editarea modulului în Turnitin, care împiedică depunerile, pentru informații suplimentare, consultați jurnalele API';
+$string['errorcode7'] = 'Acest fișier nu a fost depus în Turnitin din cauza unei probleme la crearea utilizatorului în Turnitin, care împiedică depunerile, pentru informații suplimentare, consultați jurnalele API';
+$string['errorcode8'] = 'Acest fișier nu a fost depus în Turnitin din cauza unei probleme la crearea fișierului temporar. Cauza probabilă este un nume de fișier incorect. Redenumiți fișierul și reîncărcați-l prin Editare depunere.';
+$string['errorcode9'] = 'Imposibil de depus fișierul: în lista de fișiere nu există conținut accesibil care să poată fi depus.';
+$string['coursegeterror'] = 'Nu au putut fi obținute datele cursului';
+$string['configureerror'] = 'Pentru a putea utiliza modul într-un curs, trebuie să-l configurați complet ca Administrator. Contactați administratorul Moodle.';
+$string['turnitintoolofflineerror'] = 'Avem o problemă temporară. Încercați din nou în scurt timp.';
+$string['defaultinserterror'] = 'Eroare la încercarea de a introduce o valoare de setare implicită în baza de date';
+$string['defaultupdateerror'] = 'Eroare la încercarea de a actualiza o valoare de setare implicită în baza de date';
+$string['tiiassignmentgeterror'] = 'Eroare la încercarea de a obține o temă de la Turnitin';
+$string['assigngeterror'] = 'Imposibil de obținut datele turnitintooltwo';
+$string['classupdateerror'] = 'Nu au putut fi actualizate datele cursului Turnitin';
+$string['pp_createsubmissionerror'] = 'Eroare la încercarea de a crea depunerea în Turnitin';
+$string['pp_updatesubmissionerror'] = 'Eroare la încercarea de a redepune lucrarea în Turnitin';
+$string['tiisubmissiongeterror'] = 'Eroare la încercarea de a obține o depunere de la Turnitin';
+
+// Javascript.
+$string['closebutton'] = 'Închidere';
+$string['loadingdv'] = 'Se încarcă vizualizatorul de documente Turnitin...';
+$string['changerubricwarning'] = 'Modificarea sau detașarea unui barem va înlătura din lucrările cu această temă toate punctajele acordate pe baza baremului, inclusiv grilele de notare punctate anterior. Notele generale ale lucrărilor notate anterior se vor păstra.';
+$string['messageprovider:submission'] = 'Notificări privind confirmările digitale din pluginul de detectare a plagiatului Turnitin';
+
+// Turnitin Submission Status.
+$string['turnitinstatus'] = 'Stare Turnitin';
+$string['deleted'] = 'Șters';
+$string['pending'] = 'În așteptare';
+$string['because'] = 'Cauza este faptul că un administrator a șters o temă în așteptare din coada de procesare și a întrerupt depunerea în Turnitin.<br /><strong>Fișierul există în continuare în Moodle, contactați profesorul.</strong><br />Căutați mai jos codul de eroare:';

@@ -8,13 +8,20 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+defined('MOODLE_INTERNAL') || die();
 
 $plugins = array(
-	'plagiarism-turnitin_module'		=> array('files' => array('turnitin_module.js')),
-	'plagiarism-turnitin_settings'		=> array('files' => array('turnitin_settings.js'))
+    'plagiarism-turnitin_module'        => array('files' => array('turnitin_module.js')),
+    'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js'))
 );

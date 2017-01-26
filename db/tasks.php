@@ -15,17 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package   turnitintooltwo
+ * @copyright 2012 iParadigms LLC
+ */
+
+/**
  * @package plagiarism_turnitin
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $tasks = array(
     array(
-        'classname' => 'plagiarism_turnitin\task\plagiarism_turnitin_task',
+        'classname' => 'plagiarism_turnitin\task\update_reports',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
-    )
+    ),
+    array(
+        'classname' => 'plagiarism_turnitin\task\send_submissions',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
 );

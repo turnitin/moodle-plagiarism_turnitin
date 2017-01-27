@@ -14,10 +14,6 @@
 	clear:both;
 }
 
-.tii_links_container .pp_grademark_open img {
-    padding-right: 8px;
-}
-
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, .tii_links_container .hidden,
 .tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
@@ -26,17 +22,21 @@
 }
 
 .tii_links_container .pp_origreport, .tii_links_container .grade_icon, .tii_links_container .tii_error_icon,
-.tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews {
+.tii_links_container .row_rubric_view, .tii_links_container .row_peermark_reviews, .tii_links_container .student_read_icon {
     float: left;
 }
 
-.tii_links_container .grade_icon {
-	margin-right: 8px;
+.tii_links_container .pp_grademark_open img:not(.icon) {
+    padding-right: 8px;
+}
+
+.tii_links_container .student_read_icon {
+    padding-top: 6px;
 }
 
 .tii_links_container .row_rubric_view {
     position: relative;
-    top:4px;
+    top:5px;
 }
 
 .tii_links_container .row_rubric_view i {
@@ -100,12 +100,12 @@
 }
 
 .tii_links_container .score_colour {
-    width:36px;
+    min-width:36px;
     font-size:12px;
     display:inline-block;
-    text-align: right;
+    text-align: center;
     margin-right:8px;
-    padding: 2px 2px;
+    padding: 2px 4px;
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
@@ -190,20 +190,10 @@
 }
 
 .plagiarism_turnitin_refresh_grades, .plagiarism_turnitin_refreshing_grades {
-    float:right;
-    display:inline;
-    line-height: 28px;
     cursor: pointer;
-    width:200px;
-}
-
-.plagiarism_turnitin_refresh_grades i, .plagiarism_turnitin_refreshing_grades i {
-    position: relative;
-    top: 4px;
-}
-
-.plagiarism_turnitin_refresh_grades span, .plagiarism_turnitin_refreshing_grades span {
-    padding-left: 8px;
+    background:url([[pix:plagiarism_turnitin|refresh]]) no-repeat 4px 0px;
+    margin-bottom: 4px;
+    padding: 0 0 0 40px;
 }
 
 .plagiarism_turnitin_refreshing_grades {
@@ -241,6 +231,9 @@
 .pp_turnitin_ula {
 	display: none;
     margin-bottom:16px;
+    padding-top: 40px;
+    background:url([[pix:plagiarism_turnitin|tiiIcon]]) no-repeat 50% 6px;
+    background-size:32px;
 }
 
 noscript.turnitin_ula_noscript {
@@ -304,10 +297,6 @@ button.pp-resubmit-files {
 }
 .icon_peermark_manager {
     color: #009900 !important;
-}
-
-.student_read_icon {
-    margin-top: 10px;
 }
 
 .tii_checkagainstnote, .tii_anonblindmarkingnote, .tii_genspeednote {

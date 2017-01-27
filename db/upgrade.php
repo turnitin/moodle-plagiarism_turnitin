@@ -258,6 +258,22 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
     }
 
+    if ($oldversion < 2017012601) {
+        // Add new column that has to be unique.
+        $table = new xmldb_table('plagiarism_turnitin_config');
+        $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'value');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Retrospectively update the new column to be id for previous configs.
+        $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET config_hash = id WHERE config_hash IS NULL");
+
+        // Add hash as key after update.
+        $key = new xmldb_key('config_hash', XMLDB_KEY_UNIQUE, array('config_hash'));
+        $dbman->add_key($table, $key);
+    }
+
     return $result;
 }
 

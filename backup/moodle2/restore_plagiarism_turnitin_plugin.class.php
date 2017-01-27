@@ -81,6 +81,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
                 $data = (object)$data;
                 $data->name = ($data->name == 'turnitin_assign') ? 'turnitin_assignid' : $data->name;
                 $data->cm = $this->task->get_moduleid();
+                $data->config_hash = $data->cm."_".$data->name;
 
                 $DB->insert_record('plagiarism_turnitin_config', $data);
             }

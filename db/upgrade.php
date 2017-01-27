@@ -266,7 +266,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Retrospectively update the new column to be id for previous submissions.
+        // Retrospectively update the new column to be id for previous configs.
         $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET config_hash = id WHERE config_hash IS NULL");
 
         // Add hash as key after update.

@@ -1,3 +1,9 @@
+### Date:		2017-January-31
+### Release:	v2017013101
+
+- Fixes:
+	- DB Upgrade script now checks submitter column exists as this was breaking for some users.
+
 ### Date:		2017-January-25
 ### Release:	v2017012501
 

@@ -65,17 +65,7 @@ switch ($cmd) {
 }
 
 // Build page.
-echo $turnitintooltwoview->output_header(null,
-            null,
-            $_SERVER["REQUEST_URI"],
-            '',
-            '',
-            array(),
-            "",
-            "",
-            true,
-            '',
-            '');
+echo $turnitintooltwoview->output_header($_SERVER["REQUEST_URI"]);
 
 echo html_writer::tag("div", $viewcontext, array("id" => "tii_view_context"));
 

@@ -2430,7 +2430,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->similarityscore = null;
         $plagiarismfile->externalid = $tiisubmissionid;
         $plagiarismfile->errorcode = (empty($errorcode)) ? null : $errorcode;
-        $plagiarismfile->errormsg = (empty($errormsg)) ? null : $errorcode;
+        $plagiarismfile->errormsg = (empty($errormsg)) ? null : $errormsg;
         $plagiarismfile->attempt = $attempt + 1;
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->lastmodified = time();

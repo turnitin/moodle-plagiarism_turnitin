@@ -2521,6 +2521,23 @@ function plagiarism_turnitin_send_queued_submissions() {
             break;
         }
 
+        // Previously failed submissions may not have a value for submitter.
+        if (empty($queueditem->submitter)) {
+            $queueditem->submitter = $queueditem->userid;
+        }
+
+        // User Id should never be 0 but save as errored for old submissions where this may be the case.
+        if (empty($queueditem->userid)) {
+            $savesubmission = new stdClass();
+            $savesubmission->id = $queueditem->id;
+            $savesubmission->statuscode = 'error';
+            $savesubmission->attempt = $queueditem->attempt + 1;
+            $savesubmission->errorcode = 7;
+
+            $DB->update_record('plagiarism_turnitin_files', $savesubmission);
+            break;
+        }
+
         // Join User to course.
         try {
             $user = new turnitintooltwo_user($queueditem->userid, 'Learner', true, 'cron');
@@ -2612,7 +2629,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
                     // Delete old text content submissions from Turnitin if not replacing.
                     if ($settings["plagiarism_report_gen"] == 0 && $queueditem->submissiontype == 'text_content') {
-                        $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->author);
+                        $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->userid);
                     }
                 }
 
@@ -2667,7 +2684,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // Save failed submission and don't process any further.
         if ($errorcode != 0) {
-            return $pluginturnitin->save_submission($cm, $queueditem->author, $queueditem->id,
+            return $pluginturnitin->save_submission($cm, $queueditem->userid, $queueditem->id,
                                             $queueditem->identifier, 'error', $queueditem->externalid,
                                             $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
                                             $queueditem->attempt, $errorcode);

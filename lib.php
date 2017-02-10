@@ -2577,9 +2577,9 @@ function plagiarism_turnitin_send_queued_submissions() {
                     try {
                         $textcontent = $file->get_content();
                     } catch (Exception $e) {
-                        turnitintooltwo_activitylog('File content not found on submission: '.$pathnamehash, 'PP_NO_FILE');
+                        turnitintooltwo_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
                         mtrace($e);
-                        mtrace('File content not found on submission. pathnamehash: '.$pathnamehash);
+                        mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                         $errorcode = 9;
                     }
                 } else {

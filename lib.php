@@ -2649,7 +2649,10 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $queueditem->itemid));
-                $textcontent = strip_tags($forumpost->message);
+                $textcontent = "";
+                if (isset($forumpost)) {
+                    $textcontent = strip_tags($forumpost->message);
+                }
 
                 $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
                 $filename = $title;

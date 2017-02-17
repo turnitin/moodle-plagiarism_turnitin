@@ -2663,6 +2663,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $queueditem->itemid));
+
                 if ($forumpost) {
                     $textcontent = strip_tags($forumpost->message);
                     $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
@@ -2670,6 +2671,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 } else {
                     $errorcode = 9;
                 }
+
                 break;
         }
 

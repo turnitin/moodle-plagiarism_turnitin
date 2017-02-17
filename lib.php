@@ -1917,7 +1917,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             mtrace("An exception was thrown while attempting to read submission $tiisubmissionid: "
                                    . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
                         }
-
                     }
                 } catch (Exception $e) {
                     mtrace(get_string('tiisubmissionsgeterror', 'plagiarism_turnitin'));
@@ -2530,7 +2529,7 @@ function plagiarism_turnitin_send_queued_submissions() {
         $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course, 'cron');
         // Save failed submission if class can not be created.
         if (empty($coursedata->turnitin_cid)) {
-            $this->save_errored_submission($queueditem->id, $queueditem->attempt, 10);
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 10);
             continue;
         }
 
@@ -2541,7 +2540,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // User Id should never be 0 but save as errored for old submissions where this may be the case.
         if (empty($queueditem->userid)) {
-            $this->save_errored_submission($queueditem->id, $queueditem->attempt, 7);
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 7);
             continue;
         }
 
@@ -2568,14 +2567,14 @@ function plagiarism_turnitin_send_queued_submissions() {
         }
 
         // There should never not be a submission type, handle if there isn't just in case.
-        if (in_array($queueditem->submissiontype, array('file', 'text_content', 'forum_post'))) {
-            $this->save_errored_submission($queueditem->id, $queueditem->attempt, 11);
+        if (!in_array($queueditem->submissiontype, array('file', 'text_content', 'forum_post'))) {
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 11);
             continue;
         }
 
         if (!empty($errorcode)) {
             // Save failed submission if user can not be joined to class or there was an error with the assignment.
-            $this->save_errored_submission($queueditem->id, $queueditem->attempt, $errorcode);
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, $errorcode);
             continue;
         }
 
@@ -2595,6 +2594,13 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $fs = get_file_storage();
                     $file = $fs->get_file_by_hash($queueditem->identifier);
 
+                    if (!$file) {
+                        turnitintooltwo_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
+                        mtrace('File not found for submission. Identifier: '.$queueditem->id);
+                        $errorcode = 9;
+                        continue;
+                    }
+
                     $title = $file->get_filename();
                     $filename = $file->get_filename();
 
@@ -2605,6 +2611,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                         mtrace($e);
                         mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                         $errorcode = 9;
+                        continue;
                     }
                 } else {
                     // Get the actual text content for a submission.
@@ -2656,11 +2663,20 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", array($user->id, $queueditem->itemid));
-                $textcontent = strip_tags($forumpost->message);
-
-                $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
-                $filename = $title;
+                if ($forumpost) {
+                    $textcontent = strip_tags($forumpost->message);
+                    $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
+                    $filename = $title;
+                } else {
+                    $errorcode = 9;
+                }
                 break;
+        }
+
+        // Save failed submission and don't process any further.
+        if ($errorcode != 0) {
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, $errorcode);
+            continue;
         }
 
         // Read the stored file/content into a temp file for submitting.
@@ -2683,18 +2699,12 @@ function plagiarism_turnitin_send_queued_submissions() {
             $filestring = array_merge($userdetails, $filestring);
         }
 
+        // Don't proceed if we can not create a tempfile.
         try {
             $tempfile = turnitintooltwo_tempfile($filestring, $filename);
         } catch (Exception $e) {
-            $errorcode = 8;
-        }
-
-        // Save failed submission and don't process any further.
-        if ($errorcode != 0) {
-            return $pluginturnitin->save_submission($cm, $queueditem->userid, $queueditem->id,
-                                            $queueditem->identifier, 'error', $queueditem->externalid,
-                                            $queueditem->submitter, $queueditem->itemid, $queueditem->submissiontype,
-                                            $queueditem->attempt, $errorcode);
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 8);
+            continue;
         }
 
         $fh = fopen($tempfile, "w");

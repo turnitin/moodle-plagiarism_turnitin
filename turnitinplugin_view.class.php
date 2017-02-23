@@ -164,13 +164,10 @@ class turnitinplugin_view {
                 // If assignment has submissions then show a refresh grades button.
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
                 if ($numsubs > 0) {
-                    $refreshgrades = html_writer::tag('div', $OUTPUT->pix_icon('refresh', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
-                                                html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')),
+                    $refreshgrades = html_writer::tag('div', html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refresh_grades'));
 
-                    $refreshgrades .= html_writer::tag('div', $OUTPUT->pix_icon('loading',
-                        get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin'), 'plagiarism_turnitin').
-                                                html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
+                    $refreshgrades .= html_writer::tag('div', html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refreshing_grades'));
                 }
             }
@@ -178,7 +175,6 @@ class turnitinplugin_view {
             // Quickmark Manager.
             $quickmarkmanagerlink = '';
             if ($config->usegrademark) {
-                $quickmarkmanagerlink .= $OUTPUT->box_start('row_quickmark_manager', '');
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
                                                 get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
@@ -186,7 +182,7 @@ class turnitinplugin_view {
                                                     'title' => get_string('launchquickmarkmanager', 'plagiarism_turnitin')));
                 $quickmarkmanagerlink .= html_writer::tag('span', '',
                                                 array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
-                $quickmarkmanagerlink .= $OUTPUT->box_end(true);
+                $quickmarkmanagerlink = html_writer::tag('div', $quickmarkmanagerlink, array('class' => 'row_quickmark_manager'));
             }
 
             $useturnitin = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cmid, 'name' => 'use_turnitin'));
@@ -195,7 +191,6 @@ class turnitinplugin_view {
             $peermarkmanagerlink = '';
             if (!empty($config->enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
-                    $peermarkmanagerlink .= $OUTPUT->box_start('row_peermark_manager', '');
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
                                                         '&action=peermarkmanager&view_context=box',
@@ -205,7 +200,7 @@ class turnitinplugin_view {
                                                             'title' => get_string('launchpeermarkmanager', 'plagiarism_turnitin')));
                     $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',
                                                                             'id' => 'peermark_manager_form'));
-                    $peermarkmanagerlink .= $OUTPUT->box_end(true);
+                    $peermarkmanagerlink = html_writer::tag('div', $peermarkmanagerlink, array('class' => 'row_peermark_manager'));
                 }
             }
 

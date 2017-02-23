@@ -1,8 +1,26 @@
+### Date:		2017-February-22
+### Release:	v2017022201
+
+- Verified against Moodle 3.2.
+- UI modified for compatibility with Boost theme.
+- Update grade call removed for ULCC's coursework module. (Thanks to @aferenz)
+- Fixes:
+	- An undefined index was causing a Moodle unit test to error. (Thanks to @danmarsden)
+	- Cron submission processing fails gracefully and doesn't stop further cron processing if submissiontype or submitter are not set.
+	- Cron submission processing fails gracefully and doesn't stop further cron processing if the file or forum post no longer exist. (Thanks to @danmarsden)
+	- Display customised error message if errormsg is '0'. (Thanks to @roperto)
+	- Save error message correctly instead of error code. (Thanks to @roperto)
+	- Undeclared variable replaced in logging call.
+
+---
+
 ### Date:		2017-January-31
 ### Release:	v2017013101
 
 - Fixes:
 	- DB Upgrade script now checks submitter column exists as this was breaking for some users.
+
+---
 
 ### Date:		2017-January-25
 ### Release:	v2017012501

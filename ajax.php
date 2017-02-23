@@ -95,6 +95,7 @@ switch ($action) {
                 $moduleconfigvalue->cm = $cm->id;
                 $moduleconfigvalue->name = 'grades_last_synced';
                 $moduleconfigvalue->value = time();
+                $moduleconfigvalue->config_hash = $moduleconfigvalue->cm."_".$moduleconfigvalue->name;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
             }
 

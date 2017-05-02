@@ -1,4 +1,9 @@
-(function($) {
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+jQuery(document).ready(function($) {
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
         return false;
@@ -283,4 +288,4 @@
             }
         });
     }
-})(jQuery);
+});

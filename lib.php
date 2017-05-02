@@ -38,8 +38,14 @@ $tiipp->in_use = true;
 
 // Required classes from Moodle.
 if ($CFG->branch < 28) {
-    require_once($CFG->libdir.'/pluginlib.php');
+    $pluginlib = $CFG->libdir.'/pluginlib.php';
+    // See MDL-46122, lib/pluginlib.php was removed in Moodle 2.9.
+    // The variable $CFG->branch will be the old branch number when upgrading Moodle, the file could be missing.
+    if (file_exists($pluginlib)) {
+        require_once($pluginlib);
+    }
 }
+
 require_once($CFG->libdir.'/gradelib.php');
 
 // Get global class.

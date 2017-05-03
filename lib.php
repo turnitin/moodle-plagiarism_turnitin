@@ -502,9 +502,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
         if ($CFG->branch < 29) {
-            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module_pre29.js');  
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module_pre29.js');
         } else {
-            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');    
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
         }
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.colorbox.js');

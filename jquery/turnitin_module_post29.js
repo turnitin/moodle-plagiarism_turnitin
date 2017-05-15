@@ -1,4 +1,5 @@
-jQuery(document).ready(function($) {
+require(['jquery'], function($) {
+
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
         return false;

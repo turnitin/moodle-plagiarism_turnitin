@@ -1,3 +1,13 @@
+### Date:		2017-May-XX
+### Release:	v201705XXXX
+
+- Enable DV Launchers to work from Moodle's grading interface.
+- Move connection test to after the check for whether Turnitin is enabled in the module.
+- Check if pluginlib file exists before including it.
+- Assign Mexican Spanish to Spanish in Turnitin rather than defaulting to English.
+
+---
+
 ### Date:		2017-February-22
 ### Release:	v2017022201
 

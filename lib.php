@@ -38,8 +38,14 @@ $tiipp->in_use = true;
 
 // Required classes from Moodle.
 if ($CFG->branch < 28) {
-    require_once($CFG->libdir.'/pluginlib.php');
+    $pluginlib = $CFG->libdir.'/pluginlib.php';
+    // See MDL-46122, lib/pluginlib.php was removed in Moodle 2.9.
+    // The variable $CFG->branch will be the old branch number when upgrading Moodle, the file could be missing.
+    if (file_exists($pluginlib)) {
+        require_once($pluginlib);
+    }
 }
+
 require_once($CFG->libdir.'/gradelib.php');
 
 // Get global class.
@@ -400,9 +406,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $OUTPUT, $USER, $CFG;
 
         static $tiiconnection;
-        if (empty($tiiconnection)) {
-            $tiiconnection = $this->test_turnitin_connection();
-        }
 
         $config = turnitintooltwo_admin_config();
         $output = '';
@@ -431,6 +434,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Show EULA if necessary and we have a connection to Turnitin.
+        if (empty($tiiconnection)) {
+            $tiiconnection = $this->test_turnitin_connection();
+        }
         if ($tiiconnection) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
 
@@ -501,7 +507,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
+        if ($CFG->branch > 29) {
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module_post29.js');
+        } else {
+            $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
+        }
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.colorbox.js');
         $PAGE->requires->js($jsurl);

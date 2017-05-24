@@ -1,3 +1,15 @@
+### Date:		2017-May-24
+### Release:	v2017052401
+
+- Fixed a bug preventing access to Turnitin Feedback Studio.
+- Move connection test to after the check for whether Turnitin is enabled in the module. (Thanks to @roperto)
+- Check if pluginlib file exists before including it. (Thanks to @nhoobin)
+- Assign Mexican Spanish to Spanish in Turnitin rather than defaulting to English. (Thanks to @jobcespedes)
+
+**Fixed a bug preventing access to Turnitin Feedback Studio** - We discovered a bug causing the similarity score button to break in Moodle's grading platform (a basic version of the Turnitin document viewer). The bug was a jQuery issue, stemming from the release of Moodle 3.1 earlier in the year. Moodle's grading platform caused our links to function incorrectly and consequently stopped instructors from viewing a student's Similarity Report. Links and buttons now work as they should.
+
+---
+
 ### Date:		2017-February-22
 ### Release:	v2017022201
 

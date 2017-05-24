@@ -442,7 +442,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $user = new turnitintooltwo_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
-            $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+            $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
 
             if ($eulaaccepted != 1) {
                 // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
@@ -706,7 +706,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                     // Variable $success is false if there is no Turnitin connection and null if user has previously been enrolled.
                     if ((is_null($success) || $success === true) && $eulashown == false) {
-                        $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+                        $eulaaccepted = ($user->user_agreement_accepted == 0) ? $user->get_accepted_user_agreement() : $user->user_agreement_accepted;
                         $userid = $linkarray["userid"];
 
                         if ($eulaaccepted != 1) {
@@ -1074,7 +1074,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // We need to check for security that the user is actually on the course.
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
-                                if ($user->useragreementaccepted != 1) {
+                                if ($user->user_agreement_accepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('errorcode3', 'plagiarism_turnitin'),
                                                                             'plagiarism_turnitin'),
                                                                             array('title' => get_string('errorcode3', 'plagiarism_turnitin'),
@@ -2580,7 +2580,7 @@ function plagiarism_turnitin_send_queued_submissions() {
         }
 
         // Don't submit if a user has not accepted the eula.
-        if ($queueditem->userid == $queueditem->submitter && $user->useragreementaccepted != 1) {
+        if ($queueditem->userid == $queueditem->submitter && $user->user_agreement_accepted != 1) {
             $errorcode = 3;
         }
 

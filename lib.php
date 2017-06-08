@@ -2540,6 +2540,12 @@ function plagiarism_turnitin_send_queued_submissions() {
         // Get various settings that we need.
         $errorcode = 0;
         $cm = get_coursemodule_from_id('', $queueditem->cm);
+
+        // Ignore course modules that no longer exist.
+        if (empty($cm)) {
+            continue;
+        }
+
         $settings = $pluginturnitin->get_settings($cm->id);
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 

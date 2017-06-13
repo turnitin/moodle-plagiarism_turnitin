@@ -1,3 +1,10 @@
+### Date:		TBD
+### Release:	v2017XXX
+
+- Fixed a bug preventing Moodle 3.3's bulk completion tool from working. (Thanks to @Syxton)
+
+---
+
 ### Date:		2017-May-24
 ### Release:	v2017052401
 

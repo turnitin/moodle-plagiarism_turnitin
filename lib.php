@@ -2542,7 +2542,23 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // Get various settings that we need.
         $errorcode = 0;
+
         $cm = get_coursemodule_from_id('', $queueditem->cm);
+
+        // Don't proceed if we can not find a cm.
+        if (empty($cm)) {
+            $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 12);
+
+            // Output a message in the cron for successfull submission to Turnitin.
+            $outputvars = new stdClass();
+            $outputvars->id = $queueditem->id;
+            $outputvars->cm = $queueditem->cm;
+            $outputvars->userid = $queueditem->userid;
+
+            turnitintooltwo_activitylog(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
+            continue;
+        }
+
         $settings = $pluginturnitin->get_settings($cm->id);
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 

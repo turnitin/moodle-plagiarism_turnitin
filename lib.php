@@ -223,7 +223,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB, $COURSE;
+        global $DB, $PAGE, $COURSE;
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
@@ -267,8 +267,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Create/Edit course in Turnitin and join user to class.
             $course = $this->get_course_data($cmid, $COURSE->id);
-            $turnitinpluginview->add_elements_to_settings_form($mform, $course, "activity",
-                $cmid, $plagiarismvalues["plagiarism_rubric"]);
+
+            // We don't require the settings form on Moodle 3.3's bulk completion feature.
+            if ($PAGE->pagetype != 'course-editbulkcompletion') {
+                $turnitinpluginview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
+            }
 
             // Disable all plagiarism elements if turnitin is not enabled.
             foreach ($plagiarismelements as $element) {

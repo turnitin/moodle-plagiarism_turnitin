@@ -200,6 +200,14 @@ switch ($action) {
         if ($message == 'turnitin_eula_accepted') {
             $eulauser->user_agreement_accepted = 1;
             turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
+            //Also reset their submissions ( ? ) University of Bath
+            $faileditems = $DB->get_records_select('plagiarism_turnitin_files','userid = ? AND errorcode = ?',array($USER->id,3));
+            if(!empty($faileditems)){
+                foreach ($faileditems as $fail_submission){
+                    turnitintooltwo_activitylog("Resetting user's submission as they have now accepted the EULA (CM: ".$cm->id.", User: ".$USER->id.")","PP_EULA_ACCEPTANCE");
+                    $pluginturnitin->save_submission($cm,$USER->id,$fail_submission->id,$fail_submission->identifier,null,null,$USER->id,$fail_submission->itemid,$fail_submission->submissiontype,$fail_submission->attempt);
+                }
+            }
         } else if ($message == 'turnitin_eula_declined') {
             $eulauser->user_agreement_accepted = -1;
             turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
@@ -208,12 +216,8 @@ switch ($action) {
         // Update the user using the above object.
         $DB->update_record('turnitintooltwo_users', $eulauser, $bulk = false);
 
-        //Also reset their submissions ( ? ) University of Bath
-        $faileditems = $DB->get_records_select('plagiarism_turnitin_files','userid = ? AND errorcode = ?',array($USER->id,3));
-        foreach ($faileditems as $fail_submission){
-            turnitintooltwo_activitylog("Resetting user's submission as they have now accepted the EULA (CM: ".$cm->id.", User: ".$USER->id.")","PP_EULA_ACCEPTANCE");
-            $pluginturnitin->save_submission($cm,$USER->id,$fail_submission->id,$fail_submission->identifier,null,null,$USER->id,$fail_submission->itemid,$fail_submission->submissiontype,$fail_submission->attempt);
-        }
+
+
         break;
 
     case "resubmit_event":

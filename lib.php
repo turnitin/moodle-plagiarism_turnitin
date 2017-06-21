@@ -2095,6 +2095,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Don't submit if submission hasn't changed.
                     if (in_array($previoussubmission->statuscode, array("success", "error"))
                             && $timemodified <= $previoussubmission->lastmodified) {
+
+                        //Check that if the user has retrospectively accepted EULA  - university of Bath
+                        $user = new turnitintooltwo_user($previoussubmissions->userid, 'Learner', 'false', 'cron', 'true');
+                        if($user->get_accepted_user_agreement()){
+                            //Looks like the user has accepted the agreement
+                            // Reset their submission
+                            $submissionid = $previoussubmission->id;
+                            mtrace("Resetting user's submission as they have accepted the EULA");
+                            $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                        }
                         return true;
                     } else if ($settings["plagiarism_report_gen"] > 0) {
                         // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.

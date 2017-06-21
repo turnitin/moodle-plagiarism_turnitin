@@ -149,7 +149,7 @@ require(['jquery'], function($) {
                             type: "POST",
                             url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
                             dataType: "json",
-                            data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey},
+                            data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey,cmid:cmid},
                             success: function(data) { window.location.reload(); },
                             error: function(data) { window.location.reload(); }
                         });

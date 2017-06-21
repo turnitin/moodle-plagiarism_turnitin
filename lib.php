@@ -2096,13 +2096,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if (in_array($previoussubmission->statuscode, array("success", "error"))
                             && $timemodified <= $previoussubmission->lastmodified) {
 
-                        //Check that if the user has retrospectively accepted EULA  - university of Bath
+                        //Check that if the user has retrospectively accepted EULA  - University of Bath
                         $user = new turnitintooltwo_user($previoussubmissions->userid, 'Learner', 'false', 'cron', 'true');
                         if($user->get_accepted_user_agreement()){
                             //Looks like the user has accepted the agreement
                             // Reset their submission
-                            $submissionid = $previoussubmission->id;
-                            mtrace("Resetting user's submission as they have accepted the EULA");
+                            turnitintooltwo_activitylog("Resetting user's submission as they have now accepted the EULA (CM: ".$cm->id.", User: ".$previoussubmissions->userid.")","PP_EULA_ACCEPTANCE");
                             $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
                         }
                         return true;

@@ -131,6 +131,13 @@ require(['jquery'], function($) {
     if ($('.pp_turnitin_eula_link').length > 0) {
         $(document).on('click', '.pp_turnitin_eula_link', function(e) {
             e.preventDefault();
+            var href = this.href;
+            $.urlParam = function(name,href){
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(href);
+                return results[1] || 0;
+            }
+            var cmid = $.urlParam('cmid',href); // cmid
+            console.log(cmid);
             $.colorbox({
                 iframe:true, href:this.href, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
                 onOpen: function() { getLoadingGif(); },

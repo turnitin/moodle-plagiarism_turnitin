@@ -1,7 +1,16 @@
-### Date:		TBD
-### Release:	v2017XXX
+### Date:		2017-July-03
+### Release:	v2017070301
 
-- Fixed a bug preventing Moodle 3.3's bulk completion tool from working. (Thanks to @Syxton)
+We now support Moodle 3.3!
+
+- Fixed a bug affecting the Moodle 3.3 bulk completion tool (Thanks to @Syxton)
+- Fixed a bug causing submissions from processing
+
+Fixed a bug affecting the Moodle 3.3 bulk completion tool - We received a report that the Moodle 3.3 bulk completion editing feature was broken as a result of the Plagiarism Plugin being installed.
+
+Fixed a bug causing submissions from processing - If a course was deleted before a submission was sent to Turnitin, the cron would become stuck. Submissions in the queued state would stop further submissions from being processed, revealing a database error message. We've stopped exceptions (such as a deleted course) from causing any further cron processing to fail.
+
+**Note:** A cron is used to execute commands automatically at a set time or date.
 
 ---
 

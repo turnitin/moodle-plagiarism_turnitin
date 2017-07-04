@@ -131,6 +131,13 @@ jQuery(document).ready(function($) {
     if ($('.pp_turnitin_eula_link').length > 0) {
         $(document).on('click', '.pp_turnitin_eula_link', function(e) {
             e.preventDefault();
+            var href = this.href;
+            $.urlParam = function(name,href){
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(href);
+                return results[1] || 0;
+            }
+            var cmid = $.urlParam('cmid',href); // cmid
+            console.log(cmid);
             $.colorbox({
                 iframe:true, href:this.href, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
                 onOpen: function() { getLoadingGif(); },
@@ -142,7 +149,7 @@ jQuery(document).ready(function($) {
                             type: "POST",
                             url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
                             dataType: "json",
-                            data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey},
+                            data: {action: "actionuseragreement", message: message, sesskey: M.cfg.sesskey, cmid:cmid},
                             success: function(data) { window.location.reload(); },
                             error: function(data) { window.location.reload(); }
                         });

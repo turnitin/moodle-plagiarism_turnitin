@@ -1,6 +1,8 @@
 ### Date:		2017-August-10
 ### Release:	v2017081001
 
+**Fixed a bug preventing submission after declining the EULA** - We received reports that students were unable to submit to a Moodle assignment after declining the Turnitin EULA. That definitely wasn't expected, but we've quickly fixed it. Students are now able to decline the Turnitin EULA but still submit to a Moodle assignment with Turnitin enabled.
+
 **Fixed a bug preventing submissions from processing** - We suspect our crons might have put on a little weight this month as they were becoming stuck for a few of our users! When some users deleted a submission, this would prevent the cron from running, and consequently, submissions would fail to process.
 
 > A cron is used to execute commands automatically at a set time or date.

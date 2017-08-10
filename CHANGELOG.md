@@ -1,5 +1,5 @@
-### Date:		2017-August-09
-### Release:	v2017080901
+### Date:		2017-August-10
+### Release:	v2017081001
 
 **Fixed a bug preventing submissions from processing** - We suspect our crons might have put on a little weight this month as they were becoming stuck for a few of our users! When some users deleted a submission, this would prevent the cron from running, and consequently, submissions would fail to process.
 

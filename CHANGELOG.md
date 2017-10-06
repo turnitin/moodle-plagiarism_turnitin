@@ -1,3 +1,10 @@
+### Date:		2017-xxxx-xx
+### Release:	v2017xxxx01
+
+- Code Refactored to not get course information on bulk completion (Thanks to Tony Butler).
+
+---
+
 ### Date:		2017-August-10
 ### Release:	v2017081001
 

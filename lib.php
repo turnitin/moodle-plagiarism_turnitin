@@ -179,7 +179,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean whether the plugin is configured for Turnitin.
      **/
     public function is_plugin_configured() {
-        // Check Turnitin is configured.
         $config = turnitintooltwo_admin_config();
         if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
             return false;
@@ -244,7 +243,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cmid = optional_param('update', null, PARAM_INT);
 
             // Return no form if the plugin isn't configured.
-            if (!is_plugin_configured()) {
+            if (!$this->is_plugin_configured()) {
                 return;
             }
 
@@ -449,7 +448,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Exit here if the plugin is not configured for Turnitin.
-        if (!is_plugin_configured()) {
+        if (!$this->is_plugin_configured()) {
             return $output;
         }
 
@@ -1509,7 +1508,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         // Return here if the plugin is not configured for Turnitin.
-        if (!is_plugin_configured()) {
+        if (!$this->is_plugin_configured()) {
             return;
         }
 

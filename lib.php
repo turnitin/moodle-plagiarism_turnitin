@@ -175,6 +175,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Check if plugin has been configured with Turnitin account details.
+     * @return boolean whether the plugin is configured for Turnitin.
+     **/
+    public function is_plugin_configured() {
+        $config = turnitintooltwo_admin_config();
+        if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Save the form data associated with the plugin
      *
      * @global type $DB
@@ -229,9 +242,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get Course module id and values.
             $cmid = optional_param('update', null, PARAM_INT);
 
-            // Check Turnitin is configured.
-            $config = turnitintooltwo_admin_config();
-            if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
+            // Return no form if the plugin isn't configured.
+            if (!$this->is_plugin_configured()) {
                 return;
             }
 
@@ -433,6 +445,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
             $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
+        }
+
+        // Exit here if the plugin is not configured for Turnitin.
+        if (!$this->is_plugin_configured()) {
+            return $output;
         }
 
         // Show EULA if necessary and we have a connection to Turnitin.
@@ -1489,6 +1506,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function refresh_peermark_assignments($cm, $tiiassignmentid) {
         global $DB;
+
+        // Return here if the plugin is not configured for Turnitin.
+        if (!$this->is_plugin_configured()) {
+            return;
+        }
 
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();

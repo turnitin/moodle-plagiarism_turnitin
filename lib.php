@@ -1213,7 +1213,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     private function update_submission($cm, $submissionid, $tiisubmission) {
-        global $CFG, $DB;
+        global $DB;
 
         $return = true;
         $updaterequired = false;
@@ -1255,17 +1255,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
 
-                        // Check whether submission is a group submission.
-                        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                        if (!empty($moduledata->teamsubmission)) {
-                            require_once($CFG->dirroot . '/mod/assign/locallib.php');
-                            $context = context_course::instance($cm->course);
-
-                            $assignment = new assign($context, $cm, null);
-                            $group = $assignment->get_submission_group($submissiondata->userid);
-                        }
-
                         $assignmentdata = array("assignment" => $cm->instance);
+
+                        // Check whether submission is a group submission.
+                        $group = $this->check_group_submission($cm, $submissiondata->userid);
                         if ($group) {
                             $assignmentdata['groupid'] = $group->id;
                         } else {
@@ -1473,6 +1466,24 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         return $return;
+    }
+
+    /**
+     * Check if this is a group submission.
+     */
+    function check_group_submission($cm, $userid) {
+        global $CFG, $DB;
+
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        if (!empty($moduledata->teamsubmission)) {
+            require_once($CFG->dirroot . '/mod/assign/locallib.php');
+            $context = context_course::instance($cm->course);
+
+            $assignment = new assign($context, $cm, null);
+            return $assignment->get_submission_group($userid);
+        }
+
+        return false;
     }
 
     /**

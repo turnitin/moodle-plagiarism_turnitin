@@ -1213,7 +1213,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     private function update_submission($cm, $submissionid, $tiisubmission) {
-        global $DB;
+        global $CFG, $DB;
 
         $return = true;
         $updaterequired = false;
@@ -1255,8 +1255,24 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
 
-                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance,
-                            'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
+                        // Check whether submission is a group submission.
+                        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                        if (!empty($moduledata->teamsubmission)) {
+                            require_once($CFG->dirroot . '/mod/assign/locallib.php');
+                            $context = context_course::instance($cm->course);
+
+                            $assignment = new assign($context, $cm, null);
+                            $group = $assignment->get_submission_group($submissiondata->userid);
+                        }
+
+                        $assignmentdata = array("assignment" => $cm->instance);
+                        if ($group) {
+                            $assignmentdata['groupid'] = $group->id;
+                        } else {
+                            $assignmentdata['userid'] = $submissiondata->userid;
+                        }
+                        $submission = $DB->get_records('assign_submission', $assignmentdata, 'id DESC', 'id, attemptnumber', '0', '1');
+
                         $item = current($submission);
 
                         if ($item->id != $itemid) {
@@ -2248,8 +2264,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // As this won't be present in eventdata for certain event types.
         if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
             // Get content.
-            $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                        'userid' => $author, 'id' => $eventdata['objectid']), 'id');
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id');
+
             if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                         array('submission' => $moodlesubmission->id), 'onlinetext')) {
                 $eventdata['other']['content'] = $moodletextsubmission->onlinetext;

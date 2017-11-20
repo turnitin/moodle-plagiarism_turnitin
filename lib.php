@@ -1258,9 +1258,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $assignmentdata = array("assignment" => $cm->instance);
 
                         // Check whether submission is a group submission.
-                        $group = $this->check_group_submission($cm, $submissiondata->userid);
-                        if ($group) {
-                            $assignmentdata['groupid'] = $group->id;
+                        $groupid = $this->check_group_submission($cm, $submissiondata->userid);
+                        if ($groupid) {
+                            $assignmentdata['groupid'] = $groupid;
                         } else {
                             $assignmentdata['userid'] = $submissiondata->userid;
                         }
@@ -1471,7 +1471,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Check if this is a group submission.
      */
-    function check_group_submission($cm, $userid) {
+    public function check_group_submission($cm, $userid) {
         global $CFG, $DB;
 
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
@@ -1480,7 +1480,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $context = context_course::instance($cm->course);
 
             $assignment = new assign($context, $cm, null);
-            return $assignment->get_submission_group($userid);
+            $group = $assignment->get_submission_group($userid);
+
+            return $group->id;
         }
 
         return false;

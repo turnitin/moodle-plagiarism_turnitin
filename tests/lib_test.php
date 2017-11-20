@@ -115,7 +115,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $cm = get_coursemodule_from_instance('assign', $assignmodule->id);
         $context = context_module::instance($cm->id);
         $assign = new testable_assign($context, $cm, $course);
-        
+
         $this->setUser($student);
         $submission = $assign->get_user_submission($student->id, true);
         $submission->status = ASSIGN_SUBMISSION_STATUS_SUBMITTED;

@@ -1,7 +1,18 @@
-### Date:		2017-xxxx-xx
-### Release:	v2017xxxx01
+### Date:       2017-November-23
+### Release:    v2017112302
 
-- Code Refactored to not get course information on bulk completion (Thanks to Tony Butler).
+- Support for Moodle 3.4
+- Fixed errors due to incorrect configuration of the plugin
+- Added default activity completion settings
+- Fixed an issue preventing group submission grades from updating
+
+**Support for Moodle 3.4** - After lots of tests against the release of Moodle 3.4, we're pleased to announce that Turnitin's Plagiarism Plugin now supports it.
+
+**Fixed errors due to incorrect configuration of the plugin** - If the Plagiarism Plugin was not configured correctly and PeerMark was simultaneously enabled, this would cause an error in the assignment inbox. We've managed to resolve this!
+
+**Added default activity completion settings** - We've added the default activity completion setting alongside the bulk edit activity completion. Default activity completion allows you to select one or more course activities or resources and change their default settings (usually 'manual') to a setting of your choice. Thanks to @tonyjbutler for his input!
+
+**Fixed an issue preventing group submission grades from updating** - Moodle's group submissions allow one student to submit on behalf of their group. However, we ran into a breakdown in functionality where grades failed to apply to all group participants for a submission; only the student who physically made the submission would receive a grade. Now, all students in a group can view their grade in Turnitin Feedback Studio.
 
 ---
 

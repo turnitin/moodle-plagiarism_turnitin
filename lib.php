@@ -703,7 +703,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
                 // Get the group members for the students in this group and set the author as the first member.
-                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', NULL, "r.id = 5"));
+                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', null, "r.id = 5"));
                 $groupmember  = current($groupmembers->users);
                 $author = $groupmember->id;
                 $linkarray['userid'] = $author;
@@ -2286,7 +2286,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submitter = $eventdata['userid'];
         $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
 
-        /* 
+        /*
            Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
            To get around this, we get the group ID, get the group members and set the author as the first student in the group.
         */
@@ -2294,7 +2294,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
             if ($moodlesubmission->groupid) {
                 // Get the group members for the students in this group and set the author as the first member.
-                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', NULL, "r.id = 5"));
+                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', null, "r.id = 5"));
                 $groupmember  = current($groupmembers->users);
                 $author = $groupmember->id;
             }

@@ -47,7 +47,6 @@ if ($CFG->branch < 28) {
 }
 
 require_once($CFG->libdir.'/gradelib.php');
-require_once($CFG->dirroot.'/group/lib.php');
 
 // Get global class.
 require_once($CFG->dirroot.'/plagiarism/lib.php');
@@ -702,10 +701,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             */
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
-                // Get the group members for the students in this group and set the author as the first member.
-                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', null, "r.id = 5"));
-                $groupmember  = current($groupmembers->users);
-                $author = $groupmember->id;
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
                 $linkarray['userid'] = $author;
             } else {
                 // Get correct user id that submission is for rather than who submitted, this only affects file submissions
@@ -1501,6 +1497,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return false;
     }
 
+    /*
+     * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
+     * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+
+     * @param int $cmid - The course ID.
+     * @param int $groupid - The ID of the Moodle group that we're getting from.
+     * @return int $author The Moodle user ID that we'll be using for the author.
+    */
+    private function get_first_group_author($cmid, $groupid) {
+        static $context;
+        if (empty($context)) {
+            $context = context_course::instance($cmid);
+        }
+
+        $groupmembers = groups_get_members($groupid, "u.id");
+        foreach ($groupmembers as $author => $userobject) {
+            if (!has_capability('plagiarism/turnitin:grade', $context, $author)) {
+                return $author;
+            }
+        }
+    }
+
     /**
      * Create a course within Turnitin
      */
@@ -2292,11 +2310,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         */
         if (empty($eventdata['relateduserid'])) {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
-            if ($moodlesubmission->groupid) {
-                // Get the group members for the students in this group and set the author as the first member.
-                $groupmembers = current(groups_get_members_by_role($moodlesubmission->groupid, $cm->course, 'u.id', null, "r.id = 5"));
-                $groupmember  = current($groupmembers->users);
-                $author = $groupmember->id;
+            if (!empty($moodlesubmission->groupid)) {
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
             }
         }
 

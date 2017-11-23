@@ -695,12 +695,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $linkarray['userid'] = $USER->id;
             }
 
-            // Get correct user id that submission is for rather than who submitted, this only affects file submissions
-            // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
-            $author = $linkarray['userid'];
-            if ($itemid != 0) {
-                $author = $moduleobject->get_author($itemid);
-                $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
+            /*
+               The author will be incorrect if an instructor submits on behalf of a student who is in a group.
+               To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+            */
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
+            if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+                $linkarray['userid'] = $author;
+            } else {
+                // Get correct user id that submission is for rather than who submitted, this only affects file submissions
+                // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
+                $author = $linkarray['userid'];
+                if ($itemid != 0) {
+                    $author = $moduleobject->get_author($itemid);
+                    $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
+                }
             }
 
             // Show the EULA for a student if necessary.
@@ -1267,7 +1277,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $submission = $DB->get_records('assign_submission', $assignmentdata, 'id DESC', 'id, attemptnumber', '0', '1');
 
                         $item = current($submission);
-
                         if ($item->id != $itemid) {
                              $gbupdaterequired = false;
                         }
@@ -1486,6 +1495,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         return false;
+    }
+
+    /*
+     * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
+     * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+
+     * @param int $cmid - The course ID.
+     * @param int $groupid - The ID of the Moodle group that we're getting from.
+     * @return int $author The Moodle user ID that we'll be using for the author.
+    */
+    private function get_first_group_author($cmid, $groupid) {
+        static $context;
+        if (empty($context)) {
+            $context = context_course::instance($cmid);
+        }
+
+        $groupmembers = groups_get_members($groupid, "u.id");
+        foreach ($groupmembers as $author) {
+            if (!has_capability('mod/assign:grade', $context, $author->id)) {
+                return $author->id;
+            }
+        }
     }
 
     /**
@@ -2273,12 +2304,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submitter = $eventdata['userid'];
         $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
 
+        /*
+           Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
+           To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+        */
+        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')) {
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
+            if (!empty($moodlesubmission->groupid)) {
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+            }
+        }
+
         // Get actual text content and files to be submitted for draft submissions.
         // As this won't be present in eventdata for certain event types.
         if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
             // Get content.
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id');
-
             if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                         array('submission' => $moodlesubmission->id), 'onlinetext')) {
                 $eventdata['other']['content'] = $moodletextsubmission->onlinetext;

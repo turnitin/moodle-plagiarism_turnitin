@@ -175,6 +175,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Check if plugin has been configured with Turnitin account details.
+     * @return boolean whether the plugin is configured for Turnitin.
+     **/
+    public function is_plugin_configured() {
+        $config = turnitintooltwo_admin_config();
+        if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Save the form data associated with the plugin
      *
      * @global type $DB
@@ -229,9 +242,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Get Course module id and values.
             $cmid = optional_param('update', null, PARAM_INT);
 
-            // Check Turnitin is configured.
-            $config = turnitintooltwo_admin_config();
-            if (empty($config->accountid) || empty($config->apiurl) || empty($config->secretkey)) {
+            // Return no form if the plugin isn't configured.
+            if (!$this->is_plugin_configured()) {
                 return;
             }
 
@@ -265,11 +277,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $turnitinpluginview = new turnitinplugin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
 
-            // Create/Edit course in Turnitin and join user to class.
-            $course = $this->get_course_data($cmid, $COURSE->id);
-
             // We don't require the settings form on Moodle 3.3's bulk completion feature.
-            if ($PAGE->pagetype != 'course-editbulkcompletion') {
+            if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
+                // Create/Edit course in Turnitin and join user to class.
+                $course = $this->get_course_data($cmid, $COURSE->id);
                 $turnitinpluginview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }
 
@@ -434,6 +445,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
             $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
+        }
+
+        // Exit here if the plugin is not configured for Turnitin.
+        if (!$this->is_plugin_configured()) {
+            return $output;
         }
 
         // Show EULA if necessary and we have a connection to Turnitin.
@@ -679,12 +695,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $linkarray['userid'] = $USER->id;
             }
 
-            // Get correct user id that submission is for rather than who submitted, this only affects file submissions
-            // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
-            $author = $linkarray['userid'];
-            if ($itemid != 0) {
-                $author = $moduleobject->get_author($itemid);
-                $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
+            /*
+               The author will be incorrect if an instructor submits on behalf of a student who is in a group.
+               To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+            */
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
+            if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+                $linkarray['userid'] = $author;
+            } else {
+                // Get correct user id that submission is for rather than who submitted, this only affects file submissions
+                // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
+                $author = $linkarray['userid'];
+                if ($itemid != 0) {
+                    $author = $moduleobject->get_author($itemid);
+                    $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
+                }
             }
 
             // Show the EULA for a student if necessary.
@@ -1239,10 +1265,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                         $itemid = $file->get_itemid();
 
-                        $submission = $DB->get_records('assign_submission', array('assignment' => $cm->instance,
-                            'userid' => $submissiondata->userid), 'id DESC', 'id, attemptnumber', '0', '1');
-                        $item = current($submission);
+                        $assignmentdata = array("assignment" => $cm->instance);
 
+                        // Check whether submission is a group submission.
+                        $groupid = $this->check_group_submission($cm, $submissiondata->userid);
+                        if ($groupid) {
+                            $assignmentdata['groupid'] = $groupid;
+                        } else {
+                            $assignmentdata['userid'] = $submissiondata->userid;
+                        }
+                        $submission = $DB->get_records('assign_submission', $assignmentdata, 'id DESC', 'id, attemptnumber', '0', '1');
+
+                        $item = current($submission);
                         if ($item->id != $itemid) {
                              $gbupdaterequired = false;
                         }
@@ -1444,6 +1478,48 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Check if this is a group submission.
+     */
+    public function check_group_submission($cm, $userid) {
+        global $CFG, $DB;
+
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        if (!empty($moduledata->teamsubmission)) {
+            require_once($CFG->dirroot . '/mod/assign/locallib.php');
+            $context = context_course::instance($cm->course);
+
+            $assignment = new assign($context, $cm, null);
+            $group = $assignment->get_submission_group($userid);
+
+            return $group->id;
+        }
+
+        return false;
+    }
+
+    /*
+     * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
+     * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+
+     * @param int $cmid - The course ID.
+     * @param int $groupid - The ID of the Moodle group that we're getting from.
+     * @return int $author The Moodle user ID that we'll be using for the author.
+    */
+    private function get_first_group_author($cmid, $groupid) {
+        static $context;
+        if (empty($context)) {
+            $context = context_course::instance($cmid);
+        }
+
+        $groupmembers = groups_get_members($groupid, "u.id");
+        foreach ($groupmembers as $author) {
+            if (!has_capability('mod/assign:grade', $context, $author->id)) {
+                return $author->id;
+            }
+        }
+    }
+
+    /**
      * Create a course within Turnitin
      */
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
@@ -1490,6 +1566,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function refresh_peermark_assignments($cm, $tiiassignmentid) {
         global $DB;
+
+        // Return here if the plugin is not configured for Turnitin.
+        if (!$this->is_plugin_configured()) {
+            return;
+        }
 
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
@@ -2223,12 +2304,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submitter = $eventdata['userid'];
         $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
 
+        /*
+           Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
+           To get around this, we get the group ID, get the group members and set the author as the first student in the group.
+        */
+        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')) {
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
+            if (!empty($moodlesubmission->groupid)) {
+                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+            }
+        }
+
         // Get actual text content and files to be submitted for draft submissions.
         // As this won't be present in eventdata for certain event types.
         if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
             // Get content.
-            $moodlesubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance,
-                                        'userid' => $author, 'id' => $eventdata['objectid']), 'id');
+            $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id');
             if ($moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                         array('submission' => $moodlesubmission->id), 'onlinetext')) {
                 $eventdata['other']['content'] = $moodletextsubmission->onlinetext;

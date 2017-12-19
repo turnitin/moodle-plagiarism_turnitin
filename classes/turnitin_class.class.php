@@ -61,10 +61,10 @@ class turnitin_class {
             $readclass = $response->getClass();
 
             $rubrics = $readclass->getSharedRubrics();
-			$rubricarray = array();
-			foreach ($rubrics as $rubric) {
-				$rubricarray[$rubric->getRubricGroupName()][$rubric->getRubricId()] = $rubric->getRubricName();
-			}
+            $rubricarray = array();
+            foreach ($rubrics as $rubric) {
+                $rubricarray[$rubric->getRubricGroupName()][$rubric->getRubricId()] = $rubric->getRubricName();
+            }
 
             $this->sharedrubrics = $rubricarray;
 

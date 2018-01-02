@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-require_once( 'logger.php' );
+require_once( __DIR__.'logger.php' );
 
 /**
  * @ignore

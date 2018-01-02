@@ -1,6 +1,6 @@
 <?php
 
-require_once( 'sdkexception.class.php' );
+require_once( __DIR__.'sdkexception.class.php' );
 
 /**
  * Response object containing data parsed from the API response

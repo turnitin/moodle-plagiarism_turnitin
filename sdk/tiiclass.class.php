@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-require_once( 'tiirubric.class.php' );
+require_once( __DIR__.'tiirubric.class.php' );
 
 /**
  * Defines the TiiSubmission data object which contains getters and setters for a Turnitin Class API object.

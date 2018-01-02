@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-require_once( 'tiipeermarkassignment.class.php' );
+require_once( __DIR__.'tiipeermarkassignment.class.php' );
 
 /**
  * Defines the TiiAssignment data object which contains getters and setters for a Turnitin Assignment API object.

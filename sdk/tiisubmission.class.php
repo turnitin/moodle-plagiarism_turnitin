@@ -4,7 +4,7 @@
  * @subpackage TiiSubmission
  */
 
-require_once( 'tiiform.class.php' );
+require_once( __DIR__.'tiiform.class.php' );
 
 /**
  * Defines the TiiSubmission data object which contains getters and setters for a Turnitin Submission API object.

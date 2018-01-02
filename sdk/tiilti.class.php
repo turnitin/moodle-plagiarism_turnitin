@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-require_once( 'tiiform.class.php' );
+require_once( __DIR__.'tiiform.class.php' );
 
 /**
  * Defines the TiiLTI data object which contains getters and setters for a Turnitin LTI Launch object.

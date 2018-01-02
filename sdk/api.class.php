@@ -1,11 +1,11 @@
 <?php
 
-require_once( 'usersoap.class.php' );
-require_once( 'classsoap.class.php' );
-require_once( 'assignmentsoap.class.php' );
-require_once( 'membershipsoap.class.php' );
-require_once( 'submissionsoap.class.php' );
-require_once( 'lti.class.php' );
+require_once( __DIR__.'usersoap.class.php' );
+require_once( __DIR__.'classsoap.class.php' );
+require_once( __DIR__.'assignmentsoap.class.php' );
+require_once( __DIR__.'membershipsoap.class.php' );
+require_once( __DIR__.'submissionsoap.class.php' );
+require_once( __DIR__.'lti.class.php' );
 
 /**
  * The Turnitin SDK Wrapper class. This class will give you access to all available API functionality.

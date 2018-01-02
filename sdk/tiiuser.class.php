@@ -6,8 +6,8 @@
  * and open the template in the editor.
  */
 
-require_once( 'sdkexception.class.php' );
-require_once( 'tiirubric.class.php' );
+require_once( __DIR__.'sdkexception.class.php' );
+require_once( __DIR__.'tiirubric.class.php' );
 
 /**
  * Defines the TiiUser data object which contains getters and setters for a Turnitin User object.

@@ -110,7 +110,7 @@ class turnitinplugin_view {
         global $CFG, $OUTPUT, $PAGE, $USER, $DB;
 
         // Include JS strings (closebutton is needed from both plugins).
-		$PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
+        $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');

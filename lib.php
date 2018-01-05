@@ -699,9 +699,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                The author will be incorrect if an instructor submits on behalf of a student who is in a group.
                To get around this, we get the group ID, get the group members and set the author as the first student in the group.
             */
+            $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id, 'identifier' => $identifier],
+                    'lastmodified DESC', '*', 0, 1);
+                $plagiarismfile = reset($plagiarismfiles);
+                $author = $plagiarismfile->userid;
                 $linkarray['userid'] = $author;
             } else {
                 // Get correct user id that submission is for rather than who submitted, this only affects file submissions
@@ -803,10 +807,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 // Get turnitin file details.
-                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
-                                                        'cm' => $linkarray["cmid"], 'identifier' => $identifier),
-                                                        'lastmodified DESC', '*', 0, 1);
-                $plagiarismfile = current($plagiarismfiles);
+                if (is_null($plagiarismfile)) {
+                    $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
+                            'cm' => $linkarray["cmid"], 'identifier' => $identifier),
+                            'lastmodified DESC', '*', 0, 1);
+                    $plagiarismfile = current($plagiarismfiles);
+                }
 
                 // Populate gradeitem query.
                 $gradeitemqueryarray = array(
@@ -2307,7 +2313,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
            Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
            To get around this, we get the group ID, get the group members and set the author as the first student in the group.
         */
-        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')) {
+        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')
+                && has_capability('mod/assign:editothersubmission', context_module::instance($cm->id))) {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
                 $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);

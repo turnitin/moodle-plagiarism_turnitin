@@ -25,6 +25,8 @@ if (!defined('MOODLE_INTERNAL')) {
 
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
+define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
+define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
@@ -417,7 +419,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function print_disclosure($cmid) {
-        global $OUTPUT, $USER, $CFG;
+        global $OUTPUT, $USER, $CFG, $DB;
 
         static $tiiconnection;
 
@@ -441,10 +443,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $this->load_page_components();
 
+        // Show resubmission warning.
+        $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $USER->id, 'cm' => $cm->id));
+        $tiisubmissions = current($tiisubmissions);
+
+        if ($tiisubmissions) {
+            $genparams = $this->plagiarism_get_report_gen_speed_params();
+            $output .= html_writer::tag('div', get_string('reportgenspeed_resubmission', 'plagiarism_turnitin', $genparams), array('class' => 'tii_genspeednote'));
+        }
+
         // Show agreement.
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
-            $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
+            $output .= $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
         }
 
         // Exit here if the plugin is not configured for Turnitin.
@@ -2608,6 +2619,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             mtrace('Course Module: '.$cm->id.'');
             mtrace('-------------------------');
         }
+    }
+
+    /**
+     * @return object The parameters for report gen speed.
+     */
+    public function plagiarism_get_report_gen_speed_params() {
+        $genparams = new stdClass();
+        $genparams->num_resubmissions = PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS;
+        $genparams->num_hours = PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS;
+
+        return $genparams;
     }
 }
 

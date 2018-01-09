@@ -176,4 +176,20 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
             'teacher' => $teacher
         );
     }
+
+    /**
+     * Test that the data returned from the report gen speed param function is what we expect.
+     */
+    public function test_plagiarism_get_report_gen_speed_params() {
+        $this->resetAfterTest();
+
+        $expected = new stdClass();
+        $expected->num_resubmissions = 3;
+        $expected->num_hours = 24;
+
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $response = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
+
+        $this->assertEquals($expected, $response);
+    }
 }

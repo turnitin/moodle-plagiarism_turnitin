@@ -134,7 +134,8 @@ class turnitinplugin_view {
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
-        $genparams = turnitintooltwo_get_report_gen_speed_params();
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = array(0 => get_string('genimmediately1', 'plagiarism_turnitin'),
                             1 => get_string('genimmediately2', 'plagiarism_turnitin', $genparams),
                             2 => get_string('genduedate', 'plagiarism_turnitin'));

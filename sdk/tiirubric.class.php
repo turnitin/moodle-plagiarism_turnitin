@@ -17,6 +17,7 @@ class TiiRubric {
 
     private $rubricid;
     private $rubricname;
+    private $rubricgroupname;
 
     /**
      * Get the Id for this Rubric
@@ -54,6 +55,23 @@ class TiiRubric {
         $this->rubricname = $rubricname;
     }
 
+	/**
+	 * Get the Rubric Group Name
+	 *
+	 * @return text
+	 */
+	public function getRubricGroupName() {
+		return $this->rubricgroupname;
+	}
+
+	/**
+	 * Set the Group Name for this Rubric
+	 *
+	 * @param text $rubricgroupname
+	 */
+	public function setRubricGroupName($rubricgroupname) {
+		$this->rubricgroupname = $rubricgroupname;
+	}
 }
 
 //?>

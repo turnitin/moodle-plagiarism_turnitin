@@ -1,3 +1,51 @@
+### :snowflake: Date:		2018-January-16
+### :snowflake: Release:	v2018011602
+
+### :zap: What's new
+
+#### Instant Similarity Reports for up to three resubmissions
+
+Feedback Studio allows students to view their Similarity Report results immediately! Students can now view their initial Similarity Report, then revise and resubmit their work up to three times, without having to wait 24 hours for an updated report. After three resubmissions have been made, the 24-hour report generation wait time will be restored. Instantaneous similarity results give students the formative support they need to master paraphrasing and citation conventions efficiently.
+
+> To enable resubmissions for students, you must correctly configure the assignment settings of a new or existing Moodle Direct V2 assignment.
+>
+> 1. Scroll to **Turnitin plagiarism plugin settings**.
+> 2. Under **Report Generation Speed**, select **Generate reports immediately (students can resubmit until due date): After 3 resubmissions, reports generate after 24 hours**.
+
+#### Genre-specific rubrics in Feedback Studio (North America only)
+
+Revision Assistant's genre-specific rubrics are now available in Feedback Studio for our North American users, designed with 6th - 12th graders in mind! K-12 instructors can assign new rubrics to their assignments to help their students master the art of argumentative, narrative, informative, and analytical writing. If you're actively using Revision Assistant and Feedback Studio together, you can now promote consistency in the classroom by adopting the same rubrics.
+
+> To use a new rubric for grading, you can attach it from within the assignment settings of a new or existing assignment.
+> 
+> 1. Scroll to **Turnitin plagiarism plugin settings**.
+> 2. Under **Attach a rubric to this assignment**, select a new genre-specific rubric from the drop-down list.
+> 
+> Alternatively, launch the rubric and grading form manager from the Moodle Direct V2 submission inbox, or alternatively, from within Feedback Studio.
+
+#### K-12 QuickMark sets in Feedback Studio (North America only)
+
+QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instructors! But in finding that many of our default QuickMark sets failed to address the needs of our K-12 instructors and students, we've added two new sets to the Feedback Studio collection, available to our North American users! Our new drag-and-drop (and customizable!) comments will help instructors help their students to engage in revision, save time, and more importantly, achieve learning outcomes. [Read more](https://guides.turnitin.com/01_Manuals_and_Guides/Release_Notes/Turnitin_Release_Notes/Genre-specific_rubrics_in_Feedback_Studio).
+> 
+> To view and edit your new QuickMarks, you can access the QuickMark manager from within the assignment settings of a new or existing assignment.
+>
+> 1. Scroll to Turnitin plagiarism plugin settings.
+> 2. Select Launch QuickMark manager to view and manage your new QuickMarks.
+>
+> Alternatively, launch the QuickMark manager from within in Feedback Studio.
+
+### :wrench: Fixes and enhancements
+
+#### Resubmissions now overwrite the previous submission
+
+When a student made a resubmission to Turnitin, their previous submission wasn't removed from the assignment inbox; this led to confusion for instructors, who weren't too sure which submission was the most up-to-date version. We've made sure that resubmissions now overwrite the existing submission.
+
+#### Students can submit their group work without access error issues
+
+Students have frustratingly been receiving unauthorized access errors when submitting group work, which caused some confusion. After uploading their submission and navigating to the View all submissions page, the student would witness the error. We've made a solid fix to stop this from happening! A big thanks to [@micaherne](https://github.com/micaherne) for this pull request.
+
+---
+
 ### Date:       2017-November-23
 ### Release:    v2017112302
 

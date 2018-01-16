@@ -1,5 +1,5 @@
 ### :snowflake: Date:		2018-January-16
-### Release:	v2018011602
+### :snowflake: Release:	v2018011602
 
 ### :zap: What's new
 

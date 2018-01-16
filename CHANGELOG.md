@@ -1,9 +1,7 @@
 ### :snowflake: Date:		2018-January-16
 ### Release:	v2018011602
 
-#### :zap: What's new
-
----
+### :zap: What's new
 
 #### Instant Similarity Reports for up to three resubmissions
 
@@ -36,9 +34,7 @@ QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instr
 >
 > Alternatively, launch the QuickMark manager from within in Feedback Studio.
 
-#### :wrench: Fixes and enhancements
-
----
+### :wrench: Fixes and enhancements
 
 #### Resubmissions now overwrite the previous submission
 

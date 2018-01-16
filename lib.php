@@ -25,6 +25,8 @@ if (!defined('MOODLE_INTERNAL')) {
 
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
+define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
+define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
@@ -417,7 +419,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function print_disclosure($cmid) {
-        global $OUTPUT, $USER, $CFG;
+        global $OUTPUT, $USER, $CFG, $DB;
 
         static $tiiconnection;
 
@@ -441,10 +443,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $this->load_page_components();
 
+        // Show resubmission warning.
+        $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $USER->id, 'cm' => $cm->id));
+        $tiisubmissions = current($tiisubmissions);
+
+        if ($tiisubmissions) {
+            $genparams = $this->plagiarism_get_report_gen_speed_params();
+            $output .= html_writer::tag('div', get_string('reportgenspeed_resubmission', 'plagiarism_turnitin', $genparams), array('class' => 'tii_genspeednote'));
+        }
+
         // Show agreement.
         if (!empty($config->agreement)) {
             $contents = format_text($config->agreement, FORMAT_MOODLE, array("noclean" => true));
-            $output = $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
+            $output .= $OUTPUT->box($contents, 'generalbox boxaligncenter', 'intro');
         }
 
         // Exit here if the plugin is not configured for Turnitin.
@@ -699,9 +710,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                The author will be incorrect if an instructor submits on behalf of a student who is in a group.
                To get around this, we get the group ID, get the group members and set the author as the first student in the group.
             */
+            $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id, 'identifier' => $identifier],
+                    'lastmodified DESC', '*', 0, 1);
+                $plagiarismfile = reset($plagiarismfiles);
+                $author = $plagiarismfile->userid;
                 $linkarray['userid'] = $author;
             } else {
                 // Get correct user id that submission is for rather than who submitted, this only affects file submissions
@@ -714,7 +729,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             // Show the EULA for a student if necessary.
-            if ($linkarray["userid"] == $USER->id && empty($plagiarismfile->externalid)) {
+            if ($linkarray["userid"] == $USER->id) {
                 $eula = "";
 
                 static $userid;
@@ -803,10 +818,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 // Get turnitin file details.
-                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
-                                                        'cm' => $linkarray["cmid"], 'identifier' => $identifier),
-                                                        'lastmodified DESC', '*', 0, 1);
-                $plagiarismfile = current($plagiarismfiles);
+                if (is_null($plagiarismfile)) {
+                    $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
+                            'cm' => $linkarray["cmid"], 'identifier' => $identifier),
+                            'lastmodified DESC', '*', 0, 1);
+                    $plagiarismfile = current($plagiarismfiles);
+                }
 
                 // Populate gradeitem query.
                 $gradeitemqueryarray = array(
@@ -902,7 +919,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
-                            $notorlink .= html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'plagiarism_turnitin'),
+                            $notorlink = html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'plagiarism_turnitin'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
                             // This class is applied so that only the user who submitted or a tutor can open the DV.
                             $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
@@ -1831,39 +1848,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Check whether we need to submit the file to Turnitin. If the file has not previously been submitted then submit it.
-     * If text content gets this far then it needs to be submitted
-     *
-     * @param object $user the user who the submission is for
-     * @param string $pathnamehash to identify the file to be submitted
-     */
-    public function check_if_submitting($cm, $userid, $pathnamehash, $submissiontype) {
-        global $DB;
-
-        if ($submissiontype == 'text_content' || $submissiontype == 'forum_post') {
-            return true;
-        } else if ($previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                                    " cm = ? AND userid = ? AND identifier = ? ",
-                                                array($cm->id, $userid, $pathnamehash), 'id DESC',
-                                                    'id, cm, externalid, identifier, statuscode, lastmodified', 0, 1)) {
-
-            // Get the file data to check date modified.
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_hash($pathnamehash);
-
-            $currentsubmission = current($previoussubmissions);
-            if ($currentsubmission->identifier == $pathnamehash && $currentsubmission->statuscode == "success"
-                && $file->get_timemodified() <= $currentsubmission->lastmodified) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Call functions to be run by cron
      */
     public function cron() {
@@ -2121,16 +2105,40 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $coursedata;
     }
 
+
     /**
      * Queue submissions to send to Turnitin
      *
-     *
+     * @param $cm
+     * @param $author
+     * @param $submitter
+     * @param $identifier
+     * @param $submissiontype
+     * @param int $itemid
+     * @return bool
      */
     public function queue_submission_to_turnitin($cm, $author, $submitter, $identifier, $submissiontype, $itemid = 0) {
         global $CFG, $DB, $turnitinacceptedfiles;
         $errorcode = 0;
         $attempt = 0;
+        $tiisubmissionid = null;
         $settings = $this->get_settings($cm->id);
+
+        // Create module object.
+        $moduleclass = "turnitin_".$cm->modname;
+        $moduleobject = new $moduleclass;
+
+        // Get module data.
+        $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        $moduledata->resubmission_allowed = false;
+        if ($cm->modname == 'assign') {
+            $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(
+                $cm->instance,
+                $settings["plagiarism_report_gen"],
+                $submissiontype,
+                $moduledata->attemptreopenmethod
+            );
+        }
 
         // Work out submission method.
         // If this file has successfully submitted in the past then break, text content is to be submitted.
@@ -2168,21 +2176,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt';
                 $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
 
-                // Double check there is only one submission.
+                // Check if this content/file has been submitted previously.
                 $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND ".$typefield." = ? AND identifier = ? ",
                                                 array($cm->id, $author, $submissiontype, $identifier),
                                                     'id', $submissionfields);
                 $previoussubmission = end($previoussubmissions);
+
                 if ($previoussubmission) {
                     // Don't submit if submission hasn't changed.
                     if (in_array($previoussubmission->statuscode, array("success", "error"))
                             && $timemodified <= $previoussubmission->lastmodified) {
                         return true;
-                    } else if ($settings["plagiarism_report_gen"] > 0) {
-                        // Replace if Turnitin assignment allows resubmissions or create if we have no Turnitin id stored.
+                    } else if ($moduledata->resubmission_allowed) {
+                        // Replace submission in the specific circumstance where Turnitin can accomodate resubmissions.
                         $submissionid = $previoussubmission->id;
                         $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                        $tiisubmissionid = $previoussubmission->externalid;
                     } else {
                         if ($previoussubmission->statuscode != "success") {
                             $submissionid = $previoussubmission->id;
@@ -2193,23 +2203,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                     $attempt = $previoussubmission->attempt;
                 } else {
-                    // Check if there is previous submission of text content which we will replace.
+                    // Check if there is previous submission of different content which we may be able to replace.
                     $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
-                    if ($submissiontype == 'text_content' &&
-                            $previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
+                    if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
                                                     " cm = ? AND userid = ? AND ".$typefield." = ? ",
-                                                array($cm->id, $author, 'text_content'),
-                                                    'id, cm, externalid, identifier, statuscode, lastmodified, attempt', 0, 1)) {
+                                                array($cm->id, $author, $submissiontype),
+                                                    'id, cm, externalid, identifier, statuscode, lastmodified, attempt')) {
 
                         $submissionid = $previoussubmission->id;
                         $attempt = $previoussubmission->attempt;
-
-                        // Delete old text content submissions from Turnitin if not replacing.
-                        if ($settings["plagiarism_report_gen"] == 0 && !is_null($previoussubmission->externalid)) {
+                        // Delete old text content submissions from Turnitin if resubmissions aren't allowed.
+                        if ($submissiontype == 'text_content' && $settings["plagiarism_report_gen"] == 0 && !is_null($previoussubmission->externalid)) {
                             $this->delete_tii_submission($cm, $previoussubmission->externalid, $author);
                         }
 
-                        $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                        // Replace submission in the specific circumstance where Turnitin can accomodate resubmissions.
+                        if ($moduledata->resubmission_allowed || $submissiontype == 'text_content') {
+                            $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                            $tiisubmissionid = $previoussubmission->externalid;
+                        } else {
+                            $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
+                        }
+
                     } else {
                         $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
                     }
@@ -2229,6 +2244,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     } else {
                         $submissionid = $previoussubmission->id;
                         $attempt = $previoussubmission->attempt;
+                        $tiisubmissionid = $previoussubmission->externalid;
                         $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
                     }
                 } else {
@@ -2256,8 +2272,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Save submission as queued or errored if we have an errorcode.
         $statuscode = ($errorcode != 0) ? 'error' : 'queued';
-        return $this->save_submission($cm, $author, $submissionid, $identifier, $statuscode, null, $submitter, $itemid,
-                        $submissiontype, $attempt, $errorcode, null);
+        return $this->save_submission($cm, $author, $submissionid, $identifier, $statuscode, $tiisubmissionid, $submitter, $itemid,
+                        $submissiontype, $attempt, $errorcode);
     }
 
     /**
@@ -2308,7 +2324,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
            Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
            To get around this, we get the group ID, get the group members and set the author as the first student in the group.
         */
-        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')) {
+        if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')
+                && has_capability('mod/assign:editothersubmission', context_module::instance($cm->id))) {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
                 $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
@@ -2393,13 +2410,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     continue;
                 }
 
-                if ($this->check_if_submitting($cm, $author, $pathnamehash, 'file')) {
-                    $result = $result && $this->queue_submission_to_turnitin(
+                $result = $result && $this->queue_submission_to_turnitin(
                                                 $cm, $author, $submitter, $pathnamehash, 'file',
-                                                $eventdata['objectid'], '');
-                } else {
-                    $result = $result && true;
-                }
+                                                $eventdata['objectid']);
             }
         }
 
@@ -2607,6 +2620,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             mtrace('-------------------------');
         }
     }
+
+    /**
+     * @return object The parameters for report gen speed.
+     */
+    public function plagiarism_get_report_gen_speed_params() {
+        $genparams = new stdClass();
+        $genparams->num_resubmissions = PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS;
+        $genparams->num_hours = PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS;
+
+        return $genparams;
+    }
 }
 
 /**
@@ -2631,16 +2655,12 @@ function plagiarism_turnitin_send_queued_submissions() {
     // Submit each file individually to Turnitin.
     foreach ($queueditems as $queueditem) {
 
-        // Get various settings that we need.
-        $errorcode = 0;
-
-        $cm = get_coursemodule_from_id('', $queueditem->cm);
-
         // Don't proceed if we can not find a cm.
+        $cm = get_coursemodule_from_id('', $queueditem->cm);
         if (empty($cm)) {
             $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 12);
 
-            // Output a message in the cron for successfull submission to Turnitin.
+            // Output a message in the cron for failed submission to Turnitin.
             $outputvars = new stdClass();
             $outputvars->id = $queueditem->id;
             $outputvars->cm = $queueditem->cm;
@@ -2650,8 +2670,24 @@ function plagiarism_turnitin_send_queued_submissions() {
             continue;
         }
 
+        // Get various settings that we need.
+        $errorcode = 0;
         $settings = $pluginturnitin->get_settings($cm->id);
+
+        // Create module object.
+        $moduleclass = "turnitin_".$cm->modname;
+        $moduleobject = new $moduleclass;
+
+        // Get module data.
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+        $moduledata->resubmission_allowed = false;
+        if ($cm->modname == 'assign') {
+            $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(
+                $cm->instance, $settings["plagiarism_report_gen"],
+                $queueditem->submissiontype,
+                $moduledata->attemptreopenmethod
+            );
+        }
 
         // Get course data.
         $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course, 'cron');
@@ -2768,7 +2804,9 @@ function plagiarism_turnitin_send_queued_submissions() {
                 if (is_null($queueditem->externalid)) {
                     $apimethod = "createSubmission";
                 } else {
-                    $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
+
+                    $apimethod = ($moduledata->resubmission_allowed) ? "replaceSubmission" : "createSubmission";
+
                     // Delete old text content submissions from Turnitin if not replacing.
                     if ($settings["plagiarism_report_gen"] == 0 && $queueditem->submissiontype == 'text_content') {
                         $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->userid);

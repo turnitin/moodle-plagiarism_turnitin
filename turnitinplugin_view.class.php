@@ -107,9 +107,10 @@ class turnitinplugin_view {
      * @return type
      */
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
-        global $CFG, $OUTPUT, $PAGE, $USER, $DB;
+        global $CFG, $PAGE, $USER, $DB;
 
         // Include JS strings (closebutton is needed from both plugins).
+        $PAGE->requires->string_for_js('changerubricwarning', 'turnitintooltwo');
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
@@ -134,8 +135,10 @@ class turnitinplugin_view {
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = array(0 => get_string('genimmediately1', 'plagiarism_turnitin'),
-                            1 => get_string('genimmediately2', 'plagiarism_turnitin'),
+                            1 => get_string('genimmediately2', 'plagiarism_turnitin', $genparams),
                             2 => get_string('genduedate', 'plagiarism_turnitin'));
         $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
                             2 => get_string('excludepercent', 'plagiarism_turnitin'));
@@ -271,9 +274,8 @@ class turnitinplugin_view {
                 $this->lock($mform, $location, $locks);
             }
 
-            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions);
+            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions, array('class' => 'selectlong'));
             $this->lock($mform, $location, $locks);
-            $mform->addElement('html', html_writer::tag('div', get_string('genspeednote', 'plagiarism_turnitin'), array('class' => 'tii_genspeednote')));
             $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);

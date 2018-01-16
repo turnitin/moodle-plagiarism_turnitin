@@ -62,6 +62,30 @@ class turnitin_assign {
         return (empty($onlinetextdata->onlinetext)) ? '' : $onlinetextdata->onlinetext;
     }
 
+
+    /**
+     * Check if resubmissions in a Turnitin sense are allowed to an assignment.
+     *
+     * @param $assignid
+     */
+    public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod) {
+        global $DB;
+
+        // Get the maximum number of file submissions allowed.
+        $params = array('assignment' => $assignid,
+            'subtype' => 'assignsubmission',
+            'plugin' => 'file',
+            'name' => 'maxfilesubmissions');
+
+        $maxfilesubmissions = 0;
+        if ($result = $DB->get_record('assign_plugin_config', $params, 'value')) {
+            $maxfilesubmissions = $result->value;
+        }
+
+        return ($reportgenspeed > 0 && $attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE
+            && ($submissiontype == 'text_content' || $maxfilesubmissions == 1));
+    }
+
     public function get_onlinetext($userid, $cm) {
         global $DB;
 

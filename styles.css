@@ -729,3 +729,7 @@ html .tooltipster-base {
 	-ms-transform: scale(1.1, 1.1);
 	transform: scale(1.1, 1.1);
 }
+
+.selectlong {
+    width: 530px;
+}

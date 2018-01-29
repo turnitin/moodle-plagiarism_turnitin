@@ -2325,7 +2325,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
            To get around this, we get the group ID, get the group members and set the author as the first student in the group.
         */
         if ((empty($eventdata['relateduserid'])) && ($eventdata['other']['modulename'] == 'assign')
-                && has_capability('mod/assign:editothersubmission', context_module::instance($cm->id))) {
+                && has_capability('mod/assign:editothersubmission', context_module::instance($cm->id), $submitter)) {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
                 $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);

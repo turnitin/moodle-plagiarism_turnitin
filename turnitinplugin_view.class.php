@@ -117,21 +117,11 @@ class turnitinplugin_view {
 
         $config = turnitintooltwo_admin_config();
         $configwarning = '';
-        $rubrics = array();
 
         if ($location == "activity") {
             $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
 
             $instructor->join_user_to_class($course->turnitin_cid);
-            $rubrics = $instructor->get_instructor_rubrics();
-
-            // Get rubrics that are shared on the account.
-            $turnitinclass = new turnitin_class($course->id);
-            $turnitinclass->sharedrubrics = array();
-            $turnitinclass->read_class_from_tii();
-
-            // Merge the arrays, prioitising instructor owned arrays.
-            $rubrics = $rubrics + $turnitinclass->sharedrubrics;
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
@@ -297,13 +287,7 @@ class turnitinplugin_view {
             }
 
             if ($location == "activity" && $config->usegrademark) {
-                // Populate Rubric options.
-                $rubricoptions = array('' => get_string('norubric', 'plagiarism_turnitin')) + $rubrics;
-                if (!empty($currentrubric)) {
-                    $rubricoptions[$currentrubric] = (isset($rubricoptions[$currentrubric])) ? $rubricoptions[$currentrubric] : get_string('otherrubric', 'plagiarism_turnitin');
-                }
-
-                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubricoptions);
+                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), array());
 
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.

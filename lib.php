@@ -533,7 +533,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function load_page_components() {
         global $CFG, $PAGE;
 
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-1.8.2.min.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-3.3.1.min.js');
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);

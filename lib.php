@@ -697,8 +697,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             } else if (!empty($linkarray["content"])) {
                 // Get turnitin text content details.
                 $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
-                $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = sha1($content);
+				$content = $moduleobject->set_content($linkarray);
+				$identifier = sha1($content);
             }
 
             // Group submissions where all students have to submit sets userid to 0.

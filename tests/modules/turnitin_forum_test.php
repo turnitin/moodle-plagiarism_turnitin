@@ -34,71 +34,71 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  */
 class plagiarism_turnitin_forum_testcase extends advanced_testcase {
 
-	/**
-	 * Create a course and assignment module instance
-	 */
-	public function setup() {
-		// Create a course, user and a forum.
-		$course = $this->getDataGenerator()->create_course();
-		$user = $this->getDataGenerator()->create_user();
-		$record = new stdClass();
-		$record->course = $course->id;
-		$this->forum = $this->getDataGenerator()->create_module('forum', $record);
+    /**
+     * Create a course and assignment module instance
+     */
+    public function setup() {
+        // Create a course, user and a forum.
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $record = new stdClass();
+        $record->course = $course->id;
+        $this->forum = $this->getDataGenerator()->create_module('forum', $record);
 
-		// Add discussion to course.
-		$record = new stdClass();
-		$record->course = $course->id;
-		$record->userid = $user->id;
-		$record->forum = $this->forum->id;
-		$this->discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+        // Add discussion to course.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->userid = $user->id;
+        $record->forum = $this->forum->id;
+        $this->discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
 
-		// Add post to discussion.
-		$record = new stdClass();
-		$record->course = $course->id;
-		$record->userid = $user->id;
-		$record->forum = $this->forum->id;
-		$record->discussion = $this->discussion->id;
-		$this->post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
-	}
+        // Add post to discussion.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->userid = $user->id;
+        $record->forum = $this->forum->id;
+        $record->discussion = $this->discussion->id;
+        $this->post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
+    }
 
-	/**
-	 * Test to check that content returned by set content is the same as passed in array.
-	 */
-	public function test_to_check_content_in_array_is_returned_by_set_content() {
-		global $DB;
+    /**
+     * Test to check that content returned by set content is the same as passed in array.
+     */
+    public function test_to_check_content_in_array_is_returned_by_set_content() {
+        global $DB;
 
-		$this->resetAfterTest(true);
+        $this->resetAfterTest(true);
 
-		// Create module object.
-		$moduleobject = new turnitin_forum();
+        // Create module object.
+        $moduleobject = new turnitin_forum();
 
-		$params = array(
-			'content' => $this->post->message
-		);
+        $params = array(
+            'content' => $this->post->message
+        );
 
-		$content = $moduleobject->set_content($params);
-		$this->assertEquals($content, $this->post->message);
-	}
+        $content = $moduleobject->set_content($params);
+        $this->assertEquals($content, $this->post->message);
+    }
 
-	/**
-	 * Test to check that content returned by set content is taken from database
-	 * if post id is passed in.
-	 */
-	public function test_to_check_content_from_database_is_returned_by_set_content_if_postid_present() {
-		global $DB;
+    /**
+     * Test to check that content returned by set content is taken from database
+     * if post id is passed in.
+     */
+    public function test_to_check_content_from_database_is_returned_by_set_content_if_postid_present() {
+        global $DB;
 
-		$this->resetAfterTest(true);
+        $this->resetAfterTest(true);
 
-		// Create module object.
-		$moduleobject = new turnitin_forum();
+        // Create module object.
+        $moduleobject = new turnitin_forum();
 
-		$params = array(
-			'content' => 'content should not come back',
-			'postid' => $this->post->id
-		);
+        $params = array(
+            'content' => 'content should not come back',
+            'postid' => $this->post->id
+        );
 
-		$content = $moduleobject->set_content($params);
-		$this->assertEquals($content, $this->post->message);
-	}
+        $content = $moduleobject->set_content($params);
+        $this->assertEquals($content, $this->post->message);
+    }
 
 }

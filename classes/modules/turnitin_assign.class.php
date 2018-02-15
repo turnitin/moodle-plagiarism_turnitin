@@ -69,7 +69,7 @@ class turnitin_assign {
      * @param $assignid
      */
     public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod) {
-        global $DB;
+        global $DB, $CFG;
 
         // Get the maximum number of file submissions allowed.
         $params = array('assignment' => $assignid,
@@ -80,6 +80,10 @@ class turnitin_assign {
         $maxfilesubmissions = 0;
         if ($result = $DB->get_record('assign_plugin_config', $params, 'value')) {
             $maxfilesubmissions = $result->value;
+        }
+
+        if ($CFG->branch <= 32) {
+            require_once($CFG->dirroot.'/mod/assign/lib.php');
         }
 
         return ($reportgenspeed > 0 && $attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE

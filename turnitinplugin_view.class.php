@@ -54,51 +54,6 @@ class turnitinplugin_view {
     }
 
     /**
-     * Show the config settings form for the plugin
-     *
-     * @param int $course_module_id
-     * @param obj $turnitintooltwo
-     * @return output
-     */
-    public function show_config_form($pluginconfig) {
-        global $CFG, $DB;
-
-        // Populate elements array which will generate the form elements.
-        // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).
-        $elements = array();
-        $elements[] = array('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
-        $elements[] = array('html', get_string('tiiexplain', 'plagiarism_turnitin'));
-
-        $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', array(0, 1));
-
-        // Enable Turnitin for specific modules.
-        $supportedmods = array('assign', 'forum', 'workshop');
-
-        if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
-            $supportedmods[] = 'coursework';
-        }
-
-        foreach ($supportedmods as $mod) {
-            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod,
-                get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
-                '', '', '', array('turnitin_use', '==', 1));
-        }
-
-        $elements[] = array('html', get_string('pp_configuredesc', 'plagiarism_turnitin', $CFG->wwwroot));
-
-        $elements[] = array('hidden', 'action', 'config');
-        $customdata["elements"] = $elements;
-        $customdata["disable_form_change_checker"] = true;
-
-        $optionsform = new turnitintooltwo_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php', $customdata);
-
-        $optionsform->set_data($pluginconfig);
-        $output = $optionsform->display();
-
-        return $output;
-    }
-
-    /**
      * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
      * settings. This form shows in settings > defaults as well as the activity creation screen.
      *

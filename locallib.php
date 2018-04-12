@@ -36,14 +36,14 @@ function plagiarism_turnitin_override_repository($submitpapersto) {
 
     switch ($config->repositoryoption) {
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
-        $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
-        break;
+            $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
+            break;
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO; // Force No Repository.
-        $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY;
-        break;
+            $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY;
+            break;
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL; // Force Individual Repository.
-        $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY;
-        break;
+            $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY;
+            break;
     }
 
     return $submitpapersto;

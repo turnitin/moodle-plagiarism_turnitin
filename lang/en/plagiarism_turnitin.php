@@ -126,6 +126,8 @@ $string['student'] = 'Student';
 $string['course'] = 'Course';
 $string['module'] = 'Module';
 
+$string['tiiaccountconfig'] = 'Turnitin Account Configuration';
+
 // Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';

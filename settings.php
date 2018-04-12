@@ -140,7 +140,13 @@ switch ($do) {
     case "config":
         $turnitinpluginview->draw_settings_tab_menu('turnitinsettings', $notice);
 
-        echo $turnitinpluginview->show_config_form($pluginconfig);
+        require_once(__DIR__ . '/classes/forms/tiisetupform.class.php');
+
+        $tiisetupform = new tiisetupform();
+        $tiisetupform->set_data($pluginconfig);
+
+        echo $tiisetupform->display();
+
         break;
 
     case "defaults":

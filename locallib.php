@@ -22,11 +22,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
+}
+
 /**
-* Override the repository option if necessary depending on the configuration setting.
-* @param $submitpapersto int - The repository to submit to.
-* @return $submitpapersto int - The repository to submit to.
-*/
+ * Override the repository option if necessary depending on the configuration setting.
+ * @param $submitpapersto int - The repository to submit to.
+ * @return $submitpapersto int - The repository to submit to.
+ */
 function plagiarism_turnitin_override_repository($submitpapersto) {
     $config = turnitintooltwo_admin_config();
 

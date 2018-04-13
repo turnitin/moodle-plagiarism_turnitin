@@ -46,38 +46,11 @@ if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))
     $supportedmods[] = 'coursework';
 }
 
-// Get plugin config.
-$pluginconfig = array();
-$pluginconfig['turnitin_use'] = get_config('plagiarism', 'turnitin_use');
-
-// Check that mod enabled setting has been initialised.
-foreach ($supportedmods as $mod) {
-    $pluginconfig['turnitin_use_mod_'.$mod] = $plagiarismpluginturnitin->get_config_settings('mod_'.$mod);
-}
-
 $plugindefaults = $plagiarismpluginturnitin->get_settings();
 
 // Save Settings.
 if (!empty($action)) {
     switch ($action) {
-        case "config":
-            // Overall plugin use setting.
-            $turnitinoveralluse = optional_param('turnitin_use', 0, PARAM_INT);
-            set_config('turnitin_use', $turnitinoveralluse, 'plagiarism');
-
-            // Allow Turnitin to be on for Individual modules.
-            foreach ($supportedmods as $mod) {
-                $turnitinuse = optional_param('turnitin_use_mod_'.$mod, 0, PARAM_INT);
-                $turnitinuse = ($turnitinoveralluse == 0) ? 0 : $turnitinuse;
-
-                set_config('turnitin_use_mod_'.$mod, $turnitinuse, 'plagiarism');
-            }
-
-            $_SESSION['notice']['message'] = get_string('configupdated', 'plagiarism_turnitin');
-            redirect(new moodle_url('/plagiarism/turnitin/settings.php'));
-            exit;
-            break;
-
         case "defaults":
             $fields = $plagiarismpluginturnitin->get_settings_fields();
 
@@ -143,10 +116,18 @@ switch ($do) {
         require_once(__DIR__ . '/classes/forms/tiisetupform.class.php');
 
         $tiisetupform = new tiisetupform();
+
+        // Save posted form data.
+        if (($data = $tiisetupform->get_data()) && confirm_sesskey()) {
+            $tiisetupform->save($data);
+            $output = $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitin'), 'notifysuccess');
+        }
+
+        $pluginconfig = get_config('plagiarism');
         $tiisetupform->set_data($pluginconfig);
 
         echo $tiisetupform->display();
-
+        
         break;
 
     case "defaults":

@@ -171,6 +171,8 @@ $string['pseudoemaildomain_desc'] = '<b>[Optional]</b><br />An optional domain f
 $string['pseudoemailaddress'] = 'Pseudo Email Address';
 $string['connecttest'] = 'Test Turnitin Connection';
 
+$string['savesuccess'] = 'Changes saved';
+
 // Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'View Originality Report';
 $string['launchrubricview'] = 'View the Rubric used for marking';

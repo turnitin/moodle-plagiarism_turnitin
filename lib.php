@@ -23,10 +23,23 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
+// Constants.
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
+
+// Admin Repository constants.
+define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD', 0);
+define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED', 1);
+define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD', 2);
+define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO', 3);
+define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL', 4);
+
+// Submit Papers to Repository constants.
+define('PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY', 0);
+define('PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY', 1);
+define('PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
@@ -52,6 +65,9 @@ require_once($CFG->libdir.'/gradelib.php');
 
 // Get global class.
 require_once($CFG->dirroot.'/plagiarism/lib.php');
+
+// Get helper methods.
+require_once(__DIR__.'/locallib.php');
 
 // Require classes from mod/turnitintooltwo.
 require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
@@ -1665,20 +1681,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ? $modulepluginsettings["plagiarism_submitpapersto"] : 1;
 
         // Override if necessary when admin is forcing standard/no repository.
-        switch ($config->repositoryoption) {
-            case 2; // Standard repository being forced.
-                $reposetting = 1;
-                break;
-            case 3; // No repository being forced.
-                $reposetting = 0;
-                break;
-        }
+        $reposetting = plagiarism_turnitin_override_repository($reposetting);
 
         $assignment->setSubmitPapersTo($reposetting);
         $assignment->setSubmittedDocumentsCheck($modulepluginsettings["plagiarism_compare_student_papers"]);
         $assignment->setInternetCheck($modulepluginsettings["plagiarism_compare_internet"]);
         $assignment->setPublicationsCheck($modulepluginsettings["plagiarism_compare_journals"]);
-        if ($config->repositoryoption == 1) {
+        if ($config->repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED ||
+            $config->repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL) {
             $institutioncheck = (isset($modulepluginsettings["plagiarism_compare_institution"])) ? $modulepluginsettings["plagiarism_compare_institution"] : 0;
             $assignment->setInstitutionCheck($institutioncheck);
         }

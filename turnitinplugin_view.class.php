@@ -225,25 +225,33 @@ class turnitinplugin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
-            $suboptions = array(0 => get_string('norepository', 'plagiarism_turnitin'),
-                                1 => get_string('standardrepository', 'plagiarism_turnitin'));
+            // Submit to repository.
+            $suboptions = array(
+                PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY => get_string('norepository', 'plagiarism_turnitin'),
+                PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY => get_string('standardrepository', 'plagiarism_turnitin')
+            );
+
             switch ($config->repositoryoption) {
-                case 0; // Standard options.
+                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
-                case 1; // Standard options + Allow Instituional Repository.
-                    $suboptions[2] = get_string('institutionalrepository', 'plagiarism_turnitin');
+                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED; // Standard options + Allow Instituional Repository.
+                    $suboptions[PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY] = get_string('institutionalrepository', 'plagiarism_turnitin');
 
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
-                case 2; // Force Standard Repository.
-                    $mform->addElement('hidden', 'plagiarism_submitpapersto', 1);
+                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
+                    $mform->addElement('hidden', 'plagiarism_submitpapersto', PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY);
                     $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
                     break;
-                case 3; // Force No Repository.
-                    $mform->addElement('hidden', 'plagiarism_submitpapersto', 0);
+                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO; // Force No Repository.
+                    $mform->addElement('hidden', 'plagiarism_submitpapersto', PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY);
+                    $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
+                    break;
+                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL; // Force Institutional Repository.
+                    $mform->addElement('hidden', 'plagiarism_submitpapersto', PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY);
                     $mform->setType('plagiarism_submitpapersto', PARAM_RAW);
                     break;
             }

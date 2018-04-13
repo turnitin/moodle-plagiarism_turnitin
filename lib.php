@@ -41,6 +41,9 @@ define('PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY', 0);
 define('PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY', 1);
 define('PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 
+define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN', '@tiimoodle.com');
+define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME', get_string('defaultcoursestudent'));
+
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
 $turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx',

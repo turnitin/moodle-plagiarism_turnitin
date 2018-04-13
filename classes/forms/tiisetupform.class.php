@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->libdir."/formslib.php");
 
 class tiisetupform extends moodleform {
@@ -51,7 +52,7 @@ class tiisetupform extends moodleform {
         foreach ($mods as $mod => $modpath) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $mform->addElement('advcheckbox',
-                    'turnitinmodenabled'.$mod,
+                    'turnitin_use_mod_'.$mod,
                     get_string('useturnitin_mod', 'plagiarism_turnitin', ucfirst($mod)),
                     '',
                     null,
@@ -199,5 +200,41 @@ class tiisetupform extends moodleform {
         ob_end_clean();
 
         return $form;
+    }
+
+    /**
+     * Save the plugin config data
+     */
+    public function save($data) {
+        // Save whether the plugin is enabled for individual modules.
+        $mods = core_component::get_plugin_list('mod');
+        foreach ($mods as $mod => $modpath) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                $property = "turnitin_use_mod_" . $mod;
+                ${ "turnitin_use_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
+                set_config('turnitin_use_mod_'.$mod, ${ "turnitin_use_mod_" . "$mod" }, 'plagiarism');
+                if (${ "turnitin_use_mod_" . "$mod" }) {
+                    set_config('turnitin_use', 1, 'plagiarism');
+                }
+            }
+        }
+
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_accountid");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_secretkey");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_apiurl");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_enablediagnostic");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_enableperformancelogs");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_usegrademark");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_enablepeermark");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_useerater");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_transmatch");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_repositoryoption");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_agreement");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_enablepseudo");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_pseudofirstname");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_pseudolastname");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_lastnamegen");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_pseudosalt");
+        plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_pseudoemaildomain");
     }
 }

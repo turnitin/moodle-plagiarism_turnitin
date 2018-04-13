@@ -2644,6 +2644,23 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         return $genparams;
     }
+
+    /**
+     * Set a config value for the admin settings.
+     */
+    public static function plagiarism_set_config($data, $property) {
+        if (!empty($data->$property)) {
+
+            // Scenario when performing the upgrade script to copy settings from V2 to PP.
+            if (strpos($property, 'plagiarism_') === false) {
+                $field = "plagiarism_".$property;
+            } else {
+                $field = $property;
+            }
+
+            set_config($field, $data->$property, 'plagiarism');
+        }
+    }
 }
 
 /**

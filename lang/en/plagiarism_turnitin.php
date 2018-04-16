@@ -172,6 +172,8 @@ $string['pseudoemailaddress'] = 'Pseudo Email Address';
 $string['connecttest'] = 'Test Turnitin Connection';
 
 $string['savesuccess'] = 'Changes saved';
+$string['connecttestsuccess'] = 'Connection test successful';
+$string['connecttestfailed'] = 'Connection test failed.';
 
 // Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'View Originality Report';

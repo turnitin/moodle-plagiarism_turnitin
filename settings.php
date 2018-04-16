@@ -100,7 +100,7 @@ if (!empty($action)) {
 }
 
 // Include Javascript & CSS.
-if ($do == "errors") {
+if ($do == "errors" || $do == "config") {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
 }
@@ -127,7 +127,7 @@ switch ($do) {
         $tiisetupform->set_data($pluginconfig);
 
         echo $tiisetupform->display();
-        
+
         break;
 
     case "defaults":

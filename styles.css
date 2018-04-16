@@ -733,3 +733,20 @@ html .tooltipster-base {
 .selectlong {
     width: 530px;
 }
+
+.connection-test-success,
+.connection-test-failed {
+    background-image: none !important;
+    color: #FFFFFF !important;
+    text-shadow: none !important;
+}
+.connection-test-success button:focus,
+.connection-test-failed button:focus{
+    outline: 0 !important;
+}
+.connection-test-success {
+    background-color: #51a351 !important;
+}
+.connection-test-failed {
+    background-color: #d9534f !important;
+}

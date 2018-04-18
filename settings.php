@@ -103,6 +103,8 @@ if (!empty($action)) {
 if ($do == "errors" || $do == "config") {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('connecttestfailed', 'plagiarism_turnitin');
 }
 
 if ($do != "savereport") {

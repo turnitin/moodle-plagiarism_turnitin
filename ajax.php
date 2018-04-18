@@ -264,9 +264,9 @@ switch ($action) {
 
             // We only want an API log entry for this if diagnostic mode is set to Debugging.
             if (empty($config)) {
-                $config = turnitintooltwo_admin_config();
+                $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
             }
-            if ($config->enablediagnostic != 2) {
+            if ($config->plagiarism_turnitin_enablediagnostic != 2) {
                 $turnitincomms->set_diagnostic(0);
             }
 

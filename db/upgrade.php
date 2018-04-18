@@ -283,29 +283,18 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->add_key($table, $key);
     }
 
-    if ($oldversion < 2018041307) {
+    if ($oldversion < 2018041308) {
         // If V2 is installed, copy the settings across to PP.
         if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintool'))) {
             // Get the settings for the V2 plugin.
             $data = turnitintooltwo_admin_config();
 
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "accountid");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "secretkey");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "apiurl");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "enablediagnostic");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "enableperformancelogs");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "usegrademark");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "enablepeermark");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "useerater");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "transmatch");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "repositoryoption");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "agreement");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "enablepseudo");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "pseudofirstname");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "pseudolastname");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "lastnamegen");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "pseudosalt");
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "pseudoemaildomain");
+            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableperformancelogs", "usegrademark", "enablepeermark", "useerater",
+                "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+
+            foreach ($properties as $property) {
+                plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);
+            }
         }
     }
 

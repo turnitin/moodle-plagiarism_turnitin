@@ -59,7 +59,6 @@ class tiisetupform extends moodleform {
                 );
             }
         }
-        // TODO: Ensure the coursework module appears.
 
         $mform->addElement('header', 'plagiarism_turnitinconfig', get_string('tiiaccountconfig', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_turnitinconfig');

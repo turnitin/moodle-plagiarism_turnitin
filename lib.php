@@ -2789,7 +2789,7 @@ function plagiarism_turnitin_update_reports() {
  */
 function plagiarism_turnitin_send_queued_submissions() {
     global $DB;
-    $config = $this->plagiarism_turnitin_admin_config();
+    $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
     $queueditems = $DB->get_records_select("plagiarism_turnitin_files", "statuscode = 'queued' OR statuscode = 'pending'",

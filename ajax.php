@@ -260,8 +260,6 @@ switch ($action) {
 
             $turnitincomms = new turnitintooltwo_comms($accountid, $accountshared, $url);
 
-            $testingconnection = true; // Provided by Androgogic to override offline mode for testing connection.
-
             // We only want an API log entry for this if diagnostic mode is set to Debugging.
             if (empty($config)) {
                 $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
@@ -270,7 +268,7 @@ switch ($action) {
                 $turnitincomms->set_diagnostic(0);
             }
 
-            $tiiapi = $turnitincomms->initialise_api($testingconnection);
+            $tiiapi = $turnitincomms->initialise_api(true);
 
             $class = new TiiClass();
             $class->setTitle('Test finding a class to see if connection works');

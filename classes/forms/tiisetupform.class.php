@@ -37,7 +37,7 @@ class tiisetupform extends moodleform {
 
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        $mform =& $this->_form;
+        $mform = $this->_form;
 
         $mform->disable_form_change_checker();
 
@@ -82,9 +82,9 @@ class tiisetupform extends moodleform {
 
         $ynoptions = array(0 => get_string('no'), 1 => get_string('yes'));
         $diagnosticoptions = array(
-            0 => get_string('diagnosticoptions_0', 'turnitintooltwo'),
-            1 => get_string('diagnosticoptions_1', 'turnitintooltwo'),
-            2 => get_string('diagnosticoptions_2', 'turnitintooltwo')
+            0 => get_string('diagnosticoptions_0', 'plagiarism_turnitin'),
+            1 => get_string('diagnosticoptions_1', 'plagiarism_turnitin'),
+            2 => get_string('diagnosticoptions_2', 'plagiarism_turnitin')
         );
 
         // Debugging and logging settings.
@@ -117,10 +117,11 @@ class tiisetupform extends moodleform {
         $mform->setDefault('plagiarism_turnitin_transmatch', 0);
 
         $repositoryoptions = array(
-            0 => get_string('repositoryoptions_0', 'turnitintooltwo'),
-            1 => get_string('repositoryoptions_1', 'turnitintooltwo'),
-            2 => get_string('repositoryoptions_2', 'turnitintooltwo'),
-            3 => get_string('repositoryoptions_3', 'turnitintooltwo')
+            ADMIN_REPOSITORY_OPTION_STANDARD => get_string('repositoryoptions_0', 'plagiarism_turnitin'),
+            ADMIN_REPOSITORY_OPTION_EXPANDED => get_string('repositoryoptions_1', 'plagiarism_turnitin'),
+            ADMIN_REPOSITORY_OPTION_FORCE_STANDARD => get_string('repositoryoptions_2', 'plagiarism_turnitin'),
+            ADMIN_REPOSITORY_OPTION_FORCE_NO => get_string('repositoryoptions_3', 'plagiarism_turnitin'),
+            ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin')
         );
 
         $mform->addElement('select', 'plagiarism_turnitin_repositoryoption', get_string('turnitinrepositoryoptions', 'plagiarism_turnitin'), $repositoryoptions);
@@ -131,8 +132,8 @@ class tiisetupform extends moodleform {
         $mform->addElement('header', 'plagiarism_miscsettings', get_string('tiimiscsettings', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_miscsettings');
 
-        $mform->addElement('textarea', 'plagiarism_turnitin_agreement', get_string("turnitintooltwoagreement", "plagiarism_turnitin"), 'wrap="virtual" rows="10" cols="50"');
-        $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('turnitintooltwoagreement_desc', 'plagiarism_turnitin'));
+        $mform->addElement('textarea', 'plagiarism_turnitin_agreement', get_string("ppagreement", "plagiarism_turnitin"), 'wrap="virtual" rows="10" cols="50"');
+        $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('ppagreement_desc', 'plagiarism_turnitin'));
 
         // Student data privacy settings.
         $mform->addElement('header', 'plagiarism_privacy', get_string('studentdataprivacy', 'plagiarism_turnitin'));

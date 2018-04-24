@@ -36,17 +36,18 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Show/hide student priacy if the field is selected.
+    // Show/hide student privacy if the field is selected.
     $("#id_plagiarism_turnitin_enablepseudo").change(function() {
         if ($("#id_plagiarism_turnitin_enablepseudo").val() == "1") {
             $(".studentprivacy").show();
-        } else {-
+        } else {
             $(".studentprivacy").hide();
         }
     });
 
     // Store connection test selector.
-    var ct = $("input[name=connection_test]");
+    var ct = $('#id_connection_test');
+
     if (ct.length > 0) {
 
         ct.hide();
@@ -98,16 +99,38 @@ jQuery(document).ready(function($) {
                     if (data.connection_status === 200) {
                         ct.removeClass("connection-test-failed");
                         ct.addClass("connection-test-success");
-                        ct.attr('value', M.str.plagiarism_turnitin.connecttestsuccess);
+
+                        changeString(ct, M.str.plagiarism_turnitin.connecttestsuccess);
                     } else {
                         ct.removeClass("connection-test-success");
                         ct.addClass("connection-test-failed");
-                        ct.attr('value', M.str.plagiarism_turnitin.connecttestfailed);
+
+                        changeString(ct, M.str.plagiarism_turnitin.connecttestfailed);
                     }
+
+                    // Fade out classes and swap back values.
+                    ct.delay(1000).fadeOut("slow", function() {
+                        $(this).removeClass("connection-test-failed");
+                        $(this).removeClass("connection-test-success");
+
+                        changeString(ct, M.str.plagiarism_turnitin.connecttest);
+                    }).fadeIn("slow");
                     $('#testing_container').hide();
                 }
             });
         });
     }
-    // });
+
+    /**
+     * Helper function to change the button text depending on which type of element we're handling.
+     * @param {jQuery} ct - The button element - may be input or button depending on the Moodle theme.
+     * @param {String} langString  - The language string we're setting.
+     */
+    function changeString(ct, langString) {
+        if (ct.get(0).tagName === "BUTTON") {
+            ct.text(langString);
+        } else {
+            ct.attr('value', langString);
+        }
+    }
 });

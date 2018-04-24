@@ -243,6 +243,46 @@ switch ($action) {
         }
         $return['errors'] = $errors;
         break;
+
+    case "test_connection":
+        if (!confirm_sesskey()) {
+            throw new moodle_exception('invalidsesskey', 'error');
+        }
+        $data = array("connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'turnitintooltwo'));
+
+        $PAGE->set_context(context_system::instance());
+        if (is_siteadmin()) {
+            // Initialise API connection.
+
+            $accountid = required_param('accountid', PARAM_RAW);
+            $accountshared = required_param('accountshared', PARAM_RAW);
+            $url = required_param('url', PARAM_RAW);
+
+            $turnitincomms = new turnitintooltwo_comms($accountid, $accountshared, $url);
+
+            // We only want an API log entry for this if diagnostic mode is set to Debugging.
+            if (empty($config)) {
+                $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            }
+            if ($config->plagiarism_turnitin_enablediagnostic != 2) {
+                $turnitincomms->set_diagnostic(0);
+            }
+
+            $tiiapi = $turnitincomms->initialise_api(true);
+
+            $class = new TiiClass();
+            $class->setTitle('Test finding a class to see if connection works');
+
+            try {
+                $response = $tiiapi->findClasses($class);
+                $data["connection_status"] = 200;
+                $data["msg"] = get_string('connecttestsuccess', 'turnitintooltwo');
+            } catch (Exception $e) {
+                $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
+            }
+        }
+        echo json_encode($data);
+        break;
 }
 
 if (!empty($return)) {

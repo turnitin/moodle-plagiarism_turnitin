@@ -54,51 +54,6 @@ class turnitinplugin_view {
     }
 
     /**
-     * Show the config settings form for the plugin
-     *
-     * @param int $course_module_id
-     * @param obj $turnitintooltwo
-     * @return output
-     */
-    public function show_config_form($pluginconfig) {
-        global $CFG, $DB;
-
-        // Populate elements array which will generate the form elements.
-        // Each element is in following format: (type, name, label, helptext (minus _help), options (if select).
-        $elements = array();
-        $elements[] = array('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
-        $elements[] = array('html', get_string('tiiexplain', 'plagiarism_turnitin'));
-
-        $elements[] = array('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', array(0, 1));
-
-        // Enable Turnitin for specific modules.
-        $supportedmods = array('assign', 'forum', 'workshop');
-
-        if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
-            $supportedmods[] = 'coursework';
-        }
-
-        foreach ($supportedmods as $mod) {
-            $elements[] = array('checkbox', 'turnitin_use_mod_'.$mod,
-                get_string('useturnitin_mod', 'plagiarism_turnitin', $mod), '',
-                '', '', '', array('turnitin_use', '==', 1));
-        }
-
-        $elements[] = array('html', get_string('pp_configuredesc', 'plagiarism_turnitin', $CFG->wwwroot));
-
-        $elements[] = array('hidden', 'action', 'config');
-        $customdata["elements"] = $elements;
-        $customdata["disable_form_change_checker"] = true;
-
-        $optionsform = new turnitintooltwo_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php', $customdata);
-
-        $optionsform->set_data($pluginconfig);
-        $output = $optionsform->display();
-
-        return $output;
-    }
-
-    /**
      * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
      * settings. This form shows in settings > defaults as well as the activity creation screen.
      *
@@ -115,7 +70,7 @@ class turnitinplugin_view {
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
 
-        $config = turnitintooltwo_admin_config();
+        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $configwarning = '';
 
         if ($location == "activity") {
@@ -167,7 +122,7 @@ class turnitinplugin_view {
 
             // Quickmark Manager.
             $quickmarkmanagerlink = '';
-            if ($config->usegrademark) {
+            if ($config->plagiarism_turnitin_usegrademark) {
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                 '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
                                                 get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
@@ -182,7 +137,7 @@ class turnitinplugin_view {
 
             // Peermark Manager.
             $peermarkmanagerlink = '';
-            if (!empty($config->enablepeermark) && !empty($useturnitin->value)) {
+            if (!empty($config->plagiarism_turnitin_enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
                     $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
@@ -225,14 +180,10 @@ class turnitinplugin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
-            // Submit to repository.
-            $suboptions = array(
-                PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY => get_string('norepository', 'plagiarism_turnitin'),
-                PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY => get_string('standardrepository', 'plagiarism_turnitin')
-            );
-
-            switch ($config->repositoryoption) {
-                case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD; // Standard options.
+            $suboptions = array(0 => get_string('norepository', 'plagiarism_turnitin'),
+                                1 => get_string('standardrepository', 'plagiarism_turnitin'));
+            switch ($config->plagiarism_turnitin_repositoryoption) {
+                case 0; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
                     $this->lock($mform, $location, $locks);
                     break;
@@ -266,7 +217,7 @@ class turnitinplugin_view {
             $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
             $this->lock($mform, $location, $locks);
 
-            if ($config->repositoryoption == 1) {
+            if ($config->plagiarism_turnitin_repositoryoption == 1) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
                                                 get_string('compareinstitution', 'plagiarism_turnitin'), $options);
                 $this->lock($mform, $location, $locks);
@@ -294,7 +245,7 @@ class turnitinplugin_view {
                 $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'plagiarism_turnitin');
             }
 
-            if ($location == "activity" && $config->usegrademark) {
+            if ($location == "activity" && $config->plagiarism_turnitin_usegrademark) {
                 $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), array());
 
                 $mform->addElement('static', 'rubric_link', '',
@@ -316,7 +267,7 @@ class turnitinplugin_view {
                 $mform->setType('plagiarism_rubric', PARAM_RAW);
             }
 
-            if (!empty($config->useerater)) {
+            if (!empty($config->plagiarism_turnitin_useerater)) {
                 $handbookoptions = array(
                                             1 => get_string('erater_handbook_advanced', 'plagiarism_turnitin'),
                                             2 => get_string('erater_handbook_highschool', 'plagiarism_turnitin'),
@@ -364,7 +315,7 @@ class turnitinplugin_view {
             $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
                                                                                 array('class' => 'tii_anonblindmarkingnote')));
 
-            if ($config->transmatch) {
+            if ($config->plagiarism_turnitin_transmatch) {
                 $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
             } else {
                 $mform->addElement('hidden', 'plagiarism_transmatch', 0);

@@ -283,6 +283,21 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->add_key($table, $key);
     }
 
+    if ($oldversion < 2018041310) {
+        // If V2 is installed, copy the settings across to PP.
+        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
+            // Get the settings for the V2 plugin.
+            $data = turnitintooltwo_admin_config();
+
+            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableperformancelogs", "usegrademark", "enablepeermark", "useerater",
+                "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+
+            foreach ($properties as $property) {
+                plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);
+            }
+        }
+    }
+
     return $result;
 }
 

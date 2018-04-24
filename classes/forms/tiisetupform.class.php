@@ -132,8 +132,8 @@ class tiisetupform extends moodleform {
         $mform->addElement('header', 'plagiarism_miscsettings', get_string('tiimiscsettings', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_miscsettings');
 
-        $mform->addElement('textarea', 'plagiarism_turnitin_agreement', get_string("ppagreement", "plagiarism_turnitin"), 'wrap="virtual" rows="10" cols="50"');
-        $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('ppagreement_desc', 'plagiarism_turnitin'));
+        $mform->addElement('textarea', 'plagiarism_turnitin_agreement', get_string("pp_agreement", "plagiarism_turnitin"), 'wrap="virtual" rows="10" cols="50"');
+        $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('pp_agreement_desc', 'plagiarism_turnitin'));
 
         // Student data privacy settings.
         $mform->addElement('header', 'plagiarism_privacy', get_string('studentdataprivacy', 'plagiarism_turnitin'));

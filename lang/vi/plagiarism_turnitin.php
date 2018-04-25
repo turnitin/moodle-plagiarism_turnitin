@@ -244,3 +244,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Tùy chọn]</b><br />Một tên miền
 $string['pseudoemailaddress'] = 'Địa chỉ Email Ảo';
 $string['connecttest'] = 'Kiểm tra Kết nối với Turnitin';
 $string['connecttestsuccess'] = 'Moodle đã nối kết thành công với Turnitin.';
+$string['diagnosticoptions_0'] = 'Tắt';
+$string['diagnosticoptions_1'] = 'Chuẩn';
+$string['diagnosticoptions_2'] = 'Gỡ lỗi';

@@ -246,3 +246,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Valinnainen]</b><br />Valinnainen toimi
 $string['pseudoemailaddress'] = 'Vale-sähköpostiosoite';
 $string['connecttest'] = 'Testaa Turnitin Yhteys';
 $string['connecttestsuccess'] = 'Moodle on saanut onnistuneesti yhteyden Turnitiniin.';
+$string['diagnosticoptions_0'] = 'Pois päältä';
+$string['diagnosticoptions_1'] = 'Vakio';
+$string['diagnosticoptions_2'] = 'Virheiden korjaus';

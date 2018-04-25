@@ -244,3 +244,6 @@ $string['pseudoemaildomain_desc'] = '<b>[選擇性]</b><br />虛擬電子郵件�
 $string['pseudoemailaddress'] = '虛擬電子郵件地址';
 $string['connecttest'] = '測試 Turnitin 連線';
 $string['connecttestsuccess'] = 'Moodle 已成功連線至 Turnitin。';
+$string['diagnosticoptions_0'] = '關閉';
+$string['diagnosticoptions_1'] = '標準';
+$string['diagnosticoptions_2'] = '偵錯';

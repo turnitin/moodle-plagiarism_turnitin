@@ -244,3 +244,6 @@ $string['pseudoemaildomain_desc'] = '<b>[オプション]</b><br />疑似電子�
 $string['pseudoemailaddress'] = '疑似電子メール アドレス';
 $string['connecttest'] = 'Turnitin接続のテスト';
 $string['connecttestsuccess'] = 'MoodleはTurnitinに正しく接続しました。';
+$string['diagnosticoptions_0'] = 'オフ';
+$string['diagnosticoptions_1'] = '標準';
+$string['diagnosticoptions_2'] = 'デバッグ';

@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Valfritt]</b><br />En valfri domän fö
 $string['pseudoemailaddress'] = 'Pseudonym, e-postadress';
 $string['connecttest'] = 'Testa anslutningen till Turnitin';
 $string['connecttestsuccess'] = 'Moodle har nu anslutits till Turnitin.';
+$string['diagnosticoptions_0'] = 'Av';
+$string['diagnosticoptions_1'] = 'Standardklass';
+$string['diagnosticoptions_2'] = 'Felsökning';

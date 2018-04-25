@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Facultatif]</b><br />Un nom de domaine 
 $string['pseudoemailaddress'] = 'Pseudo adresse e-mail';
 $string['connecttest'] = 'Essayer de vous connecter à Turnitin';
 $string['connecttestsuccess'] = 'La connexion de Moodle à Turnitin est réussie.';
+$string['diagnosticoptions_0'] = 'Arrêt';
+$string['diagnosticoptions_1'] = 'Standard';
+$string['diagnosticoptions_2'] = 'Débogage';

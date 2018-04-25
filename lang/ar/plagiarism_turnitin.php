@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[اختياري]</b><br />مجال اخ�
 $string['pseudoemailaddress'] = 'عنوان البريد الالكتروني الوهمي';
 $string['connecttest'] = 'اختبار الاتصال بـ Turnitin';
 $string['connecttestsuccess'] = 'تم توصيل Moodle مع Turnitin بنجاح.';
+$string['diagnosticoptions_0'] = 'إيقاف التشغيل';
+$string['diagnosticoptions_1'] = 'قياسي';
+$string['diagnosticoptions_2'] = 'تصحيح الأخطاء';

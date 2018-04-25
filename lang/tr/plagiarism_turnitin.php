@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[İsteğe Bağlı]</b><br />Sahte e-post
 $string['pseudoemailaddress'] = 'Sahte E-posta Adresi';
 $string['connecttest'] = 'Turnitin Bağlantısını Test Et';
 $string['connecttestsuccess'] = 'Moodle başarılı bir biçimde Turnitin&#39;e bağlandı.';
+$string['diagnosticoptions_0'] = 'Kapalı';
+$string['diagnosticoptions_1'] = 'Standart';
+$string['diagnosticoptions_2'] = 'Hata Ayıklama';

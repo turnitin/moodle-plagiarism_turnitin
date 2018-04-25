@@ -171,6 +171,9 @@ $string['pseudoemaildomain'] = 'Pseudo Email Domain';
 $string['pseudoemaildomain_desc'] = '<b>[Optional]</b><br />An optional domain for pseudo email addresses. (Defaults to @tiimoodle.com if left empty)';
 $string['pseudoemailaddress'] = 'Pseudo Email Address';
 $string['connecttest'] = 'Test Turnitin Connection';
+$string['diagnosticoptions_0'] = 'Off';
+$string['diagnosticoptions_1'] = 'Standard';
+$string['diagnosticoptions_2'] = 'Debugging';
 
 $string['savesuccess'] = 'Changes saved';
 $string['connecttestsuccess'] = 'Connection test successful';

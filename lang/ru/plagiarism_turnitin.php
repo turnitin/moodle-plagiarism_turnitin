@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Необязательно]</b><br />В
 $string['pseudoemailaddress'] = 'Псевдоадрес электронной почты';
 $string['connecttest'] = 'Проверить подключение к Turnitin';
 $string['connecttestsuccess'] = 'Moodle успешно подключен к Turnitin.';
+$string['diagnosticoptions_0'] = 'Выкл.';
+$string['diagnosticoptions_1'] = 'Стандартн.';
+$string['diagnosticoptions_2'] = 'Отладка';

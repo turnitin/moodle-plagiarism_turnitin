@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Optional]</b><br />Volitelná doména p
 $string['pseudoemailaddress'] = 'Zástupná e-mailová adresa';
 $string['connecttest'] = 'Prověřit připojení Turnitin';
 $string['connecttestsuccess'] = 'Moodle byl úspěšně připojen k Turnitin.';
+$string['diagnosticoptions_0'] = 'Vypnuto';
+$string['diagnosticoptions_1'] = 'Standardní';
+$string['diagnosticoptions_2'] = 'Ladění';

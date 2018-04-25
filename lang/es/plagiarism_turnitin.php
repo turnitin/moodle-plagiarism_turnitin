@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Opcional]</b><br />Un dominio opcional 
 $string['pseudoemailaddress'] = 'Pseudo dirección de correo electrónico';
 $string['connecttest'] = 'Probar la conexión de Turnitin';
 $string['connecttestsuccess'] = 'Moodle ha conectado correctamente con Turnitin.';
+$string['diagnosticoptions_0'] = 'Desactivado';
+$string['diagnosticoptions_1'] = 'Estándar';
+$string['diagnosticoptions_2'] = 'Depuración';

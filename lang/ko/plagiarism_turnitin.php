@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[옵션]</b><br />가이메일 주소의
 $string['pseudoemailaddress'] = '가 이메일 주소';
 $string['connecttest'] = 'Turnitin 접속을 시험';
 $string['connecttestsuccess'] = 'Moodle이 Turnitin에 성공적으로 연결되었습니다.';
+$string['diagnosticoptions_0'] = '꺼짐';
+$string['diagnosticoptions_1'] = '표준';
+$string['diagnosticoptions_2'] = '디버깅';

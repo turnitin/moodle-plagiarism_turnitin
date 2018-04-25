@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[选择性的]</b><br />假的电子邮�
 $string['pseudoemailaddress'] = '假电子邮件地址';
 $string['connecttest'] = '测试 Turnitin 连接';
 $string['connecttestsuccess'] = 'Moodle 已成功地连线至 Turnitin。';
+$string['diagnosticoptions_0'] = '关闭';
+$string['diagnosticoptions_1'] = '标准';
+$string['diagnosticoptions_2'] = '调试';

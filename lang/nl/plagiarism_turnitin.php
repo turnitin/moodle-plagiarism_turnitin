@@ -245,3 +245,6 @@ $string['pseudoemaildomain_desc'] = '<b>[Optioneel]</b><br />Een optioneel domei
 $string['pseudoemailaddress'] = 'Pseudo-e-mailadres';
 $string['connecttest'] = 'Turnitin-verbinding testen';
 $string['connecttestsuccess'] = 'Moodle is nu verbonden met Turnitin';
+$string['diagnosticoptions_0'] = 'Uit';
+$string['diagnosticoptions_1'] = 'Standaard';
+$string['diagnosticoptions_2'] = 'Foutopsporing';

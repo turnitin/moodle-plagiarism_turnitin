@@ -2956,7 +2956,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             );
 
             $message = $receipt->build_message($input);
-            $receipt->send_message($user->id, $message);
+            $receipt->send_message($user->id, $message, $cm->course);
 
             // Output a message in the cron for successfull submission to Turnitin.
             $outputvars = new stdClass();

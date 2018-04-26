@@ -713,7 +713,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             } else if (!empty($linkarray["content"])) {
                 // Get turnitin text content details.
                 $submissiontype = ($cm->modname == "forum") ? 'forum_post' : 'text_content';
-                $content = $moduleobject->set_content($linkarray);
+                $content = $moduleobject->set_content($linkarray, $cm);
                 $identifier = sha1($content);
             }
 
@@ -2956,7 +2956,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             );
 
             $message = $receipt->build_message($input);
-            $receipt->send_message($user->id, $message);
+            $receipt->send_message($user->id, $message, $cm->course);
 
             // Output a message in the cron for successfull submission to Turnitin.
             $outputvars = new stdClass();

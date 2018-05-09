@@ -126,6 +126,7 @@ class tiisetupform extends moodleform {
 
         $mform->addElement('select', 'plagiarism_turnitin_repositoryoption', get_string('turnitinrepositoryoptions', 'plagiarism_turnitin'), $repositoryoptions);
         $mform->addElement('static', 'plagiarism_turnitin_repositoryoption_desc', null, get_string('turnitinrepositoryoptions_desc', 'plagiarism_turnitin'));
+        $mform->addHelpButton('plagiarism_turnitin_repositoryoption', 'turnitinrepositoryoptions', 'plagiarism_turnitin');
         $mform->setDefault('plagiarism_turnitin_repositoryoption', 0);
 
         // Miscellaneous settings.

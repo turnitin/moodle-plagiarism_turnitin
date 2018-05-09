@@ -28,6 +28,7 @@ define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
+define('PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH', 180);
 
 // Admin Repository constants.
 define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD', 0);
@@ -2906,7 +2907,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // Don't proceed if we can not create a tempfile.
         try {
-            $tempfile = turnitintooltwo_tempfile($filestring, $filename);
+            $tempfile = plagiarism_turnitin_tempfile($filestring, $filename);
         } catch (Exception $e) {
             $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 8);
             continue;
@@ -3012,4 +3013,53 @@ function plagiarism_turnitin_send_queued_submissions() {
             mtrace('-------------------------');
         }
     }
+}
+
+/**
+ * Creates a temp file for submission to Turnitin, uses a random number suffixed with the stored filename
+ *
+ * @param array $filename Used to build a more readable filename
+ * @param string $suffix The file extension for the upload
+ * @return string $file The filepath of the temp file
+ */
+function plagiarism_turnitin_tempfile(array $filename, $suffix) {
+    $filename = implode('_', $filename);
+    $filename = str_replace(' ', '_', $filename);
+    $filename = clean_param(strip_tags($filename), PARAM_FILE);
+
+    $tempdir = make_temp_directory('plagiarism_turnitin');
+
+    // Get the file extension (if there is one).
+    $pathparts = explode('.', $suffix);
+    $ext = '';
+    if (count($pathparts) > 1) {
+        $ext = '.' . array_pop($pathparts);
+    }
+
+    $permittedstrlength = PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH - mb_strlen($tempdir.DIRECTORY_SEPARATOR, 'UTF-8');
+    $extlength = mb_strlen('_' . mt_getrandmax() . $ext, 'UTF-8');
+    if ($extlength > $permittedstrlength) {
+        // Someone has likely used a filename with an absurdly long extension, or the
+        // tempdir path is huge, so preserve the extension as much as possible.
+        $extlength = $permittedstrlength;
+    }
+
+    // Shorten the filename as needed, taking the extension into consideration.
+    $permittedstrlength -= $extlength;
+    $filename = mb_substr($filename, 0, $permittedstrlength, 'UTF-8');
+
+    // Ensure the filename doesn't have any characters that are invalid for the fs.
+    $filename = clean_param($filename . mb_substr('_' . mt_rand() . $ext, 0, $extlength, 'UTF-8'), PARAM_FILE);
+
+    $tries = 0;
+    do {
+        if ($tries == 10) {
+            throw new invalid_dataroot_permissions("Turnitin plagiarism plugin temporary file cannot be created.");
+        }
+        $tries++;
+
+        $file = $tempdir . DIRECTORY_SEPARATOR . $filename;
+    } while ( !touch($file) );
+
+    return $file;
 }

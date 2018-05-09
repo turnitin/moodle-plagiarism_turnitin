@@ -234,12 +234,14 @@ class turnitinplugin_view {
             switch ($config->repositoryoption) {
                 case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
+                    $mform->addHelpButton('plagiarism_submitpapersto', 'submitpapersto', 'plagiarism_turnitin');
                     $this->lock($mform, $location, $locks);
                     break;
                 case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED; // Standard options + Allow Instituional Repository.
                     $suboptions[PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY] = get_string('institutionalrepository', 'plagiarism_turnitin');
 
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
+                    $mform->addHelpButton('plagiarism_submitpapersto', 'submitpapersto', 'plagiarism_turnitin');
                     $this->lock($mform, $location, $locks);
                     break;
                 case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.

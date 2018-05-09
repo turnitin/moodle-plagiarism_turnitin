@@ -258,6 +258,7 @@ $string['errorcode12'] = 'This file has not been submitted to Turnitin because i
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
+
 $string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:submissionscore'] = 'The similarity score of the submission.';
@@ -276,4 +277,6 @@ $string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The t
 $string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
 
 $string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';
+
 $string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';
+$string['turnitinrepositoryoptions_help'] = '<strong>Enable instructor standard repository options: </strong><br />Instructors can instruct Turnitin to add documents to either the standard repository or no repository<br /><br /><strong>Enable instructor expanded repository options: </strong><br />This option will allow instructors to view an assignment setting to allow students to instruct Turnitin where their documents will be stored. Students can choose to add their documents to the standard student repository or to your institution’s private repository.<br /><br /><strong>Submit all papers to the standard repository: </strong><br />All documents will be added to the standard student repository by default.<br /><br /><strong>Do not submit any papers into a repository: </strong><br />Documents will only ever be used to perform the initial check with Turnitin and to display to the instructor for grading.<br /><br /><strong>Submit all papers to the institutional repository: </strong><br />Turnitin is instructed to store all papers within the institutional paper repository. Similarity checks to the submitted documents will only be made by other instructors within your institution.';

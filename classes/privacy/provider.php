@@ -52,6 +52,7 @@ class provider implements
         $collection->add_database_table(
             'plagiarism_turnitin_files',
             [
+                'userid' => 'privacy:metadata:plagiarism_turnitin_files:userid',
                 'similarityscore' => 'privacy:metadata:plagiarism_turnitin_files:submissionscore',
                 'attempt' => 'privacy:metadata:plagiarism_turnitin_files:attempt',
                 'transmatch' => 'privacy:metadata:plagiarism_turnitin_files:transmatch',
@@ -186,10 +187,7 @@ class provider implements
      */
     public static function delete_plagiarism_for_user(int $userid, \context $context) {
         global $DB;
-        echo 'Context: '.
-            var_dump($context);
-        echo '|';
-        exit();
+
         $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid]);
     }
 }

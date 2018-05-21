@@ -206,6 +206,8 @@ $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
 
+$string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:submissionscore'] = 'The similarity score of the submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:attempt'] = 'A timestamp indicating when the user viewed feedback on their submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:transmatch'] = 'Indicates whether Turnitin used translated matching to produce a Similarity Report for the submission.';
@@ -222,4 +224,3 @@ $string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The t
 $string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifible.';
 
 $string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';
-$string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';

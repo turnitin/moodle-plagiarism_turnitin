@@ -141,7 +141,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
      * @param array $params parameters to be provided to the assignment module creation
      * @return array containing the course, assignment module, student and teacher
      */
-    private function create_assign_with_student_and_teacher($params = array()) {
+    public function create_assign_with_student_and_teacher($params = array()) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();

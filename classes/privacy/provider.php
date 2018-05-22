@@ -35,14 +35,19 @@ class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider,
     \core_plagiarism\privacy\plagiarism_provider {
+    
+    // This trait must be included to provide the relevant polyfill for the metadata provider.
+    use \core_privacy\local\legacy_polyfill;
 
+    // This trait must be included to provide the relevant polyfill for the plagirism provider.
+    use \core_plagiarism\privacy\legacy_polyfill;
     /**
      * Return the fields which contain personal data.
      *
      * @param $collection collection a reference to the collection to use to store the metadata.
      * @return $collection the updated collection of metadata items.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function _get_metadata(collection $collection) : collection {
 
         $collection->link_subsystem(
             'core_files',
@@ -81,7 +86,7 @@ class provider implements
      * @param int $userid the userid.
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function _get_contexts_for_userid(int $userid) : contextlist {
 
         $params = ['modulename' => 'assign',
             'contextlevel' => CONTEXT_MODULE,
@@ -110,7 +115,7 @@ class provider implements
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray The weird and wonderful link array used to display information for a specific item
      */
-    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
+    public static function _export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
         $user = $DB->get_record('user', array('id' => $userid));
@@ -131,7 +136,7 @@ class provider implements
 
         foreach ($submissions as $submission) {
             $context = \context_module::instance($submission->cm);
-            self::export_plagiarism_turnitin_data_for_user((array)$submission, $context, $user);
+            self::_export_plagiarism_turnitin_data_for_user((array)$submission, $context, $user);
         }
     }
 
@@ -142,7 +147,7 @@ class provider implements
      * @param \context_module $context the module context.
      * @param \stdClass $user the user record
      */
-    protected static function export_plagiarism_turnitin_data_for_user(array $submissiondata, \context_module $context, \stdClass $user) {
+    protected static function _export_plagiarism_turnitin_data_for_user(array $submissiondata, \context_module $context, \stdClass $user) {
         // Fetch the generic module data.
         $contextdata = helper::get_context_data($context, $user);
 
@@ -159,7 +164,7 @@ class provider implements
      *
      * @param \context $context the context to delete in.
      */
-    public static function delete_plagiarism_for_context(\context $context) {
+    public static function _delete_plagiarism_for_context(\context $context) {
         global $DB;
 
         if (empty($context)) {
@@ -185,7 +190,7 @@ class provider implements
      * @param  int      $userid    The user to delete
      * @param  \context $context   The context to refine the deletion.
      */
-    public static function delete_plagiarism_for_user(int $userid, \context $context) {
+    public static function _delete_plagiarism_for_user(int $userid, \context $context) {
         global $DB;
 
         $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid]);

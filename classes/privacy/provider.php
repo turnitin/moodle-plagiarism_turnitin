@@ -35,12 +35,13 @@ class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider,
     \core_plagiarism\privacy\plagiarism_provider {
-    
+
     // This trait must be included to provide the relevant polyfill for the metadata provider.
     use \core_privacy\local\legacy_polyfill;
 
     // This trait must be included to provide the relevant polyfill for the plagirism provider.
     use \core_plagiarism\privacy\legacy_polyfill;
+
     /**
      * Return the fields which contain personal data.
      *
@@ -98,7 +99,7 @@ class provider implements
                   JOIN {assign} a ON cm.instance = a.id
                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
              LEFT JOIN {plagiarism_turnitin_files} tf ON cm.instance = cm
-                 WHERE ag.userid = :userid";
+                 WHERE tf.userid = :userid";
 
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);

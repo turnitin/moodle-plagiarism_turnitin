@@ -86,7 +86,7 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
         $this->resetAfterTest();
         global $DB;
 
-        $cs_response = $this->create_submission();
+        $csresponse = $this->create_submission();
 
         // Set the cm to the correct one for our submission.
         $cms = $DB->get_records('course_modules');
@@ -101,7 +101,7 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
 
         $this->assertEquals(1, count($submissions));
 
-        $contextlist = provider::get_contexts_for_userid($cs_response["Student"]->id);
+        $contextlist = provider::get_contexts_for_userid($csresponse["Student"]->id);
 
         $this->assertCount(1, $contextlist);
     }
@@ -110,14 +110,14 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
         $this->resetAfterTest();
         global $DB;
 
-        $cs_response = $this->create_submission();
+        $csresponse = $this->create_submission();
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(1, count($submissions));
 
         // Export all of the data for the user.
-        provider::export_plagiarism_user_data($cs_response["Student"]->id, $cs_response["Context"], array(), array());
-        $writer = \core_privacy\local\request\writer::with_context($cs_response["Context"]);
+        provider::export_plagiarism_user_data($csresponse["Student"]->id, $csresponse["Context"], array(), array());
+        $writer = \core_privacy\local\request\writer::with_context($csresponse["Context"]);
         $this->assertTrue($writer->has_any_data());
     }
 
@@ -125,13 +125,13 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
         $this->resetAfterTest();
         global $DB;
 
-        $cs_response = $this->create_submission();
+        $csresponse = $this->create_submission();
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(1, count($submissions));
 
         // Delete all of the data for the user.
-        provider::delete_plagiarism_for_user($cs_response["Student"]->id, $cs_response["Context"]);
+        provider::delete_plagiarism_for_user($csresponse["Student"]->id, $csresponse["Context"]);
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(0, count($submissions));
@@ -141,24 +141,24 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
         $this->resetAfterTest();
         global $DB;
 
-        $cs_response = $this->create_submission(3);
+        $csresponse = $this->create_submission(3);
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(3, count($submissions));
 
         // Delete all of the data for the user.
-        provider::delete_plagiarism_for_context($cs_response["Context"]);
+        provider::delete_plagiarism_for_context($csresponse["Context"]);
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(0, count($submissions));
     }
 
-    public function create_submission($numSubmissions = 1) {
+    public function create_submission($numsubmissions = 1) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
-        $lib_test = new plagiarism_turnitin_lib_testcase();
-        $result = $lib_test->create_assign_with_student_and_teacher(array(
+        $libtest = new plagiarism_turnitin_lib_testcase();
+        $result = $libtest->create_assign_with_student_and_teacher(array(
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 0
         ));
@@ -182,7 +182,7 @@ class plagiarism_privacy_provider_testcase extends advanced_testcase {
         $plagiarismfile->itemid = 12;
         $plagiarismfile->submitter = $student->id;
 
-        for ($i = 0; $i < $numSubmissions; $i++) {
+        for ($i = 0; $i < $numsubmissions; $i++) {
             $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile);
         }
 

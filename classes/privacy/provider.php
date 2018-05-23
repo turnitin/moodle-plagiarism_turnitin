@@ -115,7 +115,7 @@ class provider implements
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray The weird and wonderful link array used to display information for a specific item
      */
-    public static function _export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
+    public static function _export_plagiarism_user_data($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
         $user = $DB->get_record('user', array('id' => $userid));
@@ -190,7 +190,7 @@ class provider implements
      * @param  int      $userid    The user to delete
      * @param  \context $context   The context to refine the deletion.
      */
-    public static function _delete_plagiarism_for_user(int $userid, \context $context) {
+    public static function _delete_plagiarism_for_user($userid, \context $context) {
         global $DB;
 
         $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid]);

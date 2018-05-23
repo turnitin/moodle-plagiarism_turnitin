@@ -47,7 +47,7 @@ class provider implements
      * @param $collection collection a reference to the collection to use to store the metadata.
      * @return $collection the updated collection of metadata items.
      */
-    public static function _get_metadata(collection $collection) : collection {
+    public static function _get_metadata(collection $collection) {
 
         $collection->link_subsystem(
             'core_files',
@@ -86,7 +86,7 @@ class provider implements
      * @param int $userid the userid.
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function _get_contexts_for_userid(int $userid) : contextlist {
+    public static function _get_contexts_for_userid($userid) {
 
         $params = ['modulename' => 'assign',
             'contextlevel' => CONTEXT_MODULE,

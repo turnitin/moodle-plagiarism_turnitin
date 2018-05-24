@@ -46,12 +46,19 @@ class turnitin_forum {
         return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
     }
 
-    public function get_author($itemid) {
+    public function get_author($itemid = 0) {
         return;
     }
 
-    public function set_content($linkarray, $moduleid) {
-        return $linkarray["content"];
+    public function set_content($linkarray) {
+        global $DB;
+
+        if (empty($linkarray['postid'])) {
+            return $linkarray["content"];
+        } else {
+            $post = $DB->get_record('forum_posts', array('id' => $linkarray['postid']));
+            return $post->message;
+        }
     }
 
     public function create_file_event($params) {

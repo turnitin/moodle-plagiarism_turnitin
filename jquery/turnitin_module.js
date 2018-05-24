@@ -167,7 +167,7 @@ jQuery(document).ready(function($) {
     }
 
     function lightBoxCloseButton(closeBtnText) {
-        $('body').append('<div id="tii_close_bar"><a href="#" onclick="$.colorbox.close(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
+        $('body').append('<div id="tii_close_bar"><a href="#" onclick="jQuery(\'#cboxClose\').click(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
     }
 
     function getLoadingGif() {

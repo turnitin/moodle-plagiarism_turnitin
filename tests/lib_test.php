@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) mod/turnitintooltwo/view.php.
+ * Unit tests for (some of) plagiarism/turnitin/lib.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_assign_testcase extends advanced_testcase {
+class plagiarism_turnitin_lib_testcase extends advanced_testcase {
 
     public function test_handle_exceptions() {
         $this->resetAfterTest();
@@ -141,7 +141,7 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
      * @param array $params parameters to be provided to the assignment module creation
      * @return array containing the course, assignment module, student and teacher
      */
-    private function create_assign_with_student_and_teacher($params = array()) {
+    public function create_assign_with_student_and_teacher($params = array()) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();

@@ -77,7 +77,7 @@ $string['norepository'] = 'No Repository';
 $string['standardrepository'] = 'Standard Repository';
 $string['submitpapersto'] = 'Store Student Papers';
 $string['institutionalrepository'] = 'Institutional Repository (Where Applicable)';
-$string['submitpapersto_help'] = 'This setting provides instructors with the ability to select whether papers are stored in a Turnitin student paper repository. The benefit of submitting papers to the student paper repository is that student papers submitted to the assignment are checked against other students\&#39; submissions within your current and previous classes. If you select &#34;no repository&#34;, your students\&#39; papers will not be stored in the Turnitin student paper repository.';
+$string['submitpapersto_help'] = '<strong>No Repository: </strong><br />Turnitin is instructed to not store submitted documents to any repository. We will only process the paper to perform the initial similarity check.<br /><br /><strong>Standard Repository: </strong><br />Turnitin will store a copy of the submitted document only in the Standard Repository. By choosing this option, Turnitin is instructed to only use stored documents to make similarity checks against any documents submitted in the future.<br /><br /><strong>Institutional Repository (Where Applicable): </strong><br />Choosing this option instructs Turnitin to only add submitted documents to a repository private to your institution. Similarity checks to the submitted documents will only be made by other instructors within your institution.';
 $string['checkagainstnote'] = 'Note: If you do not select "Yes" for at least one of the "Check against..." options below then an Originality report will NOT be generated.';
 $string['spapercheck'] = 'Check against stored student papers';
 $string['internetcheck'] = 'Check against internet';
@@ -205,3 +205,22 @@ $string['errorcode12'] = 'This file has not been submitted to Turnitin because i
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
+
+$string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:submissionscore'] = 'The similarity score of the submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:attempt'] = 'A timestamp indicating when the user viewed feedback on their submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:transmatch'] = 'Indicates whether Turnitin used translated matching to produce a Similarity Report for the submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:lastmodified'] = 'A timestamp indicating when the user last modified their submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:grade'] = 'The grade applied by an instructor to the submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:orcapable'] = 'Indicates whether Turnitin was able to produce an originality report for the user\'s submission.';
+$string['privacy:metadata:plagiarism_turnitin_files:student_read'] = 'Indicates whether a student has read their feedback.';
+
+$string['privacy:metadata:plagiarism_turnitin_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin.';
+$string['privacy:metadata:plagiarism_turnitin_client:email'] = 'The user\'s email address is shared by Moodle to enable the creation of a Turnitin account.';
+$string['privacy:metadata:plagiarism_turnitin_client:firstname'] = 'The user\'s first name is sent to Turnitin so that the user can be identified.';
+$string['privacy:metadata:plagiarism_turnitin_client:lastname'] = 'The user\'s last name is sent to Turnitin so that the user can be identified.';
+$string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The title of the submission is sent to Turntin so that it is identifiable.';
+$string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
+
+$string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';

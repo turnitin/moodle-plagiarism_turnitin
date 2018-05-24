@@ -317,6 +317,30 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
+        // If V2 is installed, copy the courses across from V2.
+        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
+            $ppcourses = $DB->get_records('turnitintooltwo_courses', array('course_type' => 'PP'), 'id ASC', 'courseid, ownerid, turnitin_ctl, turnitin_cid');
+
+            foreach ($ppcourses as $ppcourse) {
+                $course = new stdClass();
+                $course->courseid = $ppcourse->courseid;
+                $course->ownerid = $ppcourse->ownerid;
+                $course->turnitin_cid = $ppcourse->turnitin_cid;
+                if (!$DB->get_record('plagiarism_turnitin_courses', array('courseid' => $ppcourse->courseid))) {
+                    $course->turnitin_ctl = $ppcourse->turnitin_ctl;
+                    $DB->insert_record('plagiarism_turnitin_courses', $course);
+
+
+                    // Clean up the record from the V2 plugin.
+                    $coursev2 = array('courseid' => $ppcourse->courseid,
+                        'ownerid' => $ppcourse->ownerid,
+                        'turnitin_cid' => $ppcourse->turnitin_cid,
+                        'course_type' => 'PP');
+                    $DB->delete_records('turnitintooltwo_courses', $coursev2);
+                }
+            }
+        }
     }
 
     return $result;

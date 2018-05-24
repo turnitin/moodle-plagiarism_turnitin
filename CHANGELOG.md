@@ -68,7 +68,6 @@ We received a report that the Close button in the Plagiarism Plugin's lightboxes
 
 #### Instructors can now successfully submit on behalf of a student
   	
-
 An instructor encountered an issue when attempting to resubmit on behalf of a student within a group submission. This was down to us incorrectly checking the permissions of the student, rather than the submitter. These permissions told us that the student wasn't permitted to resubmit to the assignment, but if we'd checked the instructor permissions, we'd have found that their permissions allowed this. Phew. A big thanks to @micaherne for his patch to fix this! It did the job nicely.
 
 ---

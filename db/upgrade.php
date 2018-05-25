@@ -331,7 +331,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                     $course->turnitin_ctl = $ppcourse->turnitin_ctl;
                     $DB->insert_record('plagiarism_turnitin_courses', $course);
 
-
                     // Clean up the record from the V2 plugin.
                     $coursev2 = array('courseid' => $ppcourse->courseid,
                         'ownerid' => $ppcourse->ownerid,

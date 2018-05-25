@@ -52,15 +52,14 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
         $pluginelement = new backup_nested_element($this->get_recommended_name());
         $plugin->add_child($pluginelement);
 
-        // Add courses from Turnitintool table.
+        // Add courses from plagiarism_turnitin table.
         $turnitincourses = new backup_nested_element('turnitin_courses');
         $turnitincourse = new backup_nested_element('turnitin_course', array('id'),
-            array('courseid', 'ownerid', 'turnitin_ctl', 'turnitin_cid', 'course_type'));
+            array('courseid', 'ownerid', 'turnitin_ctl', 'turnitin_cid'));
         $pluginelement->add_child($turnitincourses);
         $turnitincourses->add_child($turnitincourse);
 
-        $turnitincourse->set_source_table('turnitintooltwo_courses', array('courseid' => backup::VAR_COURSEID,
-         'course_type' => backup_helper::is_sqlparam('PP')));
+        $turnitincourse->set_source_table('plagiarism_turnitin_courses', array('courseid' => backup::VAR_COURSEID));
         return $plugin;
     }
 }

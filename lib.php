@@ -3085,9 +3085,9 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
     if (is_null($link)) {
         if (substr_count($_SERVER["PHP_SELF"], "assign/view.php") > 0) {
             $mod = "assign";
-        } elseif(substr_count($_SERVER["PHP_SELF"], "forum/view.php") > 0) {
+        } else if(substr_count($_SERVER["PHP_SELF"], "forum/view.php") > 0) {
             $mod = "forum";
-        } elseif(substr_count($_SERVER["PHP_SELF"], "workshop/view.php") > 0) {
+        } else if(substr_count($_SERVER["PHP_SELF"], "workshop/view.php") > 0) {
             $mod = "workshop";
         }
         $link = (!empty($linkid)) ? $CFG->wwwroot.'/'.$mod.'/view.php?id='.$linkid : $CFG->wwwroot;

@@ -551,4 +551,65 @@ class turnitin_view {
             return $turnitincall->$ltifunction($lti, $ltireturn);
         }
     }
+
+    /**
+     * Return the output for a form to launch the relevant LTi function
+     * It is then submitted on load via Javascript
+     *
+     * @param string $userrole either Instructor or Learner
+     * @param int $userid
+     * @return output form
+     */
+    public static function output_lti_form_launch($type, $userrole, $partid = 0, $classid = 0) {
+        global $USER;
+        // Initialise Comms Object.
+        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+
+        $user = new turnitintooltwo_user($USER->id, $userrole);
+
+        $lti = new TiiLTI();
+        $lti->setUserId($user->tiiuserid);
+        $lti->setRole($userrole);
+        $lti->setFormTarget('');
+
+        switch ($type) {
+            case "messages_inbox":
+                $ltifunction = "outputMessagesForm";
+                break;
+
+            case "rubric_manager":
+                if ($classid != 0) {
+                    $lti->setClassId($classid);
+                }
+                $ltifunction = "outputRubricManagerForm";
+                break;
+
+            case "rubric_view":
+                $lti->setAssignmentId($partid);
+                $ltifunction = "outputRubricViewForm";
+                break;
+
+            case "quickmark_manager":
+                $ltifunction = "outputQuickmarkManagerForm";
+                break;
+
+            case "peermark_manager":
+                $lti->setAssignmentId($partid);
+                $ltifunction = "outputPeerMarkSetupForm";
+                break;
+
+            case "peermark_reviews":
+                $lti->setAssignmentId($partid);
+                $ltifunction = "outputPeerMarkReviewForm";
+                break;
+        }
+
+        ob_start();
+        $turnitincall->$ltifunction($lti);
+        $rubricform = ob_get_contents();
+        ob_end_clean();
+
+        return $rubricform;
+    }
 }

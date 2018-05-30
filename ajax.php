@@ -139,9 +139,15 @@ switch ($action) {
             $user = new turnitintooltwo_user($USER->id, "Instructor");
             $user->join_user_to_class($coursedata->turnitin_cid);
 
-            echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_manager',
-                                                        'Instructor', $tiiassignmentid),
-                                                        array("class" => "launch_form", "style" => "display:none;"));
+            echo html_writer::tag(
+                'div',
+                turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
+                array(
+                    'class' => 'launch_form',
+                    'style' => 'display:none;'
+                )
+            );
+
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
@@ -160,9 +166,15 @@ switch ($action) {
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             $user->join_user_to_class($coursedata->turnitin_cid);
 
-            echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('rubric_view',
-                                                        'Learner', $tiiassignment->value),
-                                                        array("class" => "launch_form", "style" => "display:none;"));
+            echo html_writer::tag(
+                'div',
+                turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
+                array(
+                    'class' => 'launch_form',
+                    'style' => 'display:none;'
+                )
+            );
+
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
@@ -181,9 +193,15 @@ switch ($action) {
             $coursedata = turnitintooltwo_assignment::get_course_data($cm->course, 'PP');
             $user->join_user_to_class($coursedata->turnitin_cid);
 
-            echo html_writer::tag("div", turnitintooltwo_view::output_lti_form_launch('peermark_reviews',
-                                                        $userrole, $tiiassignment->value),
-                                                        array("class" => "launch_form", "style" => "display:none;"));
+            echo html_writer::tag(
+                'div',
+                turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
+                array(
+                    'class' => 'launch_form',
+                    'style' => 'display:none;'
+                )
+            );
+
             echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");

@@ -19,9 +19,9 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once(__DIR__.'/lib.php');
-require_once(__DIR__."/turnitinplugin_view.class.php");
+require_once(__DIR__.'/classes/turnitin_view.class.php');
 
-$turnitinpluginview = new turnitinplugin_view();
+$turnitinview = new turnitin_view();
 
 require_login();
 admin_externalpage_setup('plagiarismturnitin');
@@ -114,7 +114,7 @@ if ($do != "savereport") {
 
 switch ($do) {
     case "config":
-        $turnitinpluginview->draw_settings_tab_menu('turnitinsettings', $notice);
+        $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
         require_once(__DIR__ . '/classes/forms/tiisetupform.class.php');
 
@@ -134,7 +134,7 @@ switch ($do) {
         break;
 
     case "defaults":
-        $turnitinpluginview->draw_settings_tab_menu('turnitindefaults', $notice);
+        $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
         $mform = new turnitin_plagiarism_plugin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
@@ -147,7 +147,7 @@ switch ($do) {
         if ($do == 'viewreport') {
 
             $activetab = ($do == "savereport") ? "turnitinsaveusage" : "turnitinshowusage";
-            $turnitinpluginview->draw_settings_tab_menu($activetab, $notice);
+            $turnitinview->draw_settings_tab_menu($activetab, $notice);
 
             $output .= "<pre>";
             $output .= "====== Turnitin Plagiarism Plugin Data Dump Output ======\r\n\r\n";
@@ -224,7 +224,7 @@ switch ($do) {
     case "errors":
         $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
-        $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
+        $turnitinview->draw_settings_tab_menu('turnitinerrors', $notice);
         echo html_writer::tag("p", get_string('pperrorsdesc', 'plagiarism_turnitin'));
 
         if ($resubmitted == "success") {
@@ -238,7 +238,7 @@ switch ($do) {
         echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));
 
-        echo $turnitinpluginview->show_file_errors_table($page);
+        echo $turnitinview->show_file_errors_table($page);
 
         echo html_writer::tag("button", get_string('resubmitselected', 'plagiarism_turnitin'),
                                 array("class" => "btn btn-primary pp-resubmit-files", "disabled" => "disabled"));

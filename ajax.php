@@ -64,10 +64,17 @@ switch ($action) {
         $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
         if ($syncassignment['success']) {
-            $turnitintooltwoview = new turnitintooltwo_view();
-            $return = html_writer::tag("div",
-                                        $turnitintooltwoview->output_dv_launch_form($dvtype, $submissionid, $user->tiiuserid,
-                                                                    $userrole, ''), array('style' => 'display: none'));
+            $return = html_writer::tag(
+                "div",
+                turnitin_view::output_launch_form(
+                    $dvtype,
+                    $submissionid,
+                    $user->tiiuserid,
+                    $userrole,
+                    ''
+                ),
+                array('style' => 'display: none')
+            );
         }
         break;
 

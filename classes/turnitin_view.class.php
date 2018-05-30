@@ -19,13 +19,13 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
-require_once(__DIR__.'/lib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 global $tiipp;
 $tiipp = new stdClass();
 $tiipp->in_use = true;
 
-class turnitinplugin_view {
+class turnitin_view {
 
     /**
      * Prints the tab menu for the plugin settings
@@ -513,6 +513,69 @@ class turnitinplugin_view {
                     $mform->addElement('static', $field . '_why', '', $msg );
                 }
             }
+        }
+    }
+
+    /**
+     * Return the output for a form to launch LTI views, it is then submitted
+     * on load via Javascript
+     *
+     * @param string $type the type of document viewer that needs to be opened
+     * @param int $submissionid the Turnitin submission id
+     * @param int $userid the Turnitin user id
+     * @param string $userrole the role the user has on Turnitin in the course/class
+     * @param string $buttonstring string for the submit button
+     * @return string form
+     */
+    public static function output_launch_form($type, $submissionid, $userid, $userrole,
+                                              $buttonstring = "Submit", $ltireturn = false) {
+        // Initialise Comms Object.
+        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+
+        // Construct LTI Form Launcher.
+        $lti = new TiiLTI();
+        if ($type != "useragreement") {
+            $lti->setSubmissionId($submissionid);
+        }
+        $lti->setUserId($userid);
+        $lti->setRole($userrole);
+        $lti->setButtonText($buttonstring);
+        $lti->setFormTarget('');
+
+        switch ($type) {
+            case "useragreement":
+                $ltifunction = "outputUserAgreementForm";
+                break;
+
+            case "downloadoriginal":
+                $ltifunction = "outputDownloadOriginalFileForm";
+                break;
+
+            case "default":
+                $ltifunction = "outputDVDefaultForm";
+                break;
+
+            case "origreport":
+                $ltifunction = "outputDVReportForm";
+                break;
+
+            case "grademark":
+                $ltifunction = "outputDVGradeMarkForm";
+                break;
+        }
+
+        if ($ltireturn == false) {
+            // Read the LTI launch form in the output buffer.
+            ob_start();
+            $turnitincall->$ltifunction($lti, $ltireturn);
+            $launchdv = ob_get_contents();
+            ob_end_clean();
+
+            return $launchdv;
+        } else {
+            $lti->setAsJson(true);
+            return $turnitincall->$ltifunction($lti, $ltireturn);
         }
     }
 }

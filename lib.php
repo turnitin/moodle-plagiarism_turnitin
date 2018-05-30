@@ -78,7 +78,7 @@ require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 // Include plugin classes.
-require_once(__DIR__."/turnitinplugin_view.class.php");
+require_once(__DIR__.'/classes/turnitin_view.class.php');
 require_once(__DIR__.'/classes/turnitin_class.class.php');
 require_once(__DIR__.'/classes/turnitin_submission.class.php');
 require_once(__DIR__.'/classes/turnitin_comms.class.php');
@@ -306,14 +306,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $plagiarismelements = $this->get_settings_fields();
 
-            $turnitinpluginview = new turnitinplugin_view();
+            $turnitinview = new turnitin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
 
             // We don't require the settings form on Moodle 3.3's bulk completion feature.
             if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
                 // Create/Edit course in Turnitin and join user to class.
                 $course = $this->get_course_data($cmid, $COURSE->id);
-                $turnitinpluginview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
+                $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }
 
             // Disable all plagiarism elements if turnitin is not enabled.
@@ -442,11 +442,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Print the Turnitin student disclosure inside the submission page for students to see
      *
-     * @global type $OUTPUT
-     * @global type $USER
-     * @global type $CFG
-     * @param type $cmid
-     * @return type
+     * @global $OUTPUT
+     * @global $USER
+     * @global $CFG
+     * @param $cmid
+     * @return string
      */
     public function print_disclosure($cmid) {
         global $OUTPUT, $USER, $CFG, $DB;
@@ -514,11 +514,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass,
                                             'data-userid' => $user->id));
 
-                $noscripteula = html_writer::tag('noscript',
-                                turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tiiuserid,
-                                    "Learner", get_string('turnitinppulapre', 'plagiarism_turnitin'), false)." ".
-                                        get_string('noscriptula', 'plagiarism_turnitin'),
-                                            array('class' => 'warning turnitin_ula_noscript'));
+                $form = turnitin_view::output_launch_form(
+                    "useragreement",
+                    0,
+                    $user->tiiuserid,
+                    "Learner",
+                    get_string('turnitinppulapre', 'plagiarism_turnitin'),
+                    false
+                );
+                $form .= " ".get_string('noscriptula', 'plagiarism_turnitin');
+
+                $noscripteula = html_writer::tag('noscript', $form, array('class' => 'warning turnitin_ula_noscript'));
             }
 
             // Show EULA launcher and form placeholder.
@@ -1728,7 +1734,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             array('cm' => $cm->id, 'statuscode' => 'success'));
 
         // Use Moodle's blind marking setting for anonymous marking.
-        if ($config->plagiarism_turnitin_useanon && !$previoussubmissions) {
+        if (isset($config->plagiarism_turnitin_useanon) && $config->plagiarism_turnitin_useanon && !$previoussubmissions) {
             $anonmarking = (!empty($moduledata->blindmarking)) ? 1 : 0;
             $assignment->setAnonymousMarking($anonmarking);
         }

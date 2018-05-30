@@ -119,6 +119,10 @@ class provider implements
     public static function _export_plagiarism_user_data($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
+        if (empty($userid)) {
+            return;
+        }
+
         $user = $DB->get_record('user', array('id' => $userid));
 
         $params = ['userid' => $user->id];

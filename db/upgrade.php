@@ -313,7 +313,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('courseid', XMLDB_INDEX_UNIQUE, array('courseid'));
 
-        // Conditionally launch create table for file_conversion.
+        // Conditionally launch create table for plagiarism_turnitin_courses.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
@@ -331,6 +331,31 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             if ($DB->count_records('plagiarism_turnitin_courses') == count($ppcourses)) {
                 $DB->delete_records('turnitintooltwo_courses', array("course_type" => "PP"));
             }
+        }
+    }
+
+    if ($oldversion < 2018053102) {
+        // Define table file_conversion to be created.
+        $table = new xmldb_table('plagiarism_turnitin_peermark');
+
+        // Adding fields to table plagiarism_turnitin_peermark.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('parent_tii_assign_id', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'id');
+        $table->add_field('title', XMLDB_TYPE_TEXT, null, null, false, null, null, 'parent_tii_assign_id');
+        $table->add_field('tiiassignid', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'title');
+        $table->add_field('dtstart', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'tiiassignid');
+        $table->add_field('dtdue', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'dtstart');
+        $table->add_field('dtpost', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'dtdue');
+        $table->add_field('maxmarks', XMLDB_TYPE_INTEGER, '10', null, true, null, null, 'maxmarks');
+
+        // Adding keys and indexes to table plagiarism_turnitin_peermark.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('parent_tii_assign_id', XMLDB_INDEX_NOTUNIQUE, array('parent_tii_assign_id'));
+        $table->add_index('tiiassignid', XMLDB_INDEX_NOTUNIQUE, array('tiiassignid'));
+
+        // Conditionally launch create table for plagiarism_turnitin_peermark.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
         }
     }
 

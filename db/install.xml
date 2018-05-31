@@ -49,7 +49,7 @@
                 <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" ONDELETE="cascade" PREVIOUS="primary"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitin_courses" COMMENT="Turnitin Plagiarism Plugin Courses" PREVIOUS="plagiarism_turnitin_config">
+        <TABLE NAME="plagiarism_turnitin_courses" COMMENT="Turnitin Plagiarism Plugin Courses" PREVIOUS="plagiarism_turnitin_config" NEXT="plagiarism_turnitin_peermark">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="courseid"/>
                 <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
@@ -61,7 +61,26 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
             </KEYS>
             <INDEXES>
-                <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid" />
+                <INDEX NAME="courseid" UNIQUE="true" FIELDS="courseid" />
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="plagiarism_turnitin_peermark" COMMENT="Turnitin Plagiarism Peermark Assignments" PREVIOUS="plagiarism_turnitin_courses">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="parent_tii_assign_id"/>
+                <FIELD NAME="parent_tii_assign_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="title"/>
+                <FIELD NAME="title" TYPE="text" LENGTH="medium" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="parent_tii_assign_id" NEXT="tiiassignid"/>
+                <FIELD NAME="tiiassignid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="title" NEXT="dtstart"/>
+                <FIELD NAME="dtstart" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="tiiassignid" NEXT="dtdue"/>
+                <FIELD NAME="dtdue" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="dtstart" NEXT="dtpost"/>
+                <FIELD NAME="dtpost" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="dtdue" NEXT="maxmarks"/>
+                <FIELD NAME="maxmarks" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="dtpost"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="parent_tii_assign_id" UNIQUE="false" FIELDS="parent_tii_assign_id" NEXT="tiiassignid"/>
+                <INDEX NAME="tiiassignid" UNIQUE="false" FIELDS="tiiassignid" PREVIOUS="parent_tii_assign_id"/>
             </INDEXES>
         </TABLE>
     </TABLES>

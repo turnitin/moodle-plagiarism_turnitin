@@ -39,14 +39,16 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $recordexists = $DB->record_exists('turnitintooltwo_courses',
-                array('turnitin_cid' => $data->turnitin_cid, 'course_type' => 'PP'));
+            $recordexists = $DB->record_exists('plagiarism_turnitin_courses', array('turnitin_cid' => $data->turnitin_cid));
 
             if (!$recordexists) {
                 $data = (object)$data;
                 $data->courseid = $this->task->get_courseid();
 
-                $DB->insert_record('turnitintooltwo_courses', $data);
+                // Unset course type in case the restore is from a backup taken prior to change for where the courses are stored.
+                unset($data->course_type);
+
+                $DB->insert_record('plagiarism_turnitin_courses', $data);
             }
         }
     }

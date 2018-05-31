@@ -298,6 +298,42 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2018053101) {
+        // Define table file_conversion to be created.
+        $table = new xmldb_table('plagiarism_turnitin_courses');
+
+        // Adding fields to table plagiarism_turnitin_courses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'courseid');
+        $table->add_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
+        $table->add_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
+
+        // Adding keys and indexes to table plagiarism_turnitin_courses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('courseid', XMLDB_INDEX_UNIQUE, array('courseid'));
+
+        // Conditionally launch create table for file_conversion.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // If V2 is installed, copy the courses across from V2.
+        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
+            $ppcourses = $DB->get_records('turnitintooltwo_courses', array('course_type' => 'PP'), 'id ASC', 'courseid, ownerid, turnitin_ctl, turnitin_cid');
+            try {
+                $DB->insert_records('plagiarism_turnitin_courses', $ppcourses);
+            } catch (Exception $e) {
+                turnitintooltwo_activitylog('Unable to copy course tables during version upgrade because they already exist.', 'PP_UPGRADE');
+            }
+
+            // Clean up old data, but only if the number of courses inserted matches the number of courses we wanted to insert.
+            if ($DB->count_records('plagiarism_turnitin_courses') == count($ppcourses)) {
+                $DB->delete_records('turnitintooltwo_courses', array("course_type" => "PP"));
+            }
+        }
+    }
+
     return $result;
 }
 

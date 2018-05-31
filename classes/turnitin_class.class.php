@@ -36,8 +36,7 @@ class turnitin_class {
 
         $this->id = $id;
 
-        if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
-                                array("courseid" => $id, "course_type" => "PP"))) {
+        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $id))) {
             $this->turnitinid = $turnitincourse->turnitin_cid;
             $this->turnitintitle = $turnitincourse->turnitin_ctl;
         }

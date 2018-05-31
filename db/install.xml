@@ -36,7 +36,7 @@
                 <INDEX NAME="externalid" UNIQUE="false" FIELDS="externalid" />
             </INDEXES>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitin_config" COMMENT="info about submitted files" PREVIOUS="plagiarism_turnitin_files">
+        <TABLE NAME="plagiarism_turnitin_config" COMMENT="info about submitted files" PREVIOUS="plagiarism_turnitin_files" NEXT="plagiarism_turnitin_courses">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
@@ -48,6 +48,21 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
                 <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" ONDELETE="cascade" PREVIOUS="primary"/>
             </KEYS>
+        </TABLE>
+        <TABLE NAME="plagiarism_turnitin_courses" COMMENT="Turnitin Plagiarism Plugin Courses" PREVIOUS="plagiarism_turnitin_config">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="courseid"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
+                <FIELD NAME="ownerid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="turnitin_ctl"/>
+                <FIELD NAME="turnitin_ctl" TYPE="text" LENGTH="medium" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="ownerid" NEXT="turnitin_cid"/>
+                <FIELD NAME="turnitin_cid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="turnitin_ctl"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid" />
+            </INDEXES>
         </TABLE>
     </TABLES>
 </XMLDB>

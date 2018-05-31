@@ -298,6 +298,27 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2018053101) {
+        // Define table plagiarism_turnitin_courses to be created.
+        $table = new xmldb_table('plagiarism_turnitin_courses');
+
+        // Adding fields to table plagiarism_turnitin_courses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'courseid');
+        $table->add_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
+        $table->add_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
+
+        // Adding keys and indexes to table plagiarism_turnitin_courses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('courseid', XMLDB_INDEX_NOTUNIQUE, array('courseid'));
+
+        // Conditionally launch create table for file_conversion.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+
     return $result;
 }
 

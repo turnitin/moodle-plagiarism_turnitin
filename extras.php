@@ -24,9 +24,9 @@ require_once($CFG->libdir.'/tablelib.php');
 require_once(__DIR__."/lib.php");
 
 require_once($CFG->dirroot."/mod/turnitintooltwo/lib.php");
-require_once($CFG->dirroot."/mod/turnitintooltwo/turnitintooltwo_view.class.php");
+require_once($CFG->dirroot."/plagiarism/turnitin/turnitinplugin_view.class.php");
 
-$turnitintooltwoview = new turnitintooltwo_view();
+$turnitinpluginview = new turnitinplugin_view();
 
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
@@ -71,7 +71,7 @@ switch ($cmd) {
 }
 
 // Build page.
-echo $turnitintooltwoview->output_header($_SERVER["REQUEST_URI"]);
+echo $turnitinpluginview->output_header($_SERVER["REQUEST_URI"]);
 
 echo html_writer::tag("div", $viewcontext, array("id" => "tii_view_context"));
 

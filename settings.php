@@ -116,9 +116,9 @@ switch ($do) {
     case "config":
         $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
-        require_once(__DIR__ . '/classes/forms/tiisetupform.class.php');
+        require_once(__DIR__ . '/classes/forms/turnitin_setupform.class.php');
 
-        $tiisetupform = new tiisetupform();
+        $tiisetupform = new turnitin_setupform();
 
         // Save posted form data.
         if (($data = $tiisetupform->get_data()) && confirm_sesskey()) {
@@ -136,7 +136,9 @@ switch ($do) {
     case "defaults":
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
-        $mform = new turnitin_plagiarism_plugin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
+        require_once(__DIR__ . '/classes/forms/turnitin_defaultsettingsform.class.php');
+
+        $mform = new turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
         $mform->display();
         break;

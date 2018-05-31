@@ -283,7 +283,7 @@ switch ($action) {
             $accountshared = required_param('accountshared', PARAM_RAW);
             $url = required_param('url', PARAM_RAW);
 
-            $turnitincomms = new turnitintooltwo_comms($accountid, $accountshared, $url);
+            $turnitincomms = new turnitin_comms($accountid, $accountshared, $url);
 
             // We only want an API log entry for this if diagnostic mode is set to Debugging.
             if (empty($config)) {

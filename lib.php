@@ -409,7 +409,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // If all turnitin enabled modules for this course have been reset.
         // then remove the Turnitin course id from the database.
         if ($resetcourse) {
-            $DB->delete_records('plagiarism_turnitin_courses', array('courseid' => $courseid, 'course_type' => 'PP'));
+            $DB->delete_records('plagiarism_turnitin_courses', array('courseid' => $courseid));
         }
 
         return true;
@@ -2191,7 +2191,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $turnitincourse->ownerid = $USER->id;
         $turnitincourse->turnitin_cid = $turnitincid;
         $turnitincourse->turnitin_ctl = $coursedata->fullname . " (Moodle PP)";
-        $turnitincourse->course_type = 'PP';
 
         if (empty($coursedata->tii_rel_id)) {
             $method = "insert_record";

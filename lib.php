@@ -1653,20 +1653,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $peermark->dtpost = strtotime($peermarkassignment->getFeedbackReleaseDate());
                     $peermark->maxmarks = (int)$peermarkassignment->getMaxGrade();
                     $peermark->title = $peermarkassignment->getTitle();
-                    $peermark->instructions = $peermarkassignment->getInstructions();
-                    $peermark->distributed_reviews = (int)$peermarkassignment->getDistributedReviews();
-                    $peermark->selected_reviews = (int)$peermarkassignment->getSelectedReviews();
-                    $peermark->self_review = (int)$peermarkassignment->getSelfReviewRequired();
-                    $peermark->non_submitters_review = (int)$peermarkassignment->getNonSubmittersToReview();
 
-                    $currentpeermark = $DB->get_record('turnitintooltwo_peermarks',
+                    $currentpeermark = $DB->get_record('plagiarism_turnitin_peermark',
                                                 array('tiiassignid' => $peermark->tiiassignid));
 
                     if ($currentpeermark) {
                         $peermark->id = $currentpeermark->id;
-                        $DB->update_record('turnitintooltwo_peermarks', $peermark);
+                        $DB->update_record('plagiarism_turnitin_peermark', $peermark);
                     } else {
-                        $DB->insert_record('turnitintooltwo_peermarks', $peermark);
+                        $DB->insert_record('plagiarism_turnitin_peermark', $peermark);
                     }
                 }
             }

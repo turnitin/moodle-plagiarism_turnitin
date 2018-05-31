@@ -553,7 +553,7 @@ class turnitin_view {
     public static function output_launch_form($type, $submissionid, $userid, $userrole,
                                               $buttonstring = "Submit", $ltireturn = false) {
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Construct LTI Form Launcher.
@@ -608,12 +608,12 @@ class turnitin_view {
      *
      * @param string $userrole either Instructor or Learner
      * @param int $userid
-     * @return output form
+     * @return string form
      */
     public static function output_lti_form_launch($type, $userrole, $partid = 0, $classid = 0) {
         global $USER;
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new turnitintooltwo_user($USER->id, $userrole);

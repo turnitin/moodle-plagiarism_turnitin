@@ -75,12 +75,12 @@ if (!empty($action)) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                 (array('cm' => null, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
-                        turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 } else {
                     $defaultfield->config_hash = $defaultfield->cm."_".$defaultfield->name;
                     if (!$DB->insert_record('plagiarism_turnitin_config', $defaultfield)) {
-                        turnitintooltwo_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 }
             }

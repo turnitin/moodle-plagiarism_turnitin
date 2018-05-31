@@ -28,6 +28,29 @@ $tiipp->in_use = true;
 class turnitin_view {
 
     /**
+     * Abstracted version of print_header() / header()
+     *
+     * @param string $url The URL of the page
+     * @param string $title Appears at the top of the window
+     * @param string $heading Appears at the top of the page
+     * @param bool $return If true, return the visible elements of the header instead of echoing them.
+     * @return mixed If return=true then string else void
+     */
+    public function output_header($url, $title = '', $heading = '', $return = false) {
+        global $PAGE, $OUTPUT;
+
+        $PAGE->set_url($url);
+        $PAGE->set_title($title);
+        $PAGE->set_heading($heading);
+
+        if ($return) {
+            return $OUTPUT->header();
+        } else {
+            echo $OUTPUT->header();
+        }
+    }
+
+    /**
      * Prints the tab menu for the plugin settings
      *
      * @param string $currenttab The currect tab to be styled as selected

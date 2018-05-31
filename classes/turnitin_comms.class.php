@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  * require_once(__DIR__.'/../sdk/api.class.php');
  */
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 class turnitin_comms {
 
@@ -46,7 +47,7 @@ class turnitin_comms {
         $this->tiisecretkey = is_null($accountshared) ? $config->plagiarism_turnitin_secretkey : $accountshared;
 
         if (empty($this->tiiaccountid) || empty($this->tiiapiurl) || empty($this->tiisecretkey)) {
-            turnitintooltwo_print_error( 'configureerror', 'plagiarism_turnitin' );
+            plagiarism_turnitin_print_error( 'configureerror', 'plagiarism_turnitin' );
         }
 
         $this->diagnostic = $config->plagiarism_turnitin_enablediagnostic;
@@ -103,7 +104,7 @@ class turnitin_comms {
 
         // Offline mode provided by Androgogic.
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
-            turnitintooltwo_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
+            plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
         $api->setTestingConnection($istestingconnection);
         $api->setPerformanceLog(new turnitintooltwo_performancelog());
@@ -149,7 +150,7 @@ class turnitin_comms {
 
         turnitintooltwo_activitylog($errorstr, "API_ERROR");
         if ($toscreen) {
-            turnitintooltwo_print_error($errorstr, null);
+            plagiarism_turnitin_print_error($errorstr, null);
         } else if ($embedded) {
             return $errorstr;
         }

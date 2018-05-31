@@ -248,12 +248,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $optionfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                  (array('cm' => $data->coursemodule, 'name' => $field)));
                     if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
-                        turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 } else {
                     $optionfield->config_hash = $optionfield->cm."_".$optionfield->name;
                     if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
-                        turnitintooltwo_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     }
                 }
             }
@@ -2121,7 +2121,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (!$DB->$method('turnitintooltwo_courses', $turnitincourse)) {
             if ($workflowcontext != "cron") {
-                turnitintooltwo_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                plagiarism_turnitin_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             }
         }
@@ -2973,7 +2973,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             if (!$DB->get_field('plagiarism_turnitin_config', 'id',
                                                  (array('cm' => $cm->id, 'name' => 'submitted')))) {
                 if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
-                    turnitintooltwo_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                    plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 }
             }
 
@@ -3068,4 +3068,42 @@ function plagiarism_turnitin_tempfile(array $filename, $suffix) {
     } while ( !touch($file) );
 
     return $file;
+}
+
+/**
+ * Abstracted version of print_error()
+ *
+ * @param string $input The error string if module = null otherwise the language string called by get_string()
+ * @param string $module The module string
+ * @param string $param The parameter to send to use as the $a optional object in get_string()
+ * @param string $file The file where the error occured
+ * @param string $line The line number where the error occured
+ */
+function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin',
+                                         $link = null, $param = null, $file = __FILE__, $line = __LINE__) {
+    global $CFG;
+
+    // This is to be changed in INT-10691.
+    turnitintooltwo_activitylog($input, "PRINT_ERROR");
+
+    $message = (is_null($module)) ? $input : get_string($input, $module, $param);
+    $linkid = optional_param('id', 0, PARAM_INT);
+
+    if (is_null($link)) {
+        if (substr_count($_SERVER["PHP_SELF"], "assign/view.php") > 0) {
+            $mod = "assign";
+        } else if (substr_count($_SERVER["PHP_SELF"], "forum/view.php") > 0) {
+            $mod = "forum";
+        } else if (substr_count($_SERVER["PHP_SELF"], "workshop/view.php") > 0) {
+            $mod = "workshop";
+        }
+        $link = (!empty($linkid)) ? $CFG->wwwroot.'/'.$mod.'/view.php?id='.$linkid : $CFG->wwwroot;
+    }
+
+    if (basename($file) != "lib.php") {
+        $message .= ' ('.basename($file).' | '.$line.')';
+    }
+
+    print_error($input, 'plagiarism_turnitin', $link, $message);
+    exit();
 }

@@ -112,6 +112,10 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_useerater_desc', null, get_string('turnitinuseerater_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_useerater', 0);
 
+        $mform->addElement('select', 'plagiarism_turnitin_useanon', get_string('turnitinuseanon', 'plagiarism_turnitin'), $ynoptions);
+        $mform->addElement('static', 'plagiarism_turnitin_useanon_desc', null, get_string('turnitinuseanon_desc', 'plagiarism_turnitin'));
+        $mform->setDefault('plagiarism_turnitin_useanon', 0);
+
         $mform->addElement('select', 'plagiarism_turnitin_transmatch', get_string('transmatch', 'plagiarism_turnitin'), $ynoptions);
         $mform->addElement('static', 'plagiarism_turnitin_transmatch_desc', null, get_string('transmatch_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_transmatch', 0);

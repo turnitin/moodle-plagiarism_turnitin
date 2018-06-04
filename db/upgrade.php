@@ -299,7 +299,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018053101) {
-        // Define table file_conversion to be created.
+        // Define table plagiarism_turnitin_courses to be created.
         $table = new xmldb_table('plagiarism_turnitin_courses');
 
         // Adding fields to table plagiarism_turnitin_courses.
@@ -356,6 +356,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Conditionally launch create table for plagiarism_turnitin_peermark.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
+        }
+    }
+
+    if ($oldversion < 2018060401) {
+        // If V2 is installed, copy the anonymous marking setting across to PP.
+        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
+            // Get the settings for the V2 plugin.
+            $data = turnitintooltwo_admin_config();
+            plagiarism_plugin_turnitin::plagiarism_set_config($data, "useanon");
         }
     }
 

@@ -248,3 +248,7 @@ $string['connecttestsuccess'] = 'MoodleはTurnitinに正しく接続しました
 $string['diagnosticoptions_0'] = 'オフ';
 $string['diagnosticoptions_1'] = '標準';
 $string['diagnosticoptions_2'] = 'デバッグ';
+$string['repositoryoptions_4'] = 'すべてのレポートを機関レポジトリに提出';
+$string['turnitinrepositoryoptions_help'] = '<strong>インストラクタの標準リポジトリ オプションを有効にする: </strong><br />講師は、文書の追加先として標準のレポジトリを使う、所属機関専用のレポジトリを使う、またはレポジトリを使わないことを Turnitin で指定できます。<br /><br /><strong>講師の拡大リポジトリオプションを有効にする: </strong><br />このオプションは、講師が課題の設定を表示し、受講生が文書をどこに保管するかを Turnitin で指定できるようにするためのものです。受講生は自分の文書を標準の受講生レポジトリに追加することも、所属機関の専用レポジトリに保管することもできます。<br /><br /><strong>すべてのレポートを標準リポジトリに提出する: </strong><br />すべての文書は、既定で標準の受講者レポジトリに追加されます。<br /><br /><strong>レポートをリポジトリに提出しない: </strong><br />文書が使用されるのは、Turnitin での初回チェック時と講師による評価時のみです。<br /><br /><strong>すべてのレポートを機関レポジトリに提出: </strong><br />Turnitin は、すべてのレポートを所属機関のレポートレポジトリ内に保管するように指定されています。同様に、提出された文書のチェックは、所属機関内の別の講師によってのみ行われます。';
+$string['turnitinuseanon'] = '匿名コメント記入（マーキング）を使用';
+$string['turnitinuseanon_desc'] = '提出物評価時に匿名コメントの記入（マーキング）を許可するかどうかを設定してください。<br /><i>（このオプションは、アカウントで匿名コメントの記入を設定している方にのみ利用可能です）</i>';

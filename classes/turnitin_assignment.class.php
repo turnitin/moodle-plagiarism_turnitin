@@ -22,9 +22,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/turnitin_comms.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_user.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/turnitin_submission.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.class.php');
 
 class turnitin_assignment {
 

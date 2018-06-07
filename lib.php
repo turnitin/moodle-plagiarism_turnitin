@@ -29,6 +29,7 @@ define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
 define('PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH', 180);
+define('PLAGIARISM_TURNITIN_COURSE_TITLE_LIMIT', 300);
 
 // Admin Repository constants.
 define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD', 0);
@@ -595,7 +596,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Get Moodle and Turnitin Course data
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        $coursedata = turnitin_assignment::get_course_data($courseid, 'PP', $workflowcontext);
+        $coursedata = turnitin_assignment::get_course_data($courseid, $workflowcontext);
 
         // Get add from querystring to work out module type.
         $add = optional_param('add', '', PARAM_TEXT);
@@ -1593,7 +1594,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $ownerid = $USER->id;
 
         $turnitinassignment = new turnitin_assignment(0);
-        $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $ownerid, "PP", $workflowcontext);
+        $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $ownerid, $workflowcontext);
 
         // Join all admins to the course in Turnitin.
         $admins = explode(",", $CFG->siteadmins);
@@ -1854,7 +1855,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return $return;
         } else {
             $turnitinassignment = new turnitin_assignment(0);
-            $turnitinassignid = $turnitinassignment->create_tii_assignment($assignment, 0, 0, 'plagiarism_plugin', $workflowcontext);
+            $turnitinassignid = $turnitinassignment->create_tii_assignment($assignment, $workflowcontext);
 
             if (!$turnitinassignid) {
                 $return = array('success' => false, 'tiiassignmentid' => '', 'errorcode' => 5);
@@ -2122,7 +2123,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $turnitinassignment = new turnitin_assignment(0);
-        $turnitinassignment->edit_tii_course($coursedata, "PP");
+        $turnitinassignment->edit_tii_course($coursedata);
 
         $coursedata->turnitin_cid = $turnitincid;
         $coursedata->turnitin_ctl = $turnitincourse->turnitin_ctl;

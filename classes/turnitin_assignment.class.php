@@ -39,29 +39,25 @@ class turnitin_assignment {
      * Find the course data, including Turnitin id
      *
      * @param int $courseid The ID of the course to get the data for
-     * @param string $coursetype whether the course is TT (Turnitintool) or PP (Plagiarism Plugin)
      * @param string $workflowcontext whether we are in a cron context (from PP) or using the site as normal.
      * @return object The course object with the Turnitin Class data if it's been created
      */
-    public static function get_course_data($courseid, $coursetype = "TT", $workflowcontext = "site") {
+    public static function get_course_data($courseid, $workflowcontext = "site") {
         global $DB;
 
         if (!$course = $DB->get_record("course", array("id" => $courseid))) {
             if ($workflowcontext != "cron") {
-                turnitintooltwo_print_error('coursegeterror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                plagiarism_turnitin_print_error('coursegeterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit;
             }
         }
 
         $course->turnitin_cid = 0;
         $course->turnitin_ctl = "";
-        $course->course_type = $coursetype;
         $course->tii_rel_id = '';
-        if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
-            array("courseid" => $courseid, "course_type" => $coursetype))) {
+        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid))) {
             $course->turnitin_cid = $turnitincourse->turnitin_cid;
             $course->turnitin_ctl = $turnitincourse->turnitin_ctl;
-            $course->course_type = $turnitincourse->course_type;
             $course->ownerid = $turnitincourse->ownerid;
             $course->tii_rel_id = $turnitincourse->id;
         }
@@ -75,17 +71,17 @@ class turnitin_assignment {
      * @global type $DB
      * @param object $course The course object
      * @param int $ownerid The owner of the course
-     * @param string $coursetype whether the course is TT (Turnitintool) or PP (Plagiarism Plugin)
+     * @param string $workflowcontext The workflow being used to call this - site or cron.
      * @return object the turnitin course if created
      */
-    public function create_tii_course($course, $ownerid, $coursetype = "TT", $workflowcontext = "site") {
+    public function create_tii_course($course, $ownerid, $workflowcontext = "site") {
         global $DB;
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $class = new TiiClass();
-        $tiititle = $this->truncate_title( $course->fullname, TURNITIN_COURSE_TITLE_LIMIT, $coursetype );
+        $tiititle = $this->truncate_title( $course->fullname, PLAGIARISM_TURNITIN_COURSE_TITLE_LIMIT );
         $class->setTitle( $tiititle );
 
         try {
@@ -96,8 +92,7 @@ class turnitin_assignment {
             $turnitincourse->courseid = $course->id;
             $turnitincourse->ownerid = $ownerid;
             $turnitincourse->turnitin_cid = $newclass->getClassId();
-            $turnitincourse->turnitin_ctl = $course->fullname . " (Moodle ".$coursetype.")";
-            $turnitincourse->course_type = $coursetype;
+            $turnitincourse->turnitin_ctl = $course->fullname . " (Moodle PP)";
 
             if (empty($course->tii_rel_id)) {
                 $method = "insert_record";
@@ -106,8 +101,8 @@ class turnitin_assignment {
                 $turnitincourse->id = $course->tii_rel_id;
             }
 
-            if (!$insertid = $DB->$method('turnitintooltwo_courses', $turnitincourse)) {
-                turnitintooltwo_print_error('classupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+            if (!$insertid = $DB->$method('plagiarism_turnitin_courses', $turnitincourse)) {
+                plagiarism_turnitin_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             }
 
@@ -116,13 +111,13 @@ class turnitin_assignment {
             }
 
             turnitintooltwo_activitylog("Class created - ".$turnitincourse->courseid." | ".$turnitincourse->turnitin_cid.
-                " | ".$course->fullname . " (Moodle ".$coursetype.")" , "REQUEST");
+                " | ".$course->fullname . " (Moodle PP)" , "REQUEST");
 
             return $turnitincourse;
         } catch (Exception $e) {
             $toscreen = true;
             if ($workflowcontext == "cron") {
-                mtrace(get_string('pp_classcreationerror', 'turnitintooltwo'));
+                mtrace(get_string('pp_classcreationerror', 'plagiarism_turnitin'));
                 $toscreen = false;
             }
             $turnitincomms->handle_exceptions($e, 'classcreationerror', $toscreen);
@@ -134,55 +129,49 @@ class turnitin_assignment {
      *
      * @global type $DB
      * @param var $course The course object
-     * @param string $coursetype whether the course is TT (Turnitintool) or PP (Plagiarism Plugin)
      */
-    public function edit_tii_course($course, $coursetype = "TT") {
+    public function edit_tii_course($course) {
         global $DB;
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $class = new TiiClass();
         $class->setClassId($course->turnitin_cid);
-        $title = $this->truncate_title( $course->fullname, TURNITIN_COURSE_TITLE_LIMIT, $coursetype );
+        $title = $this->truncate_title( $course->fullname, PLAGIARISM_TURNITIN_COURSE_TITLE_LIMIT );
         $class->setTitle( $title );
 
         try {
             $turnitincall->updateClass($class);
 
-            $turnitincourse = new stdClass();
+            $turnitincourse = $DB->get_record("plagiarism_turnitin_courses", array("courseid" => $course->id));
 
-            $turnitintooltwocourse = $DB->get_record("turnitintooltwo_courses",
-                array("courseid" => $course->id, "course_type" => $coursetype));
-            $turnitincourse->id = $turnitintooltwocourse->id;
-            $turnitincourse->courseid = $course->id;
-            $turnitincourse->ownerid = $turnitintooltwocourse->ownerid;
-            $turnitincourse->turnitin_cid = $course->turnitin_cid;
-            $turnitincourse->turnitin_ctl = $course->fullname . " (Moodle ".$coursetype.")";
-            $turnitincourse->course_type = $coursetype;
+            $update = new stdClass();
+            $update->id = $turnitincourse->id;
+            $update->courseid = $course->id;
+            $update->ownerid = $turnitincourse->ownerid;
+            $update->turnitin_cid = $course->turnitin_cid;
+            $update->turnitin_ctl = $course->fullname . " (Moodle PP)";
 
-            if (!$insertid = $DB->update_record('turnitintooltwo_courses', $turnitincourse) && $coursetype != "PP") {
-                turnitintooltwo_print_error('classupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+            if (!$insertid = $DB->update_record('plagiarism_turnitin_courses', $update)) {
+                plagiarism_turnitin_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             } else {
-                turnitintooltwo_activitylog("Class edited - ".$turnitincourse->turnitin_ctl.
-                    " (".$turnitincourse->id.")", "REQUEST");
+                turnitintooltwo_activitylog("Class edited - ".$update->turnitin_ctl." (".$update->id.")", "REQUEST");
             }
         } catch (Exception $e) {
-            $toscreen = ($coursetype == "PP") ? false : true;
-            $turnitincomms->handle_exceptions($e, 'classupdateerror', $toscreen);
+            $turnitincomms->handle_exceptions($e, 'classupdateerror', false);
         }
     }
 
     /**
-     * Truncate the course and assignment titles to match Turnitin requirements and add a coursetype suffix on the end.
+     * Truncate the course and assignment titles to match Turnitin requirements and add a suffix on the end.
      *
      * @param string $title The course id on Turnitin
      * @param int $limit The course title on Turnitin
-     * @param string $coursetype whether the course is TT (Turnitintooltwo) or PP (Plagiarism Plugin)
      */
-    public static function truncate_title($title, $limit, $coursetype) {
-        $suffix = " (Moodle " . $coursetype . ")";
+    public static function truncate_title($title, $limit) {
+        $suffix = " (Moodle PP)";
         $limit = $limit - strlen($suffix);
         $truncatedtitle = "";
 
@@ -199,36 +188,26 @@ class turnitin_assignment {
     /**
      * Create Assignment on Turnitin and return id, delete the instance if it fails
      *
-     * @global type $DB
      * @param object $assignment add assignment instance
-     * @param var $toolid turnitintooltwo id
+     * @param string $workflowcontext The workflow being used to call this - site or cron.
      */
-    public static function create_tii_assignment($assignment, $toolid, $partnumber,
-                                                 $usecontext = "turnitintooltwo", $workflowcontext = "site") {
-        global $DB;
+    public static function create_tii_assignment($assignment, $workflowcontext = "site") {
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
             $response = $turnitincall->createAssignment($assignment);
             $newassignment = $response->getAssignment();
 
-            turnitintooltwo_activitylog("Part created as Turnitin Assignment (".$newassignment->getAssignmentId().
-                ") - Tool Id: (".$toolid.") - Part num: (".$partnumber.")", "REQUEST");
-
-            if ($usecontext == "turnitintooltwo") {
-                $_SESSION["assignment_updated"][$toolid] = time();
-            }
+            turnitintooltwo_activitylog("Assignment created as Turnitin Assignment (".$newassignment->getAssignmentId().")", "REQUEST");
 
             return $newassignment->getAssignmentId();
         } catch (Exception $e) {
-            if ($partnumber == 1 && $usecontext == "turnitintooltwo") {
-                $DB->delete_records('turnitintooltwo', array('id' => $toolid));
-            }
             $toscreen = true;
+
             if ($workflowcontext == "cron") {
-                mtrace(get_string('ppassignmentcreateerror', 'turnitintooltwo'));
+                mtrace(get_string('ppassignmentcreateerror', 'plagiarism_turnitin'));
                 $toscreen = false;
             }
             $turnitincomms->handle_exceptions($e, 'createassignmenterror', $toscreen);
@@ -239,10 +218,11 @@ class turnitin_assignment {
      * Edit Assignment on Turnitin
      *
      * @param object $assignment edit assignment instance
+     * @param string $workflowcontext The workflow being used to call this - site or cron.
      */
     public function edit_tii_assignment($assignment, $workflowcontext = "site") {
         // Initialise Comms Object.
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -250,7 +230,7 @@ class turnitin_assignment {
 
             $_SESSION["assignment_updated"][$assignment->getAssignmentId()] = time();
 
-            turnitintooltwo_activitylog("Turnitin Assignment part updated - id: ".$assignment->getAssignmentId(), "REQUEST");
+            turnitintooltwo_activitylog("Turnitin Assignment updated - id: ".$assignment->getAssignmentId(), "REQUEST");
 
             return array('success' => true, 'tiiassignmentid' => $assignment->getAssignmentId());
 
@@ -263,7 +243,7 @@ class turnitin_assignment {
                 $error = new stdClass();
                 $error->title = $assignment->getTitle();
                 $error->assignmentid = $assignment->getAssignmentId();
-                $errorstr = get_string('ppassignmentediterror', 'turnitintooltwo', $error);
+                $errorstr = get_string('ppassignmentediterror', 'plagiarism_turnitin', $error);
 
                 mtrace($errorstr);
                 $toscreen = false;
@@ -273,10 +253,9 @@ class turnitin_assignment {
 
             // Return error string as we use this in the plagiarism plugin.
             if ($workflowcontext == "cron") {
-                return array('success' => false, 'error' => $errorstr,
-                    'tiiassignmentid' => $assignment->getAssignmentId());
+                return array('success' => false, 'error' => $errorstr, 'tiiassignmentid' => $assignment->getAssignmentId());
             } else {
-                return array('success' => false, 'error' => get_string('editassignmenterror', 'turnitintooltwo'));
+                return array('success' => false, 'error' => get_string('editassignmenterror', 'plagiarism_turnitin'));
             }
         }
     }
@@ -290,7 +269,7 @@ class turnitin_assignment {
      */
     public function get_peermark_assignments($tiiassignid) {
         global $DB;
-        if ($peermarks = $DB->get_records("turnitintooltwo_peermarks", array("parent_tii_assign_id" => $tiiassignid))) {
+        if ($peermarks = $DB->get_records("plagiarism_turnitin_peermark", array("parent_tii_assign_id" => $tiiassignid))) {
             return $peermarks;
         } else {
             return array();

@@ -86,9 +86,9 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $course->id = $DB->insert_record('plagiarism_turnitin_courses', $course);
 
         // Stub a fake tii comms.
-        $faketiicomms = $this->getMockBuilder(turnitin_comms::class)->
-            disableOriginalConstructor()->
-            getMock();
+        $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
+                             ->disableOriginalConstructor()
+                             ->getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())

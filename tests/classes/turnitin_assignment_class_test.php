@@ -85,24 +85,24 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // Insert the course to the plagiarism turnitin courses table.
         $course->id = $DB->insert_record('plagiarism_turnitin_courses', $course);
 
-        // fake/stub a fake tii comms
+        // Stub a fake tii comms.
         $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        ->disableOriginalConstructor()
+        ->getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())
-            ->method('initialise_api')
-            ->with("");
+        ->method('initialise_api')
+        ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_create_class', 'api_get_class', 'api_get_class_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
-            ->getMock();
+        ->setMethods(array('api_create_class', 'api_get_class', 'api_get_class_id'))
+        ->setConstructorArgs(array(0, $faketiicomms))
+        ->getMock();
 
         $mock->expects($this->any())
-            ->method('api_get_class_id')
-            ->willReturn(1);
+        ->method('api_get_class_id')
+        ->willReturn(1);
 
         $response = $mock->create_tii_course($course, 1);
 
@@ -139,20 +139,20 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // Insert the course to the plagiarism turnitin courses table.
         $course->id = $DB->insert_record('plagiarism_turnitin_courses', $course);
 
-        // fake/stub a fake tii comms
+        // Stub a fake tii comms.
         $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        ->disableOriginalConstructor()
+        ->getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())
-            ->method('initialise_api')
-            ->with("");
+        ->method('initialise_api')
+        ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_update_class', 'api_set_class_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
-            ->getMock();
+        ->setMethods(array('api_update_class', 'api_set_class_id'))
+        ->setConstructorArgs(array(0, $faketiicomms))
+        ->getMock();
 
         // Edit a PP course.
         $editcourse = new stdClass();
@@ -199,24 +199,24 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $assignment = new stdClass();
         $assignment->id = 1;
 
-        // fake/stub a fake tii comms
+        // Stub a fake tii comms.
         $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        ->disableOriginalConstructor()
+        ->getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())
-            ->method('initialise_api')
-            ->with("");
+        ->method('initialise_api')
+        ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
-            ->getMock();
+        ->setMethods(array('api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'))
+        ->setConstructorArgs(array(0, $faketiicomms))
+        ->getMock();
 
         $mock->expects($this->any())
-            ->method('api_get_assignment_id')
-            ->willReturn(1);
+        ->method('api_get_assignment_id')
+        ->willReturn(1);
 
         $response = $mock->create_tii_assignment($assignment);
 
@@ -232,33 +232,33 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $assignment->id = 1;
         $assignment->title = "This is a test assignment.";
 
-        // fake/stub a fake tii comms
+        // Stub a fake tii comms.
         $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        ->disableOriginalConstructor()
+        ->getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())
-            ->method('initialise_api')
-            ->with("");
+        ->method('initialise_api')
+        ->with("");
 
         // Mock handle_exceptions method.
         $faketiicomms->expects($this->any())
-            ->method('handle_exceptions')
-            ->withAnyParameters();
+        ->method('handle_exceptions')
+        ->withAnyParameters();
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_update_assignment', 'api_get_assignment_id', 'api_get_title'))
-            ->setConstructorArgs(array(0, $faketiicomms))
-            ->getMock();
+        ->setMethods(array('api_update_assignment', 'api_get_assignment_id', 'api_get_title'))
+        ->setConstructorArgs(array(0, $faketiicomms))
+        ->getMock();
 
         $mock->expects($this->any())
-            ->method('api_get_assignment_id')
-            ->willReturn(1);
+        ->method('api_get_assignment_id')
+        ->willReturn(1);
 
         $mock->expects($this->any())
-            ->method('api_get_title')
-            ->willReturn($assignment->title);
+        ->method('api_get_title')
+        ->willReturn($assignment->title);
 
         $response = $mock->edit_tii_assignment($assignment);
 
@@ -268,8 +268,8 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
 
         // Test the exception handling for default workflow.
         $mock->expects($this->any())
-            ->method('api_update_assignment')
-            ->will($this->throwException(new Exception()));
+        ->method('api_update_assignment')
+        ->will($this->throwException(new Exception()));
 
         $response = $mock->edit_tii_assignment($assignment);
         $this->assertEquals(false, $response["success"]);

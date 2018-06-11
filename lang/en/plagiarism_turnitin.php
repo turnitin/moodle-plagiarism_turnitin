@@ -283,3 +283,7 @@ $string['turnitinrepositoryoptions_help'] = '<strong>Enable instructor standard 
 
 $string['turnitinuseanon'] = 'Use Anonymous Marking';
 $string['turnitinuseanon_desc'] = 'Choose whether to allow Anonymous Marking when grading submissions.<br /><i>(This is only available to those that have Anonymous Marking configured for their account)</i>';
+
+$string['createassignmenterror'] = 'There was an error trying to create the assignment in Turnitin';
+$string['editassignmenterror'] = 'There was an error trying to edit the assignment in Turnitin';
+$string['ppassignmentediterror'] = 'Module {$a->title} (TII ID: {$a->assignmentid}) could not be edited on Turnitin, please consult your API logs for further information';

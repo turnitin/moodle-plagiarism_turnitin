@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
 /**
- * Tests for API comms class
+ * Tests for assign
  *
  * @package turnitin
  */

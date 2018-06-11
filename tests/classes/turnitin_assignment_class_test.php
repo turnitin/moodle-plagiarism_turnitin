@@ -86,9 +86,9 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $course->id = $DB->insert_record('plagiarism_turnitin_courses', $course);
 
         // Stub a fake tii comms.
-        $faketiicomms = $this->getMockBuilder(turnitin_comms::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+        $faketiicomms = $this->getMockBuilder(turnitin_comms::class)->
+            disableOriginalConstructor()->
+            getMock();
 
         // Mock initialise_api method.
         $faketiicomms->expects($this->any())
@@ -164,7 +164,7 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // As the method does not return anything we will have to check the database before assertion.
         $mock->edit_tii_course($editcourse);
 
-        $response_course = $DB->get_record("plagiarism_turnitin_courses", array("id" => $course->id));
+        $responsecourse = $DB->get_record("plagiarism_turnitin_courses", array("id" => $course->id));
 
         $expected = new stdClass();
         $expected->id = $course->id;
@@ -174,7 +174,7 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $expected->turnitin_cid = 10;
 
         // We should expect that the original course was updated with the values we passed in.
-        $this->assertEquals($expected, $response_course);
+        $this->assertEquals($expected, $responsecourse);
     }
 
     public function test_truncate_title() {

@@ -286,3 +286,4 @@ $string['turnitinuseanon_desc'] = 'Choose whether to allow Anonymous Marking whe
 $string['createassignmenterror'] = 'There was an error trying to create the assignment in Turnitin';
 $string['editassignmenterror'] = 'There was an error trying to edit the assignment in Turnitin';
 $string['ppassignmentediterror'] = 'Module {$a->title} (TII ID: {$a->assignmentid}) could not be edited on Turnitin, please consult your API logs for further information';
+$string['pp_classcreationerror'] = 'This class could not be created on Turnitin, please consult your API logs for further information';

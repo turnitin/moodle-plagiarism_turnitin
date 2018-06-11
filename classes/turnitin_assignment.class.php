@@ -25,7 +25,6 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_user.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_api.class.php');
 
 class turnitin_assignment {
 
@@ -304,21 +303,21 @@ class turnitin_assignment {
     /**
      * Wrapper for Turnitin API call getClass().
      *
-     * @param $response
+     * @param $object
      * @return mixed
      */
-    public function api_get_class($response) {
-        return $response->getClass();
+    public function api_get_class($object) {
+        return $object->getClass();
     }
 
     /**
      * Wrapper for Turnitin API call getClassId().
      *
-     * @param $newclass
+     * @param $class
      * @return mixed
      */
-    public function api_get_class_id($newclass) {
-        return $newclass->getClassId();
+    public function api_get_class_id($class) {
+        return $class->getClassId();
     }
 
     /**
@@ -357,21 +356,21 @@ class turnitin_assignment {
     /**
      * Wrapper for Turnitin API call getAssignment().
      *
-     * @param $response
+     * @param $object
      * @return mixed
      */
-    public function api_get_assignment($response) {
-        return $response->getAssignment();
+    public function api_get_assignment($object) {
+        return $object->getAssignment();
     }
 
     /**
      * Wrapper for Turnitin API call getAssignmentId().
      *
-     * @param $newassignment
+     * @param $assignment
      * @return mixed
      */
-    public function api_get_assignment_id($newassignment) {
-        return $newassignment->getAssignmentId();
+    public function api_get_assignment_id($assignment) {
+        return $assignment->getAssignmentId();
     }
 
     /**

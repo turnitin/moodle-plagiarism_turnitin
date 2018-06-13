@@ -13,13 +13,12 @@ Feature:  Installation succeeds
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for assign | 1 |
+    And I press "Save changes"
     And I navigate to "Turnitin Assignment 2" node in "Site administration > Plugins > Activity modules"
-    And I follow "Edit password"
+    And I configure Turnitin URL
+    And I configure Turnitin credentials
     And I set the following fields to these values:
-      | Turnitin Shared Key    | testing1                     |
-      | Turnitin Account ID    | xxxxx                        |
-      | Turnitin API URL       | https://sandbox.turnitin.com |
-      | Enable Diagnostic Mode | Standard                     |
+      | Enable Diagnostic Mode | Standard |
     And I press "Save changes"
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |
@@ -28,7 +27,7 @@ Feature:  Installation succeeds
   @javascript
   Scenario: Test the plugin connectivity
     Given I navigate to "Turnitin Assignment 2" node in "Site administration > Plugins > Activity modules"
+    And I configure Turnitin URL
     And I click on "#test_link" "css_element"
     And I wait until "#test_result" "css_element" exists
     Then I should see "Moodle has successfully connected to Turnitin."
-

@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_installed
+@plugin @plagiarism @plagiarism_turnitin @plagairism_turnitin_smoke @plagiarism_turnitin_installed
 Feature:  Installation succeeds
   In order to use this plugin
   As a user

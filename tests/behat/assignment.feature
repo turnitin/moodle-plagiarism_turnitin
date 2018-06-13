@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagairism_turnitin_smoke @plagiarism_turnitin_assignment
 Feature: Plagiarism plugin works with a Moodle Assignment
   In order to allow students to send assignment submissions to Turnitin
   As a user
@@ -41,7 +41,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     Then I should see "Test assignment name"
 
   @javascript
-  Scenario: Student accepts eula
+  Scenario: Student accepts eula, submits and instructor opens the viewer
     Given I log out
     # Student accepts eula.
     And I log in as "student1"
@@ -53,6 +53,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I switch to iframe with locator ".cboxIframe"
     And I wait until the page is ready
     And I click on ".agree-button" "css_element"
+    And I wait until the page is ready
     Then I should see "Test assignment name"
     # Student submits.
     And I am on "Course 1" course homepage
@@ -85,7 +86,10 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
-    And I wait until ".originalityreport_score" "css_element" exists
+    And I wait until "[alt='GradeMark']" "css_element" exists
     And I click on "[alt='GradeMark']" "css_element"
-
-    And I wait "3000" seconds
+    And I switch to "turnitin_viewer" window
+    And I wait until the page is ready
+    And I click on ".agree-button" "css_element"
+    And I wait until the page is ready
+    Then I should see "testfile.txt"

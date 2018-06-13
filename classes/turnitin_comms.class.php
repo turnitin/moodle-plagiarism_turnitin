@@ -119,7 +119,7 @@ class turnitin_comms {
      * @param string $tterrorstr
      * @param boolean $toscreen
      */
-    public static function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
+    public function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
         $errorstr = "";
         if (!empty($tterrorstr)) {
             $errorstr = get_string($tterrorstr, 'plagiarism_turnitin')."<br/><br/>";

@@ -29,6 +29,7 @@ define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
 define('PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH', 180);
+define('PLAGIARISM_TURNITIN_COURSE_TITLE_LIMIT', 300);
 
 // Admin Repository constants.
 define('PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD', 0);
@@ -78,6 +79,7 @@ require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 // Include plugin classes.
+require_once(__DIR__.'/classes/turnitin_assignment.class.php');
 require_once(__DIR__.'/classes/turnitin_view.class.php');
 require_once(__DIR__.'/classes/turnitin_class.class.php');
 require_once(__DIR__.'/classes/turnitin_submission.class.php');
@@ -594,7 +596,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Get Moodle and Turnitin Course data
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        $coursedata = turnitintooltwo_assignment::get_course_data($courseid, 'PP', $workflowcontext);
+        $coursedata = turnitin_assignment::get_course_data($courseid, $workflowcontext);
 
         // Get add from querystring to work out module type.
         $add = optional_param('add', '', PARAM_TEXT);
@@ -1028,8 +1030,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             if (!empty($plagiarismsettings['turnitin_assignid'])) {
                                 if ($_SESSION["updated_pm"][$cm->id] <= (time() - (60 * 2))) {
                                     $this->refresh_peermark_assignments($cm, $plagiarismsettings['turnitin_assignid']);
-                                    $turnitintooltwoassignment = new turnitintooltwo_assignment($cm->instance, '', 'PP');
-                                    $_SESSION["peermark_assignments"][$cm->id] = $turnitintooltwoassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
+                                    $turnitinassignment = new turnitin_assignment($cm->instance);
+                                    $_SESSION["peermark_assignments"][$cm->id] = $turnitinassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
                                     $_SESSION["updated_pm"][$cm->id] = time();
                                 }
 
@@ -1591,8 +1593,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $ownerid = $USER->id;
 
-        $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-        $turnitincourse = $turnitintooltwoassignment->create_tii_course($coursedata, $ownerid, "PP", $workflowcontext);
+        $turnitinassignment = new turnitin_assignment(0);
+        $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $ownerid, $workflowcontext);
 
         // Join all admins to the course in Turnitin.
         $admins = explode(",", $CFG->siteadmins);
@@ -1845,15 +1847,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config',
                                     array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value')) {
             $assignment->setAssignmentId($tiiassignment->value);
-            $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
+            $turnitinassignment = new turnitin_assignment(0);
 
-            $return = $turnitintooltwoassignment->edit_tii_assignment($assignment, $workflowcontext);
+            $return = $turnitinassignment->edit_tii_assignment($assignment, $workflowcontext);
             $return['errorcode'] = ($return['success']) ? 0 : 6;
 
             return $return;
         } else {
-            $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-            $turnitinassignid = $turnitintooltwoassignment->create_tii_assignment($assignment, 0, 0, 'plagiarism_plugin', $workflowcontext);
+            $turnitinassignment = new turnitin_assignment(0);
+            $turnitinassignid = $turnitinassignment->create_tii_assignment($assignment, $workflowcontext);
 
             if (!$turnitinassignid) {
                 $return = array('success' => false, 'tiiassignmentid' => '', 'errorcode' => 5);
@@ -2120,8 +2122,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        $turnitintooltwoassignment = new turnitintooltwo_assignment(0, '', 'PP');
-        $turnitintooltwoassignment->edit_tii_course($coursedata, "PP");
+        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment->edit_tii_course($coursedata);
 
         $coursedata->turnitin_cid = $turnitincid;
         $coursedata->turnitin_ctl = $turnitincourse->turnitin_ctl;
@@ -3100,4 +3102,11 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
 
     print_error($input, 'plagiarism_turnitin', $link, $message);
     exit();
+}
+
+/**
+ * Override Moodle's mtrace function for methods shared with tasks.
+ */
+function plagiarism_turnitin_mtrace($string, $eol) {
+    return true;
 }

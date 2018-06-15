@@ -93,12 +93,13 @@ class turnitin_assign {
             if (($attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE) ||
                 ($attemptreopened == "submitted")) {
                 // If this is a text or file submission, or we can only submit one file.
-                if ($submissiontype == 'text_content' || $submissiontype == 'file' || $maxfilesubmissions == 1) {
+                if ($submissiontype == 'text_content' || ($submissiontype == 'file' && $maxfilesubmissions == 1)) {
                     // Treat this as a resubmission.
                     return true;
                 }
             }
         }
+        return false;
     }
 
     public function get_onlinetext($userid, $cm) {

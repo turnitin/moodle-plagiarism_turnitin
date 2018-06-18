@@ -82,9 +82,6 @@ class turnitin_assign {
             $maxfilesubmissions = $result->value;
         }
 
-        if ($CFG->branch <= 32) {
-            require_once($CFG->dirroot.'/mod/assign/lib.php');
-        }
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
         // If resubmissions are enabled in a Turnitin sense.

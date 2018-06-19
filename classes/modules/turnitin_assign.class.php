@@ -86,9 +86,8 @@ class turnitin_assign {
 
         // If resubmissions are enabled in a Turnitin sense.
         if ($reportgenspeed > 0) {
-            // If the attempt reopened methos is none, or an attempt has not been reopened/has previous submission.
-            if (($attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE) ||
-                ($attemptreopened == "submitted")) {
+            // If the attempt reopened method is none, or an attempt has not been reopened/has previous submission.
+            if ($attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE || $attemptreopened == 'submitted') {
                 // If this is a text or file submission, or we can only submit one file.
                 if ($submissiontype == 'text_content' || ($submissiontype == 'file' && $maxfilesubmissions == 1)) {
                     // Treat this as a resubmission.

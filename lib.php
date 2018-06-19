@@ -2147,7 +2147,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $_SESSION["moodlesubmissionstatus"] = null;
             }
 
-            if (($eventtype == "content_uploaded") || ($eventtype == "file_uploaded")) {
+            if ($eventtype == "content_uploaded" || $eventtype == "file_uploaded") {
                 $moodlesubmission = $DB->get_record('assign_submission',
                     array('assignment' => $cm->instance,
                         'userid' => $author,
@@ -2163,7 +2163,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $_SESSION["moodlesubmissionstatus"]
             );
 
-            if (($eventtype != "content_uploaded") && ($eventtype != "file_uploaded")) {
+            if ($eventtype != "content_uploaded" && $eventtype != "file_uploaded") {
                 unset($_SESSION["moodlesubmissionstatus"]);
             }
         }

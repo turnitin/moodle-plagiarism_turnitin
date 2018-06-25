@@ -368,6 +368,38 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2018062501) {
+        // Define table plagiarism_turnitin_users to be created.
+        $table = new xmldb_table('plagiarism_turnitin_users');
+
+        // Adding fields to table plagiarism_turnitin_users.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'userid');
+        $table->add_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'turnitin_uid');
+        $table->add_field('instructor_rubrics', XMLDB_TYPE_TEXT, null, null, false, null, null, 'turnitin_utp');
+        $table->add_field('user_agreement_accepted', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'instructor_rubrics');
+
+        // Adding keys and indexes to table plagiarism_turnitin_users.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+
+        // Conditionally launch create table for plagiarism_turnitin_users.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // If V2 is installed, copy the users across from V2.
+        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
+            $ppusers = $DB->get_records('turnitintooltwo_users', null, 'id ASC', 'userid, turnitin_uid, turnitin_utp, instructor_rubrics, user_agreement_accepted');
+            try {
+                $DB->insert_records('plagiarism_turnitin_users', $ppusers);
+            } catch (Exception $e) {
+                turnitintooltwo_activitylog('Unable to copy users table during version upgrade because they already exist.', 'PP_UPGRADE');
+            }
+        }
+    }
+
     return $result;
 }
 

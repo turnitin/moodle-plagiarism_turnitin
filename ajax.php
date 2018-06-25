@@ -215,8 +215,8 @@ switch ($action) {
 
         $message = optional_param('message', '', PARAM_ALPHAEXT);
 
-        // Get the id from the turnitintooltwo_users table so we can update.
-        $turnitinuser = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
+        // Get the id from the plagiarism_turnitin_users table so we can update.
+        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $USER->id));
 
         // Build user object for update.
         $eulauser = new stdClass();
@@ -231,7 +231,7 @@ switch ($action) {
         }
 
         // Update the user using the above object.
-        $DB->update_record('turnitintooltwo_users', $eulauser, $bulk = false);
+        $DB->update_record('plagiarism_turnitin_users', $eulauser, $bulk = false);
         break;
 
     case "resubmit_event":

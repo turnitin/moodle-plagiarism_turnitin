@@ -87,7 +87,7 @@ class turnitin_user {
         $this->email = trim(html_entity_decode($user->email));
         $this->username = $user->username;
 
-        $turnitintooltwouser = $DB->get_record('turnitintooltwo_users', array('userid' => $this->id));
+        $turnitintooltwouser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $this->id));
 
         $this->instructorrubrics = array();
         if (!empty($turnitintooltwouser->instructor_rubrics)) {
@@ -152,7 +152,7 @@ class turnitin_user {
     }
 
     /**
-     * A function to return a Turnitin User ID if one exists in turnitintooltwo_users
+     * A function to return a Turnitin User ID if one exists in plagiarism_turnitin_users
      * or if none found, it will try and find user in Turnitin. If not found it
      * will create them in Turnitin if necessary
      *
@@ -161,7 +161,7 @@ class turnitin_user {
      */
     private function get_tii_user_id() {
         global $DB;
-        $tiiuser = $DB->get_record("turnitintooltwo_users", array("userid" => $this->id), "turnitin_uid, user_agreement_accepted");
+        $tiiuser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id), "turnitin_uid, user_agreement_accepted");
         if (!$tiiuser) {
             $this->tiiuserid = 0;
             $this->useragreementaccepted = 0;
@@ -311,9 +311,9 @@ class turnitin_user {
 
         // Check if the deleted flag has been set. if yes delete the TII record rather than updating it.
         if ($DB->get_record("user", array('id' => $this->id, 'deleted' => 1), "deleted")) {
-            $DB->delete_records('turnitintooltwo_users', array('userid' => $this->id));
+            $DB->delete_records('plagiarism_turnitin_users', array('userid' => $this->id));
         } else {
-            $DB->update_record('turnitintooltwo_users', $tiiuser);
+            $DB->update_record('plagiarism_turnitin_users', $tiiuser);
         }
 
         turnitintooltwo_activitylog("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
@@ -336,16 +336,16 @@ class turnitin_user {
             $user->turnitin_utp = 2;
         }
 
-        if ($turnitintooltwouser = $DB->get_record("turnitintooltwo_users", array("userid" => $this->id))) {
+        if ($turnitintooltwouser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id))) {
             $user->id = $turnitintooltwouser->id;
             $user->turnitin_utp = $turnitintooltwouser->turnitin_utp;
-            if ((!$DB->update_record('turnitintooltwo_users', $user))) {
+            if ((!$DB->update_record('plagiarism_turnitin_users', $user))) {
                 if ($this->workflowcontext != "cron") {
                     turnitintooltwo_print_error('userupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
                     exit();
                 }
             }
-        } else if (!$DB->insert_record('turnitintooltwo_users', $user)) {
+        } else if (!$DB->insert_record('plagiarism_turnitin_users', $user)) {
             if ($this->workflowcontext != "cron") {
                 turnitintooltwo_print_error('userupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
                 exit();
@@ -440,13 +440,13 @@ class turnitin_user {
             $readuser = $response->getUser();
 
             if ($readuser->getAcceptedUserAgreement()) {
-                $turnitintooltwouser = $DB->get_record('turnitintooltwo_users', array('userid' => $this->id));
+                $turnitintooltwouser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $this->id));
 
                 $tiiuserinfo = new stdClass();
                 $tiiuserinfo->id = $turnitintooltwouser->id;
                 $tiiuserinfo->user_agreement_accepted = 1;
 
-                $DB->update_record('turnitintooltwo_users', $tiiuserinfo);
+                $DB->update_record('plagiarism_turnitin_users', $tiiuserinfo);
                 return true;
             } else {
                 return false;

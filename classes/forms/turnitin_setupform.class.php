@@ -144,9 +144,9 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('header', 'plagiarism_privacy', get_string('studentdataprivacy', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_privacy');
 
-        if ($DB->count_records('turnitintooltwo_users') > 0 AND isset($config->plagiarism_turnitin_enablepseudo)) {
+        if ($DB->count_records('plagiarism_turnitin_users') > 0 AND isset($config->plagiarism_turnitin_enablepseudo)) {
             $enablepseudooptions = ($config->plagiarism_turnitin_enablepseudo == 1) ? array(1 => get_string('yes')) : array(0 => get_string('no'));
-        } else if ($DB->count_records('turnitintooltwo_users') > 0) {
+        } else if ($DB->count_records('plagiarism_turnitin_users') > 0) {
             $enablepseudooptions = array( 0 => get_string('no', 'turnitintooltwo'));
         } else {
             $enablepseudooptions = $ynoptions;

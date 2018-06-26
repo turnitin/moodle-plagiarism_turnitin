@@ -38,7 +38,7 @@ if (!class_exists('\core_privacy\tests\provider_testcase')) {
     return;
 }
 
-class plagiarism_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
+class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test for _get_metadata shim.

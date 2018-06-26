@@ -34,7 +34,11 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/tests/lib_test.php');
 
-class plagiarism_privacy_provider_testcase extends advanced_testcase {
+if (!class_exists('\core_privacy\tests\provider_testcase')) {
+    return;
+}
+
+class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test for _get_metadata shim.

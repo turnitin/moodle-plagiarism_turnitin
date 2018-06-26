@@ -52,7 +52,10 @@ class pp_receipt_message {
         $eventdata->fullmessagehtml   = $message;
         $eventdata->smallmessage      = '';
         $eventdata->notification      = 1; // This is only set to 0 for personal messages between users.
-        $eventdata->courseid          = $courseid;
+
+        if ($CFG->branch >= 32) {
+            $eventdata->courseid = $courseid;
+        }
 
         message_send($eventdata);
     }

@@ -119,6 +119,10 @@ class provider implements
     public static function _export_plagiarism_user_data($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
+        if (empty($userid)) {
+            return;
+        }
+
         $user = $DB->get_record('user', array('id' => $userid));
 
         $params = ['userid' => $user->id];
@@ -176,12 +180,8 @@ class provider implements
             return;
         }
 
-        $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
-
-        $cm = get_coursemodule_from_instance('assign', $instanceid);
-
         // Delete all submissions.
-        $DB->delete_records('plagiarism_turnitin_files', ['cm' => $cm->id]);
+        $DB->delete_records('plagiarism_turnitin_files', ['cm' => $context->instanceid]);
 
     }
 

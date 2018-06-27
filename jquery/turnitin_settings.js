@@ -121,6 +121,45 @@ jQuery(document).ready(function($) {
         });
     }
 
+    // Configure datatables language settings.
+    var dataTablesLang = {
+        "nointegration": M.str.turnitintooltwo.nointegration,
+        "sProcessing": M.str.turnitintooltwo.sprocessing,
+        "sZeroRecords": M.str.turnitintooltwo.szerorecords,
+        "sInfo": M.str.turnitintooltwo.sinfo,
+        "sSearch": M.str.turnitintooltwo.ssearch,
+        "sLengthMenu": M.str.turnitintooltwo.slengthmenu,
+        "sInfoEmpty": M.str.turnitintooltwo.semptytable,
+        "oPaginate": {
+            "sNext": M.str.turnitintooltwo.snext,
+            "sPrevious": M.str.turnitintooltwo.sprevious
+        }
+    };
+
+    // Configure the unlink and relink users datatable in the plugin settings area.
+    $('#unlinkUserTable').dataTable({
+        "bDestroy": true,
+        "bProcessing": true,
+        "bServerSide": true,
+        "oLanguage": dataTablesLang,
+        "aaSorting": [[ 2, "asc" ]],
+        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "sAjaxSource": "ajax.php?action=get_users",
+        "aoColumns": [
+            {"bSortable": false,
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).addClass('centered_cell');
+                }},
+            null,
+            {"aDataSort": [ 2, 3 ]},
+            {"aDataSort": [ 3, 2 ]},
+            null
+        ],
+        "fnDrawCallback": function () {
+            $('input[name="selectallcb"]').attr('checked', false);
+        }
+    });
+
     /**
      * Helper function to change the button text depending on which type of element we're handling.
      * @param {jQuery} ct - The button element - may be input or button depending on the Moodle theme.

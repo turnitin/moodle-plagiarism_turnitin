@@ -462,4 +462,110 @@ class turnitin_user {
         }
     }
 
+
+    /**
+     * Set the rubrics the instructor has in Turnitin
+     *
+     * @return int
+     */
+    private function set_user_role($role) {
+        $this->role = $role;
+    }
+
+
+    /**
+     * Get users for unlinking/relinking. Called from ajax.php via turnitintooltwo.min.js.
+     *
+     * @global type $DB
+     * @return array return array of users to display
+     */
+    public static function plagiarism_turnitin_getusers() {
+        global $DB;
+
+        $config = turnitintooltwo_admin_config();
+        $return = array();
+        $idisplaystart = optional_param('iDisplayStart', 0, PARAM_INT);
+        $idisplaylength = optional_param('iDisplayLength', 10, PARAM_INT);
+        $secho = optional_param('sEcho', 1, PARAM_INT);
+
+        $displaycolumns = array('tu.userid', 'tu.turnitin_uid', 'mu.lastname', 'mu.firstname', 'mu.email');
+        $queryparams = array();
+
+        // Add sort to query.
+        $isortcol[0] = optional_param('iSortCol_0', null, PARAM_INT);
+        $isortingcols = optional_param('iSortingCols', 0, PARAM_INT);
+        $queryorder = "";
+        if (!is_null( $isortcol[0])) {
+            $queryorder = " ORDER BY ";
+            $startorder = $queryorder;
+            for ($i = 0; $i < intval($isortingcols); $i++) {
+                $isortcol[$i] = optional_param('iSortCol_'.$i, null, PARAM_INT);
+                $bsortable[$i] = optional_param('bSortable_'.$isortcol[$i], null, PARAM_TEXT);
+                $ssortdir[$i] = optional_param('sSortDir_'.$i, null, PARAM_TEXT);
+                if ($bsortable[$i] == "true") {
+                    $queryorder .= $displaycolumns[$isortcol[$i]]." ".$ssortdir[$i].", ";
+                }
+            }
+            if ($queryorder == $startorder) {
+                $queryorder = "";
+            } else {
+                $queryorder = substr_replace($queryorder, "", -2);
+            }
+        }
+
+        // Add search to query.
+        $ssearch = optional_param('sSearch', '', PARAM_TEXT);
+        $querywhere = ' WHERE ( ';
+        for ($i = 0; $i < count($displaycolumns); $i++) {
+            $bsearchable[$i] = optional_param('bSearchable_'.$i, null, PARAM_TEXT);
+            if (!is_null($bsearchable[$i]) && $bsearchable[$i] == "true" && $ssearch != '') {
+                $include = true;
+                if ($i <= 1) {
+                    if (!is_int($ssearch) || is_null($ssearch)) {
+                        $include = false;
+                    }
+                }
+
+                if ($include) {
+                    $querywhere .= $DB->sql_like($displaycolumns[$i], ':search_term_'.$i, false)." OR ";
+                    $queryparams['search_term_'.$i] = '%'.$ssearch.'%';
+                }
+            }
+        }
+        if ( $querywhere == ' WHERE ( ' ) {
+            $querywhere = "";
+        } else {
+            $querywhere = substr_replace( $querywhere, "", -3 );
+            $querywhere .= " )";
+        }
+
+        $query = "SELECT tu.id AS id, tu.userid AS userid, tu.turnitin_uid AS turnitin_uid, tu.turnitin_utp AS turnitin_utp, ".
+            "mu.firstname AS firstname, mu.lastname AS lastname, mu.email AS email ".
+            "FROM {plagiarism_turnitin_users} tu ".
+            "LEFT JOIN {user} mu ON tu.userid = mu.id ".$querywhere.$queryorder;
+
+        $users = $DB->get_records_sql($query, $queryparams, $idisplaystart, $idisplaylength);
+        $totalusers = count($DB->get_records_sql($query, $queryparams));
+
+        $return["aaData"] = array();
+        foreach ($users as $user) {
+            $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', array("class" => "browser_checkbox"));
+
+            $pseudoemail = "";
+            if (!empty($config->enablepseudo)) {
+                $pseudouser = new TiiPseudoUser(turnitintooltwo_user::get_pseudo_domain());
+                $pseudouser->setEmail($user->email);
+                $pseudoemail = $pseudouser->getEmail();
+            }
+
+            $aadata = array($checkbox);
+            $user->turnitin_uid = ($user->turnitin_uid == 0) ? '' : $user->turnitin_uid;
+            $userdetails = array($user->turnitin_uid, format_string($user->lastname), format_string($user->firstname), $pseudoemail);
+            $return["aaData"][] = array_merge($aadata, $userdetails);
+        }
+        $return["sEcho"] = $secho;
+        $return["iTotalRecords"] = count($users);
+        $return["iTotalDisplayRecords"] = $totalusers;
+        return $return;
+    }
 }

@@ -267,3 +267,4 @@ $string['ssearch'] = 'Vyhledat:';
 $string['sprocessing'] = 'Načítání dat ze systému Turnitin...';
 $string['szerorecords'] = 'Žádné záznamy k zobrazení.';
 $string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
+$string['userupdateerror'] = 'Nelze aktualizovat uživatelské údaje';

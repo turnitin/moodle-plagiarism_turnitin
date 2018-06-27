@@ -267,3 +267,4 @@ $string['ssearch'] = '검색:';
 $string['sprocessing'] = '처리중...';
 $string['szerorecords'] = '기록이 없음';
 $string['sinfo'] = '_START_ to _END_ 의 _TOTAL_ 사항 표시';
+$string['userupdateerror'] = '사용자 데이타를 업데이트할 수 없었음';

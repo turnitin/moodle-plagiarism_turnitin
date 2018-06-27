@@ -267,3 +267,4 @@ $string['ssearch'] = 'بحث:';
 $string['sprocessing'] = 'جاري تحميل البيانات من Turnitin...';
 $string['szerorecords'] = 'لا توجد اوليات للعرض';
 $string['sinfo'] = 'يتم عرض _البداية_الى_النهاية_من_الادخالات_الكلية.';
+$string['userupdateerror'] = 'لا يمكن تحديث بيانات المستخدم';

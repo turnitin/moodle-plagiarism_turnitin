@@ -267,3 +267,4 @@ $string['ssearch'] = '検索：';
 $string['sprocessing'] = 'Turnitinからデータをロード中...';
 $string['szerorecords'] = '表示できる記録がありません。';
 $string['sinfo'] = '_START_～_END_（全_TOTAL_）エントリを表示';
+$string['userupdateerror'] = 'ユーザーデータを講師できませんでした';

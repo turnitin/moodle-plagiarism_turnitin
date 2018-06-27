@@ -269,3 +269,4 @@ $string['ssearch'] = 'Hae:';
 $string['sprocessing'] = 'Tietoja ladataan Turnitinistä...';
 $string['szerorecords'] = 'Ei esitettäviä tiedostoja.';
 $string['sinfo'] = 'Näyttää _ALUSTA _LOPPUUN _palautusten _KOKONAISLUKUMÄÄRÄSTÄ.';
+$string['userupdateerror'] = 'Käyttäjätietoja ei voitu päivittää';

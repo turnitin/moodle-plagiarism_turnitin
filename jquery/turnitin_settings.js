@@ -123,16 +123,16 @@ jQuery(document).ready(function($) {
 
     // Configure datatables language settings.
     var dataTablesLang = {
-        "nointegration": M.str.turnitintooltwo.nointegration,
-        "sProcessing": M.str.turnitintooltwo.sprocessing,
-        "sZeroRecords": M.str.turnitintooltwo.szerorecords,
-        "sInfo": M.str.turnitintooltwo.sinfo,
-        "sSearch": M.str.turnitintooltwo.ssearch,
-        "sLengthMenu": M.str.turnitintooltwo.slengthmenu,
-        "sInfoEmpty": M.str.turnitintooltwo.semptytable,
+        "nointegration": M.str.plagiarism_turnitin.nointegration,
+        "sProcessing": M.str.plagiarism_turnitin.sprocessing,
+        "sZeroRecords": M.str.plagiarism_turnitin.szerorecords,
+        "sInfo": M.str.plagiarism_turnitin.sinfo,
+        "sSearch": M.str.plagiarism_turnitin.ssearch,
+        "sLengthMenu": M.str.plagiarism_turnitin.slengthmenu,
+        "sInfoEmpty": M.str.plagiarism_turnitin.semptytable,
         "oPaginate": {
-            "sNext": M.str.turnitintooltwo.snext,
-            "sPrevious": M.str.turnitintooltwo.sprevious
+            "sNext": M.str.plagiarism_turnitin.snext,
+            "sPrevious": M.str.plagiarism_turnitin.sprevious
         }
     };
 

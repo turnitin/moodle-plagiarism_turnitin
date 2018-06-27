@@ -267,3 +267,4 @@ $string['ssearch'] = 'Pesquisar:';
 $string['sprocessing'] = 'Carregando dados do Turnitin…';
 $string['szerorecords'] = 'Não há registros para exibir';
 $string['sinfo'] = 'Exibindo registros_START_ao_END_do_TOTAL';
+$string['userupdateerror'] = 'Não foi possível atualizar os dados do usuário';

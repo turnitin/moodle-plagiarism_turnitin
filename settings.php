@@ -242,8 +242,6 @@ switch ($do) {
         break;
 
     case "unlinkusers":
-        $turnitinview->draw_settings_tab_menu('unlinkusers', $notice);
-
         $jsrequired = true;
 
         $userids = (isset($_REQUEST['userids'])) ? $_REQUEST["userids"] : array();
@@ -323,6 +321,7 @@ switch ($do) {
             $customdata);
 
         echo $OUTPUT->header();
+        $turnitinview->draw_settings_tab_menu('unlinkusers', $notice);
         $output .= $optionsform->display();
         echo $output;
         break;

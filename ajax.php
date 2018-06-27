@@ -17,6 +17,7 @@
 require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 require_login();
@@ -307,6 +308,15 @@ switch ($action) {
             }
         }
         echo json_encode($data);
+        break;
+
+    case "get_users":
+        $PAGE->set_context(context_system::instance());
+        if (is_siteadmin()) {
+            echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
+        } else {
+            throw new moodle_exception('accessdenied', 'admin');
+        }
         break;
 }
 

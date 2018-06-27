@@ -267,3 +267,4 @@ $string['ssearch'] = 'Szukać:';
 $string['sprocessing'] = 'Wprowadzanie danych od Turnitin...';
 $string['szerorecords'] = 'Brak wyników do pokazania.';
 $string['sinfo'] = 'Pokazuje od _START_do_END__TOTAL_wpisy.';
+$string['userupdateerror'] = 'Aktualizacja danych użytkownika nie powiodła się';

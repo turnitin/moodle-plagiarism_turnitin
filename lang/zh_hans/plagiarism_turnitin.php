@@ -267,3 +267,4 @@ $string['ssearch'] = '搜索：';
 $string['sprocessing'] = '正在从 Turnitin 加载数据...';
 $string['szerorecords'] = '无法显示任何记录。';
 $string['sinfo'] = '正在显示第 _START_ 到 _END_ 个条目，共 _TOTAL_ 个条目。';
+$string['userupdateerror'] = '无法更新用户数据';

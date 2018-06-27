@@ -267,3 +267,4 @@ $string['ssearch'] = 'Căutare:';
 $string['sprocessing'] = 'Se încarcă datele din Turnitin...';
 $string['szerorecords'] = 'Nu există date de afișat.';
 $string['sinfo'] = 'Se afișează intrările _START_ – _END_ din _TOTAL_.';
+$string['userupdateerror'] = 'Imposibil de actualizat datele utilizatorilor';

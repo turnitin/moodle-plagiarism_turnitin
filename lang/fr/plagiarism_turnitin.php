@@ -267,3 +267,4 @@ $string['ssearch'] = 'Rechercher:';
 $string['sprocessing'] = 'Chargement des données Turnitin en cours...';
 $string['szerorecords'] = 'Il n´y a aucun document à afficher';
 $string['sinfo'] = 'Montrer_TOTAL_des_entrées_du_DEBUT_à_la_FIN';
+$string['userupdateerror'] = 'Impossible d&#39;actualiser les informations de l’utilisateur';

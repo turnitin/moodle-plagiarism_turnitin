@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_assign.class.php.
+ * Unit tests for plagiarism/turnitin/classes/modules/turnitin_assign.class.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2018 Turnitin
@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/classes/turnitin_assignment.c
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
 /**
- * Tests for API comms class
+ * Tests for Turnitin assignment class
  *
  * @package turnitin
  */

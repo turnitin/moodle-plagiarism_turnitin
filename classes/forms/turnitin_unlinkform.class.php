@@ -75,7 +75,7 @@ class turnitin_unlinkform extends moodleform {
             }
 
             if (!empty($element[3])) {
-                $mform->addHelpButton($element[1], $element[3], 'turnitintooltwo');
+                $mform->addHelpButton($element[1], $element[3], 'plagiarism_turnitin');
             }
 
             if (!empty($element[5])) {

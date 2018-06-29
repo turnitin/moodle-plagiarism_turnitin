@@ -50,7 +50,6 @@ class turnitin_user {
         if ($id != 0) {
             $this->get_moodle_user($this->id);
             if ($finduser === true) {
-                echo 'aaa';
                 $this->get_tii_user_id();
             }
         }
@@ -188,7 +187,6 @@ class turnitin_user {
      * @return var Turnitin user id if found otherwise null
      */
     private function find_tii_user_id() {
-        echo 'aaa';
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $tiiuserid = null;
 

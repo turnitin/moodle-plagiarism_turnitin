@@ -41,7 +41,7 @@ abstract class test_lib extends advanced_testcase {
      *
      * @param int $number_of_users
      * @param array $roles - an array of strings, each of which should be 'Learner' or 'Instructor'.
-     * @return object $return - object of two arrays of equal length, one full of turnitintooltwo_user types and the other with ids for dbtable turnitintooltwo_users. The indices of these arrays DO align.
+     * @return object $return - object of two arrays of equal length, one full of plagiarism_turnitin_user types and the other with ids for dbtable plagiarism_turnitin_users. The indices of these arrays DO align.
      */
     public function make_test_users($number_of_users, $roles) {
         $return['plagiarism_turnitin_users'] = array();

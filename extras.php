@@ -25,6 +25,7 @@ require_once(__DIR__."/lib.php");
 
 require_once($CFG->dirroot."/mod/turnitintooltwo/lib.php");
 require_once($CFG->dirroot."/plagiarism/turnitin/classes/turnitin_view.class.php");
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
 $turnitinview = new turnitin_view();
 
@@ -50,7 +51,7 @@ switch ($cmd) {
         $PAGE->requires->jquery_plugin('ui');
         $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
 
-        $user = new turnitintooltwo_user($USER->id, "Learner");
+        $user = new turnitin_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
         $output .= turnitin_view::output_launch_form(

@@ -99,7 +99,7 @@ class turnitin_view {
         $configwarning = '';
 
         if ($location == "activity") {
-            $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
+            $instructor = new turnitin_user($USER->id, 'Instructor');
 
             $instructor->join_user_to_class($course->turnitin_cid);
         }
@@ -591,7 +591,7 @@ class turnitin_view {
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
-        $user = new turnitintooltwo_user($USER->id, $userrole);
+        $user = new turnitin_user($USER->id, $userrole);
 
         $lti = new TiiLTI();
         $lti->setUserId($user->tiiuserid);

@@ -212,7 +212,7 @@ class turnitin_user {
 
         } catch (Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
-            $this->turnitincomms->handle_exceptions($e, 'userfinderror', $toscreen);
+            $turnitincomms->handle_exceptions($e, 'userfinderror', $toscreen);
         }
     }
 
@@ -258,7 +258,7 @@ class turnitin_user {
 
         } catch (Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
-            $this->turnitincomms->handle_exceptions($e, 'usercreationerror', $toscreen);
+            $turnitincomms->handle_exceptions($e, 'usercreationerror', $toscreen);
         }
     }
 
@@ -288,7 +288,7 @@ class turnitin_user {
                 $turnitincall->updateUser($user);
             } catch (Exception $e) {
                 $toscreen = ($this->workflowcontext == "cron") ? false : true;
-                $this->turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
+                $turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
             }
         }
     }
@@ -359,12 +359,14 @@ class turnitin_user {
      * @return boolean
      */
     public function join_user_to_class($tiicourseid) {
+        $turnitincomms = new turnitintooltwo_comms();
+
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
             $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         }
-        if ($config->enablediagnostic != 2) {
-            $this->turnitincomms->set_diagnostic(0);
+        if (isset($config->enablediagnostic) && $config->enablediagnostic != 2) {
+            $turnitincomms->set_diagnostic(0);
         }
         $turnitincomms = new turnitintooltwo_comms();
         $turnitincall = $turnitincomms->initialise_api();

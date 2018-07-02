@@ -53,7 +53,7 @@ switch ($action) {
     case "get_dv_html":
         $submissionid = required_param('submissionid', PARAM_INT);
         $dvtype = optional_param('dvtype', 'default', PARAM_ALPHAEXT);
-        $user = new turnitintooltwo_user($USER->id, $userrole);
+        $user = new turnitin_user($USER->id, $userrole);
         $coursedata = turnitin_assignment::get_course_data($cm->course);
 
         if ($userrole == 'Instructor') {
@@ -137,7 +137,7 @@ switch ($action) {
                 $tiiassignmentid = $tiiassignment['tiiassignmentid'];
             }
 
-            $user = new turnitintooltwo_user($USER->id, "Instructor");
+            $user = new turnitin_user($USER->id, "Instructor");
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
@@ -163,7 +163,7 @@ switch ($action) {
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
-            $user = new turnitintooltwo_user($USER->id, "Learner");
+            $user = new turnitin_user($USER->id, "Learner");
             $coursedata = turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 
@@ -190,7 +190,7 @@ switch ($action) {
         if ($userrole == 'Instructor' || $isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
-            $user = new turnitintooltwo_user($USER->id, $userrole);
+            $user = new turnitin_user($USER->id, $userrole);
             $coursedata = turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 

@@ -18,7 +18,8 @@
  * Extra helper methods for plagiarism_turnitin component
  *
  * @package   plagiarism_turnitin
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @authior   John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -17,6 +17,7 @@
 require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 require_login();
@@ -215,8 +216,8 @@ switch ($action) {
 
         $message = optional_param('message', '', PARAM_ALPHAEXT);
 
-        // Get the id from the turnitintooltwo_users table so we can update.
-        $turnitinuser = $DB->get_record('turnitintooltwo_users', array('userid' => $USER->id));
+        // Get the id from the plagiarism_turnitin_users table so we can update.
+        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $USER->id));
 
         // Build user object for update.
         $eulauser = new stdClass();
@@ -231,7 +232,7 @@ switch ($action) {
         }
 
         // Update the user using the above object.
-        $DB->update_record('turnitintooltwo_users', $eulauser, $bulk = false);
+        $DB->update_record('plagiarism_turnitin_users', $eulauser, $bulk = false);
         break;
 
     case "resubmit_event":
@@ -307,6 +308,15 @@ switch ($action) {
             }
         }
         echo json_encode($data);
+        break;
+
+    case "get_users":
+        $PAGE->set_context(context_system::instance());
+        if (is_siteadmin()) {
+            echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
+        } else {
+            throw new moodle_exception('accessdenied', 'admin');
+        }
         break;
 }
 

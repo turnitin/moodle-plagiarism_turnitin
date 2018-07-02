@@ -18,7 +18,8 @@
  * Plugin setup form for plagiarism_turnitin component
  *
  * @package   plagiarism_turnitin
- * @copyright 2018 David Winn <dwinn@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -144,10 +145,10 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('header', 'plagiarism_privacy', get_string('studentdataprivacy', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_privacy');
 
-        if ($DB->count_records('turnitintooltwo_users') > 0 AND isset($config->plagiarism_turnitin_enablepseudo)) {
+        if ($DB->count_records('plagiarism_turnitin_users') > 0 AND isset($config->plagiarism_turnitin_enablepseudo)) {
             $enablepseudooptions = ($config->plagiarism_turnitin_enablepseudo == 1) ? array(1 => get_string('yes')) : array(0 => get_string('no'));
-        } else if ($DB->count_records('turnitintooltwo_users') > 0) {
-            $enablepseudooptions = array( 0 => get_string('no', 'turnitintooltwo'));
+        } else if ($DB->count_records('plagiarism_turnitin_users') > 0) {
+            $enablepseudooptions = array( 0 => get_string('no', 'plagiarism_turnitin'));
         } else {
             $enablepseudooptions = $ynoptions;
         }

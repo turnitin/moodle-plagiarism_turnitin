@@ -30,6 +30,8 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 $do = optional_param('do', "config", PARAM_ALPHA);
 $action = optional_param('action', "", PARAM_ALPHA);
+$unlink = optional_param('unlink', null, PARAM_ALPHA);
+$relink = optional_param('relink', null, PARAM_ALPHA);
 
 if (isset($_SESSION["notice"])) {
     $notice = $_SESSION["notice"];
@@ -100,15 +102,31 @@ if (!empty($action)) {
 }
 
 // Include Javascript & CSS.
-if ($do == "errors" || $do == "config") {
+if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables', 'plagiarism_turnitin');
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables_plugins', 'plagiarism_turnitin');
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_datatables_columnfilter', 'plagiarism_turnitin');
+
+    // Strings for JS.
     $PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestfailed', 'plagiarism_turnitin');
+
+    // Strings for js specifically for For data tables.
+    $PAGE->requires->string_for_js('nointegration', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('sprevious', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('snext', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('sprocessing', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('szerorecords', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('sinfo', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('ssearch', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('slengthmenu', 'plagiarism_turnitin');
+    $PAGE->requires->string_for_js('semptytable', 'plagiarism_turnitin');
 }
 
-if ($do != "savereport") {
+if ($do != "savereport" && $do != "unlinkusers") {
     echo $OUTPUT->header();
 }
 
@@ -221,6 +239,91 @@ switch ($do) {
             echo $output;
             exit;
         }
+        break;
+
+    case "unlinkusers":
+        $jsrequired = true;
+
+        $userids = (isset($_REQUEST['userids'])) ? $_REQUEST["userids"] : array();
+        $userids = clean_param_array($userids, PARAM_INT);
+
+        // Relink users if form has been submitted.
+        if ((!is_null($relink) || !is_null($unlink)) && isset($userids) && count($userids) > 0) {
+            foreach ($userids as $tiiid) {
+                $tuser = $DB->get_record('plagiarism_turnitin_users', array('id' => $tiiid));
+
+                if ($muser = $DB->get_record('user', array('id' => $tuser->userid))) {
+                    // Get the email address if the user has been deleted.
+                    if (empty($muser->email) || strpos($muser->email, '@') === false) {
+                        $split = explode('.', $muser->username);
+                        array_pop($split);
+                        $muser->email = join('.', $split);
+                    }
+
+                    // Unlink user from Turnitin.
+                    $user = new turnitin_user(
+                        $muser->id,
+                        $role = null,
+                        $enrol = null,
+                        $workflowcontext = null,
+                        $finduser = false
+                    );
+                    $user->unlink_user($tiiid);
+
+                    // Relink user.
+                    if (!is_null($relink)) {
+                        // The user object will create user in Turnitin.
+                        $user = new turnitin_user($muser->id);
+                    }
+
+                } else {
+                    $DB->delete_records('plagiarism_turnitin_users', array('id' => $tiiid));
+                }
+            }
+            redirect(new moodle_url('/plagiarism/turnitin/settings.php', array('do' => 'unlinkusers')));
+            exit;
+        }
+
+        $output = html_writer::tag('h2', get_string('unlinkrelinkusers', 'plagiarism_turnitin'));
+
+        $table = new html_table();
+        $table->id = "unlinkUserTable";
+        $rows = array();
+
+        // Do the table headers.
+        $cells = array();
+        $cells[0] = new html_table_cell(html_writer::checkbox('selectallcb', 1, false));
+        $cells[0]->attributes['class'] = 'centered_cell centered_cb_cell';
+        $cells[0]->attributes['width'] = "100px";
+        $cells['turnitinid'] = new html_table_cell(get_string('turnitinid', 'plagiarism_turnitin'));
+        $cells['lastname'] = new html_table_cell(get_string('lastname'));
+        $cells['firstname'] = new html_table_cell(get_string('firstname'));
+        $string = "&nbsp;";
+        if (!empty($config->enablepseudo)) {
+            $string = get_string('pseudoemailaddress', 'plagiarism_turnitin');
+        }
+        $cells['pseudoemail'] = new html_table_cell($string);
+
+        $table->head = $cells;
+
+        // Include table within form.
+        $elements[] = array('html', html_writer::table($table));
+        $customdata["elements"] = $elements;
+        $customdata["hide_submit"] = true;
+
+        $multisubmitbuttons = array(
+            array('unlink', get_string('unlinkusers', 'plagiarism_turnitin')),
+            array('relink', get_string('relinkusers', 'plagiarism_turnitin')));
+        $customdata["multi_submit_buttons"] = $multisubmitbuttons;
+
+        require_once(__DIR__ . '/classes/forms/turnitin_unlinkform.class.php');
+        $optionsform = new turnitin_unlinkform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
+            $customdata);
+
+        echo $OUTPUT->header();
+        $turnitinview->draw_settings_tab_menu('unlinkusers', $notice);
+        $output .= $optionsform->display();
+        echo $output;
         break;
 
     case "errors":

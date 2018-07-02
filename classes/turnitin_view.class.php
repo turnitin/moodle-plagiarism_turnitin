@@ -20,7 +20,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
 global $tiipp;
 $tiipp = new stdClass();

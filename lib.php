@@ -84,6 +84,7 @@ require_once(__DIR__.'/classes/turnitin_view.class.php');
 require_once(__DIR__.'/classes/turnitin_class.class.php');
 require_once(__DIR__.'/classes/turnitin_submission.class.php');
 require_once(__DIR__.'/classes/turnitin_comms.class.php');
+require_once(__DIR__.'/classes/turnitin_user.class.php');
 require_once(__DIR__.'/classes/digitalreceipt/pp_receipt_message.php');
 
 // Include supported module specific code.
@@ -502,7 +503,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiconnection) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
 
-            $user = new turnitintooltwo_user($USER->id, "Learner");
+            $user = new turnitin_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
 
@@ -783,7 +784,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $eulashown = false;
                     }
 
-                    $user = new turnitintooltwo_user($USER->id, "Learner");
+                    $user = new turnitin_user($USER->id, "Learner");
                     $success = $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // Variable $success is false if there is no Turnitin connection and null if user has previously been enrolled.
@@ -1157,7 +1158,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($DB->get_record('user', array('id' => $linkarray["userid"]))) {
                             // We need to check for security that the user is actually on the course.
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
-                                $user = new turnitintooltwo_user($linkarray["userid"], "Learner");
+                                $user = new turnitin_user($linkarray["userid"], "Learner");
                                 if ($user->useragreementaccepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey', get_string('errorcode3', 'plagiarism_turnitin'),
                                                                             'plagiarism_turnitin'),
@@ -1600,7 +1601,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $admins = explode(",", $CFG->siteadmins);
         foreach ($admins as $admin) {
             // Create the admin as a user within Turnitin.
-            $user = new turnitintooltwo_user($admin, 'Instructor');
+            $user = new turnitin_user($admin, 'Instructor');
             $user->join_user_to_class($turnitincourse->turnitin_cid);
         }
 
@@ -1608,7 +1609,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!empty($tutors)) {
             foreach ($tutors as $tutor) {
                 // Create the admin as a user within Turnitin.
-                $user = new turnitintooltwo_user($tutor->id, 'Instructor');
+                $user = new turnitin_user($tutor->id, 'Instructor');
                 $user->join_user_to_class($turnitincourse->turnitin_cid);
             }
         }
@@ -2750,11 +2751,11 @@ function plagiarism_turnitin_send_queued_submissions() {
 
         // Join User to course.
         try {
-            $user = new turnitintooltwo_user($queueditem->userid, 'Learner', true, 'cron');
+            $user = new turnitin_user($queueditem->userid, 'Learner', true, 'cron');
             $user->edit_tii_user();
             $user->join_user_to_class($coursedata->turnitin_cid);
         } catch (Exception $e) {
-            $user = new turnitintooltwo_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
+            $user = new turnitin_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
             $errorcode = 7;
         }
 
@@ -2933,7 +2934,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $submission->setSubmitterUserId($user->tiiuserid);
             $submission->setRole('Learner');
         } else {
-            $instructor = new turnitintooltwo_user($queueditem->submitter, 'Instructor');
+            $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
             $instructor->edit_tii_user();
 
             $submission->setSubmitterUserId($instructor->tiiuserid);

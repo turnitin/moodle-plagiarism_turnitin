@@ -70,11 +70,6 @@ class turnitin_unlinkform extends moodleform {
                     break;
             }
 
-            // Set form data. Only used for submission form.
-            if (isset($_SESSION['form_data']->{$element[1]})) {
-                $mform->setDefault($element[1], $_SESSION['form_data']->{$element[1]});
-            }
-
             if (!empty($element[3])) {
                 $mform->addHelpButton($element[1], $element[3], 'plagiarism_turnitin');
             }

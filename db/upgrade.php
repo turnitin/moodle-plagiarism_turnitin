@@ -368,7 +368,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2018062602) {
+    if ($oldversion < 2018062603) {
         // Define table plagiarism_turnitin_users to be created.
         $table = new xmldb_table('plagiarism_turnitin_users');
 

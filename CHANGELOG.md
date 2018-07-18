@@ -1,3 +1,26 @@
+### 2018-June-26
+### v2018062601
+
+#### Fixes and enhancements
+
+---
+
+#### Resubmissions now overwrite the previous submission
+
+When a student made a resubmission to Turnitin, their previous submission wasn't removed from the assignment inbox; this led to confusion for instructors, who weren't too sure which submission was the most up-to-date version. We've made sure that resubmissions now overwrite the existing submission.
+
+> **Known issue:** While we've been able to fix this issue for students, if an instructor resubmits on behalf of a student, multiple submissions may still appear in Turnitin. We're working on a fix for this and will update you as soon as we find one!
+
+#### The Plagiarism Plugin now works on Moodle 3.1 and earlier versions
+
+Users running Moodle version 3.1 or earlier encountered an unexpected error when submitting a file. The error message, referring to an invalid parameter, was the result of a change made in our previous release. We apologize for the trouble this may have caused and can confirm that Moodle version 3.1 and earlier now function correctly.
+
+#### Moodle unit tests now pass
+
+We’ve ensured all Moodle unit tests now pass with the plugin installed. Thanks to @danmarsden and @kenneth-hendricks for their contributions.
+
+---
+
 ### Date:		2018-May-24
 ### Release:	v2018052401
 

@@ -55,8 +55,6 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
      * Test to check whether resubmissions are allowed.
      */
     public function test_check_is_resubmission_allowed() {
-        global $DB, $CFG;
-
         $this->resetAfterTest(true);
 
         // Create module object.

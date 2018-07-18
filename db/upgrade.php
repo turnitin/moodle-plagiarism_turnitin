@@ -267,7 +267,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
     }
 
-    if ($oldversion < 2018062604) {
+    if ($oldversion < 2017012601) {
         // Add new column that has to be unique.
         $table = new xmldb_table('plagiarism_turnitin_config');
         $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'value');
@@ -283,7 +283,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->add_key($table, $key);
     }
 
-    if ($oldversion < 2018041310) {
+    if ($oldversion < 2018062604) {
         // If V2 is installed, copy the settings across to PP.
         if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
             // Get the settings for the V2 plugin.

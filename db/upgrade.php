@@ -267,7 +267,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
     }
 
-    if ($oldversion < 2017012601) {
+    if ($oldversion < 2018062604) {
         // Add new column that has to be unique.
         $table = new xmldb_table('plagiarism_turnitin_config');
         $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'value');
@@ -289,16 +289,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             // Get the settings for the V2 plugin.
             $data = turnitintooltwo_admin_config();
 
-            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableperformancelogs", "usegrademark", "enablepeermark", "useerater",
-                "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableperformancelogs", "usegrademark",
+                "enablepeermark", "useerater", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
+                "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
 
             foreach ($properties as $property) {
                 plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);
             }
         }
-    }
 
-    if ($oldversion < 2018053101) {
         // Define table plagiarism_turnitin_courses to be created.
         $table = new xmldb_table('plagiarism_turnitin_courses');
 
@@ -332,9 +331,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 $DB->delete_records('turnitintooltwo_courses', array("course_type" => "PP"));
             }
         }
-    }
 
-    if ($oldversion < 2018053102) {
         // Define table file_conversion to be created.
         $table = new xmldb_table('plagiarism_turnitin_peermark');
 
@@ -357,18 +354,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-    }
 
-    if ($oldversion < 2018060401) {
-        // If V2 is installed, copy the anonymous marking setting across to PP.
-        if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
-            // Get the settings for the V2 plugin.
-            $data = turnitintooltwo_admin_config();
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "useanon");
-        }
-    }
-
-    if ($oldversion < 2018062603) {
         // Define table plagiarism_turnitin_users to be created.
         $table = new xmldb_table('plagiarism_turnitin_users');
 

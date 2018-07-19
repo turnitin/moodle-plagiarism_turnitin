@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin, intihal eklentisi';
-$string['turnitintooltwo'] = 'Turnitin Aracı';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin İntihal Eklenti Görevi';
 $string['connecttesterror'] = 'Turnitin&#39;e bağlanırken bir hata oluştu. Hata aşağıda belirtilmiştir:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin İntihal Eklenti Yapılandırması';
 $string['tiiexplain'] = 'Turnitin ticari bir üründür ve bu servisi kullanmak için ücretli üyeliğe ihtiyacınız vardır, daha fazla bilgi için bkz. <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Turnitin&#39;i Etkinleştir';
 $string['useturnitin_mod'] = 'Şunun için Turnitin&#39;i Etkinleştir {$a}';
-$string['pp_configuredesc'] = 'Bu modülü, turnitintooltwo modülünde yapılandırmalısınız. Bu eklentiyi yapılandırmak için lütfen <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>buraya</a> tıklayın';
 $string['turnitindefaults'] = 'Turnitin, intihal eklentisi varsayılan ayarları';
 $string['defaultsdesc'] = 'Etkinlik Modülünde Turnitin etkinleştirilirken aşağıdaki ayarlar, varsayılan ayarlar olarak belirlendi';
 $string['turnitinpluginsettings'] = 'Turnitin, intihal eklentisi ayarları';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Geçici bir sorun yaşıyoruz. Lütfen k�
 $string['defaultinserterror'] = 'Veritabanına varsayılan ayar değeri girilirken bir hata oluştu';
 $string['defaultupdateerror'] = 'Veritabanında varsayılan ayar değerleri güncellenirken bir hata oluştu';
 $string['tiiassignmentgeterror'] = 'Turnitin&#39;den ödev alınırken bir sorun oluştu';
-$string['assigngeterror'] = 'Turnitintooltwo verileri alınamadı';
+$string['assigngeterror'] = 'Turnitin verileri alınamadı';
 $string['classupdateerror'] = 'Turnitin Sınıf verileri güncellenemedi';
 $string['pp_createsubmissionerror'] = 'Turnitin&#39;de bir gönderi oluşturulurken sorun oluştu';
 $string['pp_updatesubmissionerror'] = 'Turnitin&#39;e ödevinizi yeniden gönderirken bir sorun oluştu';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = 'Hata Ayıklama ve Günlük Oluşturma';
 $string['turnitindiagnostic'] = 'Teşhis Modunu Etkinleştir';
 $string['enableperformancelogs'] = 'Ağ Performans Kaydını Etkinleştir';
-$string['enableperformancelogs_desc'] = 'Etkinleştirilirse, Turnitin sunucusuna gönderilen tüm talepler {tempdir}/turnitintooltwo/logs dizinine kaydedilecektir';
+$string['enableperformancelogs_desc'] = 'Etkinleştirilirse, Turnitin sunucusuna gönderilen tüm talepler {tempdir}/plagiarism_turnitin/logs dizinine kaydedilecektir';
 $string['turnitindiagnostic_desc'] = '<b>[Dikkat]</b><br />Teşhis modunu sadece Turnitin API ile ilgili problemleri ortaya çıkarmak için etkinleştirin.';
 $string['tiiaccountsettings_desc'] = 'Lütfen bu ayarların Turnitin hesabınızda yapılandırdığınız ayarlarla aynı olduğundan emin olun, aksi taktirde ödev oluştururken ve/veya öğrenci gönderimlerinde sorun yaşayabilirsiniz.';
 $string['tiiaccountsettings'] = 'Turnitin Hesap Ayarları';

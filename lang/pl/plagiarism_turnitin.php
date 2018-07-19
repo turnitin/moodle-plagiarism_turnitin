@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Wtyczka plagiatu Turnitin';
-$string['turnitintooltwo'] = 'Narzędzie Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Zadanie wtyczki plagiatu Turnitin';
 $string['connecttesterror'] = 'Wystąpił błąd podczas łączenia z Turnitin. Poniżej znajduje się informacja o błędzie:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Konfiguracja wtyczki plagiatu Turnitin';
 $string['tiiexplain'] = 'Turnitin jest produktem komercyjnym — do korzystania z niego wymagana jest płatna subskrypcja. Więcej informacji znajduje się w <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Włącz Turnitin';
 $string['useturnitin_mod'] = 'Włącz Turnitin dla {$a}';
-$string['pp_configuredesc'] = 'Musisz skonfigurować ten moduł wewnątrz modułu turnitintooltwo. Kliknij <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>tutaj</a>, aby skonfigurować tę wtyczkę';
 $string['turnitindefaults'] = 'Ustawienia domyślne wtyczki plagiatu Turnitin';
 $string['defaultsdesc'] = 'Następujące ustawienia są ustawieniami domyślnymi gdy Turnitin jest włączony wewnątrz modułu aktywności';
 $string['turnitinpluginsettings'] = 'Ustawienia wtyczki plagiatu Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'URL API Turnitin';
 $string['tiidebugginglogs'] = 'Wykrywanie błędów i dzienniki';
 $string['turnitindiagnostic'] = 'Włączenie trybu diagnostycznego';
 $string['enableperformancelogs'] = 'Włącz rejestrowanie wydajności sieci';
-$string['enableperformancelogs_desc'] = 'Jeśli ustawienie jest włączone, każde żądanie przesyłane do serwera Turnitin będzie zapisywane w {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Jeśli ustawienie jest włączone, każde żądanie przesyłane do serwera Turnitin będzie zapisywane w {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Uwaga]</b><br />Tryb diagnostyczny należy uruchamiać tylko na potrzeby wykrywania problemów z API Turnitin.';
 $string['tiiaccountsettings_desc'] = 'Należy upewnić się, że te ustawienia są takie same, jak te skonfigurowane na koncie Turnitin. W innym przypadku mogą wystąpić problemy z tworzeniem zadań lub wysłanymi pracami studentów.';
 $string['tiiaccountsettings'] = 'Ustawienia konta Turnitin';

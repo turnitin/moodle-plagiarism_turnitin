@@ -18,7 +18,6 @@ require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 require_login();
 
@@ -274,7 +273,7 @@ switch ($action) {
         if (!confirm_sesskey()) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
-        $data = array("connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'turnitintooltwo'));
+        $data = array("connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'plagiarism_turnitin'));
 
         $PAGE->set_context(context_system::instance());
         if (is_siteadmin()) {
@@ -302,7 +301,7 @@ switch ($action) {
             try {
                 $response = $tiiapi->findClasses($class);
                 $data["connection_status"] = 200;
-                $data["msg"] = get_string('connecttestsuccess', 'turnitintooltwo');
+                $data["msg"] = get_string('connecttestsuccess', 'plagiarism_turnitin');
             } catch (Exception $e) {
                 $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
             }

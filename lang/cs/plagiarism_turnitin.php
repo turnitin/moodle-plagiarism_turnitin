@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin plagiátorství Turnitin';
-$string['turnitintooltwo'] = 'Nástroj Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Úloha pluginu plagiátorství Turnitin';
 $string['connecttesterror'] = 'Došlo k chybě během připojení k Turnitin. Následuje chybové hlášení níže:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Konfigurace pluginu plagiátorství Turnitin';
 $string['tiiexplain'] = 'Turnitin je komerční produkt, tudíž musíte mít pro využívání této služby předplatné. Pro více informací se obraťte na <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Povolit Turnitin';
 $string['useturnitin_mod'] = 'Aktivovat Turnitin pro {$a}';
-$string['pp_configuredesc'] = 'Tento modul musíte nakonfigurovat v rámci modulu turnitintooltwo. Kliknutím <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>zde</a> nakonfigurujete tento modul plugin';
 $string['turnitindefaults'] = 'Výchozí nastavení pro plugin plagiátorství Turnitin';
 $string['defaultsdesc'] = 'Následující nastavení jsou výchozí při povolení systému Turnitin v rámci modulu aktivity';
 $string['turnitinpluginsettings'] = 'Nastavení pro plugin plagiátorství Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Vyskytl se dočasný problém. Zkuste pro
 $string['defaultinserterror'] = 'Došlo k chybě při vkládání hodnoty výchozího nastavení do databáze';
 $string['defaultupdateerror'] = 'Došlo k chybě při aktualizaci hodnoty výchozího nastavení v databázi';
 $string['tiiassignmentgeterror'] = 'Došlo k chybě při získávání úkolu ze systému Turnitin';
-$string['assigngeterror'] = 'Nelze získat turnitintooltwo údaje';
+$string['assigngeterror'] = 'Nelze získat Turnitin údaje';
 $string['classupdateerror'] = 'Nebylo možné aktualizovat údaje kurzu Turnitin';
 $string['pp_createsubmissionerror'] = 'Došlo k chybě při tvoření odevzdání v systému Turnitin';
 $string['pp_updatesubmissionerror'] = 'Došlo k chybě při opětovném odeslání vaší odevzdané práce do systému Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = 'Ladění a protokolování';
 $string['turnitindiagnostic'] = 'Povolit diagnostický režim';
 $string['enableperformancelogs'] = 'Povolte protokolování výkonu sítě';
-$string['enableperformancelogs_desc'] = 'V případě povolení bude každá žádost na serveru Turnitin zaprotokolována v protokolech {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'V případě povolení bude každá žádost na serveru Turnitin zaprotokolována v protokolech {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Caution]</b><br />Povolit diagnostický režim pouze za účelem vystopování problémů s Turnitin API.';
 $string['tiiaccountsettings_desc'] = 'Ověřte, zda se tato nastavení shodují s těmi nakonfigurovanými v účtu Turnitin, v opačném případě se můžete setkat s potížemi při vytváření úkolů a/nebo odevzdávání prací studenty.';
 $string['tiiaccountsettings'] = 'Nastavení účtu Turnitin';

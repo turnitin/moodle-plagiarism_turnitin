@@ -42,31 +42,31 @@ class plagiarism_turnitin_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Note that $submitpapersto would only ever be 0, 1 or 2 but this is to illustrate
-        // that it won't be overridden by the turnitintooltwo_override_repository method.
+        // that it won't be overridden by the plagiarism_turnitin_override_repository method.
         $submitpapersto = 6;
 
         // Test that repository is not overridden for value of 0.
-        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD, 'turnitintooltwo');
+        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD, 'plagiarism');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($response, $submitpapersto);
 
         // Test that repository is not overridden for value of 1.
-        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED, 'turnitintooltwo');
+        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED, 'plagiarism');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($response, $submitpapersto);
 
         // Standard Repository is being forced.
-        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD, 'turnitintooltwo');
+        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD, 'plagiarism');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($response, PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY);
 
         // No Repository is being forced.
-        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO, 'turnitintooltwo');
+        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO, 'plagiarism');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($response, PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY);
 
         // Institutional Repository is being forced.
-        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL, 'turnitintooltwo');
+        set_config('repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL, 'plagiarism');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($response, PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY);
     }

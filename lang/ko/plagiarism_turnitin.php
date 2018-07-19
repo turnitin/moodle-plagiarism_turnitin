@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin 표절 플러그인';
-$string['turnitintooltwo'] = 'Turnitin 도구';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 표절 플러그인 작업';
 $string['connecttesterror'] = 'Turnitin에 연결하는 데 오류가 생겼습니다. 오류 메시지가 아래에 있습니다.<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin 표절 Plugin 구성';
 $string['tiiexplain'] = 'Turnitin은 상업 제품이며 이 서비스를 사용하려면 사용료를 지불하여야 합니다. 자세한 사항은 <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>를 참조하십시오.';
 $string['useturnitin'] = 'Turnitin 활성화 하기';
 $string['useturnitin_mod'] = 'Turnitin 활성화 대상 {$a}';
-$string['pp_configuredesc'] = 'turnitintooltwo 모듈 내에서 이 모듈을 구성해야 합니다. <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>여기</a>를 클릭하여 이 플러그인을 구성하십시오.';
 $string['turnitindefaults'] = 'Turnitin 표절 플러그인 기본 환경';
 $string['defaultsdesc'] = '다음의 환경들은 Turnitin을 활동 모듈에서 활성화시킬 때의 기본 세트입니다';
 $string['turnitinpluginsettings'] = 'Turnitin 표절 플러그인 환경';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '일시적인 문제가 발생했습니다
 $string['defaultinserterror'] = '데이타베이스에 기본 환경값을 삽입하는 데 오류가 생겼습니다.';
 $string['defaultupdateerror'] = '데이타베이스에 있는 기본 환경값을 업데이트하는 데 오류가 생겼습니다.';
 $string['tiiassignmentgeterror'] = 'Turnitin에서 과제를 가져오는데 오류가 발생하였습니다';
-$string['assigngeterror'] = 'turnitintooltwo 데이타를 취득할 수 없었음';
+$string['assigngeterror'] = 'Turnitin 데이타를 취득할 수 없었음';
 $string['classupdateerror'] = 'Turnitin 클래스 데이타를 업데이트할 수 없었습니다';
 $string['pp_createsubmissionerror'] = 'Turnitin에서 제출물을 생성하는데 오류가 발생하였습니다';
 $string['pp_updatesubmissionerror'] = 'Turnitin에 대해 제출물을 재제출하는데 오류가 발생하였습니다';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = '디버깅 및 로깅';
 $string['turnitindiagnostic'] = '진단 모드를 활성화 시키기';
 $string['enableperformancelogs'] = '네크워크 성능 로깅 활성화';
-$string['enableperformancelogs_desc'] = '활성화되면 Turnitin 서버에 대한 각 요청은 {tempdir}/turnitintooltwo/logs에 기록됩니다.';
+$string['enableperformancelogs_desc'] = '활성화되면 Turnitin 서버에 대한 각 요청은 {tempdir}/plagiarism_turnitin/logs에 기록됩니다.';
 $string['turnitindiagnostic_desc'] = '<b>[주의]</b><br />Turnitin API의 문제들을 찾아내기 위해서만 진단 모드를 활성화 시킵니다.';
 $string['tiiaccountsettings_desc'] = '이 설정은 귀하의 Turnitin 계정에서 구성한 설정과 일치해야 합니다. 그렇지 않으면 과제 생성 및/또는 학생 제출물에 문제가 발생할 수 있습니다.';
 $string['tiiaccountsettings'] = 'Turnitin 계정 설정';

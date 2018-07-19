@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin de detectare a plagiatului Turnitin';
-$string['turnitintooltwo'] = 'Instrument Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Procesul plugin de detectare a plagiatului Turnitin';
 $string['connecttesterror'] = 'Eroare la conectarea la Turnitin. S-a returnat mesajul de eroare de mai jos:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Configurarea pluginului de detectare a plagiatului 
 $string['tiiexplain'] = 'Turnitin este un produs comercial și trebuie să aveți un abonament plătit pentru a folosi acest serviciu. Pentru mai multe informații citiți <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Activare Turnitin';
 $string['useturnitin_mod'] = 'Activare Turnitin pentru {$a}';
-$string['pp_configuredesc'] = 'Trebuie să configurați acest modul în modulul turnitintooltwo. Faceți clic <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>aici</a> pentru a configura acest plugin';
 $string['turnitindefaults'] = 'Setările implicite ale pluginului de detectare a plagiatului Turnitin';
 $string['defaultsdesc'] = 'Următoarele setări sunt valorile implicite setate la activarea Turnitin într-un modul de activitate';
 $string['turnitinpluginsettings'] = 'Setări plugin de detectare a plagiatului Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Avem o problemă temporară. Încercați 
 $string['defaultinserterror'] = 'Eroare la încercarea de a introduce o valoare de setare implicită în baza de date';
 $string['defaultupdateerror'] = 'Eroare la încercarea de a actualiza o valoare de setare implicită în baza de date';
 $string['tiiassignmentgeterror'] = 'Eroare la încercarea de a obține o temă de la Turnitin';
-$string['assigngeterror'] = 'Imposibil de obținut datele turnitintooltwo';
+$string['assigngeterror'] = 'Imposibil de obținut datele Turnitin';
 $string['classupdateerror'] = 'Nu au putut fi actualizate datele cursului Turnitin';
 $string['pp_createsubmissionerror'] = 'Eroare la încercarea de a crea depunerea în Turnitin';
 $string['pp_updatesubmissionerror'] = 'Eroare la încercarea de a redepune lucrarea în Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'URL-ul API Turnitin';
 $string['tiidebugginglogs'] = 'Depanare și înregistrare în jurnal';
 $string['turnitindiagnostic'] = 'Activați Modul diagnostic';
 $string['enableperformancelogs'] = 'Activarea înregistrării în jurnal a performanțelor rețelei';
-$string['enableperformancelogs_desc'] = 'Dacă activați opțiunea, fiecare solicitare trimisă serverului Turnitin va fi înregistrată în jurnalele din {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Dacă activați opțiunea, fiecare solicitare trimisă serverului Turnitin va fi înregistrată în jurnalele din {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Atenție]</b><br />Activați Modul diagnostic numai pentru a identifica problemele cu API Turnitin.';
 $string['tiiaccountsettings_desc'] = 'Asigurați-vă că aceste setări sunt identice cu cele pe care le-ați configurat în contul Turnitin, în caz contrar puteți întâmpina probleme în crearea temelor și/dau în lucrul cu materialele depuse de studenți.';
 $string['tiiaccountsettings'] = 'Setările contului Turnitin';

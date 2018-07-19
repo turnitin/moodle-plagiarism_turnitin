@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'المكون الإضافي الخاص بسرقة محتوى Turnitin';
-$string['turnitintooltwo'] = 'أداة Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'وظيفة المكون الإضافي الخاص بسرقة محتوى Turnitin';
 $string['connecttesterror'] = 'حدث خطأ أثناء الاتصال بـ Turnitin وهذه رسالة الخطأ:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'تكوين المكون الإضافي الخاص �
 $string['tiiexplain'] = 'Turnitin هو منتج تجاري، ويجب أن يكون لديك اشتراك مدفوع لاستخدام هذه الخدمة، لمزيد من المعلومات راجع <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'تمكين Turnitin';
 $string['useturnitin_mod'] = 'تمكين Turnitin لـ {$a}';
-$string['pp_configuredesc'] = 'يجب عليك تكوين هذه الوحدة داخل وحدة turnitintooltwo . يرجى النقر <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>هنا </a>لتكوين المكون الإضافي هذا';
 $string['turnitindefaults'] = 'الاعدادات الافتراضية لمكون الانتحال في Turnitin';
 $string['defaultsdesc'] = 'الاعدادات التالية هي الاعدادات الإفتراضية التي تم تحديدها حين تم تفعيل Turnitinضمن نموذج فعالية';
 $string['turnitinpluginsettings'] = 'الاعدادات لمكون الانتحال في Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'نحن نواجه مشكلة في الو�
 $string['defaultinserterror'] = 'حدث خطأ عند محاولة إدخال قيمة إعداد إفتراضي لقاعدة البيانات';
 $string['defaultupdateerror'] = 'حدث خطأ عند محاولة تحديث قيمة إعداد إفتراضي في قاعدة البيانات';
 $string['tiiassignmentgeterror'] = 'حدث خطأ عند محاولة الحصول على مهمة من Turnitin';
-$string['assigngeterror'] = 'لا يمكن الحصول على بيانات أدوات turnitintooltwo';
+$string['assigngeterror'] = 'لا يمكن الحصول على بيانات أدوات Turnitin';
 $string['classupdateerror'] = 'لا يمكن تحديث بيانات درس Turnitin';
 $string['pp_createsubmissionerror'] = 'حدث خطأ عند محاولة إنشاء التسليم في Turnitin';
 $string['pp_updatesubmissionerror'] = 'حدث خطأ عند محاولة إعادة تسليم ما قمت بتسليمه الى Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API-URL';
 $string['tiidebugginglogs'] = 'تصحيح الأخطاء والتسجيل';
 $string['turnitindiagnostic'] = 'تفعيل الوضع التشخيصي';
 $string['enableperformancelogs'] = 'تمكين تسجيل أداء الشبكة';
-$string['enableperformancelogs_desc'] = 'في حالة التمكين، سيتم تسجيل كل طلب موجه إلى خادم Turnitin في {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'في حالة التمكين، سيتم تسجيل كل طلب موجه إلى خادم Turnitin في {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[تحذير]</b><br />قم بتمكين الوضع التشخيصي فقط لتتبع المشكلات من خلال Turnitin API.';
 $string['tiiaccountsettings_desc'] = 'يرجى التأكد أن هذه الإعدادات تطابق الإعدادات المكونة في حساب turnitin الخاص بك، وإلا فقد تواجه مشكلات مع إنشاء المهام و/أو إرسالات الطلاب.';
 $string['tiiaccountsettings'] = 'إعدادات حساب Turnitin ';

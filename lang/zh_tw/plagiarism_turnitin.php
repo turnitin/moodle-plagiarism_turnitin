@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin 剽竊 Plugin';
-$string['turnitintooltwo'] = 'Turnitin 工具';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 剽竊 Plugin 工作';
 $string['connecttesterror'] = '連線至 Turnitin 時發生錯誤，傳回的錯誤訊息如下：<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin 剽竊 Plugin 配置';
 $string['tiiexplain'] = 'Turnitin 為商務產品。您必須付費訂閱，才能使用此服務。如需更多資訊，請參閱　<a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = '啟用 Turnitin';
 $string['useturnitin_mod'] = '啟用 Turnitin 的對象 {$a}';
-$string['pp_configuredesc'] = '您必須在turnitintooltwo單元內配置此單元。請按一下<a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>這裡</a>，以配置此 Plugin';
 $string['turnitindefaults'] = 'Turnitin 剽竊 Plugin 預設設定';
 $string['defaultsdesc'] = '以下設定是在活動單元內啟用 Turnitin時的預設集';
 $string['turnitinpluginsettings'] = 'Turnitin 剽竊 Plugin 設定';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '發生暫時性問題。請稍後再試�
 $string['defaultinserterror'] = '嘗試將預設的設定值插入資料庫時發生錯誤';
 $string['defaultupdateerror'] = '嘗試更新資料庫中預設的設定值時發生錯誤';
 $string['tiiassignmentgeterror'] = '嘗試從 Turnitin 內取得作業時發生錯誤';
-$string['assigngeterror'] = '無法取得 turnitintooltwo 資料';
+$string['assigngeterror'] = '無法取得 Turnitin 資料';
 $string['classupdateerror'] = '無法更新 Turnitin 課程資料';
 $string['pp_createsubmissionerror'] = '嘗試在 Turnitin 內建立提交物件時發生錯誤';
 $string['pp_updatesubmissionerror'] = '嘗試將您的提交物件重新提交至 Turnitin 時發生錯誤';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = '偵錯和記錄';
 $string['turnitindiagnostic'] = '啟用診斷模式';
 $string['enableperformancelogs'] = '開啓網路效能記錄';
-$string['enableperformancelogs_desc'] = '如果啟用，送至 Turnitin 伺服器的每個要求都將記錄在 {tempdir}/turnitintooltwo/logs 中';
+$string['enableperformancelogs_desc'] = '如果啟用，送至 Turnitin 伺服器的每個要求都將記錄在 {tempdir}/plagiarism_turnitin/logs 中';
 $string['turnitindiagnostic_desc'] = '<b>[警告]</b><br />啟用診斷模式，只能追蹤 Turnitin API 的問題。';
 $string['tiiaccountsettings_desc'] = '請確定這些設定和 Turnitin 帳戶中配置的設定相符，否則您可能會遇到有關作業建立和/或學生提交的問題。';
 $string['tiiaccountsettings'] = 'Turnitin 帳戶設定';

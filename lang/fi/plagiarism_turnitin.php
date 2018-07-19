@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin plagiointi plugin-laajennus';
-$string['turnitintooltwo'] = 'Turnitin-työkalu';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin plagiointi plugin-tehtävä';
 $string['connecttesterror'] = 'Turnitiniin liittymisessä ilmeni virhe. Palautettu virheilmoitus on alla:<br />';
@@ -106,7 +105,6 @@ $string['turnitinconfig'] = 'Turnitin Plagiointi Plugin-lisäosan konfigurointi'
 $string['tiiexplain'] = 'Turnitin on kaupallinen tuote, ja sinulla pitää olla maksettu tilaus voidaksesi käyttää tätä palvelua. Lisätietoja saat täältä: <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Aktivoi Turnitin';
 $string['useturnitin_mod'] = 'Aktivoi Turnitin {$a}';
-$string['pp_configuredesc'] = 'Sinun täytyy konfiguroida tämä moduuli turnitintooltwo-moduulissa. Voit konfiguroida tämän plugin-laajennuksen napsauttamalla <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>tätä</a>';
 $string['turnitindefaults'] = 'Turnitin plagiarismi plugin-laajennuksen oletusasetukset';
 $string['defaultsdesc'] = 'Seuraavat asetukset ovat oletusarvot silloin kun Turnitin on aktivoitu Toimintamoduulin sisällä';
 $string['turnitinpluginsettings'] = 'Turnitin plagiarismi plugin-laajennuksen asetukset';
@@ -209,7 +207,7 @@ $string['turnitinapiurl'] = 'Turnitin API-URL';
 $string['tiidebugginglogs'] = 'Virheiden korjaus ja lokiinkirjaus';
 $string['turnitindiagnostic'] = 'Aktivoi Diagnoosi-tila';
 $string['enableperformancelogs'] = 'Aktivoi verkon suorituskyky-loki';
-$string['enableperformancelogs_desc'] = 'Mikäli aktivoitu, jokainen pyyntö Turnitinin palvelimelle tullaan kirjaamaan tänne: {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Mikäli aktivoitu, jokainen pyyntö Turnitinin palvelimelle tullaan kirjaamaan tänne: {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Varoitus]</b><br />Aktivoi Diagnoosi-tila ainoastaan löytääksesi ongelmia Turnitin API:ssä.';
 $string['tiiaccountsettings_desc'] = 'Varmista, että nämä asetukset ovat samat kuin Turnitin-tilissäsi, sillä muuten tehtävien luonnissa ja/tai opiskelijoiden palautuksissa voi ilmetä ongelmia.';
 $string['tiiaccountsettings'] = 'Turnitin-tilin asetukset';

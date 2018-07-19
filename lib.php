@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2013 iParadigms LLC
  */
 
@@ -24,6 +24,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 // Constants.
+define('PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE', 41943040);
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
@@ -74,9 +75,8 @@ require_once($CFG->dirroot.'/plagiarism/lib.php');
 // Get helper methods.
 require_once(__DIR__.'/locallib.php');
 
-// Require classes from mod/turnitintooltwo.
+// This can't be removed until comms and activity logs are copied across.
 require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_view.class.php');
 
 // Include plugin classes.
 require_once(__DIR__.'/classes/turnitin_assignment.class.php');
@@ -582,9 +582,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
         }
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.colorbox.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.colorbox.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/jquery.tooltipster.js');
+        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.tooltipster.js');
         $PAGE->requires->js($jsurl);
 
         // Include JS strings (closebutton is needed from both plugins).
@@ -1068,7 +1068,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // Deal with legacy error issues.
                         $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
                         if ($errorcode == 0 && $submissiontype == 'file') {
-                            if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                            if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
                                 $errorcode = 2;
                                 $plagiarismfile->errorcode = 2;
                             }
@@ -1083,7 +1083,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 'errorcode'.$plagiarismfile->errorcode,
                                 'plagiarism_turnitin',
                                 array(
-                                    'maxfilesize' => display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE),
+                                    'maxfilesize' => display_size(PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE),
                                     'externalid' => $plagiarismfile->externalid
                                 ));
                         }
@@ -1137,7 +1137,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $errorstring = empty($plagiarismfile->errormsg) ? get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
                             $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
-                                            'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                                            'plagiarism_turnitin', display_size(PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE));
                         }
                         $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin').': '.get_string('deleted', 'plagiarism_turnitin').'<br />';
                         $statusstr .= get_string('because', 'plagiarism_turnitin').'<br />"'.$errorstring.'"';
@@ -2388,7 +2388,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Check file is less than maximum allowed size.
         if ($submissiontype == 'file') {
-            if ($file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+            if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
                 $errorcode = 2;
             }
         }

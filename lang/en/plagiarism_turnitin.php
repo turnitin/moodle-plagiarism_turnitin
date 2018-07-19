@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin plagiarism plugin';
-$string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
 $string['connecttesterror'] = 'There was an error connecting to Turnitin the return error message is below:<br />';
 
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin Plagiarism Plugin Configuration';
 $string['tiiexplain'] = 'Turnitin is a commercial product and you must have a paid subscription to use this service for more information see <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Enable Turnitin';
 $string['useturnitin_mod'] = 'Enable Turnitin for {$a}';
-$string['pp_configuredesc'] = 'You must configure this module within the turnitintooltwo module. Please click <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>here</a> to configure this plugin';
 $string['turnitindefaults'] = 'Turnitin plagiarism plugin default settings';
 $string['defaultsdesc'] = 'The following settings are the defaults set when enabling Turnitin within an Activity Module';
 $string['turnitinpluginsettings'] = 'Turnitin plagiarism plugin settings';
@@ -133,7 +131,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = 'Debugging and Logging';
 $string['turnitindiagnostic'] = 'Enable Diagnostic Mode';
 $string['enableperformancelogs'] = 'Enable Network Performance Logging';
-$string['enableperformancelogs_desc'] = 'If enabled, each request to the Turnitin server will be logged in {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'If enabled, each request to the Turnitin server will be logged in {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Caution]</b><br />Enable Diagnostic mode only to track down problems with the Turnitin API.';
 $string['tiiaccountsettings_desc'] = 'Please ensure these settings match those configured in your Turnitin account, otherwise you may experience issues with assignment creation and/or student submissions.';
 $string['tiiaccountsettings'] = 'Turnitin Account Settings';
@@ -234,7 +232,7 @@ $string['turnitintoolofflineerror'] = 'We are experiencing a temporary problem. 
 $string['defaultinserterror'] = 'There was an error when trying to insert a default setting value into the database';
 $string['defaultupdateerror'] = 'There was an error when trying to update a default setting value in the database';
 $string['tiiassignmentgeterror'] = 'There was an error when trying to get an assignment from Turnitin';
-$string['assigngeterror'] = 'Could not get turnitintooltwo data';
+$string['assigngeterror'] = 'Could not get Turnitin data';
 $string['classupdateerror'] = 'Could not update Turnitin Class data';
 $string['pp_createsubmissionerror'] = 'There was an error trying to create the submission in Turnitin';
 $string['pp_updatesubmissionerror'] = 'There was an error trying to resubmit your submission to Turnitin';
@@ -301,3 +299,6 @@ $string['sprocessing'] = 'Loading data from Turnitin...';
 $string['szerorecords'] = 'No records to display.';
 $string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
 $string['userupdateerror'] = 'Could not update user data';
+$string['connecttestcommerror'] = 'Could not connect to Turnitin. Double check your API URL setting.';
+
+

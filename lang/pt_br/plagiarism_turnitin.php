@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin de plágio Turnitin';
-$string['turnitintooltwo'] = 'Ferramenta Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tarefa do Plugin de Plágio Turnitin';
 $string['connecttesterror'] = 'Ocorreu um erro ao se conectar no Turnitin, a mensagem de erro de retorno está abaixo:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Configurações do Plugin de Plágio Turnitin';
 $string['tiiexplain'] = 'O Turnitin é um produto comercial e você deve pagar uma assinatura para usar esse serviço. Para obter mais informações, consulte <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Habilitar o Turnitin';
 $string['useturnitin_mod'] = 'Habilitar Turnitin para {$a}';
-$string['pp_configuredesc'] = 'Você deve configurar esse módulo dentro do módulo turnitintooltwo. Clique <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>aqui</a> para configurar esse plugin';
 $string['turnitindefaults'] = 'Configurações padrão do plugin de plágio Turnitin';
 $string['defaultsdesc'] = 'As seguintes configurações são as padrões definidas ao ativar o Turnitin em um módulo de atividades';
 $string['turnitinpluginsettings'] = 'Configurações do plugin de plágio Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Estamos passando por um problema temporá
 $string['defaultinserterror'] = 'Ocorreu um erro ao tentar inserir um valor de configuração padrão no banco de dados';
 $string['defaultupdateerror'] = 'Ocorreu um erro ao tentar um valor de configuração padrão no banco de dados';
 $string['tiiassignmentgeterror'] = 'Ocorreu um erro ao tentar obter um trabalho a partir do Turnitin';
-$string['assigngeterror'] = 'Não foi possível obter os dados do turnitintooltwo';
+$string['assigngeterror'] = 'Não foi possível obter os dados do Turnitin';
 $string['classupdateerror'] = 'Não foi possível atualizar os dados da Aula Turnitin';
 $string['pp_createsubmissionerror'] = 'Ocorreu um erro ao tentar criar o envio no Turnitin';
 $string['pp_updatesubmissionerror'] = 'Ocorreu um erro ao tentar reenviar seus envios ao Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'URL da API Turnitin';
 $string['tiidebugginglogs'] = 'Depuração e Registro';
 $string['turnitindiagnostic'] = 'Habilitar Modo Diagnóstico';
 $string['enableperformancelogs'] = 'Habilitar registro de desempenho de rede';
-$string['enableperformancelogs_desc'] = 'Se habilitado, cada solicitação ao servidor do Turnitin será registrada em {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Se habilitado, cada solicitação ao servidor do Turnitin será registrada em {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Cuidado]</b><br />Habilitar modo de Diagnóstico somente para rastrear os problemas com o API do Turnitin.';
 $string['tiiaccountsettings_desc'] = 'Certifique-se que essas configurações correspondem àquelas configuradas em sua conta Turnitin, senão você pode ter problemas com a criação de trabalhos e/ou envios dos alunos.';
 $string['tiiaccountsettings'] = 'Configurações da Conta Turnitin';

@@ -339,13 +339,13 @@ class turnitin_user {
             $user->turnitin_utp = $turnitinuser->turnitin_utp;
             if ((!$DB->update_record('plagiarism_turnitin_users', $user))) {
                 if ($this->workflowcontext != "cron") {
-                    turnitintooltwo_print_error('userupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                    plagiarism_turnitin_print_error('userupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                     exit();
                 }
             }
         } else if (!$DB->insert_record('plagiarism_turnitin_users', $user)) {
             if ($this->workflowcontext != "cron") {
-                turnitintooltwo_print_error('userupdateerror', 'turnitintooltwo', null, null, __FILE__, __LINE__);
+                plagiarism_turnitin_print_error('userupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             }
         }

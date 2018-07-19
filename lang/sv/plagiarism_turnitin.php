@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin plagiatplugin';
-$string['turnitintooltwo'] = 'Turnitin-verktyg';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Pluginuppgiften plagiat i Turnitin';
 $string['connecttesterror'] = 'Det uppstod ett fel vid försök att ansluta till Turnitin. Inkommande felmeddelande visas nedan:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Konfiguration av plagiatplugin i Turnitin';
 $string['tiiexplain'] = 'Turnitin är en kommersiell produkt och du måste ha ett betalt abonnemang för att använda den här tjänsten. För mer information se <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Aktivera Turnitin';
 $string['useturnitin_mod'] = 'Aktivera Turnitin för {$a}';
-$string['pp_configuredesc'] = 'Du måste konfigurera denna modul inom turnitintooltwo modulen. Var god klicka <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>här</a> för att konfigurera denna plugin';
 $string['turnitindefaults'] = 'Turnitin plagiatplugin, standardinställningar';
 $string['defaultsdesc'] = 'Följande inställningar är standardvärden som fastställs vid aktivering av Turnitin inom en Aktivitetsmodul';
 $string['turnitinpluginsettings'] = 'Turnitin plagiatplugin, inställningar';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Vi har ett tillfälligt problem. Försök
 $string['defaultinserterror'] = 'Det uppstod ett fel vid försök att infoga en standardvärdeinställning i databasen';
 $string['defaultupdateerror'] = 'Det uppstod ett fel vid försök att uppdatera en standardvärdeinställning i databasen';
 $string['tiiassignmentgeterror'] = 'Det uppstod ett fel vid försök att hämta en uppgift från Turnitin';
-$string['assigngeterror'] = 'Gick inte att hämta turnitintooltwo data';
+$string['assigngeterror'] = 'Gick inte att hämta Turnitin data';
 $string['classupdateerror'] = 'Kunde inte uppdatera Turnitin-klassinformation';
 $string['pp_createsubmissionerror'] = 'Det uppstod ett fel vid försök att skapa en inlämning i Turnitin';
 $string['pp_updatesubmissionerror'] = 'Det uppstod ett fel vid försök att återinlämna din uppgift till Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API-URL';
 $string['tiidebugginglogs'] = 'Felsökning och loggning';
 $string['turnitindiagnostic'] = 'Aktivera Diagnostikläge';
 $string['enableperformancelogs'] = 'Aktivera Loggning av nätverksprestanda';
-$string['enableperformancelogs_desc'] = 'Om funktionen aktiveras kommer alla anrop till Turnitin-servern att loggas i {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Om funktionen aktiveras kommer alla anrop till Turnitin-servern att loggas i {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Varning]</b><br />Aktivera Diagnostikläge endast för att spåra problem med Turnitin API.';
 $string['tiiaccountsettings_desc'] = 'Kontrollera att dessa inställningar matchar de som du har konfiguerat i ditt Turnitin-konto. Annars kan du få problem med att skapa uppgifter och/eller studentinlämningar.';
 $string['tiiaccountsettings'] = 'Kontoinställningar för Turnitin';

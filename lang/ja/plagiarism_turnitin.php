@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin Plagiarismプラグイン';
-$string['turnitintooltwo'] = 'Turnitinツール';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin Plagiarismプラグインのタスク';
 $string['connecttesterror'] = 'Turnitinへの接続中にエラーが発生しました。エラーメッセージは以下の通りです。<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin Plagiarismプラグインの構成';
 $string['tiiexplain'] = 'Turnitinは商用製品であり、このサービスを利用するにはサービス料のお支払いが必要です。詳しくは、<a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>をご覧ください。';
 $string['useturnitin'] = 'Turnitinを有効にする';
 $string['useturnitin_mod'] = 'Turnitinを有効にする： {$a}';
-$string['pp_configuredesc'] = 'このモジュールはturnitintooltwoモジュール内で設定する必要があります。このプラグインを設定するには<a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>こちら</a>をクリックしてください。';
 $string['turnitindefaults'] = 'Turnitin Plagiarismプラグインデフォルト設定';
 $string['defaultsdesc'] = '次の設定はアクティビティーモジュール内のTurnitinを有効にする際のデフォルト設定です';
 $string['turnitinpluginsettings'] = 'Turnitin Plagiarismプラグイン設定';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '現在一時的な問題が発生して�
 $string['defaultinserterror'] = 'データベースのデフォルト設定値を挿入中にエラーが発生しました';
 $string['defaultupdateerror'] = 'データベースのデフォルト設定値を更新中にエラーが発生しました';
 $string['tiiassignmentgeterror'] = 'Turnitinから課題を入手する際にエラーが発生しました';
-$string['assigngeterror'] = 'turnitintooltwoデータを取得できませんでした';
+$string['assigngeterror'] = 'Turnitinデータを取得できませんでした';
 $string['classupdateerror'] = 'Turnitinクラスのデータを更新できませんでした';
 $string['pp_createsubmissionerror'] = 'Turnitinで提出物を作成する際にエラーが発生しました';
 $string['pp_updatesubmissionerror'] = '提出物をTurnitinへ再提出する際にエラーが発生しました';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['tiidebugginglogs'] = 'デバッグとログ';
 $string['turnitindiagnostic'] = '診断モードをオンにする';
 $string['enableperformancelogs'] = 'ネットワークパフォーマンスログを有効にする';
-$string['enableperformancelogs_desc'] = '有効にすると、Turnitinサーバーへの各リクエストは{tempdir}/turnitintooltwo/logsにログされます。';
+$string['enableperformancelogs_desc'] = '有効にすると、Turnitinサーバーへの各リクエストは{tempdir}/plagiarism_turnitin/logsにログされます。';
 $string['turnitindiagnostic_desc'] = '<b>[注意]</b><br />Turnitin APIを使用して診断モードを有効にするのは、問題を追跡するときにだけにしてください。';
 $string['tiiaccountsettings_desc'] = 'これらの設定がTurnitinアカウントでの構成と一致していることを確認してください。一致していないと、課題の作成や学生の提出物に問題が発生することがあります。';
 $string['tiiaccountsettings'] = 'Turnitinアカウントの設定';

@@ -71,7 +71,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('orcapable', $privacyfields);
         $this->assertArrayHasKey('student_read', $privacyfields);
 
-        // Verify turnitintooltwo_client data is returned.
+        // Verify plagiarism_turnitin_client data is returned.
         $this->assertEquals('plagiarism_turnitin_client', $itemcollection[2]->get_name());
 
         $privacyfields = $itemcollection[2]->get_privacy_fields();

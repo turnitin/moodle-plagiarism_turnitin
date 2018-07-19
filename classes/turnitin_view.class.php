@@ -115,7 +115,7 @@ class turnitin_view {
 
         if ($location == "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
-            $mform->addElement('html', get_string("defaultsdesc", "turnitintooltwo"));
+            $mform->addElement('html', get_string("defaultsdesc", "plagiarism_turnitin"));
         }
 
         if ($location != "defaults") {
@@ -126,9 +126,9 @@ class turnitin_view {
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-            $PAGE->requires->jquery_plugin('turnitintooltwo-colorbox', 'mod_turnitintooltwo');
+            $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
 
-            $cssurl = new moodle_url('/mod/turnitintooltwo/css/colorbox.css');
+            $cssurl = new moodle_url('/mod/plagiarism/turnitin/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
             // Refresh Grades.
@@ -185,23 +185,23 @@ class turnitin_view {
         $locks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
 
         if (empty($configwarning)) {
-            $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
 
-            $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'plagiarism_turnitin');
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
-                $tiidraftoptions = array(0 => get_string("submitondraft", "turnitintooltwo"),
-                                         1 => get_string("submitonfinal", "turnitintooltwo"));
+                $tiidraftoptions = array(0 => get_string("submitondraft", "plagiarism_turnitin"),
+                                         1 => get_string("submitonfinal", "plagiarism_turnitin"));
 
-                $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "turnitintooltwo"), $tiidraftoptions);
+                $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "plagiarism_turnitin"), $tiidraftoptions);
                 $this->lock($mform, $location, $locks);
                 $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
             }
 
-            $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
@@ -237,11 +237,11 @@ class turnitin_view {
             $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'plagiarism_turnitin'),
                                                                                 array('class' => 'tii_checkagainstnote')));
 
-            $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
-            $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
-            $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
 
             if ($config->plagiarism_turnitin_repositoryoption == 1) {
@@ -250,14 +250,14 @@ class turnitin_view {
                 $this->lock($mform, $location, $locks);
             }
 
-            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "turnitintooltwo"), $genoptions, array('class' => 'selectlong'));
+            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "plagiarism_turnitin"), $genoptions, array('class' => 'selectlong'));
             $this->lock($mform, $location, $locks);
-            $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
-            $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "turnitintooltwo"), $options);
+            $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
 
-            $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "turnitintooltwo"),
+            $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "plagiarism_turnitin"),
                                                                                 $excludetypeoptions);
             $this->lock($mform, $location, $locks);
             $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
@@ -343,7 +343,7 @@ class turnitin_view {
                                                                                 array('class' => 'tii_anonblindmarkingnote')));
 
             if ($config->plagiarism_turnitin_transmatch) {
-                $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "turnitintooltwo"), $options);
+                $mform->addElement('select', 'plagiarism_transmatch', get_string("transmatch", "plagiarism_turnitin"), $options);
             } else {
                 $mform->addElement('hidden', 'plagiarism_transmatch', 0);
             }
@@ -441,7 +441,7 @@ class turnitin_view {
                     if (is_null($errorcode)) {
                         $errorcode = 0;
                         if ($v->submissiontype == 'file') {
-                            if (is_object($file) && $file->get_filesize() > TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE) {
+                            if (is_object($file) && $file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
                                 $errorcode = 2;
                             }
                         }
@@ -453,7 +453,7 @@ class turnitin_view {
                         $errorstring = (is_null($errormsg)) ? get_string('ppsubmissionerrorseelogs', 'plagiarism_turnitin') : $errormsg;
                     } else {
                         $errorstring = get_string('errorcode'.$v->errorcode,
-                                            'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                                            'plagiarism_turnitin', display_size(PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE));
                     }
                     $cells["error"] = $errorstring;
 

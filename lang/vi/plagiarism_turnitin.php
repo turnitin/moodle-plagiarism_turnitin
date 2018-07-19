@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Phần bổ trợ chống đạo văn của Turnitin';
-$string['turnitintooltwo'] = 'Công cụ Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tác vụ của Phần bổ trợ Chống đạo văn của Turnitin';
 $string['connecttesterror'] = 'Xảy ra lỗi khi kết nối với Turnitin, thông báo lỗi như sau:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Cấu hình phần Bổ trợ về Đạo văn củ
 $string['tiiexplain'] = 'Turnitin là một sản phẩm thương mại và bạn phải trả phí thuê bao đăng ký để sử dụng dịch vụ này. Để biết thêm thông tin, vui lòng xem <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Cho phép Turnitin';
 $string['useturnitin_mod'] = 'Cho phép Turnitin cho {$a}';
-$string['pp_configuredesc'] = 'Bạn phải định cấu hình mô-đun này bên trong mô-đun turnitintooltwo. Vui lòng nhấp vào <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>đây</a> để định cấu hình phần bổ trợ này';
 $string['turnitindefaults'] = 'Cài đặt mặc định phần bổ trợ chống đạo văn của Turnitin';
 $string['defaultsdesc'] = 'Các cài đặt sau đây là mặc định khi cho phép Turnitin bên trong một Mô-đun Hoạt động';
 $string['turnitinpluginsettings'] = 'Cài đặt phần bổ trợ chống đạo văn của Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Chúng tôi hiện đang gặp một sự
 $string['defaultinserterror'] = 'Xảy ra lỗi khi cố gắng chèn một giá trị cài đặt mặc định vào cơ sở dữ liệu';
 $string['defaultupdateerror'] = 'Xảy ra lỗi khi cố gắng cập nhật một giá trị cài đặt mặc định vào cơ sở dữ liệu';
 $string['tiiassignmentgeterror'] = 'Xảy ra lỗi khi cố gắng lấy một bài tập từ Turnitin';
-$string['assigngeterror'] = 'Không thể lấy dữ liệu turnitintooltwo';
+$string['assigngeterror'] = 'Không thể lấy dữ liệu Turnitin';
 $string['classupdateerror'] = 'Không thể cập nhật dữ liệu Lớp Turnitin';
 $string['pp_createsubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng tạo bài nộp trên Turnitin';
 $string['pp_updatesubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng nộp lại bài nộp trên Turnitin';
@@ -207,7 +205,7 @@ $string['turnitinapiurl'] = 'URL API Turnitin';
 $string['tiidebugginglogs'] = 'Gỡ lỗi và Ghi nhật ký';
 $string['turnitindiagnostic'] = 'Bật Cho phép Chế độ Chẩn đoán';
 $string['enableperformancelogs'] = 'Cho phép ghi log Hiệu năng Mạng';
-$string['enableperformancelogs_desc'] = 'Nếu cho phép, mỗi yêu cầu gửi đến máy chủ Turnitin sẽ được ghi lại vào {tempdir}/turnitintooltwo/logs';
+$string['enableperformancelogs_desc'] = 'Nếu cho phép, mỗi yêu cầu gửi đến máy chủ Turnitin sẽ được ghi lại vào {tempdir}/plagiarism_turnitin/logs';
 $string['turnitindiagnostic_desc'] = '<b>[Cẩn thận]</b><br />Bật chế độ Chẩn đoán chỉ để tìm các sự cố với API Turnitin.';
 $string['tiiaccountsettings_desc'] = 'Vui lòng đảm bảo rằng các cài đặt này phù hợp với những cài đặt được định cấu hình trong tài khoản Turnitin của bạn, nếu không bạn có thể gặp sự cố với việc tạo bài tập và/hoặc bài nộp của học sinh.';
 $string['tiiaccountsettings'] = 'Cài đặt Tài khoản Turnitin';

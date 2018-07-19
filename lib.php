@@ -2689,7 +2689,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $field = $property;
         }
 
-        set_config($field, $data->$property, 'plagiarism');
+        if (isset($data->$property)) {
+            set_config($field, $data->$property, 'plagiarism');
+        }
     }
 }
 

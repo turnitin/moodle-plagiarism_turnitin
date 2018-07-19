@@ -217,5 +217,16 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
 
         $this->assertEquals("Test", $config->plagiarism_turnitin_secretkey);
+
+        // Check that an undefined property does not set a config value.
+        $data = new stdClass();
+        $data->test = "Test";
+        $property = "NotTest";
+        $plagiarismturnitin->plagiarism_set_config($data, $property);
+
+        // Get the config.
+        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+
+        $this->assertObjectNotHasAttribute("plagiarism_turnitin_test", $config);
     }
 }

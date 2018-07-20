@@ -224,10 +224,10 @@ switch ($action) {
         $eulauser->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {
             $eulauser->user_agreement_accepted = 1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
+            plagiarism_turnitin_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
             $eulauser->user_agreement_accepted = -1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
+            plagiarism_turnitin_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
         }
 
         // Update the user using the above object.

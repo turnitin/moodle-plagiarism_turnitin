@@ -21,10 +21,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/* We can't currently use the sdk classes as the class is already declared from mod/turnitintooltwo.
- * require_once(__DIR__.'/../sdk/api.class.php');
- */
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
+/*
+ * This is necessary to cover the scenario where a user has both this plugin and Moodle Direct V2 installed.
+ * As both plugins include the SDK from different places require_once alone won't work.
+*/
+if(!class_exists('TurnitinAPI')) {
+    require_once(__DIR__.'/../sdk/api.class.php');
+}
+
+//require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 class turnitin_comms {
@@ -66,7 +71,7 @@ class turnitin_comms {
                                 $this->tiiintegrationid, $this->langcode);
         // Enable logging if diagnostic mode is turned on.
         if ($this->diagnostic) {
-            $api->setLogPath($CFG->tempdir.'/turnitintooltwo/logs/');
+            $api->setLogPath($CFG->tempdir.'/plagiarism_turnitin/logs/');
         }
 
         // Use Moodle's proxy settings if specified.
@@ -148,7 +153,7 @@ class turnitin_comms {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
-        turnitintooltwo_activitylog($errorstr, "API_ERROR");
+        plagiarism_turnitin_activitylog($errorstr, "API_ERROR");
         if ($toscreen) {
             plagiarism_turnitin_print_error($errorstr, null);
         } else if ($embedded) {

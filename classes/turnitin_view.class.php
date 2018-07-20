@@ -18,7 +18,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
+//require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 global $tiipp;

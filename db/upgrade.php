@@ -323,7 +323,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             try {
                 $DB->insert_records('plagiarism_turnitin_courses', $ppcourses);
             } catch (Exception $e) {
-                turnitintooltwo_activitylog('Unable to copy course tables during version upgrade because they already exist.', 'PP_UPGRADE');
+                plagiarism_turnitin_activitylog('Unable to copy course tables during version upgrade because they already exist.', 'PP_UPGRADE');
             }
 
             // Clean up old data, but only if the number of courses inserted matches the number of courses we wanted to insert.
@@ -381,7 +381,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             try {
                 $DB->insert_records('plagiarism_turnitin_users', $ppusers);
             } catch (Exception $e) {
-                turnitintooltwo_activitylog('Unable to copy users table during version upgrade because they already exist.', 'PP_UPGRADE');
+                plagiarism_turnitin_activitylog('Unable to copy users table during version upgrade because they already exist.', 'PP_UPGRADE');
             }
         }
     }

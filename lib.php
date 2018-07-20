@@ -75,9 +75,6 @@ require_once($CFG->dirroot.'/plagiarism/lib.php');
 // Get helper methods.
 require_once(__DIR__.'/locallib.php');
 
-// This can't be removed until comms and activity logs are copied across.
-require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
-
 // Include plugin classes.
 require_once(__DIR__.'/classes/turnitin_assignment.class.php');
 require_once(__DIR__.'/classes/turnitin_view.class.php');
@@ -2524,14 +2521,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $file = $fs->get_file_by_hash($pathnamehash);
 
                 if (!$file) {
-                    turnitintooltwo_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
+                    plagiarism_turnitin_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
                     $result = true;
                     continue;
                 } else {
                     try {
                         $file->get_content();
                     } catch (Exception $e) {
-                        turnitintooltwo_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
+                        plagiarism_turnitin_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
                         mtrace($e);
                         mtrace('File content not found. pathnamehash: '.$pathnamehash);
                         $result = true;
@@ -2570,7 +2567,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->submissiontype = $submissiontype;
 
         if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_NEW_SUB");
+            plagiarism_turnitin_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_NEW_SUB");
             $fileid = 0;
         }
 
@@ -2597,7 +2594,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->orcapable = null;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_REPLACE_SUB");
+            plagiarism_turnitin_activitylog("Update record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_REPLACE_SUB");
         }
     }
 
@@ -2682,7 +2679,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->errorcode = $errorcode;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitintooltwo_activitylog("Update record failed (Submission: ".$submissionid.") - ", "PP_UPDATE_SUB_ERROR");
+            plagiarism_turnitin_activitylog("Update record failed (Submission: ".$submissionid.") - ", "PP_UPDATE_SUB_ERROR");
         }
 
         return true;
@@ -2716,11 +2713,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($submissionid != 0) {
             if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$userid.") - ", "PP_UPDATE_SUB_ERROR");
+                plagiarism_turnitin_activitylog("Update record failed (CM: ".$cm->id.", User: ".$userid.") - ", "PP_UPDATE_SUB_ERROR");
             }
         } else {
             if (!$DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                turnitintooltwo_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$userid.") - ", "PP_INSERT_SUB_ERROR");
+                plagiarism_turnitin_activitylog("Insert record failed (CM: ".$cm->id.", User: ".$userid.") - ", "PP_INSERT_SUB_ERROR");
             }
         }
 
@@ -2815,7 +2812,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $outputvars->cm = $queueditem->cm;
             $outputvars->userid = $queueditem->userid;
 
-            turnitintooltwo_activitylog(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
+            plagiarism_turnitin_activitylog(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
             continue;
         }
 
@@ -2920,7 +2917,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $file = $fs->get_file_by_hash($queueditem->identifier);
 
                     if (!$file) {
-                        turnitintooltwo_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
+                        plagiarism_turnitin_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
                         mtrace('File not found for submission. Identifier: '.$queueditem->id);
                         $errorcode = 9;
                         continue;
@@ -2932,7 +2929,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                     try {
                         $textcontent = $file->get_content();
                     } catch (Exception $e) {
-                        turnitintooltwo_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
+                        plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
                         mtrace($e);
                         mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                         $errorcode = 9;
@@ -3200,7 +3197,7 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
     global $CFG;
 
     // This is to be changed in INT-10691.
-    turnitintooltwo_activitylog($input, "PRINT_ERROR");
+    plagiarism_turnitin_activitylog($input, "PRINT_ERROR");
 
     $message = (is_null($module)) ? $input : get_string($input, $module, $param);
     $linkid = optional_param('id', 0, PARAM_INT);
@@ -3229,4 +3226,51 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
  */
 function plagiarism_turnitin_mtrace($string, $eol) {
     return true;
+}
+
+/**
+ * Log activity / errors
+ *
+ * @param string $string The string describing the activity
+ * @param string $activity The activity prompting the log
+ * e.g. PRINT_ERROR (default), API_ERROR, INCLUDE, REQUIRE_ONCE, REQUEST, REDIRECT
+ */
+function plagiarism_turnitin_activitylog($string, $activity) {
+    global $CFG;
+
+    static $config;
+    if (empty($config)) {
+        $config = plagiarism_turnitin_admin_config();
+    }
+
+    if ($config->enablediagnostic) {
+        // We only keep 10 log files, delete any additional files.
+        $prefix = "activitylog_";
+
+        $dirpath = $CFG->tempdir."/plagiarism_turnitin/logs";
+        if (!file_exists($dirpath)) {
+            mkdir($dirpath, 0777, true);
+        }
+        $dir = opendir($dirpath);
+        $files = array();
+        while ($entry = readdir($dir)) {
+            if (substr(basename($entry), 0, 1) != "." AND substr_count(basename($entry), $prefix) > 0) {
+                $files[] = basename($entry);
+            }
+        }
+        sort($files);
+        for ($i = 0; $i < count($files) - 10; $i++) {
+            unlink($dirpath."/".$files[$i]);
+        }
+
+        // Replace <br> tags with new line character.
+        $string = str_replace("<br/>", "\r\n", $string);
+
+        // Write to log file.
+        $filepath = $dirpath."/".$prefix.gmdate('Y-m-d', time()).".txt";
+        $file = fopen($filepath, 'a');
+        $output = date('Y-m-d H:i:s O')." (".$activity.")"." - ".$string."\r\n";
+        fwrite($file, $output);
+        fclose($file);
+    }
 }

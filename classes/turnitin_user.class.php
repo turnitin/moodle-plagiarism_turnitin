@@ -190,7 +190,7 @@ class turnitin_user {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         if (!empty($config->enablepseudo) && $this->role == "Learner") {
@@ -228,7 +228,7 @@ class turnitin_user {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Convert the email, firstname and lastname to pseudos for students if the option is set in config
@@ -252,7 +252,7 @@ class turnitin_user {
             $newuser = $response->getUser();
             $tiiuserid = $newuser->getUserId();
 
-            turnitintooltwo_activitylog("Turnitin User created: ".$this->id." (".$tiiuserid.")", "REQUEST");
+            plagiarism_turnitin_activitylog("Turnitin User created: ".$this->id." (".$tiiuserid.")", "REQUEST");
 
             return $tiiuserid;
 
@@ -272,7 +272,7 @@ class turnitin_user {
     public function edit_tii_user() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Only update if pseudo is not enabled.
@@ -314,7 +314,7 @@ class turnitin_user {
             $DB->update_record('plagiarism_turnitin_users', $tiiuser);
         }
 
-        turnitintooltwo_activitylog("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
+        plagiarism_turnitin_activitylog("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
     }
 
 
@@ -359,7 +359,7 @@ class turnitin_user {
      * @return boolean
      */
     public function join_user_to_class($tiicourseid) {
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
 
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
@@ -368,7 +368,6 @@ class turnitin_user {
         if (isset($config->enablediagnostic) && $config->enablediagnostic != 2) {
             $turnitincomms->set_diagnostic(0);
         }
-        $turnitincomms = new turnitintooltwo_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $membership = new TiiMembership();
@@ -379,7 +378,7 @@ class turnitin_user {
         try {
             $turnitincall->createMembership($membership);
 
-            turnitintooltwo_activitylog("User ".$this->id." (".$this->tiiuserid.") joined to class (".
+            plagiarism_turnitin_activitylog("User ".$this->id." (".$this->tiiuserid.") joined to class (".
                 $tiicourseid.")", "REQUEST");
 
             return true;
@@ -403,7 +402,7 @@ class turnitin_user {
     public function get_accepted_user_agreement() {
         global $DB;
 
-        $turnitincomms = new turnitintooltwo_comms();
+        $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new TiiUser();

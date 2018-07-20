@@ -17,7 +17,6 @@
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
-require_once($CFG->dirroot.'/mod/turnitintooltwo/lib.php');
 require_once(__DIR__.'/lib.php');
 require_once(__DIR__.'/classes/turnitin_view.class.php');
 

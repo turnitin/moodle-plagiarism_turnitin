@@ -29,7 +29,7 @@ if(!class_exists('TurnitinAPI')) {
     require_once(__DIR__.'/../sdk/api.class.php');
 }
 
-//require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_perflog.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 class turnitin_comms {
@@ -112,7 +112,7 @@ class turnitin_comms {
             plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
         $api->setTestingConnection($istestingconnection);
-        $api->setPerformanceLog(new turnitintooltwo_performancelog());
+        $api->setPerformanceLog(new turnitin_performancelog());
 
         return $api;
     }

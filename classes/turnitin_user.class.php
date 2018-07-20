@@ -102,7 +102,7 @@ class turnitin_user {
      */
     public static function get_pseudo_domain() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $domain = empty($config->pseudoemaildomain) ? PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->pseudoemaildomain;
+        $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ? PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->pseudoemaildomain;
 
         return $domain;
     }
@@ -115,7 +115,7 @@ class turnitin_user {
     public function get_pseudo_firstname() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        return !empty( $config->pseudofirstname ) ? $config->pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
+        return !empty( $config->plagiarism_turnitin_pseudofirstname ) ? $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
     }
 
     /**
@@ -129,11 +129,11 @@ class turnitin_user {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $userinfo = $DB->get_record('user_info_data', array('userid' => $this->id, 'fieldid' => $config->pseudolastname));
 
-        if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->pseudolastname != 0 && $config->lastnamegen == 1) {
+        if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 && $config->plagiarism_turnitin_lastnamegen == 1) {
             $uniqueid = strtoupper(strrev(uniqid()));
             $userinfoob = new stdClass();
             $userinfoob->userid = $this->id;
-            $userinfoob->fieldid = $config->pseudolastname;
+            $userinfoob->fieldid = $config->plagiarism_turnitin_pseudolastname;
             $userinfoob->data = $uniqueid;
             if (isset($userinfoob->data)) {
                 $userinfoob->id = $userinfo->id;
@@ -141,7 +141,7 @@ class turnitin_user {
             } else {
                 $DB->insert_record('user_info_data', $userinfo);
             }
-        } else if ($config->pseudolastname != 0) {
+        } else if ($config->plagiarism_turnitin_pseudolastname != 0) {
             $uniqueid = $userinfo->data;
         } else {
             $uniqueid = get_string('user');
@@ -193,9 +193,9 @@ class turnitin_user {
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
-        if (!empty($config->enablepseudo) && $this->role == "Learner") {
+        if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
             $user = new TiiPseudoUser($this->get_pseudo_domain());
-            $user->setPseudoSalt($config->pseudosalt);
+            $user->setPseudoSalt($config->plagiarism_turnitin_pseudosalt);
         } else {
             $user = new TiiUser();
         }
@@ -233,9 +233,9 @@ class turnitin_user {
 
         // Convert the email, firstname and lastname to pseudos for students if the option is set in config
         // Unless the user is already logged as a tutor then use real details.
-        if (!empty($config->enablepseudo) && $this->role == "Learner") {
+        if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
             $user = new TiiPseudoUser($this->get_pseudo_domain());
-            $user->setPseudoSalt($config->pseudosalt);
+            $user->setPseudoSalt($config->plagiarism_turnitin_pseudosalt);
             $user->setFirstName($this->get_pseudo_firstname());
             $user->setLastName($this->get_pseudo_lastname());
         } else {
@@ -276,7 +276,7 @@ class turnitin_user {
         $turnitincall = $turnitincomms->initialise_api();
 
         // Only update if pseudo is not enabled.
-        if (empty($config->enablepseudo)) {
+        if (empty($config->plagiarism_turnitin_enablepseudo)) {
             $user = new TiiUser();
             $user->setFirstName($this->firstname);
             $user->setLastName($this->lastname);
@@ -365,7 +365,7 @@ class turnitin_user {
         if (empty($config)) {
             $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         }
-        if (isset($config->enablediagnostic) && $config->enablediagnostic != 2) {
+        if (isset($config->plagiarism_turnitin_enablediagnostic) && $config->plagiarism_turnitin_enablediagnostic != 2) {
             $turnitincomms->set_diagnostic(0);
         }
         $turnitincall = $turnitincomms->initialise_api();
@@ -525,7 +525,7 @@ class turnitin_user {
             $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', array("class" => "browser_checkbox"));
 
             $pseudoemail = "";
-            if (!empty($config->enablepseudo)) {
+            if (!empty($config->plagiarism_turnitin_enablepseudo)) {
                 $pseudouser = new TiiPseudoUser(turnitin_user::get_pseudo_domain());
                 $pseudouser->setEmail($user->email);
                 $pseudoemail = $pseudouser->getEmail();

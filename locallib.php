@@ -35,7 +35,7 @@ if (!defined('MOODLE_INTERNAL')) {
 function plagiarism_turnitin_override_repository($submitpapersto) {
     $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-    switch ($config->repositoryoption) {
+    switch ($config->plagiarism_turnitin_repositoryoption) {
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
             break;

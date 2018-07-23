@@ -21,16 +21,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * This is necessary to cover the scenario where a user has both this plugin and Moodle Direct V2 installed.
- * As both plugins include the SDK from different places require_once alone won't work.
-*/
-if(!class_exists('TurnitinAPI')) {
-    require_once(__DIR__.'/../sdk/api.class.php');
-}
-
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_perflog.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+
+use Integrations\PhpSdk\TurnitinAPI;
 
 class turnitin_comms {
 
@@ -111,8 +106,8 @@ class turnitin_comms {
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
             plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setIsTestingConnection($istestingconnection);
-        $api->setPerfLog(new turnitin_performancelog());
+        $api->setTestingConnection($istestingconnection);
+        $api->setPerformanceLog(new turnitin_performancelog());
 
         return $api;
     }

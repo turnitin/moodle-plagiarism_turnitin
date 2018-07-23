@@ -16,10 +16,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../sdk/perflog.class.php');
-require_once(__DIR__.'/../lib.php');
+/*
+ * This is necessary to cover the scenario where a user has both this plugin and Moodle Direct V2 installed.
+ * As both plugins include the SDK from different places require_once alone won't work.
+*/
+if(!class_exists('PerformanceLog')) {
+    require_once(__DIR__ . '/../sdk/perflog.class.php');
+}
 
-class turnitin_performancelog extends PerfLog {
+class turnitin_performancelog extends PerformanceLog {
 
     /**
      * Log networking performance details of an individual request

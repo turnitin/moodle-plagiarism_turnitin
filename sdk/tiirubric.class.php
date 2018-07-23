@@ -17,7 +17,7 @@ class TiiRubric {
 
     private $rubricid;
     private $rubricname;
-    private $rubricgroupname;
+	private $rubricgroupname;
 
     /**
      * Get the Id for this Rubric

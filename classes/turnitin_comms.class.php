@@ -111,8 +111,8 @@ class turnitin_comms {
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
             plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setTestingConnection($istestingconnection);
-        $api->setPerformanceLog(new turnitin_performancelog());
+        $api->setIsTestingConnection($istestingconnection);
+        $api->setPerfLog(new turnitin_performancelog());
 
         return $api;
     }

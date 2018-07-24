@@ -8,8 +8,7 @@ use Integrations\PhpSdk\TiiClass;
 
 $logdir = getcwd().'/logs';
 
-$api = new TurnitinAPI(8624, 'https://sprintx.turnitinuk.com', '12345678', '13');
-//$api = new TurnitinAPI(TII_ACCOUNT, TII_APIBASEURL, TII_SECRET, TII_APIPRODUCT);
+$api = new TurnitinAPI(TII_ACCOUNT, TII_APIBASEURL, TII_SECRET, TII_APIPRODUCT);
 
 $api->setLogPath($logdir);
 $api->setDebug(true);

@@ -237,6 +237,11 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
         UtilMethods::clearClasses(self::$sdk, self::$classtitle);
     }
 
+    /**
+     * @group sanity
+     * @group smoke
+     * @return array
+     */
     public function testCreateSubmission()
     {
         // create an assignment to submit to
@@ -491,6 +496,10 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
         $this->assertContains($new_new_file_name, $content_disposition, 'Found overridden filename');
     }
 
+    /**
+     * @group sanity
+     * @group smoke
+     */
     public function testNothingSubmission()
     {
         $submission = new TiiSubmission();
@@ -505,6 +514,9 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(get_class($response->getSubmission()) == 'Integrations\PhpSdk\TiiSubmission');
     }
 
+    /**
+     * @group smoke
+     */
     public function testReplaceSubmission()
     {
         // Create Submission to Replace
@@ -553,6 +565,8 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @group sanity
+     * @group smoke
      * @depends testCreateSubmission
      * @param array $submissions
      * @return array
@@ -607,6 +621,8 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @group sanity
+     * @group smoke
      * @depends testReadSubmission
      */
     public function testUpdateSubmisionTitle($submissions)
@@ -664,6 +680,8 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @group sanity
+     * @group smoke
      * @depends testUpdateSubmisionTitle
      */
     public function testDeleteSubmission($submissions)
@@ -814,6 +832,9 @@ class SubmissionTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("fullsuccess", $response->getStatusCode());
     }
 
+    /**
+     * @group smoke
+     */
     public function testFindSubmissions()
     {
         //fwrite(STDOUT, __METHOD__ . "\n");

@@ -47,6 +47,10 @@ class MembershipTest extends PHPUnit_Framework_TestCase
         UtilMethods::clearClasses(self::$sdk, self::$classtitle);
     }
 
+    /**
+     * @group smoke
+     * @return array
+     */
     public function testCreateLearnerMembership()
     {
         $membershipToCreate = new TiiMembership();
@@ -158,6 +162,9 @@ class MembershipTest extends PHPUnit_Framework_TestCase
         self::$sdk->findMemberships($membership);
     }
 
+    /**
+     * @group smoke
+     */
     public function testCreateInstructorMembership()
     {
         $membershipToCreate = new TiiMembership();
@@ -177,6 +184,7 @@ class MembershipTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testCreateLearnerMembership
      */
     public function testReadStudentMembership(array $memberships)
@@ -203,6 +211,7 @@ class MembershipTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testCreateInstructorMembership
      */
     public function testReadInstructorMembership(array $memberships)
@@ -228,6 +237,9 @@ class MembershipTest extends PHPUnit_Framework_TestCase
         $this->assertNull($resultMembership->getMembershipIds());
     }
 
+    /**
+     * @group smoke
+     */
     public function testFindMemberships()
     {
         // create a sperate class to place the
@@ -284,6 +296,9 @@ class MembershipTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($studentMembershipFound && $instructorMembershipFound);
     }
 
+    /**
+     * @group smoke
+     */
     public function testFindMembershipsOneIdReturned()
     {
         $classToCreate = new TiiClass();
@@ -358,6 +373,10 @@ class MembershipTest extends PHPUnit_Framework_TestCase
         self::$sdk->readMembership($membershipToRead);
     }
 
+    /**
+     * @group smoke
+     * @return mixed
+     */
     public function testReadMemberships()
     {
         $membership1ToCreate = new TiiMembership();
@@ -494,6 +513,7 @@ class MembershipTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testReadMemberships
      */
     public function testReadMembershipsPartialSuccess(array $validMemberships)

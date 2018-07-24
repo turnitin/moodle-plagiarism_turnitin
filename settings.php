@@ -244,7 +244,6 @@ switch ($do) {
 
     case "apilog":
     case "activitylog":
-    case "perflog":
 
         $logsdir = $CFG->tempdir . "/plagiarism_turnitin/logs/";
         $savefile = $do.'_'.$filedate.'.txt';
@@ -262,9 +261,6 @@ switch ($do) {
             $tabs[] = new tabobject( $label, $CFG->wwwroot.'/plagiarism/turnitin/settings.php?do='.$label,
                 ucfirst( $label ), ucfirst( $label ), false );
             $label = 'activitylog';
-            $tabs[] = new tabobject( $label, $CFG->wwwroot.'/plagiarism/turnitin/settings.php?do='.$label,
-                ucfirst( $label ), ucfirst( $label ), false );
-            $label = 'perflog';
             $tabs[] = new tabobject( $label, $CFG->wwwroot.'/plagiarism/turnitin/settings.php?do='.$label,
                 ucfirst( $label ), ucfirst( $label ), false );
             $inactive = array($do);

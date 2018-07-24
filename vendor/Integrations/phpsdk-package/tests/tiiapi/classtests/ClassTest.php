@@ -112,6 +112,10 @@ class ClassTest extends PHPUnit_Framework_TestCase
         self::$sdk->findClasses($class);
     }
 
+    /**
+     * @group smoke
+     * @return array
+     */
     public function testCreateClass()
     {
         $classEndDate = gmdate("Y-m-d\TH:i:s\Z", strtotime('+1 years'));
@@ -135,6 +139,7 @@ class ClassTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testCreateClass
      */
     public function testReadClass(array $classes)
@@ -161,6 +166,9 @@ class ClassTest extends PHPUnit_Framework_TestCase
         return $classToRead;
     }
 
+    /**
+     * @group smoke
+     */
     public function testReadClasses()
     {
         $classEndDate = gmdate("Y-m-d\TH:i:s\Z", strtotime('+1 years'));
@@ -213,6 +221,9 @@ class ClassTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($class1Found && $class2Found);
     }
 
+    /**
+     * @group smoke
+     */
     public function testUpdateClass()
     {
         $classEndDate = gmdate("Y-m-d\TH:i:s\Z", strtotime('+1 years'));
@@ -311,6 +322,9 @@ class ClassTest extends PHPUnit_Framework_TestCase
         self::$sdk->updateClass($classToUpdate);
     }
 
+    /**
+     * @group smoke
+     */
     public function testFindClasses()
     {
         $searchString = uniqid();

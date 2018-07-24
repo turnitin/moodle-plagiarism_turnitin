@@ -38,6 +38,9 @@ class LTITest extends PHPUnit_Framework_TestCase
     {
         $expected = 12345;
         $this->object->setAccountId($expected);
+        $result = $this->object->getAccountId();
+
+        $this->assertEquals($expected,$result);
     }
 
     public function testGetAccountId()
@@ -53,6 +56,9 @@ class LTITest extends PHPUnit_Framework_TestCase
     {
         $expected = 'secret';
         $this->object->setSharedKey($expected);
+        $result = $this->object->getSharedKey();
+
+        $this->assertEquals($expected,$result);
     }
 
     public function testGetSharedKey()
@@ -68,6 +74,9 @@ class LTITest extends PHPUnit_Framework_TestCase
     {
         $expected = 'test';
         $this->object->setProxyType($expected);
+        $result = $this->object->getProxyType();
+
+        $this->assertEquals($expected,$result);
     }
 
     public function testGetProxyType()
@@ -83,6 +92,9 @@ class LTITest extends PHPUnit_Framework_TestCase
     {
         $expected = 'test';
         $this->object->setProxyBypass($expected);
+        $result = $this->object->getProxyBypass();
+
+        $this->assertEquals($expected,$result);
     }
 
     public function testGetProxyBypass()
@@ -94,4 +106,81 @@ class LTITest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected,$result);
     }
 
+    public function testGetSSLCertificate()
+    {
+        $expected = 'test';
+        $this->object->setSSLCertificate($expected);
+        $result = $this->object->getSSLCertificate();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testSetIntegrationVersion()
+    {
+        $expected = 'test';
+        $this->object->setIntegrationVersion($expected);
+        $result = $this->object->getIntegrationVersion();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testGetIntegrationVersion()
+    {
+        $expected = 'test';
+        $this->object->setIntegrationVersion($expected);
+        $result = $this->object->getIntegrationVersion();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testSetPluginVersion()
+    {
+        $expected = 'test';
+        $this->object->setPluginVersion($expected);
+        $result = $this->object->getPluginVersion();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testGetPluginVersion()
+    {
+        $expected = 'test';
+        $this->object->setPluginVersion($expected);
+        $result = $this->object->getPluginVersion();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testSetLtiParams()
+    {
+        $pluginversion = 1;
+        $integrationversion = 2;
+        $params = array();
+        $this->object->setPluginVersion($pluginversion);
+        $this->object->setIntegrationVersion($integrationversion);
+
+        $this->object->setLtiParams($params);
+        $result = $this->object->getLtiParams();
+
+        $this->assertEquals($integrationversion,$result["custom_integration_version"]);
+        $this->assertEquals($pluginversion,$result["custom_plugin_version"]);
+    }
+
+    public function testSetCurlHandler()
+    {
+        $expected = 'test';
+        $this->object->setCurlHandler($expected);
+        $result = $this->object->getCurlHandler();
+
+        $this->assertEquals($expected,$result);
+    }
+
+    public function testGetCurlHandler()
+    {
+        $expected = 'test';
+        $this->object->setCurlHandler($expected);
+        $result = $this->object->getCurlHandler();
+
+        $this->assertEquals($expected,$result);
+    }
 }

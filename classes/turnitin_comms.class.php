@@ -21,7 +21,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_perflog.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
 
@@ -64,6 +63,7 @@ class turnitin_comms {
 
         $api = new TurnitinAPI($this->tiiaccountid, $this->tiiapiurl, $this->tiisecretkey,
                                 $this->tiiintegrationid, $this->langcode);
+
         // Enable logging if diagnostic mode is turned on.
         if ($this->diagnostic) {
             $api->setLogPath($CFG->tempdir.'/plagiarism_turnitin/logs/');
@@ -106,8 +106,6 @@ class turnitin_comms {
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
             plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setTestingConnection($istestingconnection);
-        $api->setPerformanceLog(new turnitin_performancelog());
 
         return $api;
     }

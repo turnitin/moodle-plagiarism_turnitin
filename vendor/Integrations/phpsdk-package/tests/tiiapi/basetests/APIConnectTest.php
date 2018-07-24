@@ -210,6 +210,21 @@ class ApiConnectTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testGetSetVersions()
+    {
+        $this->object = new TurnitinAPI(TII_ACCOUNT, TII_APIBASEURL, TII_SECRET, TII_APIPRODUCT);
+        $this->object->setDebug(false);
+        $this->object->setLogPath(self::$tempdir);
+
+        $testpluginversion = 'test';
+        $testintegrationversion = 'test';
+
+        $this->object->setPluginVersion($testpluginversion);
+        $this->object->setIntegrationVersion($testintegrationversion);
+        $this->assertEquals($testpluginversion, $this->object->getPluginVersion());
+        $this->assertEquals($testintegrationversion, $this->object->getIntegrationVersion());
+    }
+
     /**
      * @expectedException Integrations\PhpSdk\TurnitinSDKException
      */
@@ -300,6 +315,8 @@ class ApiConnectTest extends PHPUnit_Framework_TestCase
         $this->object->setProxyUser('test');
         $this->object->setProxyPassword('test');
         $this->object->setSSLCertificate('test');
+        $this->object->setIntegrationVersion('test');
+        $this->object->setPluginVersion('test');
 
         $user = new TiiUser();
         $user->setUserId(0);

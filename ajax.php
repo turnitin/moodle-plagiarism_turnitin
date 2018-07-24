@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Integrations\PhpSdk\TiiClass;
+
 require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');

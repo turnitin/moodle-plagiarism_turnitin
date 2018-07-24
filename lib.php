@@ -19,6 +19,10 @@
  * @copyright 2013 iParadigms LLC
  */
 
+use Integrations\PhpSdk\TiiClass;
+use Integrations\PhpSdk\TiiSubmission;
+use Integrations\PhpSdk\TiiAssignment;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }

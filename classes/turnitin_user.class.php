@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Integrations\PhpSdk\TiiUser;
+use Integrations\PhpSdk\TiiPseudoUser;
+use Integrations\PhpSdk\TiiMembership;
+
 /**
  * @package   plagiarism_turnitin
  * @copyright 2018 iParadigms LLC *

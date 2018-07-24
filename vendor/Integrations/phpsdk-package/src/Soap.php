@@ -5,6 +5,8 @@
  */
 
 namespace Integrations\PhpSdk;
+use SoapHeader;
+use SoapVar;
 
 /**
  * @ignore
@@ -20,6 +22,9 @@ class Soap extends \SoapClient
     private $httpheaders;
     private $language;
 
+    private $integrationversion;
+    private $pluginversion;
+
     private $proxyhost;
     private $proxyport;
     private $proxytype;
@@ -31,6 +36,7 @@ class Soap extends \SoapClient
     public $httpresponse;
     public $httprequest;
     public $logresponse;
+    public $curlhandler;
 
     protected $extensions;
 
@@ -51,6 +57,38 @@ class Soap extends \SoapClient
     public function setIntegrationId($product)
     {
         $this->integrationid = $product;
+    }
+
+    /**
+     * @param null $integrationversion
+     */
+    public function setIntegrationVersion($integrationversion = null)
+    {
+        $this->integrationversion = $integrationversion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntegrationVersion()
+    {
+        return (empty($this->integrationversion)) ? 'Not provided' : $this->integrationversion;
+    }
+
+    /**
+     * @param null $pluginversion
+     */
+    public function setPluginVersion($pluginversion = null)
+    {
+        $this->pluginversion = $pluginversion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginVersion()
+    {
+        return (empty($this->pluginversion)) ? 'Not provided' : $this->pluginversion;
     }
 
     /**
@@ -226,8 +264,8 @@ class Soap extends \SoapClient
         $xml->endElement();
         $xml->endElement();
         $xml->endElement();
-        $var = new \SoapVar($xml->outputMemory(), XSD_ANYXML);
-        $header = new \SoapHeader($this->ns, 'header', $var);
+        $var = new SoapVar($xml->outputMemory(), XSD_ANYXML);
+        $header = new SoapHeader($this->ns, 'header', $var);
         $this->__setSoapHeaders($header);
     }
 
@@ -317,6 +355,8 @@ class Soap extends \SoapClient
                         'EraterUsername' => 'String',
                         'EraterPassword' => 'String'
                         );
+        $this->integrationversion = '';
+        $this->pluginversion = '';
         parent::__construct($wsdl, $options);
     }
 
@@ -339,6 +379,8 @@ class Soap extends \SoapClient
             'Pragma: no-cache',
             'SOAPAction: "' . $action . '"',
             'Content-length: ' . strlen($request),
+            'X-Integration-Version: '.$this->getIntegrationVersion(),
+            'X-Plugin-Version: '.$this->getPluginVersion()
         );
 
         $location .= (!is_null($this->language)) ? '?lang=' . $this->language : '';
@@ -372,6 +414,8 @@ class Soap extends \SoapClient
         $this->setHttpHeaders(join(PHP_EOL, $curl_headers));
 
         $result = curl_exec($curl_handler);
+        $this->setCurlHandler($curl_handler);
+
         $this->httpresponse = $result;
         $this->httprequest = $request;
 
@@ -406,5 +450,20 @@ class Soap extends \SoapClient
         return $this->httpheaders;
     }
 
+	/**
+	 * @return mixed
+	 */
+	public function getCurlHandler()
+	{
+		return $this->curlhandler;
+	}
+
+	/**
+	 * @param $curlhandler
+	 */
+	public function setCurlHandler($curlhandler)
+	{
+		$this->curlhandler = $curlhandler;
+	}
 }
 

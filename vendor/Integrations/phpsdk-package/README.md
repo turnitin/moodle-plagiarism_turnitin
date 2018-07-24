@@ -78,8 +78,15 @@ docker run -v ${PWD}:/root/phpsdk --env-file ${PWD}/.envfile -it phpsdk-package 
 ```
 
 Run the tests:
-```
+```bash
+# Full suite
 docker run -v ${PWD}:/root/phpsdk --env-file ${PWD}/.envfile -it phpsdk-package phpdbg -qrr ./vendor/bin/phpunit
+
+# Smoke test suite
+docker run -v ${PWD}:/root/phpsdk --env-file ${PWD}/.envfile -it phpsdk-package phpdbg -qrr ./vendor/bin/phpunit --group smoke
+
+# Sanity test suite
+docker run -v ${PWD}:/root/phpsdk --env-file ${PWD}/.envfile -it phpsdk-package phpdbg -qrr ./vendor/bin/phpunit --group sanity
 ```
 
 To view generated coverage run:

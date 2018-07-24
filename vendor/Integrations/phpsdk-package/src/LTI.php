@@ -26,6 +26,9 @@ class LTI extends OAuthSimple {
     protected $apibaseurl;
     protected $language;
 
+    protected $integrationversion;
+    protected $pluginversion;
+
     protected $proxyhost;
     protected $proxyport;
     protected $proxytype;
@@ -33,6 +36,7 @@ class LTI extends OAuthSimple {
     protected $proxypassword;
     protected $proxybypass;
     protected $sslcertificate;
+    protected $curlhandler;
 
     public function __construct( $apibaseurl ) {
         $this->setApiBaseUrl( $apibaseurl );
@@ -40,6 +44,8 @@ class LTI extends OAuthSimple {
             'lti_version'      => 'LTI-1p0',
             'resource_link_id' => $this->genUuid()
         );
+        $this->integrationversion = '';
+        $this->pluginversion = '';
     }
 
     /**
@@ -640,7 +646,7 @@ class LTI extends OAuthSimple {
      *
      * @return array
      */
-    protected function getLtiParams() {
+    public function getLtiParams() {
         return $this->ltiparams;
     }
 
@@ -648,9 +654,13 @@ class LTI extends OAuthSimple {
      *
      * @param array $params
      */
-    protected function setLtiParams( $params ) {
+    public function setLtiParams( $params ) {
         if ( !is_null( $this->language ) ) $params["lang"] = $this->language;
         $params = array_merge( $this->ltiparams, $params );
+
+        $params['custom_integration_version'] = $this->getIntegrationVersion();
+        $params['custom_plugin_version'] = $this->getPluginVersion();
+
         $this->ltiparams = $params;
     }
 
@@ -856,6 +866,14 @@ class LTI extends OAuthSimple {
     }
 
     /**
+     *
+     * @return string
+     */
+    public function getSSLCertificate() {
+        return $this->sslcertificate;
+    }
+
+    /**
      * @param $sslcertificate
      */
     public function setSSLCertificate($sslcertificate) {
@@ -888,6 +906,7 @@ class LTI extends OAuthSimple {
         }
 
         $result = curl_exec($ch);
+        $this->setCurlHandler($ch);
 
         if( $result === false) {
             $err = 'Curl error: ' . curl_error($ch);
@@ -919,5 +938,36 @@ class LTI extends OAuthSimple {
         $this->language = $language;
     }
 
+    public function setIntegrationVersion($integrationversion = null) {
+        $this->integrationversion = $integrationversion;
+    }
+
+    public function getIntegrationVersion() {
+        return (empty($this->integrationversion)) ? 'Not provided' : $this->integrationversion;
+    }
+
+    public function setPluginVersion($pluginversion = null) {
+        $this->pluginversion = $pluginversion;
+    }
+
+    public function getPluginVersion() {
+        return (empty($this->pluginversion)) ? 'Not provided' : $this->pluginversion;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurlHandler()
+    {
+        return $this->curlhandler;
+    }
+
+    /**
+     * @param $curlhandler
+     */
+    public function setCurlHandler($curlhandler)
+    {
+        $this->curlhandler = $curlhandler;
+    }
 }
 

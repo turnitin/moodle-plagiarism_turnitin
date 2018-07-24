@@ -80,6 +80,12 @@ class UtilMethods extends PHPUnit_Framework_TestCase
                     'first_name' => 'Instructor',
                     'role'       => 'Instructor',
                 ),
+                array(
+                    'email'      => 'brandnewuserphpsdk@vle.org.uk',
+                    'last_name'  => 'New',
+                    'first_name' => 'Brand',
+                    'role'       => 'Instructor',
+                ),
             );
 
             $createuser = false;

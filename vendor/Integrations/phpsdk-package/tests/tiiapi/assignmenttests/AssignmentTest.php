@@ -164,6 +164,10 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         $api->findAssignments($assignment);
     }
 
+    /**
+     * @group smoke
+     * @return array
+     */
     public function testCreateAssignment()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");
@@ -194,6 +198,10 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         return array('AssignmentToRead'=>$response->getAssignment(),'ExpectedAssignment'=>$assignment);
     }
 
+    /**
+     * @group smoke
+     * @return array
+     */
     public function testCreateNonDefaultAssignment()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");
@@ -248,6 +256,7 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testCreateAssignment
      */
     public function testReadAssignment(array $assignments)
@@ -304,6 +313,7 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group smoke
      * @depends testCreateNonDefaultAssignment
      */
     public function testReadNonDefaultAssignment(array $assignments)
@@ -382,6 +392,9 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("partialdatastorage", $response->getStatusCode());
     }
 
+    /**
+     * @group smoke
+     */
     public function testReadAssignments()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");
@@ -542,6 +555,9 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $resultAssignment->getTranslatedMatching());
     }
 
+    /**
+     * @group smoke
+     */
     public function testUpdateAssignment()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");
@@ -638,6 +654,10 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Testing assignment", $resultAssignment->getTitle());
     }
 
+    /**
+     * @group smoke
+     * @return mixed
+     */
     public function testDeleteAssingment()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");
@@ -668,6 +688,9 @@ class AssignmentTest extends PHPUnit_Framework_TestCase
         self::$sdk->readAssignment($assignmentToRead);
     }
 
+    /**
+     * @group smoke
+     */
     public function testFindAssingments()
     {
         //fwrite(STDOUT, "\n".__METHOD__ . "\n");

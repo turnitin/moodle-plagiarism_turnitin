@@ -1,18 +1,18 @@
 [
     {
         "name": "Integrations/phpsdk-package",
-        "version": "v1.3.3",
-        "version_normalized": "1.3.3.0",
+        "version": "dev-adding_moodle_features",
+        "version_normalized": "dev-adding_moodle_features",
         "source": {
             "type": "git",
             "url": "git@ghe.iparadigms.com:Integrations/phpsdk-package.git",
-            "reference": "81993453b7472fd9de9a1af9ed068667de08af0c"
+            "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2"
         },
         "dist": {
             "type": "zip",
-            "url": "http://bin-repo.iparadigms.com/artifactory/integrations-composer/dist/integrations-phpsdk-package-v1.3.3-e1bca1.zip",
-            "reference": "81993453b7472fd9de9a1af9ed068667de08af0c",
-            "shasum": "b2260a6ae5a528ae2cbb9df5de8b21d20c4b2f78"
+            "url": "http://bin-repo.iparadigms.com/artifactory/integrations-composer/dist/integrations-phpsdk-package-dev-adding_moodle_features-61f7e1.zip",
+            "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2",
+            "shasum": "3e89613f9e9e2220007c6a00c7ba55efafaa3c07"
         },
         "require": {
             "nategood/httpful": "^0.2.20",
@@ -22,7 +22,7 @@
             "brianium/paratest": "~0.14",
             "phpunit/phpunit": "4.3.*"
         },
-        "time": "2018-04-25T10:19:17+00:00",
+        "time": "2018-07-24T13:22:25+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

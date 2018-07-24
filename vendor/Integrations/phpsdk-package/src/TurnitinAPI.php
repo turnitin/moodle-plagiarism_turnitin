@@ -18,6 +18,9 @@ class TurnitinAPI {
     protected $language;
     protected $debug;
 
+    protected $integrationversion;
+    protected $pluginversion;
+
     protected $proxyhost;
     protected $proxyport;
     protected $proxytype;
@@ -31,6 +34,9 @@ class TurnitinAPI {
     protected $lineitemwsdl;
     protected $membershipwsdl;
     protected $resultwsdl;
+
+    protected $curlHandler;
+    protected $service;
 
     const VERSION = '1.2.0';
 
@@ -217,6 +223,42 @@ class TurnitinAPI {
     }
 
     /**
+     * Set the integration version.
+     *
+     * @param string $integrationversion
+     */
+    public function setIntegrationVersion( $integrationversion = null ) {
+        $this->integrationversion = $integrationversion;
+    }
+
+    /**
+     * Get the integration version.
+     *
+     * @return string
+     */
+    public function getIntegrationVersion() {
+        return $this->integrationversion;
+    }
+
+    /**
+     * Set the plugin version.
+     *
+     * @param string $pluginversion
+     */
+    public function setPluginVersion( $pluginversion = null ) {
+        $this->pluginversion = $pluginversion;
+    }
+
+    /**
+     * Get the plugin version.
+     *
+     * @return string
+     */
+    public function getPluginVersion() {
+        return $this->pluginversion;
+    }
+
+    /**
      * Set API communication debugging level.
      *
      * Determines whether debugging will be output to the screen, if true then API request and response data will be output to the screen.
@@ -246,6 +288,31 @@ class TurnitinAPI {
      */
     public function getApiBaseUrl() {
         return $this->apibaseurl;
+    }
+
+    /**
+     * Getthe Curl handler
+     *
+     * @return string
+     */
+    public function getCurlHandler() {
+        return $this->curlHandler;
+    }
+
+    /**
+     * @return Soap
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param Soap $service
+     */
+    public function setService(&$service)
+    {
+        $this->service = $service;
     }
 
     /**
@@ -286,6 +353,17 @@ class TurnitinAPI {
         if ((isset($this->sslcertificate)) AND ($this->sslcertificate != '')) {
             $service->setSSLCertificate( $this->sslcertificate );
         }
+
+        if (isset($this->integrationversion) && !empty($this->integrationversion)) {
+            $service->setIntegrationVersion( $this->integrationversion);
+        }
+
+        if (isset($this->pluginversion) && !empty($this->pluginversion)) {
+            $service->setPluginVersion( $this->pluginversion);
+        }
+var_dump($service);
+        $this->setService( $service );
+
         return $service;
     }
 

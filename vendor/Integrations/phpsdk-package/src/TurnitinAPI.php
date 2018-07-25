@@ -361,7 +361,7 @@ class TurnitinAPI {
         if (isset($this->pluginversion) && !empty($this->pluginversion)) {
             $service->setPluginVersion( $this->pluginversion);
         }
-var_dump($service);
+
         $this->setService( $service );
 
         return $service;

@@ -126,7 +126,7 @@ if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
     $PAGE->requires->string_for_js('semptytable', 'plagiarism_turnitin');
 }
 
-if ($do != "savereport" && $do != "unlinkusers") {
+if ($do != "savereport" && $do != "unlinkusers" && $do != "apilog" && $do != "activitylog") {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('pluginname', 'plagiarism_turnitin'), '2', 'main');
 }
@@ -244,18 +244,16 @@ switch ($do) {
 
     case "apilog":
     case "activitylog":
-
         $logsdir = $CFG->tempdir . "/plagiarism_turnitin/logs/";
         $savefile = $do.'_'.$filedate.'.txt';
         $output = "";
-
-//        echo $OUTPUT->header();
-        $turnitinview->draw_settings_tab_menu('apilog', $notice);
 
         if (!is_null($filedate)) {
             header("Content-type: plain/text; charset=UTF-8");
             send_file( $logsdir.$savefile, $savefile, false );
         } else {
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('pluginname', 'plagiarism_turnitin'), '2', 'main');
 
             $label = 'apilog';
             $tabs[] = new tabobject( $label, $CFG->wwwroot.'/plagiarism/turnitin/settings.php?do='.$label,
@@ -280,7 +278,7 @@ switch ($do) {
                         $split = preg_split("/_/", $entry);
                         $date = array_pop($split);
                         $date = str_replace('.txt', '', $date);
-                        $output .= $OUTPUT->box(html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/settings_extras.php?'.
+                        $output .= $OUTPUT->box(html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/settings.php?'.
                             'do='.$do.'&filedate='.$date,
                             ucfirst($do).' ('.
                             userdate(strtotime($date), '%d/%m/%Y').')'), '');

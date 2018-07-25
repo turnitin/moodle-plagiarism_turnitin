@@ -266,3 +266,4 @@ $string['sprocessing'] = 'Hämtar information från Turnitin...';
 $string['szerorecords'] = 'Inga uppgifter att visa.';
 $string['sinfo'] = 'Visar _START_till_END_av_TOTAL_inlägg.';
 $string['userupdateerror'] = 'Kunde inte uppdatera användardata';
+$string['connecttestcommerror'] = 'Kunde inte ansluta till Turnitin. Dubbelkolla din inställningen för API-webbadressen.';

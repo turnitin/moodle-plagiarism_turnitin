@@ -266,3 +266,4 @@ $string['sprocessing'] = 'Veriler Turnitin&#39;den yükleniyor...';
 $string['szerorecords'] = 'Gösterilecek kayıt yok.';
 $string['sinfo'] = '_START_ /_END_ of _TOTAL_ giriş gösteriliyor.';
 $string['userupdateerror'] = 'Kullanıcı verileri güncellenemedi';
+$string['connecttestcommerror'] = 'Turnitin&#39; e bağlanılamadı. API URL ayarlarını tekrar kontrol edin.';

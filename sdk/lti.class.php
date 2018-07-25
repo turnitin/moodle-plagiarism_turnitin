@@ -39,8 +39,8 @@ class LTI extends OAuthSimple {
     protected $proxybypass;
     protected $sslcertificate;
 
-    protected $testingconnection;
-    protected $performancelog;
+    protected $istestingconnection;
+    protected $perflog;
 
     public function __construct( $apibaseurl ) {
         $this->setApiBaseUrl( $apibaseurl );
@@ -48,8 +48,8 @@ class LTI extends OAuthSimple {
             'lti_version'      => 'LTI-1p0',
             'resource_link_id' => $this->genUuid()
         );
-        $this->testingconnection = false;
-        $this->performancelog = null;
+        $this->istestingconnection = false;
+        $this->perflog = null;
         $this->integrationversion = '';
         $this->pluginversion = '';
     }
@@ -907,24 +907,24 @@ class LTI extends OAuthSimple {
      *
      * @return string
      */
-    public function getTestingConnection() {
-        return $this->$testingconnection;
+    public function getIsTestingConnection() {
+        return $this->$istestingconnection;
     }
 
-    public function setTestingConnection($testingconnection) {
-        $this->testingconnection = $testingconnection;
+    public function setIsTestingConnection($istestingconnection) {
+        $this->istestingconnection = $istestingconnection;
     }
 
     /**
      *
      * @return string
      */
-    public function getPerformanceLog() {
-        return $this->performancelog;
+    public function getPerflog() {
+        return $this->perflog;
     }
 
-    public function setPerformanceLog($performancelog) {
-        $this->performancelog = $performancelog;
+    public function setPerflog($perflog) {
+        $this->perflog = $perflog;
     }
 
     /**
@@ -952,14 +952,14 @@ class LTI extends OAuthSimple {
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, sprintf('%s:%s', $this->proxyuser, $this->proxypassword));
         }
 
-        if ($this->performancelog !== null) {
-            $this->performancelog->start_timer();
+        if ($this->perflog !== null) {
+            $this->perflog->start_timer();
         }
 
         $result = curl_exec($ch);
 
-        if ($this->performancelog !== null) {
-            $this->performancelog->stop_timer($ch);
+        if ($this->perflog !== null) {
+            $this->perflog->stop_timer($ch);
         }
 
         if( $result === false) {

@@ -254,6 +254,7 @@ switch ($do) {
         } else {
             echo $OUTPUT->header();
             echo $OUTPUT->heading(get_string('pluginname', 'plagiarism_turnitin'), '2', 'main');
+            $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
             $label = 'apilog';
             $tabs[] = new tabobject( $label, $CFG->wwwroot.'/plagiarism/turnitin/settings.php?do='.$label,

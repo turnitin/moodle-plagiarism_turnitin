@@ -67,7 +67,7 @@ class OAuthSimple {
      * Set the parameters either from a hash or a string
      *
      * @access public
-     * @param parameters (string, object) List of parameters for the call, this can either be a URI string (e.g. "foo=bar&gorp=banana" or an object/hash)
+     * @param(string, object) List of parameters for the call, this can either be a URI string (e.g. "foo=bar&gorp=banana" or an object/hash)
      * @return OAuthSimple (Object)
      */
     public function setParameters($parameters = Array()) {
@@ -233,7 +233,7 @@ class OAuthSimple {
      * other helper functions.
      *
      * @param args (Array) hash of arguments for the call {action, path, parameters (array), method, signatures (array)} all arguments are optional.
-     * @return Signed Values (Array) - array map of signed values
+     * @return (Array) signed values
      */
     public function sign($args = array()) {
         if (!empty($args['action'])) {
@@ -272,7 +272,7 @@ class OAuthSimple {
      * ways to do that.
      *
      * @param args (Array)
-     * @return result (String)
+     * @return $result (String)
      */
     public function getHeaderString($args = array()) {
         if (empty($this->_parameters['oauth_signature'])) {
@@ -368,10 +368,9 @@ class OAuthSimple {
         $result = '';
         $cLength = strlen($this->_nonce_chars);
         for ($i = 0; $i < $length; $i++) {
-            $rnum = mt_rand(0, $cLength);
+            $rnum = rand(0, $cLength);
             $result .= substr($this->_nonce_chars, $rnum, 1);
         }
-        $result .= getmypid();
         $this->_parameters['oauth_nonce'] = sha1($result);
 
         return $result;

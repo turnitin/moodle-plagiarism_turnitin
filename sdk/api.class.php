@@ -33,8 +33,8 @@ class TurnitinAPI {
     protected $proxybypass;
     protected $sslcertificate;
 
-    protected $testingconnection;
-    protected $performancelog;
+    protected $istestingconnection;
+    protected $perflog;
 
     protected $personwsdl;
     protected $coursesectionwsdl;
@@ -71,8 +71,8 @@ class TurnitinAPI {
         $this->integrationid = $integrationid;
         $this->language = $language;
 
-        $this->testingconnection = false;
-        $this->performancelog = null;
+        $this->istestingconnection = false;
+        $this->perflog = null;
 
         $this->personwsdl = dirname(__FILE__).'/wsdl/lis-person.wsdl';
         $this->coursesectionwsdl = dirname(__FILE__).'/wsdl/lis-coursesection.wsdl';
@@ -212,35 +212,35 @@ class TurnitinAPI {
      *
      * @return boolean
      */
-    public function getTestingConnection() {
-        return $this->testingconnection;
+    public function getIsTestingConnection() {
+        return $this->istestingconnection;
     }
 
     /**
      * Set testing connection flag
      *
-     * @param boolean $testingconnection
+     * @param boolean $istestingconnection
      */
-    public function setTestingConnection($testingconnection) {
-        $this->testingconnection = $testingconnection;
+    public function setIsTestingConnection($istestingconnection) {
+        $this->istestingconnection = $istestingconnection;
     }
 
     /**
      * Get logger for performance data
      *
-     * @return PerformanceLog
+     * @return PerfLog
      */
-    public function getPerformanceLog() {
-        return $this->performancelog;
+    public function getPerflog() {
+        return $this->perflog;
     }
 
     /**
      * Set logger for performance data
      *
-     * @param PerformanceLog $performancelog
+     * @param PerfLog $perflog
      */
-    public function setPerformanceLog($performancelog) {
-        $this->performancelog = $performancelog;
+    public function setPerflog($perflog) {
+        $this->perflog = $perflog;
     }
 
     /**
@@ -375,8 +375,8 @@ class TurnitinAPI {
         $service->setIntegrationVersion( $this->integrationversion);
         $service->setPluginVersion( $this->pluginversion);
 
-        $service->setTestingConnection($this->testingconnection);
-        $service->setPerformanceLog($this->performancelog);
+        $service->setIsTestingConnection($this->istestingconnection);
+        $service->setPerflog($this->perflog);
         return $service;
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-class PerformanceLog {
+class PerfLog {
 
     private $start_time;
 

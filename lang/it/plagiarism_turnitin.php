@@ -266,3 +266,4 @@ $string['sprocessing'] = 'Caricamento dati da Turnitin in corso…';
 $string['szerorecords'] = 'Nessun record da visualizzare.';
 $string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
 $string['userupdateerror'] = 'Impossibile aggiornare i dati dell&#39;utente';
+$string['connecttestcommerror'] = 'Impossibile connettersi a Turnitin. Verifica l&#39;impostazione dell&#39;URL API.';

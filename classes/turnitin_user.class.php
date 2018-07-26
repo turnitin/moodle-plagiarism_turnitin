@@ -131,7 +131,7 @@ class turnitin_user {
     public function get_pseudo_lastname() {
         global $DB;
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $userinfo = $DB->get_record('user_info_data', array('userid' => $this->id, 'fieldid' => $config->pseudolastname));
+        $userinfo = $DB->get_record('user_info_data', array('userid' => $this->id, 'fieldid' => $config->plagiarism_turnitin_pseudolastname));
 
         if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 && $config->plagiarism_turnitin_lastnamegen == 1) {
             $uniqueid = strtoupper(strrev(uniqid()));

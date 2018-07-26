@@ -16,8 +16,8 @@
 
 use Integrations\PhpSdk\TiiClass;
 
-require_once(__DIR__."/../../config.php");
-require_once(__DIR__."/lib.php");
+require_once($CFG->dirroot.'/config.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 

@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once(__DIR__.'/../../config.php');
+require_once($CFG->dirroot.'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
-require_once(__DIR__.'/lib.php');
-require_once(__DIR__.'/classes/turnitin_view.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 
 $turnitinview = new turnitin_view();
 
@@ -135,7 +135,7 @@ switch ($do) {
     case "config":
         $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
-        require_once(__DIR__ . '/classes/forms/turnitin_setupform.class.php');
+        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_setupform.class.php');
 
         $tiisetupform = new turnitin_setupform();
 
@@ -155,7 +155,7 @@ switch ($do) {
     case "defaults":
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
-        require_once(__DIR__ . '/classes/forms/turnitin_defaultsettingsform.class.php');
+        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_defaultsettingsform.class.php');
 
         $mform = new turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
@@ -371,7 +371,7 @@ switch ($do) {
             array('relink', get_string('relinkusers', 'plagiarism_turnitin')));
         $customdata["multi_submit_buttons"] = $multisubmitbuttons;
 
-        require_once(__DIR__ . '/classes/forms/turnitin_unlinkform.class.php');
+        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_unlinkform.class.php');
         $optionsform = new turnitin_unlinkform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
             $customdata);
 

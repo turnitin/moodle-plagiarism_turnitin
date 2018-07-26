@@ -7,25 +7,25 @@ namespace Composer\Autoload;
 class ComposerStaticInit0fe026b7ec5872d4051c02ca5a6adb33
 {
     public static $prefixLengthsPsr4 = array (
-        'I' => 
+        'I' =>
         array (
             'Integrations\\PhpSdk\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Integrations\\PhpSdk\\' => 
+        'Integrations\\PhpSdk\\' =>
         array (
-            0 => __DIR__ . '/..' . '/Integrations/phpsdk-package/src',
+            0 => __DIR__ . '/../Integrations/phpsdk-package/src',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'H' => 
+        'H' =>
         array (
-            'Httpful' => 
+            'Httpful' =>
             array (
-                0 => __DIR__ . '/..' . '/nategood/httpful/src',
+                0 => __DIR__ . '/../nategood/httpful/src',
             ),
         ),
     );

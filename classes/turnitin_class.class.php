@@ -23,7 +23,7 @@ use Integrations\PhpSdk\TiiClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/turnitin_comms.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 
 class turnitin_class {
 

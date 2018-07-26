@@ -2,7 +2,9 @@
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
-require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
+global $CFG;
+
+require_once($CFG->libdir.'/behat/behat_base.php');
 
 class behat_plagiarism_turnitin extends behat_base {
 

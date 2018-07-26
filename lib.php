@@ -77,22 +77,22 @@ require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/plagiarism/lib.php');
 
 // Get helper methods.
-require_once(__DIR__.'/locallib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/locallib.php');
 
 // Include plugin classes.
-require_once(__DIR__.'/classes/turnitin_assignment.class.php');
-require_once(__DIR__.'/classes/turnitin_view.class.php');
-require_once(__DIR__.'/classes/turnitin_class.class.php');
-require_once(__DIR__.'/classes/turnitin_submission.class.php');
-require_once(__DIR__.'/classes/turnitin_comms.class.php');
-require_once(__DIR__.'/classes/turnitin_user.class.php');
-require_once(__DIR__.'/classes/digitalreceipt/pp_receipt_message.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_class.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/digitalreceipt/pp_receipt_message.php');
 
 // Include supported module specific code.
-require_once(__DIR__.'/classes/modules/turnitin_assign.class.php');
-require_once(__DIR__.'/classes/modules/turnitin_forum.class.php');
-require_once(__DIR__.'/classes/modules/turnitin_workshop.class.php');
-require_once(__DIR__.'/classes/modules/turnitin_coursework.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_assign.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_forum.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_workshop.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_coursework.class.php');
 
 
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
@@ -352,7 +352,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean
      */
     public static function course_reset($eventdata) {
-        global $DB;
+        global $DB, $CFG;
         $data = $eventdata->get_data();
         $courseid = (int)$data['other']['reset_options']['courseid'];
         $resetcourse = true;
@@ -372,7 +372,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Get the modules that support the Plagiarism plugin by whether they have a class file.
         $supportedmods = array();
-        foreach (scandir(__DIR__.'/classes/modules/') as $filename) {
+        foreach (scandir($CFG->dirroot.'/plagiarism/turnitin/classes/modules/') as $filename) {
             if (!in_array($filename, array(".", ".."))) {
                 $filenamear = explode('.', $filename);
                 $classnamear = explode('_', $filenamear[0]); // Split the class name.

@@ -16,7 +16,7 @@ class ComposerStaticInit0fe026b7ec5872d4051c02ca5a6adb33
     public static $prefixDirsPsr4 = array (
         'Integrations\\PhpSdk\\' =>
         array (
-            0 => __DIR__ . '/../Integrations/phpsdk-package/src',
+            0 => __DIR__ . '/..' . '/Integrations/phpsdk-package/src',
         ),
     );
 
@@ -25,7 +25,7 @@ class ComposerStaticInit0fe026b7ec5872d4051c02ca5a6adb33
         array (
             'Httpful' =>
             array (
-                0 => __DIR__ . '/../nategood/httpful/src',
+                0 => __DIR__ . '/..' . '/nategood/httpful/src',
             ),
         ),
     );

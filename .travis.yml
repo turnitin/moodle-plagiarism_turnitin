@@ -2,6 +2,9 @@ language: php
 
 sudo: false
 
+addons:
+  postgresql: "9.3"
+
 cache:
   directories:
     - $HOME/.composer/cache
@@ -54,4 +57,4 @@ script:
   - moodle-plugin-ci csslint
   - moodle-plugin-ci shifter
   - moodle-plugin-ci validate
-  - moodle-plugin-ci phpunit
+#  - moodle-plugin-ci phpunit

@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once(__DIR__."/../../config.php");
-require_once(__DIR__."/lib.php");
+use Integrations\PhpSdk\TiiClass;
+
+require_once($CFG->dirroot.'/config.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
@@ -224,10 +226,10 @@ switch ($action) {
         $eulauser->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {
             $eulauser->user_agreement_accepted = 1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
+            plagiarism_turnitin_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.", "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
             $eulauser->user_agreement_accepted = -1;
-            turnitintooltwo_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
+            plagiarism_turnitin_activitylog("User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.", "PP_EULA_ACCEPTANCE");
         }
 
         // Update the user using the above object.

@@ -19,12 +19,11 @@
  * @copyright 2012 iParadigms LLC
  */
 
-require_once(__DIR__.'/../../config.php');
+require_once($CFG->dirroot.'/config.php');
 require_once($CFG->libdir.'/tablelib.php');
-require_once(__DIR__."/lib.php");
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
-require_once($CFG->dirroot."/mod/turnitintooltwo/lib.php");
-require_once($CFG->dirroot."/plagiarism/turnitin/classes/turnitin_view.class.php");
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
 $turnitinview = new turnitin_view();

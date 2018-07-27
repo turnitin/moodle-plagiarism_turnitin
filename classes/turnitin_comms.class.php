@@ -21,11 +21,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/* We can't currently use the sdk classes as the class is already declared from mod/turnitintooltwo.
- * require_once(__DIR__.'/../sdk/api.class.php');
- */
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+
+use Integrations\PhpSdk\TurnitinAPI;
 
 class turnitin_comms {
 
@@ -64,9 +63,10 @@ class turnitin_comms {
 
         $api = new TurnitinAPI($this->tiiaccountid, $this->tiiapiurl, $this->tiisecretkey,
                                 $this->tiiintegrationid, $this->langcode);
+
         // Enable logging if diagnostic mode is turned on.
         if ($this->diagnostic) {
-            $api->setLogPath($CFG->tempdir.'/turnitintooltwo/logs/');
+            $api->setLogPath($CFG->tempdir.'/plagiarism_turnitin/logs/');
         }
 
         // Use Moodle's proxy settings if specified.
@@ -106,8 +106,6 @@ class turnitin_comms {
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
             plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setTestingConnection($istestingconnection);
-        $api->setPerformanceLog(new turnitintooltwo_performancelog());
 
         return $api;
     }
@@ -148,7 +146,7 @@ class turnitin_comms {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
-        turnitintooltwo_activitylog($errorstr, "API_ERROR");
+        plagiarism_turnitin_activitylog($errorstr, "API_ERROR");
         if ($toscreen) {
             plagiarism_turnitin_print_error($errorstr, null);
         } else if ($embedded) {

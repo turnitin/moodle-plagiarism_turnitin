@@ -1,0 +1,110 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "aa4f7aa4672a42af6cebd0b60961f342",
+    "packages": [
+        {
+            "name": "Integrations/phpsdk-package",
+            "version": "dev-adding_moodle_features",
+            "source": {
+                "type": "git",
+                "url": "git@ghe.iparadigms.com:Integrations/phpsdk-package.git",
+                "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://bin-repo.iparadigms.com/artifactory/integrations-composer/dist/integrations-phpsdk-package-dev-adding_moodle_features-61f7e1.zip",
+                "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2",
+                "shasum": "3e89613f9e9e2220007c6a00c7ba55efafaa3c07"
+            },
+            "require": {
+                "nategood/httpful": "^0.2.20",
+                "php": ">=5.4.4"
+            },
+            "require-dev": {
+                "brianium/paratest": "~0.14",
+                "phpunit/phpunit": "4.3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Integrations\\PhpSdk\\": "src"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Dawson",
+                    "email": "pdawson@turnitin.com"
+                }
+            ],
+            "description": "PHP SDK loadable as a package via composer",
+            "time": "2018-07-24T13:22:25+00:00"
+        },
+        {
+            "name": "nategood/httpful",
+            "version": "0.2.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nategood/httpful.git",
+                "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nategood/httpful/zipball/c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+                "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Httpful": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Good",
+                    "email": "me@nategood.com",
+                    "homepage": "http://nategood.com"
+                }
+            ],
+            "description": "A Readable, Chainable, REST friendly, PHP HTTP Client",
+            "homepage": "http://github.com/nategood/httpful",
+            "keywords": [
+                "api",
+                "curl",
+                "http",
+                "requests",
+                "rest",
+                "restful"
+            ],
+            "time": "2015-10-26T16:11:30+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "integrations/phpsdk-package": 20
+    },
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

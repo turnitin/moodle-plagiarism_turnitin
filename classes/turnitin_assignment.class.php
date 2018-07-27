@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Integrations\PhpSdk\TiiClass;
+
 /**
  * @package   plagiarism_turnitin
  * @copyright 2018 iParadigms LLC *
@@ -114,7 +116,7 @@ class turnitin_assignment {
                 $turnitincourse->id = $insertid;
             }
 
-            turnitintooltwo_activitylog("Class created - ".$turnitincourse->courseid." | ".$turnitincourse->turnitin_cid.
+            plagiarism_turnitin_activitylog("Class created - ".$turnitincourse->courseid." | ".$turnitincourse->turnitin_cid.
                 " | ".$course->fullname . " (Moodle PP)" , "REQUEST");
 
             return $turnitincourse;
@@ -161,7 +163,7 @@ class turnitin_assignment {
                 plagiarism_turnitin_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             } else {
-                turnitintooltwo_activitylog("Class edited - ".$update->turnitin_ctl." (".$update->id.")", "REQUEST");
+                plagiarism_turnitin_activitylog("Class edited - ".$update->turnitin_ctl." (".$update->id.")", "REQUEST");
             }
         } catch (Exception $e) {
             $this->turnitincomms->handle_exceptions($e, 'classupdateerror', false);
@@ -203,7 +205,7 @@ class turnitin_assignment {
             $newassignment = $this->api_get_assignment($response);
             $assignmentid = $this->api_get_assignment_id($newassignment);
 
-            turnitintooltwo_activitylog("Assignment created as Turnitin Assignment (".$assignmentid.")", "REQUEST");
+            plagiarism_turnitin_activitylog("Assignment created as Turnitin Assignment (".$assignmentid.")", "REQUEST");
 
             return $assignmentid;
         } catch (Exception $e) {
@@ -232,7 +234,7 @@ class turnitin_assignment {
 
             $_SESSION["assignment_updated"][$assignmentid] = time();
 
-            turnitintooltwo_activitylog("Turnitin Assignment updated - id: ".$assignmentid, "REQUEST");
+            plagiarism_turnitin_activitylog("Turnitin Assignment updated - id: ".$assignmentid, "REQUEST");
 
             return array('success' => true, 'tiiassignmentid' => $assignmentid);
 

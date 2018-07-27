@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Integrations\PhpSdk\TiiLTI;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
@@ -67,6 +69,8 @@ class turnitin_view {
                         get_string('showusage', 'plagiarism_turnitin'), get_string('showusage', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
                         get_string('saveusage', 'plagiarism_turnitin'), get_string('saveusage', 'plagiarism_turnitin'), false);
+        $tabs[] = new tabobject('apilog', 'settings.php?do=apilog',
+                        get_string('logs'), get_string('logs'), false);
         $tabs[] = new tabobject('unlinkusers', 'settings.php?do=unlinkusers',
             get_string('unlinkusers', 'plagiarism_turnitin'), get_string('unlinkusers', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',

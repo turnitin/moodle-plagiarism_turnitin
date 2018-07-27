@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Integrations\PhpSdk\TiiClass;
+
 /**
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
@@ -21,7 +23,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/turnitin_comms.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 
 class turnitin_class {
 

@@ -84,8 +84,8 @@ class plagiarism_turnitin_user_class_testcase extends test_lib {
         $student = $this->getDataGenerator()->create_user();
         $DB->insert_record('user_info_data', array('userid' => $student->id, 'fieldid' => 1, 'data' => 'Student', 'dataformat' => 0));
 
-        set_config('pseudolastname', 1, 'plagiarism');
-        set_config('lastnamegen', 1, 'plagiarism');
+        set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism');
+        set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism');
 
         $turnitinuser = new turnitin_user($student->id, null, null, null, null);
         $response = $turnitinuser->get_pseudo_lastname();

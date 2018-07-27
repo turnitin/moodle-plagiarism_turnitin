@@ -266,3 +266,4 @@ $string['sprocessing'] = '正在從 Turnitin 載入資料...';
 $string['szerorecords'] = '無法顯示任何記錄。';
 $string['sinfo'] = '顯示 _START_ 到 _END_，總共 _TOTAL_ 個項目。';
 $string['userupdateerror'] = '無法更新使用者資料';
+$string['connecttestcommerror'] = '無法連線至 Turnitin。請再次檢查 API URL 設定。';

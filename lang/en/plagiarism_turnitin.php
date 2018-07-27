@@ -299,5 +299,3 @@ $string['szerorecords'] = 'No records to display.';
 $string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
 $string['userupdateerror'] = 'Could not update user data';
 $string['connecttestcommerror'] = 'Could not connect to Turnitin. Double check your API URL setting.';
-
-

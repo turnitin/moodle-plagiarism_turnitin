@@ -19,7 +19,7 @@
  * @copyright 2012 iParadigms LLC
  */
 
-require_once($CFG->dirroot.'/config.php');
+require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/tablelib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 

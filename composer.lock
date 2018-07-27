@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa4f7aa4672a42af6cebd0b60961f342",
+    "content-hash": "eb5d63af629edef7aab247ff67cc8f2b",
     "packages": [
         {
             "name": "Integrations/phpsdk-package",
-            "version": "dev-adding_moodle_features",
+            "version": "v1.3.4",
             "source": {
                 "type": "git",
                 "url": "git@ghe.iparadigms.com:Integrations/phpsdk-package.git",
-                "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2"
+                "reference": "382750d710a06eb2f2a8de1757d4b27b23f55f33"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://bin-repo.iparadigms.com/artifactory/integrations-composer/dist/integrations-phpsdk-package-dev-adding_moodle_features-61f7e1.zip",
-                "reference": "aae5afcfbfeb0549217327c35b1edd05605c18e2",
-                "shasum": "3e89613f9e9e2220007c6a00c7ba55efafaa3c07"
+                "url": "http://bin-repo.iparadigms.com/artifactory/integrations-composer/dist/integrations-phpsdk-package-v1.3.4-2d67fc.zip",
+                "reference": "382750d710a06eb2f2a8de1757d4b27b23f55f33",
+                "shasum": "5f9052ea561f6947756e8ec925f1fcc7794ce7d8"
             },
             "require": {
                 "nategood/httpful": "^0.2.20",
@@ -44,7 +44,7 @@
                 }
             ],
             "description": "PHP SDK loadable as a package via composer",
-            "time": "2018-07-24T13:22:25+00:00"
+            "time": "2018-07-26T10:04:42+00:00"
         },
         {
             "name": "nategood/httpful",
@@ -100,9 +100,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "integrations/phpsdk-package": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],

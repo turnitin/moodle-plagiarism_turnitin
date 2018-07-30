@@ -34,7 +34,7 @@ class turnitin_setupform extends moodleform {
 
     // Define the form.
     public function definition() {
-        global $DB;
+        global $DB, $CFG;
 
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
@@ -70,10 +70,18 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('passwordunmask', 'plagiarism_turnitin_secretkey', get_string('turnitinsecretkey', 'plagiarism_turnitin'));
 
         $options = array(
-            'https://api.turnitin.com' => 'Turnitin Global',
-            'https://api.turnitinuk.com' => 'Turnitin UK',
-            'https://sandbox.turnitin.com' => 'Sandbox'
+            'https://api.turnitin.com' => 'https://api.turnitin.com',
+            'https://api.turnitinuk.com' => 'https://api.turnitinuk.com',
+            'https://sandbox.turnitin.com' => 'https://sandbox.turnitin.com'
         );
+
+        // Set $CFG->turnitinqa and add URLs to $CFG->turnitinqaurls array in config.php file for testing other environments.
+        if (!empty($CFG->turnitinqa)) {
+            foreach ($CFG->turnitinqaurls as $url) {
+                $options[$url] = $url;
+            }
+        }
+
         $mform->addElement('select', 'plagiarism_turnitin_apiurl', get_string('turnitinapiurl', 'plagiarism_turnitin'), $options);
 
         $mform->addElement('button', 'connection_test', get_string("connecttest", 'plagiarism_turnitin'));

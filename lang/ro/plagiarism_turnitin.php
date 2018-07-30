@@ -267,3 +267,4 @@ $string['szerorecords'] = 'Nu există date de afișat.';
 $string['sinfo'] = 'Se afișează intrările _START_ – _END_ din _TOTAL_.';
 $string['userupdateerror'] = 'Imposibil de actualizat datele utilizatorilor';
 $string['connecttestcommerror'] = 'Imposibil de conectat la Turnitin. Verificați setarea URL-ului API.';
+$string['userfinderror'] = 'Eroare la încercarea de a găsi utilizatorul în Turnitin';

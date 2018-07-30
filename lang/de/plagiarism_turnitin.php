@@ -267,3 +267,4 @@ $string['szerorecords'] = 'Keine Daten vorhanden';
 $string['sinfo'] = 'Anzeigen _START_ bis _END_ von _TOTAL_ Einträgen.';
 $string['userupdateerror'] = 'Benutzerdaten konnten nicht aktualisiert werden.';
 $string['connecttestcommerror'] = 'Keine Verbindung mit Turnitin möglich. Überprüfen Sie Ihre API-URL-Einstellung.';
+$string['userfinderror'] = 'Beim Suchen des Benutzers in Turnitin ist ein Fehler aufgetreten.';

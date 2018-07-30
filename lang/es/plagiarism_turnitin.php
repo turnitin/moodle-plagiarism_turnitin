@@ -267,3 +267,4 @@ $string['szerorecords'] = 'No hay registros que mostrar.';
 $string['sinfo'] = 'Mostrando _TOTAL_ de entradas de _START_ a _END_';
 $string['userupdateerror'] = 'No se han podido actualizar los datos del usuario';
 $string['connecttestcommerror'] = 'No se pudo conectar a Turnitin. Comprueba nuevamente tu configuración de URL de API.';
+$string['userfinderror'] = 'Ha ocurrido un error al intentar encontrar al usuario en Turnitin';

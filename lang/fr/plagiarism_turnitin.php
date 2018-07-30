@@ -267,3 +267,4 @@ $string['szerorecords'] = 'Il n´y a aucun document à afficher';
 $string['sinfo'] = 'Montrer_TOTAL_des_entrées_du_DEBUT_à_la_FIN';
 $string['userupdateerror'] = 'Impossible d&#39;actualiser les informations de l’utilisateur';
 $string['connecttestcommerror'] = 'Impossible de se connecter à Turnitin. Veuillez vérifier les paramètres de l’URL de l’API.';
+$string['userfinderror'] = 'Une erreur est survenue en cherchant l´utilisateur Turnitin';

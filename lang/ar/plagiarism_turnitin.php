@@ -267,3 +267,4 @@ $string['szerorecords'] = 'لا توجد اوليات للعرض';
 $string['sinfo'] = 'يتم عرض _البداية_الى_النهاية_من_الادخالات_الكلية.';
 $string['userupdateerror'] = 'لا يمكن تحديث بيانات المستخدم';
 $string['connecttestcommerror'] = 'تعذر الاتصال بـ Turnitin. يرجى التأكد من إعداد API URL. ';
+$string['userfinderror'] = 'حدث خطأ عند محاولة إيجاد المستخدم في Turnitin';

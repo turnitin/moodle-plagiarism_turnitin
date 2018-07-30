@@ -267,3 +267,4 @@ $string['szerorecords'] = '기록이 없음';
 $string['sinfo'] = '_START_ to _END_ 의 _TOTAL_ 사항 표시';
 $string['userupdateerror'] = '사용자 데이타를 업데이트할 수 없었음';
 $string['connecttestcommerror'] = 'Turnitin에 연결할 수 없었습니다. API URL 환경을 재확인하시기 바랍니다.';
+$string['userfinderror'] = 'Turnitin에 있는 사용자를 찾는 데 오류가 발생하였습니다';

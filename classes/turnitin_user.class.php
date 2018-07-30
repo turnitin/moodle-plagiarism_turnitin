@@ -173,10 +173,12 @@ class turnitin_user {
         }
 
         if (empty($this->tiiuserid)) {
-            $this->tiiuserid = $this->find_tii_user_id();
-            if (empty($this->tiiuserid) && $this->enrol) {
+            try {
+                $this->tiiuserid = $this->find_tii_user_id();
+            } catch (Exception $e) {
                 $this->tiiuserid = $this->create_tii_user();
             }
+
             if (!empty($this->tiiuserid)) {
                 $this->save_tii_user();
             }

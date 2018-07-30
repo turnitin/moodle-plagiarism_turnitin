@@ -21,13 +21,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
-      | Enable Turnitin for assign | 1 |
-    And I press "Save changes"
-    And I navigate to "Turnitin Assignment 2" node in "Site administration > Plugins > Activity modules"
+      | Enable Turnitin for Assign | 1 |
     And I configure Turnitin URL
     And I configure Turnitin credentials
     And I set the following fields to these values:
-      | Enable Diagnostic Mode | Standard |
+      | Enable Diagnostic Mode | Yes |
     And I press "Save changes"
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |

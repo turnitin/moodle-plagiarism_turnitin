@@ -26,5 +26,4 @@ Feature:  Installation succeeds
   Scenario: Test the plugin connectivity
     Given I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
     And I click on "#id_connection_test" "css_element"
-#    And I wait until "#connection-test-success" "css_element" exists
     Then I should see "Connection test successful"

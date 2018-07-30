@@ -267,3 +267,4 @@ $string['szerorecords'] = '无法显示任何记录。';
 $string['sinfo'] = '正在显示第 _START_ 到 _END_ 个条目，共 _TOTAL_ 个条目。';
 $string['userupdateerror'] = '无法更新用户数据';
 $string['connecttestcommerror'] = '无法连线至 Turnitin。请再次检查您的 API URL 设置。';
+$string['userfinderror'] = '尝试在 Turnitin 中查找用户时出错';

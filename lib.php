@@ -22,6 +22,7 @@
 use Integrations\PhpSdk\TiiClass;
 use Integrations\PhpSdk\TiiSubmission;
 use Integrations\PhpSdk\TiiAssignment;
+use Integrations\PhpSdk\TiiLTI;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.

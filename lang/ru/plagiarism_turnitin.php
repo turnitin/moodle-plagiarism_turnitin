@@ -267,3 +267,4 @@ $string['szerorecords'] = 'Нет записей для отображения';
 $string['sinfo'] = 'Отображены элементы с _ПЕРВОГО_ до _ПОСЛЕДНЕГО_, _ВСЕГО_ элементов';
 $string['userupdateerror'] = 'Не удалось обновить данные пользователя';
 $string['connecttestcommerror'] = 'Не удалось подключиться к Turnitin. Проверьте настройки URL-адреса API.';
+$string['userfinderror'] = 'Возникла ошибка при попытке найти пользователя в Turnitin';

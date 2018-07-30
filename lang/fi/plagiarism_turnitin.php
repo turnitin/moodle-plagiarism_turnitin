@@ -269,3 +269,4 @@ $string['szerorecords'] = 'Ei esitettäviä tiedostoja.';
 $string['sinfo'] = 'Näyttää _ALUSTA _LOPPUUN _palautusten _KOKONAISLUKUMÄÄRÄSTÄ.';
 $string['userupdateerror'] = 'Käyttäjätietoja ei voitu päivittää';
 $string['connecttestcommerror'] = 'Turnitiniin ei saatu yhteyttä. Tarkasta API:n URL-asetus.';
+$string['userfinderror'] = 'Kun käyttäjää haettiin Turnitinistä, kohdattiin virhe';

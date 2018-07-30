@@ -50,12 +50,12 @@ class behat_plagiarism_turnitin extends behat_base {
             var option = document.createElement('option');
             option.setAttribute('value', '${apiurl}');
             var apiurl = document.createTextNode('${apiurl}');
-            var select = document.querySelector('#admin-apiurl select');
+            var select = document.querySelector('#id_plagiarism_turnitin_apiurl');
             option.appendChild(apiurl);
             select.appendChild(option);
         ";
         $this->getSession()->executeScript($javascript);
-        $this->getSession()->getPage()->find("css", "#admin-apiurl select")->selectOption($apiurl);
+        $this->getSession()->getPage()->find("css", "#id_plagiarism_turnitin_apiurl")->selectOption($apiurl);
     }
 
     /**
@@ -66,10 +66,10 @@ class behat_plagiarism_turnitin extends behat_base {
         $account = getenv('TII_ACCOUNT');
         $secret = getenv('TII_SECRET');
 
-        $this->getSession()->getPage()->find("css", "#admin-accountid input")->setValue($account);
+        $this->getSession()->getPage()->find("css", "#id_plagiarism_turnitin_accountid")->setValue($account);
 
         $this->getSession()->getPage()->find('css', '[title="Edit password"]')->click();
-        $this->getSession()->getPage()->find("css", "#admin-secretkey input")->setValue($secret);
+        $this->getSession()->getPage()->find("css", "#id_plagiarism_turnitin_secretkey")->setValue($secret);
     }
 
     /**

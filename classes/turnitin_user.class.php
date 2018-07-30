@@ -17,6 +17,7 @@
 use Integrations\PhpSdk\TiiUser;
 use Integrations\PhpSdk\TiiPseudoUser;
 use Integrations\PhpSdk\TiiMembership;
+use Integrations\PhpSdk\TurnitinApiException;
 
 /**
  * @package   plagiarism_turnitin
@@ -175,7 +176,7 @@ class turnitin_user {
         if (empty($this->tiiuserid)) {
             try {
                 $this->tiiuserid = $this->find_tii_user_id();
-            } catch (Exception $e) {
+            } catch (TurnitinApiException $e) {
                 $this->tiiuserid = $this->create_tii_user();
             }
 
@@ -189,8 +190,8 @@ class turnitin_user {
     /**
      * Check Turnitin to see if this user has previously registered
      *
-     * @param object $user_details A data object for the user
-     * @return var Turnitin user id if found otherwise null
+     * @return integer Turnitin user id if found otherwise null
+     * @throws TurnitinApiException
      */
     private function find_tii_user_id() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
@@ -215,7 +216,9 @@ class turnitin_user {
                 $tiiuserid = null;
             }
             return $tiiuserid;
-
+        } catch (TurnitinApiException $e) {
+            // In case of a Turnitin exception we rethrow as get_tii_user_id will catch this exception.
+            throw $e;
         } catch (Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
             $turnitincomms->handle_exceptions($e, 'userfinderror', $toscreen);

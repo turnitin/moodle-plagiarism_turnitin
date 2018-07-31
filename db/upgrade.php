@@ -289,7 +289,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             // Get the settings for the V2 plugin.
             $data = turnitintooltwo_admin_config();
 
-            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableperformancelogs", "usegrademark",
+            $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark",
                 "enablepeermark", "useerater", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
                 "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
 

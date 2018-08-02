@@ -266,3 +266,4 @@ $string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
 $string['userupdateerror'] = 'Nelze aktualizovat uživatelské údaje';
 $string['connecttestcommerror'] = 'Nebylo možné se k Turnitin připojit. Zkontrolujte své API URL nastavení.';
 $string['userfinderror'] = 'Došlo k chybě při hledání uživatele v systému Turnitin';
+$string['tiiusergeterror'] = 'Došlo k chybě při získávání uživatelských detailů ze systému Turnitin';

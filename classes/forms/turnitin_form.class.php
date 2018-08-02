@@ -30,7 +30,7 @@ global $CFG;
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->libdir."/formslib.php");
 
-class turnitin_unlinkform extends moodleform {
+class turnitin_form extends moodleform {
 
     // Define the form.
     public function definition()

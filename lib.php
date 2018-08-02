@@ -88,6 +88,7 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.cla
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/digitalreceipt/pp_receipt_message.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');
 
 // Include supported module specific code.
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_assign.class.php');
@@ -541,7 +542,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 $customdata = array("disable_form_change_checker" => true,
                                     "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
-                $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+
+                $eulaform = new turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                                         'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                 $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
             }
@@ -810,7 +812,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $customdata = array("disable_form_change_checker" => true,
                                     "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
-                            $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+                            $eulaform = new turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                     'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                             $eulashown = true;

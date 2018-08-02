@@ -319,6 +319,58 @@ switch ($action) {
             throw new moodle_exception('accessdenied', 'admin');
         }
         break;
+
+    case "refresh_rubric_select":
+        $courseid = required_param('course', PARAM_INT);
+        $assignmentid = required_param('assignment', PARAM_INT);
+        $modulename = required_param('modulename', PARAM_ALPHA);
+
+        $PAGE->set_context(context_course::instance($courseid));
+
+        if (has_capability('moodle/course:update', context_course::instance($courseid))) {
+            // Set Rubric options to instructor rubrics.
+            $instructor = new turnitin_user($USER->id, 'Instructor');
+            $instructor->set_user_values_from_tii();
+            $instructorrubrics = $instructor->get_instructor_rubrics();
+
+            $options = array('' => get_string('norubric', 'plagiarism_turnitin')) + $instructorrubrics;
+
+            // Get rubrics that are shared on the Turnitin account.
+            $turnitinclass = new turnitin_class($courseid);
+
+            $turnitinclass->read_class_from_tii();
+            $sharedrubrics = $turnitinclass->sharedrubrics;
+
+            foreach ($sharedrubrics as $group => $grouprubrics) {
+                foreach ($grouprubrics as $rubricid => $rubricname) {
+                    $options[$group][$rubricid] = $rubricname;
+                }
+            }
+
+            // Get assignment details.
+            if (!empty($assignmentid)) {
+                $cm = get_coursemodule_from_instance($modulename, $assignmentid);
+                $plagiarismsettings = $pluginturnitin->get_settings($cm->id);
+            }
+
+            // Add in selected rubric if it belongs to another instructor.
+            if (!empty($assignmentid)) {
+                if (!empty($plagiarismsettings["plagiarism_rubric"])) {
+                    if (isset($options[$plagiarismsettings["plagiarism_rubric"]])) {
+                        $rubricname = $options[$plagiarismsettings["plagiarism_rubric"]];
+                    } else {
+                        $rubricname = get_string('otherrubric', 'plagiarism_turnitin');
+                    }
+                    $options[$plagiarismsettings["plagiarism_rubric"]] = $rubricname;
+                }
+            }
+        } else {
+            $options = array();
+        }
+
+        echo json_encode($options);
+        break;
+
 }
 
 if (!empty($return)) {

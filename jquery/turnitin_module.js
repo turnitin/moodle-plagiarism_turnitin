@@ -166,7 +166,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    function lightBoxCloseButton(closeBtnText) {
+    function lightBoxCloseButton() {
         $('body').append('<div id="tii_close_bar"><a href="#" onclick="jQuery(\'#cboxClose\').click(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
     }
 
@@ -284,6 +284,77 @@ jQuery(document).ready(function($) {
             onCleanup: function() {
                 $('#tii_close_bar').remove();
                 hideLoadingGif();
+            }
+        });
+    }
+
+    // Show warning when changing the rubric linked to an assignment.
+    $('#id_plagiarism_rubric').mousedown(function () {
+        if ($('input[name="instance"]').val() != '' && $('input[name="rubric_warning_seen"]').val() != 'Y') {
+            if (confirm(M.str.plagiarism_turnitin.changerubricwarning)) {
+                $('input[name="rubric_warning_seen"]').val('Y');
+            }
+        }
+    });
+
+    // Open an iframe light box containing the Quickmark Manager.
+    if ($('.plagiarism_turnitin_quickmark_manager_launch').length > 0) {
+        $('.plagiarism_turnitin_quickmark_manager_launch').colorbox({
+            iframe: true, width: "770px", height: "600px", opacity: "0.7", className: "quickmark_manager", transition: "none",
+            onLoad: function () {
+                lightBoxCloseButton();
+                getLoadingGif();
+            },
+            onCleanup: function () {
+                $('#tii_close_bar').remove();
+                hideLoadingGif();
+            }
+        });
+    }
+
+    if ($("#id_plagiarism_rubric").length > 0) {
+        refreshRubricSelect();
+    }
+
+    // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
+    function refreshRubricSelect() {
+        var currentRubric = $('#id_plagiarism_rubric').val();
+        $.ajax({
+            "dataType": 'json',
+            "type": "POST",
+            "url": "../plagiarism/turnitin/ajax.php",
+            "data": {
+                action: "refresh_rubric_select", assignment: $('input[name="instance"]').val(),
+                modulename: $('input[name="modulename"]').val(), course: $('input[name="course"]').val()
+            },
+            success: function (data) {
+                $($('#id_plagiarism_rubric')).empty();
+                var options = data;
+                $.each(options, function (i, val) {
+                    if (!$.isNumeric(i) && i !== "") {
+
+                        var optgroup = $('<optgroup>');
+                        optgroup.attr('label', i);
+
+                        $.each(val, function (j, rubric) {
+                            var option = $("<option></option>");
+                            option.val(j);
+                            option.text(rubric);
+
+                            optgroup.append(option);
+                        });
+
+                        $('#id_plagiarism_rubric').append(optgroup);
+
+                    } else {
+                        $($('#id_plagiarism_rubric')).append($('<option>', {
+                            value: i,
+                            text: val
+                        }));
+                    }
+                });
+
+                $('#id_plagiarism_rubric' + ' option[value="' + currentRubric + '"]').attr("selected", "selected");
             }
         });
     }

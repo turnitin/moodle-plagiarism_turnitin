@@ -125,7 +125,6 @@ class turnitin_view {
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
 
@@ -150,7 +149,7 @@ class turnitin_view {
             $quickmarkmanagerlink = '';
             if ($config->plagiarism_turnitin_usegrademark) {
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                                '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
+                                                '/plagiarism/turnitin/extras.php?cmd=quickmarkmanager&view_context=box',
                                                 get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                     'title' => get_string('launchquickmarkmanager', 'plagiarism_turnitin')));
@@ -278,7 +277,7 @@ class turnitin_view {
 
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
-                                                    '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
+                                                    '/plagiarism/turnitin/extras.php?cmd=rubricmanager&view_context=box',
                                                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
                                                     array('class' => 'rubric_manager_launch',
                                                         'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'))).

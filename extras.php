@@ -43,6 +43,20 @@ $PAGE->set_context(context_system::instance());
 require_login();
 
 switch ($cmd) {
+    case "rubricmanager":
+        $PAGE->set_pagelayout('embedded');
+        $tiicourseid = optional_param('tiicourseid', 0, PARAM_INT);
+
+        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
+            array("class" => "launch_form"));
+        break;
+
+    case "quickmarkmanager":
+        $PAGE->set_pagelayout('embedded');
+
+        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
+            array("class" => "launch_form"));
+        break;
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
 

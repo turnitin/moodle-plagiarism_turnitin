@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 use Integrations\PhpSdk\TiiUser;
+use Integrations\PhpSdk\TiiClass;
 use Integrations\PhpSdk\TiiPseudoUser;
 use Integrations\PhpSdk\TiiMembership;
 use Integrations\PhpSdk\TurnitinApiException;
@@ -444,6 +445,91 @@ class turnitin_user {
         }
     }
 
+    /**
+     * Set the number of user messages and any instructor rubrics from Turnitin
+     */
+    public function set_user_values_from_tii() {
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+
+        $user = new TiiUser();
+        $user->setUserId($this->tiiuserid);
+
+        try {
+            $response = $turnitincall->readUser($user);
+            $readuser = $response->getUser();
+
+            $this->usermessages = $readuser->getUserMessages();
+            $this->save_instructor_rubrics($readuser->getInstructorRubrics());
+
+            $tiiuser = array(
+                "id" => $readuser->getUserId(),
+                "firstname" => $readuser->getFirstName(),
+                "lastname" => $readuser->getLastName(),
+                "email" => $readuser->getEmail()
+            );
+
+            return $tiiuser;
+
+        } catch (Exception $e) {
+            try {
+                // We need to join the user to the account, we can only do that by adding the user to a class
+                // make one and add them, then delete it. Awful workaround but should be rare.
+                $class = new TiiClass();
+                $uuid = uniqid(microtime() . '-');
+                $class->setTitle($uuid);
+                $response = $turnitincall->createClass($class);
+                $newclass = $response->getClass();
+                $tiiclassid = $newclass->getClassId();
+                $membership = new TiiMembership();
+                $membership->setRole($this->role);
+                $membership->setUserId($this->tiiuserid);
+                $membership->setClassId($tiiclassid);
+                $turnitincall->createMembership($membership);
+                $class->setClassId($tiiclassid);
+                $turnitincall->deleteClass($class);
+
+                $response = $turnitincall->readUser($user);
+                $readuser = $response->getUser();
+
+                $this->usermessages = $readuser->getUserMessages();
+                $this->save_instructor_rubrics($readuser->getInstructorRubrics());
+
+            } catch ( Exception $e ) {
+                $turnitincomms->handle_exceptions($e, 'tiiusergeterror');
+            }
+        }
+    }
+
+    /**
+     * Save the rubrics belonging to the user locally
+     *
+     * @param array $rubrics
+     */
+    private function save_instructor_rubrics($rubrics) {
+        global $DB;
+
+        $rubricarray = array();
+        foreach ($rubrics as $rubric) {
+            $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName();
+        }
+
+        if ($turnitinuser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id))) {
+            $turnitinuser->instructor_rubrics = json_encode($rubricarray);
+            $DB->update_record('plagiarism_turnitin_users', $turnitinuser);
+        }
+
+        $this->instructorrubrics = $rubricarray;
+    }
+
+    /**
+     * Get an array of any rubrics the instructor has
+     *
+     * @return int
+     */
+    public function get_user_role() {
+        return $this->role;
+    }
 
     /**
      * Set the rubrics the instructor has in Turnitin
@@ -454,6 +540,14 @@ class turnitin_user {
         $this->role = $role;
     }
 
+    /**
+     * Get an array of any rubrics the instructor has
+     *
+     * @return int
+     */
+    public function get_instructor_rubrics() {
+        return $this->instructorrubrics;
+    }
 
     /**
      * Get users for unlinking/relinking. Called from ajax.php via turnitin_settings.js.

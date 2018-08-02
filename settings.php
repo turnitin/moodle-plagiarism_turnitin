@@ -371,8 +371,8 @@ switch ($do) {
             array('relink', get_string('relinkusers', 'plagiarism_turnitin')));
         $customdata["multi_submit_buttons"] = $multisubmitbuttons;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_unlinkform.class.php');
-        $optionsform = new turnitin_unlinkform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
+        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');
+        $optionsform = new turnitin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
             $customdata);
 
         echo $OUTPUT->header();

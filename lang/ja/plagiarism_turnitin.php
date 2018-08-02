@@ -266,3 +266,4 @@ $string['sinfo'] = '_START_～_END_（全_TOTAL_）エントリを表示';
 $string['userupdateerror'] = 'ユーザーデータを講師できませんでした';
 $string['connecttestcommerror'] = 'Turnitinに接続できませんでした。APIのURL設定を確認してください。';
 $string['userfinderror'] = 'Turnitinのユーザーを検索中にエラーが発生しました';
+$string['tiiusergeterror'] = 'ユーザー情報をTurnitinから入手する際にエラーが発生しました';

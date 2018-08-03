@@ -148,7 +148,7 @@ class turnitin_view {
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
 
-            $cssurl = new moodle_url('/mod/plagiarism/turnitin/css/colorbox.css');
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
             // Refresh Grades.

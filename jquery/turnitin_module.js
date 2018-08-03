@@ -1,4 +1,6 @@
 jQuery(document).ready(function($) {
+    $(".js_required").show();
+    $(".js_hide").hide();
 
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
@@ -235,19 +237,6 @@ jQuery(document).ready(function($) {
             url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
             dataType: "json",
             data: {action: "update_grade", submission: submission_id, cmid: coursemoduleid, sesskey: M.cfg.sesskey},
-            success: function(data) {
-                window.location = window.location;
-            }
-        });
-    }
-
-    // Update the DB value for EULA accepted.
-    function userAgreementAccepted( user_id ){
-        $.ajax({
-            type: "POST",
-            url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-            dataType: "json",
-            data: {action: 'acceptuseragreement', user_id: user_id},
             success: function(data) {
                 window.location = window.location;
             }

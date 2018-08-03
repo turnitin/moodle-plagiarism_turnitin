@@ -127,11 +127,11 @@ class turnitin_setupform extends moodleform {
         $mform->setDefault('plagiarism_turnitin_transmatch', 0);
 
         $repositoryoptions = array(
-            ADMIN_REPOSITORY_OPTION_STANDARD => get_string('repositoryoptions_0', 'plagiarism_turnitin'),
-            ADMIN_REPOSITORY_OPTION_EXPANDED => get_string('repositoryoptions_1', 'plagiarism_turnitin'),
-            ADMIN_REPOSITORY_OPTION_FORCE_STANDARD => get_string('repositoryoptions_2', 'plagiarism_turnitin'),
-            ADMIN_REPOSITORY_OPTION_FORCE_NO => get_string('repositoryoptions_3', 'plagiarism_turnitin'),
-            ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin')
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD => get_string('repositoryoptions_0', 'plagiarism_turnitin'),
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED => get_string('repositoryoptions_1', 'plagiarism_turnitin'),
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD => get_string('repositoryoptions_2', 'plagiarism_turnitin'),
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO => get_string('repositoryoptions_3', 'plagiarism_turnitin'),
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin')
         );
 
         $mform->addElement('select', 'plagiarism_turnitin_repositoryoption', get_string('turnitinrepositoryoptions', 'plagiarism_turnitin'), $repositoryoptions);

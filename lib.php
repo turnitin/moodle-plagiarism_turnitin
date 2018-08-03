@@ -517,8 +517,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         get_string('turnitinppulapre', 'plagiarism_turnitin'),
                                         array("class" => "pp_turnitin_eula_link"));
 
-                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_ula_ignored' : '';
-                $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass,
+                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_eula_ignored' : '';
+                $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula'.$eulaignoredclass,
                                             'data-userid' => $user->id));
 
                 $form = turnitin_view::output_launch_form(
@@ -800,7 +800,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     get_string('turnitinppulapost', 'plagiarism_turnitin'),
                                     array("class" => "pp_turnitin_eula_link"));
 
-                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
+                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
                         }
 
                         // Show EULA launcher and form placeholder.

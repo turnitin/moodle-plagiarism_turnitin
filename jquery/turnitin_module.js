@@ -1,6 +1,5 @@
 jQuery(document).ready(function($) {
-    $(".js_required").show();
-    $(".js_hide").hide();
+    $(".pp_turnitin_eula").show();
 
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
@@ -159,12 +158,12 @@ jQuery(document).ready(function($) {
     }
 
     // Hide the submission form if the user has never accepted or declined the Turnitin EULA.
-    if ($(".pp_turnitin_ula_ignored").length > 0) {
+    if ($(".pp_turnitin_eula_ignored").length > 0) {
         if ($('.editsubmissionform').length > 0) {
             $('.editsubmissionform').hide();
         }
-        if ($('.pp_turnitin_ula').siblings('.mform').length > 0) {
-            $('.pp_turnitin_ula').siblings('.mform').hide();
+        if ($('.pp_turnitin_eula').siblings('.mform').length > 0) {
+            $('.pp_turnitin_eula').siblings('.mform').hide();
         }
     }
 

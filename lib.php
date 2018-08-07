@@ -49,6 +49,7 @@ define('PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY', 0);
 define('PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY', 1);
 define('PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 
+// Student privacy constants.
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN', '@tiimoodle.com');
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME', get_string('defaultcoursestudent'));
 
@@ -88,6 +89,7 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.cla
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/digitalreceipt/pp_receipt_message.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');
 
 // Include supported module specific code.
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_assign.class.php');
@@ -515,8 +517,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         get_string('turnitinppulapre', 'plagiarism_turnitin'),
                                         array("class" => "pp_turnitin_eula_link"));
 
-                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_ula_ignored' : '';
-                $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_ula js_required'.$eulaignoredclass,
+                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_eula_ignored' : '';
+                $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula'.$eulaignoredclass,
                                             'data-userid' => $user->id));
 
                 $form = turnitin_view::output_launch_form(
@@ -541,7 +543,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 $customdata = array("disable_form_change_checker" => true,
                                     "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
-                $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+
+                $eulaform = new turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                                         'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                 $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
             }
@@ -576,7 +579,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-3.3.1.min.js');
         $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/mod/turnitintooltwo/jquery/turnitintooltwo.js');
         $PAGE->requires->js($jsurl);
         if ($CFG->branch > 29) {
             $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module_post29.js');
@@ -798,7 +800,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     get_string('turnitinppulapost', 'plagiarism_turnitin'),
                                     array("class" => "pp_turnitin_eula_link"));
 
-                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_ula js_required', 'data-userid' => $user->id));
+                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
                         }
 
                         // Show EULA launcher and form placeholder.
@@ -810,7 +812,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $customdata = array("disable_form_change_checker" => true,
                                     "elements" => array(array('html', $OUTPUT->box('', '', 'useragreement_inputs'))));
-                            $eulaform = new turnitintooltwo_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+                            $eulaform = new turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                     'POST', $target = 'eulaWindow', array('id' => 'eula_launch'));
                             $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
                             $eulashown = true;

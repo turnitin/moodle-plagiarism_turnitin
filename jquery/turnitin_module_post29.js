@@ -1,4 +1,5 @@
 require(['jquery'], function($) {
+    $(".pp_turnitin_eula").show();
 
     $(document).on('mouseover', '.tii_links_container .tii_tooltip', function() {
         $(this).tooltipster({ multiple: true });
@@ -157,16 +158,16 @@ require(['jquery'], function($) {
     }
 
     // Hide the submission form if the user has never accepted or declined the Turnitin EULA.
-    if ($(".pp_turnitin_ula_ignored").length > 0) {
+    if ($(".pp_turnitin_eula_ignored").length > 0) {
         if ($('.editsubmissionform').length > 0) {
             $('.editsubmissionform').hide();
         }
-        if ($('.pp_turnitin_ula').siblings('.mform').length > 0) {
-            $('.pp_turnitin_ula').siblings('.mform').hide();
+        if ($('.pp_turnitin_eula').siblings('.mform').length > 0) {
+            $('.pp_turnitin_eula').siblings('.mform').hide();
         }
     }
 
-    function lightBoxCloseButton(closeBtnText) {
+    function lightBoxCloseButton() {
         $('body').append('<div id="tii_close_bar"><a href="#" onclick="$.colorbox.close(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
     }
 
@@ -241,19 +242,6 @@ require(['jquery'], function($) {
         });
     }
 
-    // Update the DB value for EULA accepted.
-    function userAgreementAccepted( user_id ){
-        $.ajax({
-            type: "POST",
-            url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-            dataType: "json",
-            data: {action: 'acceptuseragreement', user_id: user_id},
-            success: function(data) {
-                window.location = window.location;
-            }
-        });
-    }
-
     // Open an iframe light box containing the Peermark Manager.
     if ($('.peermark_manager_launch').length > 0) {
         $('.peermark_manager_launch').colorbox({
@@ -284,6 +272,87 @@ require(['jquery'], function($) {
             onCleanup: function() {
                 $('#tii_close_bar').remove();
                 hideLoadingGif();
+            }
+        });
+    }
+
+    // Show warning when changing the rubric linked to an assignment.
+    $('#id_plagiarism_rubric').mousedown(function () {
+        if ($('input[name="instance"]').val() != '' && $('input[name="rubric_warning_seen"]').val() != 'Y') {
+            if (confirm(M.str.plagiarism_turnitin.changerubricwarning)) {
+                $('input[name="rubric_warning_seen"]').val('Y');
+            }
+        }
+    });
+
+    // Open an iframe light box containing the Quickmark Manager.
+    if ($('.plagiarism_turnitin_quickmark_manager_launch').length > 0) {
+        $('.plagiarism_turnitin_quickmark_manager_launch').colorbox({
+            iframe: true, width: "770px", height: "600px", opacity: "0.7", className: "quickmark_manager", transition: "none",
+            onLoad: function () {
+                lightBoxCloseButton();
+                getLoadingGif();
+            },
+            onCleanup: function () {
+                $('#tii_close_bar').remove();
+                hideLoadingGif();
+            }
+        });
+    }
+
+    // Show or hide the submission link depending on whether the EULA has been accepted.
+    function submitVisibility() {
+        if (($(".upload_box").data("user-type") == 1) || ($(".upload_box").data("eula") == 1)) {
+            $(".upload_box").show();
+        }
+        else {
+            $(".upload_box").hide();
+        }
+    }
+
+    if ($("#id_plagiarism_rubric").length > 0) {
+        refreshRubricSelect();
+    }
+
+    // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
+    function refreshRubricSelect() {
+        var currentRubric = $('#id_plagiarism_rubric').val();
+        $.ajax({
+            "dataType": 'json',
+            "type": "POST",
+            "url": "../plagiarism/turnitin/ajax.php",
+            "data": {
+                action: "refresh_rubric_select", assignment: $('input[name="instance"]').val(),
+                modulename: $('input[name="modulename"]').val(), course: $('input[name="course"]').val()
+            },
+            success: function (data) {
+                $($('#id_plagiarism_rubric')).empty();
+                var options = data;
+                $.each(options, function (i, val) {
+                    if (!$.isNumeric(i) && i !== "") {
+
+                        var optgroup = $('<optgroup>');
+                        optgroup.attr('label', i);
+
+                        $.each(val, function (j, rubric) {
+                            var option = $("<option></option>");
+                            option.val(j);
+                            option.text(rubric);
+
+                            optgroup.append(option);
+                        });
+
+                        $('#id_plagiarism_rubric').append(optgroup);
+
+                    } else {
+                        $($('#id_plagiarism_rubric')).append($('<option>', {
+                            value: i,
+                            text: val
+                        }));
+                    }
+                });
+
+                $('#id_plagiarism_rubric' + ' option[value="' + currentRubric + '"]').attr("selected", "selected");
             }
         });
     }

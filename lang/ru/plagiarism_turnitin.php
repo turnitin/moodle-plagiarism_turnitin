@@ -266,3 +266,4 @@ $string['sinfo'] = 'Отображены элементы с _ПЕРВОГО_ д
 $string['userupdateerror'] = 'Не удалось обновить данные пользователя';
 $string['connecttestcommerror'] = 'Не удалось подключиться к Turnitin. Проверьте настройки URL-адреса API.';
 $string['userfinderror'] = 'Возникла ошибка при попытке найти пользователя в Turnitin';
+$string['tiiusergeterror'] = 'Возникла ошибка при попытке получить детальную информацию о пользователе из Turnitin';

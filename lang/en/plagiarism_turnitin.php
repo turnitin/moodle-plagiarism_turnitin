@@ -299,3 +299,4 @@ $string['userupdateerror'] = 'Could not update user data';
 $string['connecttestcommerror'] = 'Could not connect to Turnitin. Double check your API URL setting.';
 
 $string['userfinderror'] = 'There was an error trying to find the user in Turnitin';
+$string['tiiusergeterror'] = 'There was an error when trying to get the user details from Turnitin';

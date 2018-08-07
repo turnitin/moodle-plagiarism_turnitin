@@ -215,7 +215,7 @@
     line-height: 28px;
 }
 
-.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_ula {
+.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_eula {
     cursor:pointer;
     text-decoration: underline;
 	text-align: center;
@@ -228,7 +228,7 @@
 	display: block;
 }
 
-.pp_turnitin_ula {
+.pp_turnitin_eula {
 	display: none;
     margin-bottom:16px;
     padding-top: 40px;

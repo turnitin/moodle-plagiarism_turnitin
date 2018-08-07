@@ -20,7 +20,6 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_form.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 global $tiipp;
@@ -126,11 +125,10 @@ class turnitin_view {
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo', 'mod_turnitintooltwo');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
 
-            $cssurl = new moodle_url('/mod/plagiarism/turnitin/css/colorbox.css');
+            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
             $PAGE->requires->css($cssurl);
 
             // Refresh Grades.
@@ -151,7 +149,7 @@ class turnitin_view {
             $quickmarkmanagerlink = '';
             if ($config->plagiarism_turnitin_usegrademark) {
                 $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                                '/mod/turnitintooltwo/extras.php?cmd=quickmarkmanager&view_context=box',
+                                                '/plagiarism/turnitin/extras.php?cmd=quickmarkmanager&view_context=box',
                                                 get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
                                                 array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
                                                     'title' => get_string('launchquickmarkmanager', 'plagiarism_turnitin')));
@@ -279,7 +277,7 @@ class turnitin_view {
 
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
-                                                    '/mod/turnitintooltwo/extras.php?cmd=rubricmanager&view_context=box',
+                                                    '/plagiarism/turnitin/extras.php?cmd=rubricmanager&view_context=box',
                                                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
                                                     array('class' => 'rubric_manager_launch',
                                                         'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'))).

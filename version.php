@@ -32,6 +32,5 @@ if (!empty($CFG->version)) {
 }
 
 $plugin->dependencies = array(
-    'mod_turnitintooltwo' => 2018011601,
     'mod_assign' => 2013110500
 );

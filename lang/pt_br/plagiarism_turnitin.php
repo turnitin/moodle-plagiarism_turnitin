@@ -266,3 +266,4 @@ $string['sinfo'] = 'Exibindo registros_START_ao_END_do_TOTAL';
 $string['userupdateerror'] = 'Não foi possível atualizar os dados do usuário';
 $string['connecttestcommerror'] = 'Não foi possível conectar ao Turnitin. Verifique as suas configurações do API URL';
 $string['userfinderror'] = 'Ocorreu um erro ao tentar encontrar o trabalho no Turnitin';
+$string['tiiusergeterror'] = 'Ocorreu um erro ao tentar obter os detalhes do usuário a partir do Turnitin';

@@ -266,3 +266,4 @@ $string['sinfo'] = 'Visar _START_till_END_av_TOTAL_inlägg.';
 $string['userupdateerror'] = 'Kunde inte uppdatera användardata';
 $string['connecttestcommerror'] = 'Kunde inte ansluta till Turnitin. Dubbelkolla din inställningen för API-webbadressen.';
 $string['userfinderror'] = 'Det uppstod ett fel vid försök att hitta användaren i Turnitin';
+$string['tiiusergeterror'] = 'Det uppstod ett fel vid försök att hämta användaruppgifterna från Turnitin';

@@ -83,6 +83,25 @@ require(['jquery'], function($) {
         return false;
     });
 
+    // Open an iframe light box containing the Rubric Manager.
+    if ($('.rubric_manager_launch').length > 0) {
+        $('.rubric_manager_launch').colorbox({
+            iframe: true, width: "832px", height: "682px", opacity: "0.7", className: "rubric_manager", transition: "none",
+            onLoad: function () {
+                lightBoxCloseButton();
+                getLoadingGif();
+            },
+            onCleanup: function () {
+                hideLoadingGif();
+                // Refresh Rubric drop down in add/update form.
+                if ($(this).attr("id") != 'rubric_manager_inbox_launch') {
+                    refreshRubricSelect();
+                }
+                $('#tii_close_bar').remove();
+            }
+        });
+    }
+
     // Open an iframe light box containing the Rubric View.
     $(document).on('click', '.rubric_view_pp_launch', function() {
         $('.rubric_view_pp_launch').colorbox({
@@ -127,6 +146,8 @@ require(['jquery'], function($) {
 
         return false;
     });
+
+    $('.launch_form form').submit();
 
     // Open an iframe light box containing the EULA View.
     if ($('.pp_turnitin_eula_link').length > 0) {
@@ -298,16 +319,6 @@ require(['jquery'], function($) {
                 hideLoadingGif();
             }
         });
-    }
-
-    // Show or hide the submission link depending on whether the EULA has been accepted.
-    function submitVisibility() {
-        if (($(".upload_box").data("user-type") == 1) || ($(".upload_box").data("eula") == 1)) {
-            $(".upload_box").show();
-        }
-        else {
-            $(".upload_box").hide();
-        }
     }
 
     if ($("#id_plagiarism_rubric").length > 0) {

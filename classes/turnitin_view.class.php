@@ -125,7 +125,11 @@ class turnitin_view {
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+            if ($CFG->branch > 29) {
+                $PAGE->requires->jquery_plugin('plagiarism-turnitin_module_post29', 'plagiarism_turnitin');
+            } else {
+                $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+            }
             $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
 
             $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');

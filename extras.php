@@ -47,11 +47,7 @@ require_login();
 
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('ui');
-if ($CFG->branch > 29) {
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_module_post29', 'plagiarism_turnitin');
-} else {
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-}
+$PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
 
 switch ($cmd) {
     case "rubricmanager":

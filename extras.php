@@ -35,12 +35,23 @@ $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
 $output = "";
 $jsrequired = false;
 
-$cmid = required_param('cmid', PARAM_INT);
-$cm = get_coursemodule_from_id('', $cmid);
-$context = context_course::instance($cm->course);
+$cmid = optional_param('cmid', 0, PARAM_INT);
+
+if ($cmid) {
+    $cm = get_coursemodule_from_id('', $cmid);
+    $context = context_course::instance($cm->course);
+}
 
 $PAGE->set_context(context_system::instance());
 require_login();
+
+$PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('ui');
+if ($CFG->branch > 29) {
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_module_post29', 'plagiarism_turnitin');
+} else {
+    $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+}
 
 switch ($cmd) {
     case "rubricmanager":
@@ -59,10 +70,6 @@ switch ($cmd) {
         break;
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
-
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('ui');
-        $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
 
         $user = new turnitin_user($USER->id, "Learner");
 

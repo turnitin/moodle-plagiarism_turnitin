@@ -246,7 +246,7 @@ jQuery(document).ready(function($) {
             refreshScores(submissionid, coursemoduleid);
         } else {
             setTimeout( function(){
-                            checkDVClosed(submissionid, coursemoduleid);
+                checkDVClosed(submissionid, coursemoduleid);
             }, 500);
         }
     }

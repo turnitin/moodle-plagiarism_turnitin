@@ -1979,7 +1979,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 try {
                     $this->invalidatemissingsubmission($missingsubmission);
                 } catch (Exception $e) {
-                    mtrace("An exception was thrown while attempting to update plagiarism turnitin file submission $missingsubmission: "
+                    mtrace("An exception was thrown while attempting to update plagiarism turnitin file submission: $missingsubmission "
                         . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
                 }
             }
@@ -2061,29 +2061,29 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     private function checklocalsubmissionstate($assignmentIds, $submissionids) {
-        try {
-            // Initialise Comms Object.
-            $turnitincomms = new turnitin_comms();
-            $turnitincall = $turnitincomms->initialise_api();
-            $tiisubmissionids = array();
+        // Initialise Comms Object.
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+        $tiisubmissionids = array();
+
+        foreach ($assignmentIds as $assignmentId) {
             $submission = new TiiSubmission();
-            foreach ($assignmentIds as $assignmentId) {
-                $submission->setAssignmentId($assignmentId);
-                $submission->setDateFrom('2018-09-12T09:00:00Z'); // TODO(hperperidis): see how we can get a valid date here;
+            $submission->setAssignmentId($assignmentId);
+            $submission->setDateFrom('2018-09-12T09:00:00Z'); // TODO(hperperidis): see how we can get a valid date here;
+
+            try {
                 $response = $turnitincall->findSubmissions($submission);
-
-                $tiiSubmission = $response->getSubmission();
                 $tiisubmissionids = array_merge($tiisubmissionids, $response->getSubmission()->getSubmissionIds());
+            } catch (Exception $e) {
+                mtrace("An exception was thrown while attempting to find submissions for Turnitin assignment: $assignmentId. "
+                    . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
             }
-
-            return array(
-                'trimmedSubmissions' => array_intersect($submissionids, $tiisubmissionids),
-                'missingTiiSubmissions' => array_diff($submissionids, $tiisubmissionids)
-            );
-
-        } catch (Exception $e) {
-
         }
+
+        return array(
+            'trimmedSubmissions' => array_intersect($submissionids, $tiisubmissionids),
+            'missingTiiSubmissions' => array_diff($submissionids, $tiisubmissionids)
+        );
     }
 
     private function invalidatemissingsubmission($missingsubmission) {

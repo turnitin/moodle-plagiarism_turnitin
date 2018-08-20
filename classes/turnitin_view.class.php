@@ -301,7 +301,6 @@ class turnitin_view {
                 }
 
                 $mform->addElement('selectgroups', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubrics);
-
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.
                                                     '/plagiarism/turnitin/extras.php?cmd=rubricmanager&view_context=box',

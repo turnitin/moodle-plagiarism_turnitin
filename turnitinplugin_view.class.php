@@ -141,7 +141,7 @@ class turnitinplugin_view {
             $rubricsnew = array($options => $rubricsnew);
 
             // Merge the arrays, prioritising instructor owned arrays.
-            $rubrics = $rubricsnew + $turnitinclass->sharedrubrics;
+            $rubrics = array_merge($rubricsnew, $turnitinclass->sharedrubrics);
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));

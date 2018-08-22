@@ -300,3 +300,4 @@ $string['connecttestcommerror'] = 'Could not connect to Turnitin. Double check y
 
 $string['userfinderror'] = 'There was an error trying to find the user in Turnitin';
 $string['tiiusergeterror'] = 'There was an error when trying to get the user details from Turnitin';
+$string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';

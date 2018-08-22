@@ -1917,7 +1917,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
-        $validatedSubmissions = array();
+        $validatedsubmissions = array();
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
@@ -1971,13 +1971,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         //Seperate out $submissionids that do not exist in TII.
-        $validatedSubmissions = $this->checklocalsubmissionstate($assignmentids, $submissionids);
+        $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);
 
         //At this point update missingTiiSubmissions state to error:
-        if (count($validatedSubmissions['missingTiiSubmissions']) > 0) {
-            foreach ($validatedSubmissions['missingTiiSubmissions'] as $missingsubmission) {
+        if (count($validatedsubmissions['missingTiiSubmissions']) > 0) {
+            foreach ($validatedsubmissions['missingTiiSubmissions'] as $missingsubmission) {
                 try {
-                    $this->invalidatemissingsubmission($missingsubmission);
+                    $this->invalidate_missing_submission($missingsubmission);
                 } catch (Exception $e) {
                     mtrace("An exception was thrown while attempting to update plagiarism turnitin file submission: $missingsubmission "
                         . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
@@ -1985,10 +1985,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        if (count($validatedSubmissions['trimmedSubmissions']) > 0) {
+        if (count($validatedsubmissions['trimmedSubmissions']) > 0) {
 
             // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
-            $submissionbatches = array_chunk($validatedSubmissions['trimmedSubmissions'], PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
+            $submissionbatches = array_chunk($validatedsubmissions['trimmedSubmissions'], PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
             foreach ($submissionbatches as $submissionsbatch) {
 
                 // Initialise Comms Object.
@@ -2060,7 +2060,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
-    private function checklocalsubmissionstate($assignmentIds, $submissionids) {
+    private function check_local_submission_state($assignmentIds, $submissionids) {
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
@@ -2069,7 +2069,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         foreach ($assignmentIds as $assignmentId) {
             $submission = new TiiSubmission();
             $submission->setAssignmentId($assignmentId);
-            $submission->setDateFrom('2018-09-12T09:00:00Z'); // TODO(hperperidis): see how we can get a valid date here;
 
             try {
                 $response = $turnitincall->findSubmissions($submission);
@@ -2086,7 +2085,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         );
     }
 
-    private function invalidatemissingsubmission($missingsubmission) {
+    private function invalidate_missing_submission($missingsubmission) {
         global $DB;
         $currentsubmission = $DB->get_record('plagiarism_turnitin_files',
             array('externalid' => $missingsubmission),
@@ -2099,8 +2098,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->id = $currentsubmission->id;
         $plagiarismfile->externalid = $currentsubmission->externalid;
         $plagiarismfile->userid = $currentsubmission->userid;
-        $plagiarismfile->statuscode='error';
-        $plagiarismfile->errorcode=13;
+        $plagiarismfile->statuscode = 'error';
+        $plagiarismfile->errorcode = 13;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
             mtrace("File failed to update: ".$plagiarismfile->id);

@@ -224,4 +224,4 @@ $string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The t
 $string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
 
 $string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';
-$string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in TII. Unable to retrieve similarity score and other submission data.';
+$string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';

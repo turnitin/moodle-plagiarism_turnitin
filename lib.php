@@ -1956,7 +1956,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissionids[] = $tiisubmission->externalid;
 
                     // If submission is added to the request, add the corresponding assign id in the assignids array.
-                    $moduleturnitinconfig =  $DB->get_record('plagiarism_turnitin_config',
+                    $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
                         array(
                             'cm' => $cm->id,
                             'name' => 'turnitin_assignid'
@@ -1970,10 +1970,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        //Seperate out $submissionids that do not exist in TII.
+        // Seperate out $submissionids that do not exist in TII.
         $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);
 
-        //At this point update missingTiiSubmissions state to error:
+        // At this point update missingTiiSubmissions state to error.
         if (count($validatedsubmissions['missingTiiSubmissions']) > 0) {
             foreach ($validatedsubmissions['missingTiiSubmissions'] as $missingsubmission) {
                 try {
@@ -2060,21 +2060,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return true;
     }
 
-    private function check_local_submission_state($assignmentIds, $submissionids) {
+    private function check_local_submission_state($assignmentids, $submissionids) {
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $tiisubmissionids = array();
 
-        foreach ($assignmentIds as $assignmentId) {
+        foreach ($assignmentids as $assignmentid) {
             $submission = new TiiSubmission();
-            $submission->setAssignmentId($assignmentId);
+            $submission->setAssignmentId($assignmentid);
 
             try {
                 $response = $turnitincall->findSubmissions($submission);
                 $tiisubmissionids = array_merge($tiisubmissionids, $response->getSubmission()->getSubmissionIds());
             } catch (Exception $e) {
-                mtrace("An exception was thrown while attempting to find submissions for Turnitin assignment: $assignmentId. "
+                mtrace("An exception was thrown while attempting to find submissions for Turnitin assignment: $assignmentid. "
                     . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
             }
         }
@@ -2089,9 +2089,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
         $currentsubmission = $DB->get_record('plagiarism_turnitin_files',
             array('externalid' => $missingsubmission),
-            'id, 
-            cm, 
-            externalid, 
+            'id,
+            cm,
+            externalid,
             userid'
         );
         $plagiarismfile = new stdClass();

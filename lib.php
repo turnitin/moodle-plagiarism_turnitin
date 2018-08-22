@@ -1986,7 +1986,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // Seperate out $submissionids that do not exist in TII.
+        // Separate out $submissionids that do not exist in TII.
         $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);
 
         // At this point update missingTiiSubmissions state to error.

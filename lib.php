@@ -1990,7 +1990,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // Separate out $submissionids that do not exist in TII.
         $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);
 
         // At this point update missingTiiSubmissions state to error.
@@ -2125,27 +2124,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             mtrace("File failed to update: ".$plagiarismfile->id);
         } else {
             mtrace("File updated: ".$plagiarismfile->id);
-        }
-    }
-
-    /**
-     * Get a class Id from Turnitin if you only have an assignment id.
-     */
-    private function get_course_id_from_assignment_id($assignmentid) {
-        // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-
-        try {
-            $assignment = new TiiAssignment();
-            $assignment->setAssignmentId($assignmentid);
-
-            $response = $turnitincall->readAssignment($assignment);
-            $readassignment = $response->getAssignment();
-
-            return $readassignment->getClassId();
-        } catch (Exception $e) {
-            $turnitincomms->handle_exceptions($e, 'assigngeterror', false);
         }
     }
 

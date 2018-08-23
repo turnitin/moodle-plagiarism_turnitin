@@ -1056,8 +1056,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
                             $errorstring = empty($plagiarismfile->errormsg) ? get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
                         } else {
-                            $errorstring = get_string('errorcode'.$plagiarismfile->errorcode,
-                                            'plagiarism_turnitin', display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE));
+                            $errorstring = get_string(
+                                'errorcode'.$plagiarismfile->errorcode,
+                                'plagiarism_turnitin',
+                                array(
+                                    'maxfilesize' => display_size(TURNITINTOOLTWO_MAX_FILE_UPLOAD_SIZE),
+                                    'externalid' => $plagiarismfile->externalid
+                                ));
                         }
 
                         $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'),

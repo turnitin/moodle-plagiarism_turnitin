@@ -2225,8 +2225,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Check if this content/file has been submitted previously.
                 $previoussubmissions = $DB->get_records_select('plagiarism_turnitin_files',
-                                                    " cm = ? AND userid = ? AND ? = ? AND identifier = ?",
-                                                array($cm->id, $author, $typefield, $submissiontype, $identifier),
+                                                    " cm = ? AND userid = ? AND ".$typefield." = ? AND identifier = ?",
+                                                array($cm->id, $author, $submissiontype, $identifier),
                                                     'id', $submissionfields);
                 $previoussubmission = end($previoussubmissions);
 
@@ -2254,8 +2254,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Check if there is previous submission of different content which we may be able to replace.
                     $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
                     if ($previoussubmission = $DB->get_record_select('plagiarism_turnitin_files',
-                                                    " cm = ? AND userid = ? AND ? = ?",
-                                                array($cm->id, $author, $typefield, $submissiontype),
+                                                    " cm = ? AND userid = ? AND ".$typefield." = ?",
+                                                array($cm->id, $author, $submissiontype),
                                                     'id, cm, externalid, identifier, statuscode, lastmodified, attempt')) {
 
                         $submissionid = $previoussubmission->id;

@@ -167,7 +167,7 @@ $string['code'] = 'Code';
 $string['tiisubmissionsgeterror'] = 'There was an error when trying to get submissions for this assignment from Turnitin';
 $string['errorcode0'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
 $string['errorcode1'] = 'This file has not been sent to Turnitin as it does not have enough content to produce an Originality Report.';
-$string['errorcode2'] = 'This file will not be submitted to Turnitin as it exceeds the maximum size of {$a} allowed';
+$string['errorcode2'] = 'This file will not be submitted to Turnitin as it exceeds the maximum size of {$a->maxfilesize} allowed';
 $string['errorcode3'] = 'This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement.';
 $string['errorcode4'] = 'You must upload a supported file type for this assignment. Accepted file types are; .doc, .docx, .ppt, .pptx, .pps, .ppsx, .pdf, .txt, .htm, .html, .hwp, .odt, .wpd, .ps and .rtf';
 $string['errorcode5'] = 'This file has not been submitted to Turnitin because there is a problem creating the module in Turnitin which is preventing submissions, please consult your API logs for further information';
@@ -224,3 +224,4 @@ $string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The t
 $string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
 
 $string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';
+$string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';

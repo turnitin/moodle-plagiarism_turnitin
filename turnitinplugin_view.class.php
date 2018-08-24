@@ -117,11 +117,31 @@ class turnitinplugin_view {
 
         $config = turnitintooltwo_admin_config();
         $configwarning = '';
+        $rubrics = array();
 
         if ($location == "activity") {
             $instructor = new turnitintooltwo_user($USER->id, 'Instructor');
 
             $instructor->join_user_to_class($course->turnitin_cid);
+
+            $rubrics = array(get_string('attachrubric', 'plagiarism_turnitin') => $instructor->get_instructor_rubrics());
+
+            // Get rubrics that are shared on the account.
+            $turnitinclass = new turnitin_class($course->id);
+            $turnitinclass->sharedrubrics = array();
+            $turnitinclass->read_class_from_tii();
+
+            // This will ensure all rubric keys are integers.
+            $rubricsnew = array(0 => get_string('norubric', 'plagiarism_turnitin'));
+            foreach ($rubrics AS $options => $rubriclist) {
+                foreach ($rubriclist AS $key => $value) {
+                    $rubricsnew[$key] = $value;
+                }
+            }
+            $rubricsnew = array($options => $rubricsnew);
+
+            // Merge the arrays, prioritising instructor owned arrays.
+            $rubrics = array_merge($rubricsnew, $turnitinclass->sharedrubrics);
         }
 
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
@@ -297,7 +317,14 @@ class turnitinplugin_view {
             }
 
             if ($location == "activity" && $config->usegrademark) {
-                $mform->addElement('select', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), array());
+                if (!empty($currentrubric)) {
+                    $attachrubricstring = get_string('attachrubric', 'plagiarism_turnitin');
+                    if (!isset($rubrics[$attachrubricstring][$currentrubric])) {
+                        $rubrics[$attachrubricstring][$currentrubric] = get_string('otherrubric', 'plagiarism_turnitin');
+                    }
+                }
+
+                $mform->addElement('selectgroups', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubrics);
 
                 $mform->addElement('static', 'rubric_link', '',
                                         html_writer::link($CFG->wwwroot.

@@ -321,10 +321,6 @@ jQuery(document).ready(function($) {
         });
     }
 
-    if ($("#id_plagiarism_rubric").length > 0) {
-        refreshRubricSelect();
-    }
-
     // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
     function refreshRubricSelect() {
         var currentRubric = $('#id_plagiarism_rubric').val();

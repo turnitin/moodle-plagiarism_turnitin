@@ -127,7 +127,8 @@ class provider implements
 
         $params = ['userid' => $user->id];
 
-        $sql = "SELECT cm,
+        $sql = "SELECT id,
+                cm,
                 similarityscore,
                 attempt,
                 transmatch,

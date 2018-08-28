@@ -1,3 +1,33 @@
+### Date:	2018-August-28
+### Release:	v2018082801
+
+### :wrench: Fixes and enhancements
+
+---
+
+#### All files submitted to a multi-file assignment are now sent to Turnitin
+
+We received a report from one of our users who noticed an emerging issue for assignments allowing multiple-file submissions: only one of the submitted files was sent to Turnitin, therefore only generating one Similarity Report. We've resolved this!
+
+**Note:** This issue stemmed from the release of plugin version 2018062601.
+
+---
+
+#### Rubric and grading forms now successfully attach to Turnitin assignments
+
+We apologize for any difficulty you may have encountered when trying to attach rubrics and grading forms to your assignments through the Moodle Plagiarism Plugin. We're very pleased to announce that normal service has resumed, and all rubric and grading form selections made during and after assignment creation will stick like glue!
+  	Hammer&Screwdriver_Blue.png 	
+
+**Note:** This issue stemmed from the release of plugin version 2018011602.
+
+---
+
+#### We'll no longer attempt to process the Similarity Reports of deleted submissions
+
+Having mistakenly attempted to retrieve the Similarity Reports of deleted submissions, as a direct result, our system recently encountered difficulties with processing new submissions. "It's time to let go of the past!" we told the system, which reluctantly agreed. We'll now no longer try to pull Similarity Reports for deleted submissions... hoorah!
+
+---
+
 ### 2018-June-26
 ### v2018062601
 

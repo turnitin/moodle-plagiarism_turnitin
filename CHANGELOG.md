@@ -1,5 +1,5 @@
 ### Date:	2018-August-28
-### Release:	v2018082801
+### Release:	v2018082802
 
 ### :wrench: Fixes and enhancements
 
@@ -11,16 +11,12 @@ We received a report from one of our users who noticed an emerging issue for ass
 
 **Note:** This issue stemmed from the release of plugin version 2018062601.
 
----
-
 #### Rubric and grading forms now successfully attach to Turnitin assignments
 
 We apologize for any difficulty you may have encountered when trying to attach rubrics and grading forms to your assignments through the Moodle Plagiarism Plugin. We're very pleased to announce that normal service has resumed, and all rubric and grading form selections made during and after assignment creation will stick like glue!
   	Hammer&Screwdriver_Blue.png 	
 
 **Note:** This issue stemmed from the release of plugin version 2018011602.
-
----
 
 #### We'll no longer attempt to process the Similarity Reports of deleted submissions
 

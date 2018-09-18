@@ -2233,7 +2233,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     array('assignment' => $cm->instance,
                         'userid' => $author,
                         'id' => $itemid), 'status');
-                $_SESSION["moodlesubmissionstatus"] = $moodlesubmission->status;
+
+                if ($moodlesubmission) {
+                    $_SESSION["moodlesubmissionstatus"] = $moodlesubmission->status;
+                }
             }
 
             $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(

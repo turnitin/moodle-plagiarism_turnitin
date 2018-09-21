@@ -1,8 +1,8 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_resubmission
 Feature: Plagiarism plugin works with a Moodle Assignment
-  In order to allow students to send assignment submissions to Turnitin
+  In order to allow students to resubmit assignment submissions to Turnitin
   As a user
-  I need to create an assignment with the plugin enabled and the assignment to launch successfully.
+  I need to create an assignment with the plugin enabled, resubmissions allowed and the student can resubmit.
 
   Background: Set up the plugin
     Given the following "courses" exist:
@@ -36,10 +36,12 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | Assignment name                   | Test assignment name |
       | use_turnitin                      | 1                    |
       | plagiarism_compare_student_papers | 1                    |
+      | id_plagiarism_report_gen          | 1                    |
     Then I should see "Test assignment name"
+    And I click on
 
   @javascript
-  Scenario: Student accepts eula, submits and instructor opens the viewer
+  Scenario: Student accepts eula, submits, gets a report and then resubmits, then and instructor opens the viewer
     Given I log out
     # Student accepts eula.
     And I log in as "student1"
@@ -61,25 +63,53 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I press "Save changes"
     Then I should see "Submitted for grading"
     And I should see "Queued"
-    # Trigger cron as admin for submission
     And I log out
+    # Trigger cron as admin for submission
     And I log in as "admin"
     And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
-    # Instructor opens assignment.
     And I log out
+    # Instructor opens assignment.
     And I log in as "instructor1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
-    # Trigger cron as admin for report
     And I log out
+    # Trigger cron as admin for report
     And I log in as "admin"
     And I wait "20" seconds
     And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
-    # Instructor opens viewer
     And I log out
+    # Student resubmits.
+    And I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test assignment name"
+    And I press "Edit submission"
+    And I delete "testfile.txt" from "File submissions" filemanager
+    And I upload "plagiarism/turnitin/tests/fixtures/testfile2.txt" file to "File submissions" filemanager
+    And I press "Save changes"
+    Then I should see "Submitted for grading"
+    And I should see "Queued"
+    And I log out
+    # Trigger cron as admin for submission
+    And I log in as "admin"
+    And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
+    And I log out
+    # Instructor opens assignment.
+    And I log in as "instructor1"
+    And I am on "Course 1" course homepage
+    And I follow "Test assignment name"
+    Then I should see "View all submissions"
+    When I navigate to "View all submissions" in current page administration
+    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
+    And I log out
+    # Trigger cron as admin for report
+    And I log in as "admin"
+    And I wait "20" seconds
+    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    And I log out
+    # Instructor opens viewer
     And I log in as "instructor1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
@@ -92,4 +122,4 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I wait until the page is ready
     And I click on ".agree-button" "css_element"
     And I wait until the page is ready
-    Then I should see "testfile.txt"
+    Then I should see "testfile2.txt"

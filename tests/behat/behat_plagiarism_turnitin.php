@@ -101,6 +101,8 @@ class behat_plagiarism_turnitin extends behat_base {
             'email' => uniqid($username, true) . '@example.com',
             'username' => $username,
             'password' => $username,
+            'firstname' => $username,
+            'lastname' => $username
         ));
     }
 

@@ -269,3 +269,4 @@ $string['userupdateerror'] = 'Käyttäjätietoja ei voitu päivittää';
 $string['connecttestcommerror'] = 'Turnitiniin ei saatu yhteyttä. Tarkasta API:n URL-asetus.';
 $string['userfinderror'] = 'Kun käyttäjää haettiin Turnitinistä, kohdattiin virhe';
 $string['tiiusergeterror'] = 'Kun käyttäjän tietoja yritettiin saada Turnitinistä, kohdattiin virhe';
+$string['usercreationerror'] = 'Turnitin käyttäjän luominen epäonnistui';

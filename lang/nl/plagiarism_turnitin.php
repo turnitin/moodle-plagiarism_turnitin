@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Kan gebruikersgegevens niet bijwerken';
 $string['connecttestcommerror'] = 'Kan geen verbinding maken met Turnitin. Controleer uw API URL-instelling';
 $string['userfinderror'] = 'Er is een fout opgetreden tijdens het zoeken naar de gebruiker in Turnitin';
 $string['tiiusergeterror'] = 'Er is een fout opgetreden bij een poging gebruikersgegevens op te halen bij Turnitin';
+$string['usercreationerror'] = 'Maken van Turnitin-gebruiker mislukt';

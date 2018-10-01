@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Nelze aktualizovat uživatelské údaje';
 $string['connecttestcommerror'] = 'Nebylo možné se k Turnitin připojit. Zkontrolujte své API URL nastavení.';
 $string['userfinderror'] = 'Došlo k chybě při hledání uživatele v systému Turnitin';
 $string['tiiusergeterror'] = 'Došlo k chybě při získávání uživatelských detailů ze systému Turnitin';
+$string['usercreationerror'] = 'Vytvoření uživatele Turnitin se nezdařilo';

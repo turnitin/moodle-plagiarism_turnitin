@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Kunde inte uppdatera användardata';
 $string['connecttestcommerror'] = 'Kunde inte ansluta till Turnitin. Dubbelkolla din inställningen för API-webbadressen.';
 $string['userfinderror'] = 'Det uppstod ett fel vid försök att hitta användaren i Turnitin';
 $string['tiiusergeterror'] = 'Det uppstod ett fel vid försök att hämta användaruppgifterna från Turnitin';
+$string['usercreationerror'] = 'Turnitin användare gick inte att skapa';

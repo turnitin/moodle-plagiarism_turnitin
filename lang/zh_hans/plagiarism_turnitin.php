@@ -267,3 +267,4 @@ $string['userupdateerror'] = '无法更新用户数据';
 $string['connecttestcommerror'] = '无法连线至 Turnitin。请再次检查您的 API URL 设置。';
 $string['userfinderror'] = '尝试在 Turnitin 中查找用户时出错';
 $string['tiiusergeterror'] = '尝试从 Turnitin 中获取用户细节时出错';
+$string['usercreationerror'] = 'Turnitin 用户创建失败';

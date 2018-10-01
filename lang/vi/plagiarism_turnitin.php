@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Không thể cập nhật dữ liệu người dù
 $string['connecttestcommerror'] = 'Không thể kết nối với Turnitin. Hãy kiểm tra lại cài đặt URL API của bạn.';
 $string['userfinderror'] = 'Xảy ra lỗi khi đang cố gắng tìm một người dùng trên Turnitin';
 $string['tiiusergeterror'] = 'Xảy ra lỗi khi đang cố gắng lấy thông tin người dùng từ Turnitin';
+$string['usercreationerror'] = 'Tạo Người dùng Turnitin không thành công';

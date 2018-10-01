@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Impossibile aggiornare i dati dell&#39;utente';
 $string['connecttestcommerror'] = 'Impossibile connettersi a Turnitin. Verifica l&#39;impostazione dell&#39;URL API.';
 $string['userfinderror'] = 'Si è verificato un errore nel tentativo di trovare l&#39;utente Turnitin';
 $string['tiiusergeterror'] = 'Si è verificato un errore durante il tentativo di ottenere i dettagli utente da Turnitin';
+$string['usercreationerror'] = 'Creazione utente Turnitin non riuscita';

@@ -83,8 +83,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     # Check if we're using the pseudo domain.
     And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
     And I click on "Unlink Users" "link"

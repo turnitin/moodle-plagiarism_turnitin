@@ -38,7 +38,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | plagiarism_compare_student_papers | 1                    |
       | id_plagiarism_report_gen          | 1                    |
     Then I should see "Test assignment name"
-    And I click on
 
   @javascript
   Scenario: Student accepts eula, submits, gets a report and then resubmits, then and instructor opens the viewer
@@ -106,8 +105,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I log out
     # Trigger cron as admin for report
     And I log in as "admin"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     And I log out
     # Instructor opens viewer
     And I log in as "instructor1"

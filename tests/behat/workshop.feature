@@ -44,7 +44,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
       | id_description__idx_2_editor |         |
 
   @javascript
-  Scenario: A submission can be queued and sent to Turnitin
+  Scenario: A submission can be queued and sent to Turnitin for a workshop
     And I change phase in workshop "Test workshop" to "Submission phase"
     And I log out
     # Student makes submission to workshop.
@@ -81,17 +81,12 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I follow "Test workshop"
     And I follow "Submission1"
     Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
-    And I log out
     # Admin runs scheduled task to request an originality report.
-    And I log in as "admin"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
-    And I am on "Course 1" course homepage
-    And I follow "Test workshop"
-    And I follow "Submission1"
-    Then I should see "%" in the "div.origreport_score" "css_element"
     And I log out
+    And I log in as "admin"
+    And I obtain an originality report for "student1 student1" on "workshop" "Test workshop" on course "Course 1"
     # Login as student and a score should be visible.
+    And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test workshop"

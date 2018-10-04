@@ -88,17 +88,12 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I follow "Test forum"
     And I follow "Forum post 1"
     Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
-    And I log out
     # Trigger cron as admin for report
-    And I log in as "admin"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
-    And I am on "Course 1" course homepage
-    And I follow "Test forum"
-    And I follow "Forum post 1"
-    Then I should see "%" in the "div.origreport_score" "css_element"
     And I log out
+    And I log in as "admin"
+    And I obtain an originality report for "student1 student1" on "forum" "Test forum" on course "Course 1"
     # Login as student and a score should be visible.
+    And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test forum"

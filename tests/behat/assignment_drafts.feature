@@ -98,11 +98,13 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
-    Then I should see "Turnitin ID:"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
+    # Trigger cron as admin for report
     And I log out
+    And I log in as "admin"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     # Instructor opens viewer
+    And I log out
     And I log in as "instructor1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
@@ -154,11 +156,12 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     When I navigate to "View all submissions" in current page administration
     Then "student2 student2" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
-    # Update report.
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    # Trigger cron as admin for report
     And I log out
+    And I log in as "admin"
+    And I obtain an originality report for "student2 student2" on "assignment" "Test assignment name" on course "Course 1"
     # Instructor opens viewer
+    And I log out
     And I log in as "instructor1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"

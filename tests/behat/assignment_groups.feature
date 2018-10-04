@@ -86,8 +86,7 @@ Feature: Group assignment submissions
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
     And "student2 student2" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
     # Admin runs scheduled task to request an originality report.
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     When I navigate to "View all submissions" in current page administration

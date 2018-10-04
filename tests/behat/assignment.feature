@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_basic
 Feature: Plagiarism plugin works with a Moodle Assignment
   In order to allow students to send assignment submissions to Turnitin
   As a user
@@ -76,8 +76,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I wait "20" seconds
-    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     # Instructor opens viewer
     And I log out
     And I log in as "instructor1"

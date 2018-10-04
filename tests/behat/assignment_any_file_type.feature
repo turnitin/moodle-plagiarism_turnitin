@@ -77,7 +77,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I wait "20" seconds
     And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
     # Instructor opens viewer
     And I log out

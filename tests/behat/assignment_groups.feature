@@ -1,4 +1,8 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_groups
+@broken
+#@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_groups
+
+# Note: This test is broken until INT-12029 is completed. Leaving the code here as the test should work once that ticket is fixed.
+
 Feature: Group assignment submissions
   In order to allow students to work collaboratively on an assignment
   As a teacher
@@ -49,9 +53,6 @@ Feature: Group assignment submissions
     And I navigate to "View all submissions" in current page administration
     And I follow "Test assignment name"
     Then I should see "Grading summary"
-
-
-   # Note: This test is broken until INT-12029 is completed. Leaving the code here as the test should work once that ticket is fixed.
 
   @javascript
   Scenario: Confirm that all students in a group can access the Evaluation Viewer even if they didn't submit.

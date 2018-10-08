@@ -45,7 +45,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
 
   @javascript
   Scenario: A submission can be queued and sent to Turnitin for a workshop
-    And I change phase in workshop "Test workshop" to "Submission phase"
+    Given I change phase in workshop "Test workshop" to "Submission phase"
     And I log out
     # Student makes submission to workshop.
     And I log in as "student1"

@@ -55,7 +55,6 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I click on ".pp_turnitin_eula_link" "css_element"
     And I wait until ".cboxIframe" "css_element" exists
     And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
     And I click on ".agree-button" "css_element"
     And I wait until the page is ready
     Then I should see "Test workshop"

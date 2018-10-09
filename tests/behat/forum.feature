@@ -40,14 +40,9 @@ Feature: Plagiarism plugin works with a Moodle forum
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
-    And I follow "Test forum"
-    And I click on "Add a new discussion topic" "button"
-    And I wait until the page is ready
-    Then I should see "Subject"
-    And I set the following fields to these values:
+    And I add a new discussion to "Test forum" forum with:
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
-    And I press "Post to forum"
     And I log out
 
   @javascript

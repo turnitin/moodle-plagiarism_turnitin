@@ -40,7 +40,7 @@ Feature: Plagiarism plugin works with a Moodle forum
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
-    And I wait "2" seconds
+    And I am on "Course 1" course homepage
     And I add a new discussion to "Test forum" forum with:
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |

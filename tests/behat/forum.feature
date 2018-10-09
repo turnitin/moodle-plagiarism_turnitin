@@ -42,6 +42,8 @@ Feature: Plagiarism plugin works with a Moodle forum
       | plagiarism_show_student_report    | 1                              |
     And I follow "Test forum"
     And I click on "Add a new discussion topic" "button"
+    And I wait until the page is ready
+    Then I should see "Subject"
     And I set the following fields to these values:
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |

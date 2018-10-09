@@ -46,12 +46,12 @@ Feature: Plagiarism plugin works with a Moodle forum
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I press "Post to forum"
+    And I log out
 
   @javascript
   Scenario: Add a post to a discussion with a file attached and retrieve the originality score
-    Given I log out
     # Student creates a forum discussion and replies to original post.
-    And I log in as "student1"
+    Given I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test forum"
     And I click on "Add a new discussion topic" "button"

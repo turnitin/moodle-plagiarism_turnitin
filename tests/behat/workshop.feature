@@ -8,7 +8,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     Given the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1        | 0        | 1         |
-    And I create a unique moodle user with username "student1"
+    And I create a unique user with username "student1"
     And I create a unique user with username "instructor1"
     And the following "course enrolments" exist:
       | user        | course | role    |
@@ -62,7 +62,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I set the following fields to these values:
       | Title              | Submission1                                                                                                                                            |
       | Submission content | This is a workshop submission that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking and matched against any sources |
-      | Attachment         | plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                                           |
+      | Attachment         | plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                                        |
     And I press "Save changes"
     Then I should see "My submission"
     And I should see "Queued" in the "div.turnitin_status" "css_element"

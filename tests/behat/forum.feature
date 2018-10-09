@@ -33,15 +33,15 @@ Feature: Plagiarism plugin works with a Moodle forum
     # Create Forum.
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Forum" to section "1" and I fill the form with:
-      | Forum name                        | Test forum                     |
+      | Forum name                        | Test forum name                |
       | Forum type                        | Standard forum for general use |
-      | Description                       | Test forum                     |
+      | Description                       | Test forum description         |
       | groupmode                         | 0                              |
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
     And I am on "Course 1" course homepage
-    And I add a new discussion to "Test forum" forum with:
+    And I add a new discussion to "Test forum name" forum with:
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I log out
@@ -51,7 +51,7 @@ Feature: Plagiarism plugin works with a Moodle forum
     # Student creates a forum discussion and replies to original post.
     Given I log in as "student1"
     And I am on "Course 1" course homepage
-    And I follow "Test forum"
+    And I follow "Test forum name"
     And I click on "Add a new discussion topic" "button"
     And I click on ".pp_turnitin_eula_link" "css_element"
     And I wait until ".cboxIframe" "css_element" exists
@@ -59,12 +59,12 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I wait until the page is ready
     And I click on ".agree-button" "css_element"
     And I wait until the page is ready
-    Then I should see "Test forum"
+    Then I should see "Test forum name"
     And I set the following fields to these values:
       | Subject | Forum post 2                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I press "Post to forum"
-    And I reply "Forum post 1" post from "Test forum" forum with:
+    And I reply "Forum post 1" post from "Test forum name" forum with:
       | Subject    | Reply with attachment                                                                                                       |
       | Message    | This is the body of the forum reply that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
       | Attachment | plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                |
@@ -76,32 +76,32 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I log in as "admin"
     And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
     And I am on "Course 1" course homepage
-    And I follow "Test forum"
+    And I follow "Test forum name"
     And I follow "Forum post 1"
     Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
     And I log out
     # Student can see post has been sent to Turnitin.
     And I log in as "student1"
     And I am on "Course 1" course homepage
-    And I follow "Test forum"
+    And I follow "Test forum name"
     And I follow "Forum post 1"
     Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I obtain an originality report for "student1 student1" on "forum" "Test forum" on course "Course 1"
+    And I obtain an originality report for "student1 student1" on "forum" "Test forum name" on course "Course 1"
     # Login as student and a score should be visible.
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
-    And I follow "Test forum"
+    And I follow "Test forum name"
     And I follow "Forum post 1"
     Then I should see "%" in the "div.origreport_score" "css_element"
     # Instructor opens viewer
     And I log out
     And I log in as "instructor1"
     And I am on "Course 1" course homepage
-    And I follow "Test forum"
+    And I follow "Test forum name"
     And I follow "Forum post 1"
     And I wait until "div.pp_origreport_open" "css_element" exists
     And I click on "div.pp_origreport_open" "css_element"

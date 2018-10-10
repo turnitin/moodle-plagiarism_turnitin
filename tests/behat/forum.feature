@@ -15,7 +15,7 @@ Feature: Plagiarism plugin works with a Moodle forum
       | student1    | C1     | student |
       | instructor1 | C1     | editingteacher |
     And I log in as "admin"
-    And I navigate to "Advanced features" node in "Site administration"
+    And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
     And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
@@ -31,6 +31,8 @@ Feature: Plagiarism plugin works with a Moodle forum
       | Plugin name         |
       | plagiarism_turnitin |
     # Create Forum.
+    And I log out
+    And I log in as "instructor1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name                        | Test forum name                |
@@ -40,7 +42,6 @@ Feature: Plagiarism plugin works with a Moodle forum
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
-    And I am on "Course 1" course homepage
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Forum post 1                                                                                                                |
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |

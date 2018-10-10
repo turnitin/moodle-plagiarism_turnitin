@@ -28,7 +28,7 @@ Feature: Group assignment submissions
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |

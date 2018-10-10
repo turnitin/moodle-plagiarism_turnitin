@@ -6,7 +6,7 @@ Feature:  Installation succeeds
 
   Background: Set up the plugin
     When I log in as "admin"
-    And I navigate to "Advanced features" node in "Site administration"
+    And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
     And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"

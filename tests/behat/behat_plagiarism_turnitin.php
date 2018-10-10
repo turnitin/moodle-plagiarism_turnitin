@@ -101,6 +101,8 @@ class behat_plagiarism_turnitin extends behat_base {
             'email' => uniqid($username, true) . '@example.com',
             'username' => $username,
             'password' => $username,
+            'firstname' => $username,
+            'lastname' => $username
         ));
     }
 
@@ -128,6 +130,59 @@ class behat_plagiarism_turnitin extends behat_base {
         if (count($elements) != $textcount) {
             throw new ExpectationException('Found '.count($elements).' instances of the text '. $text.'. Expected '.$textcount,
                 $this->getSession());
+        }
+    }
+
+    /**
+     * Poll 12 times over 2 minutes for an originality report. This should be enough time for the vast majority of cases.
+     *
+     * @Given /^I obtain an originality report for "(?P<student>(?:[^"]|\\")*)" on "(?P<modtype>(?:[^"]|\\")*)" "(?P<modname>(?:[^"]|\\")*)" on course "(?P<coursename>(?:[^"]|\\")*)"$/
+     * @param string $student
+     * @param string $modtype
+     * @param string $modname
+     * @param string $coursename
+     * @throws ElementNotFoundException
+     * @throws Exception
+     */
+    public function i_obtain_an_originality_report_for_student_on_modtype_assignmentname_on_course_coursename($student, $modtype, $modname, $coursename)
+    {
+        $reportFound = false;
+        $count = 1;
+        while (!$reportFound) {
+            $this->execute('behat_general::i_run_the_scheduled_task', "\plagiarism_turnitin\\task\update_reports");
+            $this->execute('behat_general::i_wait_seconds', 1);
+            $this->execute('behat_navigation::i_am_on_course_homepage', $coursename);
+            $this->execute('behat_general::click_link', $modname);
+
+            switch($modtype) {
+                case "assignment":
+                    $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', "View all submissions");
+                    break;
+                case "forum":
+                    $this->execute('behat_general::click_link', "Forum post 1");
+                    break;
+                case "workshop":
+                    $this->execute('behat_general::click_link', "Submission1");
+                    break;
+            }
+
+            try {
+                switch($modtype) {
+                    case "assignment":
+                        $this->execute('behat_general::row_column_of_table_should_contain', array($student, "File submissions", "generaltable", "%"));
+                        break;
+                    case "forum":
+                    case "workshop":
+                        $this->execute('behat_general::assert_element_contains_text', array("%", "div.origreport_score", "css_element"));
+                        break;
+                }
+                break;
+            } catch (Exception $e) {
+                if ($count >= 12) {
+                    throw new ElementNotFoundException($this->getSession());
+                }
+                $count++;
+            }
         }
     }
 }

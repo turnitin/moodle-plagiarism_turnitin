@@ -108,7 +108,7 @@ class turnitin_user {
      */
     public static function get_pseudo_domain() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ? PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->pseudoemaildomain;
+        $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ? PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
 
         return $domain;
     }

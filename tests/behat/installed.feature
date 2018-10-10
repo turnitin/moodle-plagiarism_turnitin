@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagairism_turnitin_smoke @plagiarism_turnitin_installed
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_installed
 Feature:  Installation succeeds
   In order to use this plugin
   As a user
@@ -25,5 +25,5 @@ Feature:  Installation succeeds
   @javascript
   Scenario: Test the plugin connectivity
     Given I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
-    And I click on "#id_connection_test" "css_element"
+    And I press "Test Turnitin Connection"
     Then I should see "Connection test successful"

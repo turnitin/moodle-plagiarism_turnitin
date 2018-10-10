@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagairism_turnitin_smoke @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_multiple_files
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_multiple_files
 Feature: Plagiarism plugin works with a Moodle Assignment and multiple files.
   In order to allow students to send multiple file submissions to Turnitin
   As a user

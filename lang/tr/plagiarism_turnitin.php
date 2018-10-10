@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'Kullanıcı verileri güncellenemedi';
 $string['connecttestcommerror'] = 'Turnitin&#39; e bağlanılamadı. API URL ayarlarını tekrar kontrol edin.';
 $string['userfinderror'] = 'Kullanıcı Turnitin&#39;de aranırken bir sorun oluştu';
 $string['tiiusergeterror'] = 'Turnitin&#39;den kullanıcı detayları alınırken bir sorun oluştu';
+$string['usercreationerror'] = 'Turnitin kullanıcı oluşturma işlemi başarısız oldu';

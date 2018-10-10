@@ -1,8 +1,8 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_basic
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_pseudo
 Feature: Plagiarism plugin works with a Moodle Assignment
-  In order to allow students to send assignment submissions to Turnitin
+  In order to allow students to send assignment submissions to Turnitin with pseudo enabled at account level
   As a user
-  I need to create an assignment with the plugin enabled and the assignment to launch successfully.
+  I need to create an assignment with the plugin enabled and the assignment to launch successfully and for student names to be masked in the inbox.
 
   Background: Set up the plugin
     Given the following "courses" exist:
@@ -26,6 +26,13 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I configure Turnitin credentials
     And I set the following fields to these values:
       | Enable Diagnostic Mode | Yes |
+      | Enable Student Privacy | Yes |
+    And I press "Save changes"
+    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I set the following fields to these values:
+      | Student Pseudo First Name | Pseudo       |
+      | Pseudo Encryption Salt    | Salt         |
+      | Pseudo Email Domain       | behatmoodle.com |
     And I press "Save changes"
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |
@@ -39,7 +46,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     Then I should see "Test assignment name"
 
   @javascript
-  Scenario: Student accepts eula, submits and instructor opens the viewer
+  Scenario: Student accepts eula, submits and instructor opens the viewer and finds a masked student name.
     Given I log out
     # Student accepts eula.
     And I log in as "student1"
@@ -77,6 +84,10 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I log out
     And I log in as "admin"
     And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
+    # Check if we're using the pseudo domain.
+    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I click on "Unlink Users" "link"
+    Then I should see "@behatmoodle.com"
     # Instructor opens viewer
     And I log out
     And I log in as "instructor1"
@@ -92,3 +103,4 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I click on ".agree-button" "css_element"
     And I wait until the page is ready
     Then I should see "testfile.txt"
+    Then I should see "Pseudo User"

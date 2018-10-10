@@ -267,3 +267,4 @@ $string['userupdateerror'] = 'ユーザーデータを講師できませんで�
 $string['connecttestcommerror'] = 'Turnitinに接続できませんでした。APIのURL設定を確認してください。';
 $string['userfinderror'] = 'Turnitinのユーザーを検索中にエラーが発生しました';
 $string['tiiusergeterror'] = 'ユーザー情報をTurnitinから入手する際にエラーが発生しました';
+$string['usercreationerror'] = 'Turnitinユーザー作成に失敗';

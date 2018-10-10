@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_smoke @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_basic
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_any_file_type
 Feature: Plagiarism plugin works with a Moodle Assignment
   In order to allow students to send assignment submissions to Turnitin
   As a user
@@ -33,13 +33,14 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Create Assignment.
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Assignment" to section "1" and I fill the form with:
-      | Assignment name                   | Test assignment name |
-      | use_turnitin                      | 1                    |
-      | plagiarism_compare_student_papers | 1                    |
+      | Assignment name                     | Test assignment name |
+      | use_turnitin                        | 1                    |
+      | plagiarism_compare_student_papers   | 1                    |
+      | plagiarism_allow_non_or_submissions | 1                    |
     Then I should see "Test assignment name"
 
   @javascript
-  Scenario: Student accepts eula, submits and instructor opens the viewer
+  Scenario: Student accepts eula, submits a non-OR file and instructor opens the viewer
     Given I log out
     # Student accepts eula.
     And I log in as "student1"
@@ -57,7 +58,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
-    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+    And I upload "plagiarism/turnitin/tests/fixtures/carpet.jpg" file to "File submissions" filemanager
     And I press "Save changes"
     Then I should see "Submitted for grading"
     And I should see "Queued"
@@ -76,7 +77,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
+    And I run the scheduled task "\plagiarism_turnitin\task\update_reports"
     # Instructor opens viewer
     And I log out
     And I log in as "instructor1"
@@ -84,11 +85,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
-    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
+    Then "student1 student1" row "File submissions" column of "generaltable" table should not contain "%"
     And I wait until "[alt='GradeMark']" "css_element" exists
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
     And I click on ".agree-button" "css_element"
     And I wait until the page is ready
-    Then I should see "testfile.txt"
+    Then I should see "carpet.jpg"

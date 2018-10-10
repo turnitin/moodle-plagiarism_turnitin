@@ -18,7 +18,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -28,7 +28,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | Enable Diagnostic Mode | Yes |
       | Enable Student Privacy | Yes |
     And I press "Save changes"
-    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
     And I set the following fields to these values:
       | Student Pseudo First Name | Pseudo       |
       | Pseudo Encryption Salt    | Salt         |
@@ -85,7 +85,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I log in as "admin"
     And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     # Check if we're using the pseudo domain.
-    And I navigate to "Turnitin" node in "Site administration > Plugins > Plagiarism"
+    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
     And I click on "Unlink Users" "link"
     Then I should see "@behatmoodle.com"
     # Instructor opens viewer

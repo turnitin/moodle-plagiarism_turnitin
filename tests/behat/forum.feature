@@ -32,7 +32,7 @@ Feature: Plagiarism plugin works with a Moodle forum
       | plagiarism_turnitin |
     # Create Forum.
     And I log out
-    And I log in as "instructor1"
+    And I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name                        | Test forum name                |
@@ -42,13 +42,16 @@ Feature: Plagiarism plugin works with a Moodle forum
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
-    And I add a new discussion to "Test forum name" forum with:
-      | Subject | Forum post 1                                                                                                                |
-      | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
-    And I log out
 
   @javascript
   Scenario: Add a post to a discussion with a file attached and retrieve the originality score
+    Given I follow "Test forum name"
+    And I click on "Add a new discussion topic" "button"
+    And I set the following fields to these values:
+      | Subject | Forum post 1                                                                                                                |
+      | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
+    And I press "Post to forum"
+    And I log out
     # Student creates a forum discussion and replies to original post.
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -66,8 +69,8 @@ Feature: Plagiarism plugin works with a Moodle forum
       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I press "Post to forum"
     And I reply "Forum post 1" post from "Test forum name" forum with:
-      | Subject    | Reply with attachment                                                                                                       |
-      | Message    | This is the body of the forum reply that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
+      | Subject    | Reply with attachment                                                                                                          |
+      | Message    | This is the body of the forum reply that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking   |
       | Attachment | plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                |
     Then I should see "Reply with attachment"
     And I should see "testfile.txt"

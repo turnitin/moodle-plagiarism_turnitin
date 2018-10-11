@@ -47,11 +47,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and multiple files.
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     And I wait until the page is ready
     Then I should see "Test assignment name"
     # Student submits.

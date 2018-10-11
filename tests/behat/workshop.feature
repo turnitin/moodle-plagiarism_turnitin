@@ -52,10 +52,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I am on "Course 1" course homepage
     And I follow "Test workshop"
     And I press "Start preparing your submission"
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     And I wait until the page is ready
     Then I should see "Test workshop"
     And I set the following fields to these values:
@@ -101,6 +98,6 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I click on "div.pp_origreport_open" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
     Then I should see "onlinetext_"

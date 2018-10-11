@@ -185,4 +185,33 @@ class behat_plagiarism_turnitin extends behat_base {
             }
         }
     }
+
+    /**
+     * @Given I accept the Turnitin EULA if necessary
+     */
+    public function i_accept_the_turnitin_eula_if_necessary() {
+        try {
+            $this->getSession()->getPage()->find("css", ".pp_turnitin_eula_link");
+
+            $this->execute('behat_general::i_click_on', array(".pp_turnitin_eula_link", "css_element"));
+            $this->execute('behat_general::wait_until_exists', array(".cboxIframe", "css_element"));
+            $this->i_switch_to_iframe_with_locator(".cboxIframe");
+            $this->execute('behat_general::i_click_on', array(".agree-button", "css_element"));
+        } catch (Exception $e) {
+            // EULA not found - so skip it.
+        }
+    }
+
+    /**
+     * @Given I accept the Turnitin EULA from the EV if necessary
+     */
+    public function i_accept_the_turnitin_eula_from_the_ev_if_necessary() {
+        try {
+            $this->getSession()->getPage()->find("css", ".agree-button");
+
+            $this->execute('behat_general::i_click_on', array(".agree-button", "css_element"));
+        } catch (Exception $e) {
+            // EULA not found - so skip it.
+        }
+    }
 }

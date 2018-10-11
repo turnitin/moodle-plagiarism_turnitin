@@ -47,11 +47,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     And I press "Add submission"
     Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept."
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
-    And I click on ".disagree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     And I wait until the page is ready
     And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I click on "#id_submitbutton" "css_element" in the "#mform2" "css_element"
@@ -77,11 +73,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
     And I should see "This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement."
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     # Admin can trigger a resubmission from the errors tab of the settings page.
     And I log out
     And I log in as "admin"
@@ -116,6 +108,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
     Then I should see "testfile.txt"

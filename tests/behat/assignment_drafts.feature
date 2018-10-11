@@ -51,11 +51,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     And I wait until the page is ready
     Then I should see "Test assignment name"
     # Student submits.
@@ -114,7 +110,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
     Then I should see "testfile.txt"
 
@@ -130,11 +126,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
-    And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
-    And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA if necessary
     And I wait until the page is ready
     Then I should see "Test assignment name"
     # Student submits.
@@ -171,6 +163,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
-    And I click on ".agree-button" "css_element"
+    And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
     Then I should see "testfile.txt"

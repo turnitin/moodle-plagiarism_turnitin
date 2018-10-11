@@ -47,7 +47,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     And I press "Add submission"
     Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept."
-    And I accept the Turnitin EULA if necessary
+    And I click on ".pp_turnitin_eula_link" "css_element"
+    And I wait until ".cboxIframe" "css_element" exists
+    And I switch to iframe with locator ".cboxIframe"
+    And I wait until the page is ready
+    And I click on ".disagree-button" "css_element"
     And I wait until the page is ready
     And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I click on "#id_submitbutton" "css_element" in the "#mform2" "css_element"

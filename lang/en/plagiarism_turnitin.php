@@ -96,6 +96,7 @@ $string['filedoesnotexist'] = 'File has been deleted';
 $string['reportgenspeed_resubmission'] = 'You have already submitted a paper to this assignment and a Similarity Report was generated for your submission. If you choose to resubmit your paper, your earlier submission will be replaced and a new report will be generated. After {$a->num_resubmissions} resubmissions, you will need to wait {$a->num_hours} hours after a resubmission to see a new Similarity Report.';
 
 // Plugin settings.
+$string['viewerrorreport'] = 'View Error Report';
 $string['config'] = 'Configuration';
 $string['defaults'] = 'Default Settings';
 $string['showusage'] = 'Show Data Dump';
@@ -154,7 +155,6 @@ $string['launchpeermarkreviews'] = 'Launch Peermark Reviews';
 $string['ppqueuesize'] = 'Number of events in the Plagiarism Plugin events queue';
 $string['ppcronsubmissionlimitreached'] = 'No further submissions will be sent to Turnitin by this cron execution as only {$a} are processed per run';
 $string['cronsubmittedsuccessfully'] = 'Submission: {$a->title} (TII ID: {$a->submissionid}) for the assignment {$a->assignmentname} on the course {$a->coursename} was successfully submitted to Turnitin.';
-$string['pp_submission_error'] = 'Turnitin has returned an error with your submission:';
 $string['turnitindeletionerror'] = 'Turnitin submission deletion failed. The local Moodle copy was removed but the submission in Turnitin could not be deleted.';
 $string['ppeventsfailedconnection'] = 'No events will be processed by the Turnitin plagiarism plugin by this cron execution as a connection to Turnitin can not be established.';
 

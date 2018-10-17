@@ -32,20 +32,30 @@ class turnitinplugin_view {
      *
      * @param string $currenttab The currect tab to be styled as selected
      */
-    public function draw_settings_tab_menu($currenttab, $notice = null) {
+    public function draw_settings_tab_menu($currenttab, $notice = null, $hidetabs = null) {
         global $OUTPUT;
 
         $tabs = array();
-        $tabs[] = new tabobject('turnitinsettings', 'settings.php',
-                        get_string('config', 'plagiarism_turnitin'), get_string('config', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
-                        get_string('defaults', 'plagiarism_turnitin'), get_string('defaults', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinshowusage', 'settings.php?do=viewreport',
-                        get_string('showusage', 'plagiarism_turnitin'), get_string('showusage', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
-                        get_string('saveusage', 'plagiarism_turnitin'), get_string('saveusage', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',
-                        get_string('errors', 'plagiarism_turnitin'), get_string('errors', 'plagiarism_turnitin'), false);
+        if (is_null($hidetabs) ||  !in_array('config', $hidetabs)) {
+            $tabs[] = new tabobject('turnitinsettings', 'settings.php',
+                get_string('config', 'plagiarism_turnitin'), get_string('config', 'plagiarism_turnitin'), false);
+        }
+        if (is_null($hidetabs) ||  !in_array('defaults', $hidetabs)) {
+            $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
+                get_string('defaults', 'plagiarism_turnitin'), get_string('defaults', 'plagiarism_turnitin'), false);
+        }
+        if (is_null($hidetabs) ||  !in_array('showusage', $hidetabs)) {
+            $tabs[] = new tabobject('turnitinshowusage', 'settings.php?do=viewreport',
+                get_string('showusage', 'plagiarism_turnitin'), get_string('showusage', 'plagiarism_turnitin'), false);
+        }
+        if (is_null($hidetabs) ||  !in_array('saveusage', $hidetabs)) {
+            $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
+                get_string('saveusage', 'plagiarism_turnitin'), get_string('saveusage', 'plagiarism_turnitin'), false);
+        }
+        if (is_null($hidetabs) ||  !in_array('errors', $hidetabs)) {
+            $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',
+                get_string('errors', 'plagiarism_turnitin'), get_string('errors', 'plagiarism_turnitin'), false);
+        }
         print_tabs(array($tabs), $currenttab);
 
         if (!is_null($notice)) {

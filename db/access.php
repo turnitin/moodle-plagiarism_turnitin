@@ -38,4 +38,9 @@ $capabilities = array(
          'manager' => CAP_ALLOW
         )
     ),
+    'plagiarism/turnitin:viewerrorreport' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'legacy' => []
+    ]
 );

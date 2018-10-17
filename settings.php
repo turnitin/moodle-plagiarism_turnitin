@@ -26,10 +26,27 @@ $turnitinpluginview = new turnitinplugin_view();
 require_login();
 admin_externalpage_setup('plagiarismturnitin');
 $context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
+$siteconfig = has_capability('moodle/site:config', $context, $USER->id);
+$viewerrorreport = has_capability('plagiarism/turnitin:viewerrorreport', $context, $USER->id);
 
-$do = optional_param('do', "config", PARAM_ALPHA);
+if (!($viewerrorreport || $siteconfig)) {
+    print_error('nopermissions');
+}
+
+$defaultdo = 'errors';// default gets set to the error page
+$defaultaction = '';
+$prohibitedactions = ['config', 'defaults']; //, 'viewreport', 'savereport'  // can argue if this should be permitted to the people who can view errors...
+if ($siteconfig) {
+    $defaultdo = 'config';
+    $prohibitedactions = [];
+}
+
+$do = optional_param('do', $defaultdo, PARAM_ALPHA);
 $action = optional_param('action', "", PARAM_ALPHA);
+
+if (in_array(strtolower($do), $prohibitedactions)) {
+    print_error('nopermissions');
+}
 
 if (isset($_SESSION["notice"])) {
     $notice = $_SESSION["notice"];
@@ -138,13 +155,13 @@ if ($do != "savereport") {
 
 switch ($do) {
     case "config":
-        $turnitinpluginview->draw_settings_tab_menu('turnitinsettings', $notice);
+        $turnitinpluginview->draw_settings_tab_menu('turnitinsettings', $notice, $prohibitedactions);
 
         echo $turnitinpluginview->show_config_form($pluginconfig);
         break;
 
     case "defaults":
-        $turnitinpluginview->draw_settings_tab_menu('turnitindefaults', $notice);
+        $turnitinpluginview->draw_settings_tab_menu('turnitindefaults', $notice, $prohibitedactions);
 
         $mform = new turnitin_plagiarism_plugin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
@@ -157,7 +174,7 @@ switch ($do) {
         if ($do == 'viewreport') {
 
             $activetab = ($do == "savereport") ? "turnitinsaveusage" : "turnitinshowusage";
-            $turnitinpluginview->draw_settings_tab_menu($activetab, $notice);
+            $turnitinpluginview->draw_settings_tab_menu($activetab, $notice, $prohibitedactions);
 
             $output .= "<pre>";
             $output .= "====== Turnitin Plagiarism Plugin Data Dump Output ======\r\n\r\n";
@@ -234,7 +251,7 @@ switch ($do) {
     case "errors":
         $page = optional_param('page', 0, PARAM_INT);
         $resubmitted = optional_param('resubmitted', '', PARAM_ALPHA);
-        $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice);
+        $turnitinpluginview->draw_settings_tab_menu('turnitinerrors', $notice, $prohibitedactions);
         echo html_writer::tag("p", get_string('pperrorsdesc', 'plagiarism_turnitin'));
 
         if ($resubmitted == "success") {

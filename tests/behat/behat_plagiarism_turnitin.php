@@ -218,7 +218,6 @@ class behat_plagiarism_turnitin extends behat_base {
         }
     }
 
-
     /**
      * @Given /^the following users will be created if they do not already exist:$/
      * @param TableNode $data
@@ -237,7 +236,6 @@ class behat_plagiarism_turnitin extends behat_base {
         $tablenode = new TableNode($newdata);
         $this->execute('behat_data_generators::the_following_exist', array('users', $tablenode));
     }
-
 
     /**
      * @Given /^I unenroll the user account "(?P<student>(?:[^"]|\\")*)" with the role "(?P<role>(?:[^"]|\\")*)" from the class in Turnitin$/

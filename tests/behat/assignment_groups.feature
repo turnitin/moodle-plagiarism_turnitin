@@ -12,9 +12,11 @@ Feature: Group assignment submissions
     Given the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1        | 0        | 1         |
-    And I create a unique user with username "student1"
-    And I create a unique user with username "student2"
-    And I create a unique user with username "instructor1"
+    And the following users will be created if they do not already exist:
+      | username    | firstname   | lastname    | email                                   |
+      | instructor1 | instructor1 | instructor1 | instructor1_tiibehattesting@example.com |
+      | student1    | student1    | student1    | student1_tiibehattesting@example.com    |
+      | student2    | student2    | student2    | student2_tiibehattesting@example.com    |
     And the following "course enrolments" exist:
       | user        | course | role           |
       | student1    | C1     | student        |

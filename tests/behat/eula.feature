@@ -10,7 +10,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | Turnitin Behat EULA Test Course | C1        | 0        | 0         |
     And the following users will be created if they do not already exist:
       | username    | firstname   | lastname    | email                                   |
-      | instructor1 | instructor1 | instructor1 | instructor1_tiibehattesting@example.com |
+      | instructor1 | instructor1 | instructor1 | instructor1_$account_tiibehattesting@example.com |
     And I create a unique user with username "student1"
     And the following "course enrolments" exist:
       | user        | course | role    |

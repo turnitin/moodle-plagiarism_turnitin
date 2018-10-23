@@ -92,6 +92,7 @@ class pp_receipt_message {
      * @return string
      */
     public function build_instructor_message($input) {
+        $message = new stdClass();
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
         if ( isset($input['assignment_part']) ) {
@@ -114,9 +115,16 @@ class pp_receipt_message {
      * @return void
      */
     public function send_instructor_message($instructors, $message) {
+        global $CFG;
         $subject = get_string('receipt_instructor_copy_subject', 'plagiarism_turnitin');
 
-        $eventdata = new stdClass();
+        // Pre 2.9 does not have \core\message\message()
+        if ($CFG->branch >= 29) {
+            $eventdata = new \core\message\message();
+        } else {
+            $eventdata = new stdClass();
+        }
+
         $eventdata->component         = 'plagiarism_turnitin'; // Your component name.
         $eventdata->name              = 'submission'; // This is the message name from messages.php.
         $eventdata->userfrom          = \core_user::get_noreply_user();

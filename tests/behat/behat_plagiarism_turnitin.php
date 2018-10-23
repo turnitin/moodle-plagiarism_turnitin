@@ -228,7 +228,7 @@ class behat_plagiarism_turnitin extends behat_base {
         $rowNum = 0;
         foreach ($data->getRows() as $row) {
             if (!$rowNum == 0) { // not header row
-                $row[3] = $row[0] . "_". getenv('TII_ACCOUNT') . ".tiibehattesting@example.com";
+                $row[3] = str_replace('$account', getenv('TII_ACCOUNT'), $row[3]);
             }
             $rowNum++;
             $newdata[] = $row;

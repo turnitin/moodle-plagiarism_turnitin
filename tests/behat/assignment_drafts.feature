@@ -10,9 +10,9 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | Course 1 | C1        | 0        | 0         |
     And the following users will be created if they do not already exist:
       | username    | firstname   | lastname    | email                                   |
-      | instructor1 | instructor1 | instructor1 | instructor1_tiibehattesting@example.com |
-      | student1    | student1    | student1    | student1_tiibehattesting@example.com    |
-      | student2    | student2    | student2    | student2_tiibehattesting@example.com    |
+      | instructor1 | instructor1 | instructor1 | instructor1_$account_tiibehattesting@example.com |
+      | student1    | student1    | student1    | student1_$account_tiibehattesting@example.com    |
+      | student2    | student2    | student2    | student2_$account_tiibehattesting@example.com    |
     And the following "course enrolments" exist:
       | user        | course | role    |
       | student1    | C1     | student |

@@ -22,11 +22,14 @@
  */
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
-
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
+require_once(__DIR__ . '/../../vendor/autoload.php');
 
+use Behat\Gherkin\Node\TableNode as TableNode;
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
+use Integrations\PhpSdk\TiiMembership;
+use Integrations\PhpSdk\TurnitinAPI;
 
 class behat_plagiarism_turnitin extends behat_base {
 
@@ -213,5 +216,106 @@ class behat_plagiarism_turnitin extends behat_base {
         } catch (Exception $e) {
             // EULA not found - so skip it.
         }
+    }
+
+    /**
+     * @Given /^the following users will be created if they do not already exist:$/
+     * @param TableNode $data
+     * @throws Exception
+     */
+    public function the_following_users_will_be_created_if_they_do_not_already_exist(TableNode $data) {
+        $newdata = array();
+        $rowNum = 0;
+        foreach ($data->getRows() as $row) {
+            if (!$rowNum == 0) { // not header row
+                $row[3] = str_replace('$account', getenv('TII_ACCOUNT'), $row[3]);
+            }
+            $rowNum++;
+            $newdata[] = $row;
+        }
+        $tablenode = new TableNode($newdata);
+        $this->execute('behat_data_generators::the_following_exist', array('users', $tablenode));
+    }
+
+    /**
+     * @Given /^I unenroll the user account "(?P<student>(?:[^"]|\\")*)" with the role "(?P<role>(?:[^"]|\\")*)" from the class in Turnitin$/
+     * @throws Exception
+     */
+    public function i_unenroll_the_user_account_with_the_role_from_the_class_in_turnitin($student, $role) {
+        global $DB;
+
+        $course = $DB->get_record("course", array("fullname" => "Turnitin Behat EULA Test Course"), 'id', MUST_EXIST);
+        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $course->id), 'turnitin_cid', MUST_EXIST);
+
+        // Get the user.
+        $user = $DB->get_record("user", array("username" => $student), 'id', MUST_EXIST);
+        $tiiuser = $DB->get_record('plagiarism_turnitin_users', array("userid" => $user->id), 'turnitin_uid', MUST_EXIST);
+
+        $turnitincall = $this->behat_initialise_api(getenv('TII_ACCOUNT'), getenv('TII_SECRET'), getenv('TII_APIBASEURL'));
+
+        // Find the membership IDs for this user/class/role and delete them.
+        $membership = new TiiMembership();
+        $membership->setClassId($tiicourse->turnitin_cid);
+        $membership->setUserId($tiiuser->turnitin_uid);
+        $membership->setRole($role);
+
+        $response = $turnitincall->findMemberships($membership);
+        $findmembership = $response->getMembership();
+        $membershipids = $findmembership->getMembershipIds();
+
+        try {
+            foreach ($membershipids as $membershipid) {
+                $membership->setMembershipId($membershipid);
+                $turnitincall->deleteMembership($membership);
+            }
+        } catch (Exception $e) {
+            // ignore exception.
+        }
+    }
+
+    /**
+     * Initialise the API object for a behat call.
+     *
+     * @return object \APITurnitin
+     */
+    public function behat_initialise_api( ) {
+        global $CFG;
+
+        $api = new TurnitinAPI(getenv('TII_ACCOUNT'), getenv('TII_APIBASEURL'), getenv('TII_SECRET'), 12);
+
+        // Use Moodle's proxy settings if specified.
+        if (!empty($CFG->proxyhost)) {
+            $api->setProxyHost($CFG->proxyhost);
+        }
+
+        if (!empty($CFG->proxyport)) {
+            $api->setProxyPort($CFG->proxyport);
+        }
+
+        if (!empty($CFG->proxyuser)) {
+            $api->setProxyUser($CFG->proxyuser);
+        }
+
+        if (!empty($CFG->proxypassword)) {
+            $api->setProxyPassword($CFG->proxypassword);
+        }
+
+        if (!empty($CFG->proxytype)) {
+            $api->setProxyType($CFG->proxytype);
+        }
+
+        if (!empty($CFG->proxybypass)) {
+            $api->setProxyBypass($CFG->proxybypass);
+        }
+
+        $api->setIntegrationVersion($CFG->version);
+        $api->setPluginVersion(get_config('plagiarism_turnitin', 'version'));
+
+        if (is_readable("$CFG->dataroot/moodleorgca.crt")) {
+            $certificate = realpath("$CFG->dataroot/moodleorgca.crt");
+            $api->setSSLCertificate($certificate);
+        }
+
+        return $api;
     }
 }

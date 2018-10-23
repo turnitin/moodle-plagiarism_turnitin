@@ -7,9 +7,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment
   Background: Set up the plugin
     Given the following "courses" exist:
       | fullname | shortname | category | groupmode |
-      | Course 1 | C1        | 0        | 0         |
+      | Turnitin Behat EULA Test Course | C1        | 0        | 0         |
+    And the following users will be created if they do not already exist:
+      | username    | firstname   | lastname    | email                                   |
+      | instructor1 | instructor1 | instructor1 | instructor1_$account_tiibehattesting@example.com |
     And I create a unique user with username "student1"
-    And I create a unique user with username "instructor1"
     And the following "course enrolments" exist:
       | user        | course | role    |
       | student1    | C1     | student |
@@ -31,7 +33,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
       | Plugin name         |
       | plagiarism_turnitin |
     # Create Assignment.
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Turnitin Behat EULA Test Course" course homepage with editing mode on
     And I add a "Assignment" to section "1" and I fill the form with:
       | Assignment name                   | Test assignment name |
       | use_turnitin                      | 1                    |
@@ -43,7 +45,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     Given I log out
     # Student declines the EULA and submits.
     And I log in as "student1"
-    And I am on "Course 1" course homepage
+    And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
     Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept."
@@ -65,7 +67,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Instructor opens assignment.
     And I log out
     And I log in as "instructor1"
-    And I am on "Course 1" course homepage
+    And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
@@ -73,7 +75,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     Given I log out
     # Student accepts the EULA.
     And I log in as "student1"
-    And I am on "Course 1" course homepage
+    And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
     And I should see "This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement."
@@ -91,7 +93,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Instructor opens assignment.
     And I log out
     And I log in as "instructor1"
-    And I am on "Course 1" course homepage
+    And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
@@ -99,11 +101,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Trigger cron as admin for report
     And I log out
     And I log in as "admin"
-    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
+    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Turnitin Behat EULA Test Course"
     # Instructor opens viewer
     And I log out
     And I log in as "instructor1"
-    And I am on "Course 1" course homepage
+    And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
@@ -115,3 +117,4 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
     Then I should see "testfile.txt"
+    Then I unenroll the user account "student1" with the role "Learner" from the class in Turnitin

@@ -19,7 +19,7 @@
  * @copyright 2012 iParadigms LLC
  */
 
-$plugin->version = 2018082802;
+$plugin->version = 2018102901;
 $plugin->release = "2.7+";
 $plugin->requires = 2014051200;
 $plugin->component = 'plagiarism_turnitin';
@@ -32,6 +32,6 @@ if (!empty($CFG->version)) {
 }
 
 $plugin->dependencies = array(
-    'mod_turnitintooltwo' => 2018082801,
+    'mod_turnitintooltwo' => 2018102601,
     'mod_assign' => 2013110500
 );

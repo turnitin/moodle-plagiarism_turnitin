@@ -1,3 +1,16 @@
+### Date:       2018-October-29
+### Release:    v2018082802
+
+### :wrench: Fixes and enhancements
+
+---
+
+#### We've fixed a bug that prevented users from being able to accept the EULA
+
+On Friday 26th October, we released a plugin update that unexpectedly prevented new users from being able to accept the EULA in the Plagiarism Plugin, and were subsequently unable to submit to Turnitin. If you've updated your plugin since Friday, we're kindly requesting that you update again to resolve this bug.
+
+---
+
 ### Date:	2018-August-28
 ### Release:	v2018082802
 

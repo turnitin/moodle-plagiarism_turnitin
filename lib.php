@@ -2223,6 +2223,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $_SESSION["moodlesubmissionstatus"] = null;
             }
 
+            // Group submissions require userid = 0 when checking assign_submission.
+            $userid = ($moduledata->teamsubmission) ? 0 : $author;
+
             if ($eventtype == "content_uploaded" || $eventtype == "file_uploaded") {
                 $moodlesubmission = $DB->get_record('assign_submission',
                     array('assignment' => $cm->instance,

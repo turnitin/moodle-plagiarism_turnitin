@@ -55,7 +55,7 @@ Feature: Group assignment submissions
     Then I should see "Grading summary"
 
   @javascript
-  Scenario: Confirm that all students in a group can access the Evaluation Viewer even if they didn't submit.
+  Scenario: Confirm that all students in a group can see the similarity report even if they didn't submit.
     Given I log out
     # Student accepts eula.
     And I log in as "student1"

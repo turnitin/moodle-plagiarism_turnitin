@@ -44,6 +44,7 @@ Feature: Group assignment submissions
     And I add a "Assignment" to section "1" and I fill the form with:
       | Assignment name                   | Test assignment name |
       | use_turnitin                      | 1                    |
+      | plagiarism_show_student_report    | 1                    |
       | plagiarism_compare_student_papers | 1                    |
       | Students submit in groups         | Yes                  |
       | Group mode                        | Separate groups      |
@@ -92,15 +93,8 @@ Feature: Group assignment submissions
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
     And "student2 student2" row "File submissions" column of "generaltable" table should contain "%"
     And I log out
-    # Open the Evaluation Viewer as student2.
+    # Check student2 can see the report.
     And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     Then I should see "%"
-    And I wait until "[alt='GradeMark']" "css_element" exists
-    And I click on "[alt='GradeMark']" "css_element"
-    And I switch to "turnitin_viewer" window
-    And I wait until the page is ready
-    And I accept the Turnitin EULA from the EV if necessary
-    And I wait until the page is ready
-    Then I should see "testfile.txt"

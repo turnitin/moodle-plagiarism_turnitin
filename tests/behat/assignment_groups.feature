@@ -1,7 +1,4 @@
-@broken
-#@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_groups
-
-# Note: This test is broken until INT-12029 is completed. Leaving the code here as the test should work once that ticket is fixed.
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_groups
 
 Feature: Group assignment submissions
   In order to allow students to work collaboratively on an assignment

@@ -2228,11 +2228,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $_SESSION["moodlesubmissionstatus"] = null;
             }
 
+            // Group submissions require userid = 0 when checking assign_submission.
+            $userid = ($moduledata->teamsubmission) ? 0 : $author;
+
             if ($eventtype == "content_uploaded" || $eventtype == "file_uploaded") {
                 $moodlesubmission = $DB->get_record('assign_submission',
                     array('assignment' => $cm->instance,
-                        'userid' => $author,
+                        'userid' => $userid,
                         'id' => $itemid), 'status');
+
                 $_SESSION["moodlesubmissionstatus"] = $moodlesubmission->status;
             }
 
@@ -2268,13 +2272,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         case 'assign':
                             $moodlesubmission = $DB->get_record('assign_submission',
                                                     array('assignment' => $cm->instance,
-                                                                'userid' => $author,
+                                                                'userid' => $userid,
                                                                 'id' => $itemid), 'timemodified');
                             break;
                         case 'workshop':
                             $moodlesubmission = $DB->get_record('workshop_submissions',
                                                     array('workshopid' => $cm->instance,
-                                                            'authorid' => $author), 'timemodified');
+                                                            'authorid' => $userid), 'timemodified');
                             break;
                     }
 
@@ -2792,10 +2796,13 @@ function plagiarism_turnitin_send_queued_submissions() {
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
         $moduledata->resubmission_allowed = false;
 
+        // Group submissions require userid = 0 when checking assign_submission.
+        $userid = ($moduledata->teamsubmission) ? 0 : $queueditem->userid;
+
         if ($cm->modname == 'assign') {
             $moodlesubmission = $DB->get_record('assign_submission',
                 array('assignment' => $cm->instance,
-                    'userid' => $queueditem->userid,
+                    'userid' => $userid,
                     'id' => $queueditem->itemid), 'status');
 
             $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(

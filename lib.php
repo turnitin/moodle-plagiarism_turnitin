@@ -2223,13 +2223,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
         $moduledata->resubmission_allowed = false;
 
+        // Group submissions require userid = 0 when checking assign_submission.
+        $userid = ($moduledata->teamsubmission) ? 0 : $author;
+
         if ($cm->modname == 'assign') {
             if (!isset($_SESSION["moodlesubmissionstatus"])) {
                 $_SESSION["moodlesubmissionstatus"] = null;
             }
-
-            // Group submissions require userid = 0 when checking assign_submission.
-            $userid = ($moduledata->teamsubmission) ? 0 : $author;
 
             if ($eventtype == "content_uploaded" || $eventtype == "file_uploaded") {
                 $moodlesubmission = $DB->get_record('assign_submission',

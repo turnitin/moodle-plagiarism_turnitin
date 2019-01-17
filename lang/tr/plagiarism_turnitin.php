@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Turnitin&#39; e bağlanılamadı. API URL aya
 $string['userfinderror'] = 'Kullanıcı Turnitin&#39;de aranırken bir sorun oluştu';
 $string['tiiusergeterror'] = 'Turnitin&#39;den kullanıcı detayları alınırken bir sorun oluştu';
 $string['usercreationerror'] = 'Turnitin kullanıcı oluşturma işlemi başarısız oldu';
+$string['ppassignmentcreateerror'] = 'Bu modül Turnitin&#39;de oluşturulamadı, daha ayrıntılı bilgi için lütfen API kayıtlarınıza bakın';

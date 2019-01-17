@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Nie udało się połączyć z Turnitin. Spraw
 $string['userfinderror'] = 'Wystąpił błąd przy próbie znalezienia użytkownika w Turnitin';
 $string['tiiusergeterror'] = 'Wystąpił błąd podczas próby uzyskania danych użytkownika od Turnitin';
 $string['usercreationerror'] = 'Utworzenie użytkownika Turnitin nie powiodło się';
+$string['ppassignmentcreateerror'] = 'Utworzenie modułu w Turnitin nie powiodło się. Szczegółowe informacje znajdują się w dziennikach API.';

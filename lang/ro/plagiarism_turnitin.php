@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Imposibil de conectat la Turnitin. Verificaț
 $string['userfinderror'] = 'Eroare la încercarea de a găsi utilizatorul în Turnitin';
 $string['tiiusergeterror'] = 'Eroare la încercarea de obține detaliile utilizatorului de la Turnitin';
 $string['usercreationerror'] = 'Crearea utilizatorului Turnitin nu a reușit';
+$string['ppassignmentcreateerror'] = 'Acest modul nu a putut fi creat în Turnitin, consultați jurnalele API pentru mai multe informații';

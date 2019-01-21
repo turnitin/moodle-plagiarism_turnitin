@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Turnitinに接続できませんでした。A
 $string['userfinderror'] = 'Turnitinのユーザーを検索中にエラーが発生しました';
 $string['tiiusergeterror'] = 'ユーザー情報をTurnitinから入手する際にエラーが発生しました';
 $string['usercreationerror'] = 'Turnitinユーザー作成に失敗';
+$string['ppassignmentcreateerror'] = 'このモジュールをTurnitin上で作成できませんでした。詳しい情報については、APIログをご覧ください。';

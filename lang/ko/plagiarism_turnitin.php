@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Turnitin에 연결할 수 없었습니다. AP
 $string['userfinderror'] = 'Turnitin에 있는 사용자를 찾는 데 오류가 발생하였습니다';
 $string['tiiusergeterror'] = 'Turnitin에서 사용자 상세사항을 가져오는 데 오류가 발생하였습니다';
 $string['usercreationerror'] = 'Turnitin 사용자 생성 실패';
+$string['ppassignmentcreateerror'] = '이 모듈은 Turnitin에서 생성되지 못했습니다. 자세한 정보는 해당 API 로그를 참조하십시오.';

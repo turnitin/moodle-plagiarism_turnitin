@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Kunde inte ansluta till Turnitin. Dubbelkolla
 $string['userfinderror'] = 'Det uppstod ett fel vid försök att hitta användaren i Turnitin';
 $string['tiiusergeterror'] = 'Det uppstod ett fel vid försök att hämta användaruppgifterna från Turnitin';
 $string['usercreationerror'] = 'Turnitin användare gick inte att skapa';
+$string['ppassignmentcreateerror'] = 'Den här modulen kunde inte skapas i Turnitin. Hänvisa till dina API-loggar för mer information.';

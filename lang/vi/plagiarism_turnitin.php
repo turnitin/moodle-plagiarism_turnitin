@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Không thể kết nối với Turnitin. Hãy
 $string['userfinderror'] = 'Xảy ra lỗi khi đang cố gắng tìm một người dùng trên Turnitin';
 $string['tiiusergeterror'] = 'Xảy ra lỗi khi đang cố gắng lấy thông tin người dùng từ Turnitin';
 $string['usercreationerror'] = 'Tạo Người dùng Turnitin không thành công';
+$string['ppassignmentcreateerror'] = 'Không thể tạo Mô đun này trên Turnitin, vui lòng xem log API của bạn để biết thêm thông tin';

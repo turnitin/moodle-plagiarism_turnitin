@@ -268,3 +268,4 @@ $string['connecttestcommerror'] = 'Nebylo možné se k Turnitin připojit. Zkont
 $string['userfinderror'] = 'Došlo k chybě při hledání uživatele v systému Turnitin';
 $string['tiiusergeterror'] = 'Došlo k chybě při získávání uživatelských detailů ze systému Turnitin';
 $string['usercreationerror'] = 'Vytvoření uživatele Turnitin se nezdařilo';
+$string['ppassignmentcreateerror'] = 'Tento modul nelze v systému Turnitin vytvořit. Další informace najdete v API protokolu.';

@@ -270,3 +270,4 @@ $string['connecttestcommerror'] = 'Turnitiniin ei saatu yhteyttä. Tarkasta API:
 $string['userfinderror'] = 'Kun käyttäjää haettiin Turnitinistä, kohdattiin virhe';
 $string['tiiusergeterror'] = 'Kun käyttäjän tietoja yritettiin saada Turnitinistä, kohdattiin virhe';
 $string['usercreationerror'] = 'Turnitin käyttäjän luominen epäonnistui';
+$string['ppassignmentcreateerror'] = 'Tätä modulia ei voitu luoda Turnitiniin. Ole hyvä ja hae lisätietoja API-rajapinta-lokista';

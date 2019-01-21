@@ -480,13 +480,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $this->load_page_components();
 
-        // Show resubmission warning.
-        $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $USER->id, 'cm' => $cm->id));
-        $tiisubmissions = current($tiisubmissions);
+        // Show resubmission warning - but not for mod forum.
+        if ($cm->modname != 'forum') {
+            $tiisubmissions = $DB->get_records('plagiarism_turnitin_files', array('userid' => $USER->id, 'cm' => $cm->id));
+            $tiisubmissions = current($tiisubmissions);
 
-        if ($tiisubmissions) {
-            $genparams = $this->plagiarism_get_report_gen_speed_params();
-            $output .= html_writer::tag('div', get_string('reportgenspeed_resubmission', 'plagiarism_turnitin', $genparams), array('class' => 'tii_genspeednote'));
+            if ($tiisubmissions) {
+                $genparams = $this->plagiarism_get_report_gen_speed_params();
+                $output .= html_writer::tag('div', get_string('reportgenspeed_resubmission', 'plagiarism_turnitin', $genparams), array('class' => 'tii_genspeednote'));
+            }
         }
 
         // Show agreement.

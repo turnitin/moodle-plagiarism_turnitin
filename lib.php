@@ -1268,6 +1268,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
                                                  'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback')) {
+
+            // Build Plagiarism file object.
             $plagiarismfile = new stdClass();
             $plagiarismfile->id = $submissiondata->id;
             $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ? $tiisubmission->getOverallSimilarity() : null;
@@ -1278,8 +1280,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
             $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
             $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
-
             $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
+
+            // Reset Error Values.
+            $plagiarismfile->errorcode = null;
+            $plagiarismfile->errormsg = null;
 
             // Update feedback timestamp.
             $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ? strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
@@ -1295,6 +1300,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $updaterequired = true;
                 }
             }
+            
             // Don't update grademark if the submission is not part of the latest attempt.
             $gbupdaterequired = $updaterequired;
             if ($cm->modname == "assign") {
@@ -2578,6 +2584,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->submissiontype = $submissiontype;
         $plagiarismfile->orcapable = null;
+        $plagiarismfile->statuscode = null;
+        $plagiarismfile->errorcode = null;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
             turnitintooltwo_activitylog("Update record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_REPLACE_SUB");

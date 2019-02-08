@@ -2584,7 +2584,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->submissiontype = $submissiontype;
         $plagiarismfile->orcapable = null;
-        $plagiarismfile->statuscode = null;
+        $plagiarismfile->errormsg = null;
         $plagiarismfile->errorcode = null;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {

@@ -903,7 +903,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Display links to OR, GradeMark and show relevant errors.
                 if ($plagiarismfile) {
 
-                    if ($plagiarismfile->statuscode == 'success') {
+                    if ($plagiarismfile->statuscode == 'success' || ($plagiarismfile->statuscode == 'error' && $plagiarismfile->errorcode == 13)) {
                         if ($istutor || $linkarray["userid"] == $USER->id) {
                             $output .= html_writer::tag('div',
                                             $OUTPUT->pix_icon('tiiIcon',

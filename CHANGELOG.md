@@ -83,7 +83,7 @@ We've made the Moodle Plagiarism Plugin repository settings much clearer, by pro
 
 Moodle has released two plugins with privacy features to assist with GDPR compliance. While we've successfully implemented [Moodle's new privacy features](https://docs.moodle.org/dev/Privacy_API), Moodle's update is only available to those using Moodle 3.3.5+, 3.4.2+, or 3.5. Therefore, if you're using an earlier version, you must upgrade to have access to these new features.
 
-To inform you about the data we store in relation to our users, we now provide a detailed list via the Moodle Privacy and Policies page. Learn more about the data we're reporting on via our [Moodle Plugins and GDPR](https://guides.turnitin.com/03_Integrations/Turnitin_Partner_Integrations/Moodle/Moodle_Plugins_and_GDPR) page.
+To inform you about the data we store in relation to our users, we now provide a detailed list via the Moodle Privacy and Policies page. Learn more about the data we're reporting on via our [Moodle Plugins and GDPR](https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm) page.
 
 #### Students can request to download their data
 
@@ -93,7 +93,7 @@ Students have the ability to request an export of their data stored in Moodle. T
 
 Students can also request their data to be removed from Moodle. This requested can be accepted or declined by their Moodle administrator. If accepted, the administrator will remove the student data from Moodle. However, administrators must contact support@turnitin.com to request that student data be removed from Turnitin itself.
   
-> If you're a Moodle administrator, and using version 3.3.5+, 3.4.2+, or 3.5, follow the steps on the [Moodle Plugins and GDPR](https://guides.turnitin.com/03_Integrations/Turnitin_Partner_Integrations/Moodle/Moodle_Plugins_and_GDPR) page to view the data we store in Moodle.
+> If you're a Moodle administrator, and using version 3.3.5+, 3.4.2+, or 3.5, follow the steps on the [Moodle Plugins and GDPR](https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm) page to view the data we store in Moodle.
 
 #### You can now send all papers to your institutional repository by default!
 
@@ -161,7 +161,7 @@ Revision Assistant's genre-specific rubrics are now available in Feedback Studio
 
 #### K-12 QuickMark sets in Feedback Studio (North America only)
 
-QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instructors! But in finding that many of our default QuickMark sets failed to address the needs of our K-12 instructors and students, we've added two new sets to the Feedback Studio collection, available to our North American users! Our new drag-and-drop (and customizable!) comments will help instructors help their students to engage in revision, save time, and more importantly, achieve learning outcomes. [Read more](https://guides.turnitin.com/01_Manuals_and_Guides/Release_Notes/Turnitin_Release_Notes/Genre-specific_rubrics_in_Feedback_Studio).
+QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instructors! But in finding that many of our default QuickMark sets failed to address the needs of our K-12 instructors and students, we've added two new sets to the Feedback Studio collection, available to our North American users! Our new drag-and-drop (and customizable!) comments will help instructors help their students to engage in revision, save time, and more importantly, achieve learning outcomes.
 > 
 > To view and edit your new QuickMarks, you can access the QuickMark manager from within the assignment settings of a new or existing assignment.
 >

@@ -1885,6 +1885,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $pptaskcall = false;
         }
 
+        // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
+        if (!$this->test_turnitin_connection()) {
+            mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
+            return false;
+        }
+
         // Update scores by separate submission type.
         $submissiontypes = array('file', 'text_content', 'forum_post');
         foreach ($submissiontypes as $submissiontype) {
@@ -2770,8 +2776,15 @@ function plagiarism_turnitin_update_reports() {
  */
 function plagiarism_turnitin_send_queued_submissions() {
     global $DB;
+
     $config = turnitintooltwo_admin_config();
     $pluginturnitin = new plagiarism_plugin_turnitin();
+
+    // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
+    if (!$pluginturnitin->test_turnitin_connection()) {
+        mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
+        return;
+    }
 
     $queueditems = $DB->get_records_select("plagiarism_turnitin_files", "statuscode = 'queued' OR statuscode = 'pending'",
                                             null, '', '*', 0, PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);

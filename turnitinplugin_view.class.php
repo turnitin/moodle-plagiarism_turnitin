@@ -133,8 +133,8 @@ class turnitinplugin_view {
 
             // This will ensure all rubric keys are integers.
             $rubricsnew = array(0 => get_string('norubric', 'plagiarism_turnitin'));
-            foreach ($rubrics AS $options => $rubriclist) {
-                foreach ($rubriclist AS $key => $value) {
+            foreach ($rubrics as $options => $rubriclist) {
+                foreach ($rubriclist as $key => $value) {
                     $rubricsnew[$key] = $value;
                 }
             }

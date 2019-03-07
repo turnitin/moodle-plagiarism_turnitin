@@ -1300,7 +1300,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $updaterequired = true;
                 }
             }
-            
+
             // Don't update grademark if the submission is not part of the latest attempt.
             $gbupdaterequired = $updaterequired;
             if ($cm->modname == "assign") {

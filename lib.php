@@ -1768,13 +1768,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         break;
                     case 0:
                         $dtpost = $dtstart;
-                        // If any grades have been released early via marking workflow, set post date to current time.
+                        // If any grades have been released early via marking workflow, set post date to have passed.
                         if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                             $gradesreleased = $DB->record_exists('assign_user_flags',
                                                             array('assignment' => $cm->instance,
                                                                     'workflowstate' => 'released'));
 
-                            $dtpost = ($gradesreleased) ? time() : strtotime('+1 month');
+                            $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+1 month');
                         }
                         break;
                     default:

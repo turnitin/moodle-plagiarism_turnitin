@@ -946,15 +946,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $blindon = (!empty($moduledata->blindmarking) && empty($moduledata->revealidentities));
 
                         // Check if a grade exists - as $currentgradequery->grade defaults to -1.
-                        $gradeExists = false;
+                        $gradeexists = false;
                         if (isset($currentgradequery->grade)) {
                             if ($currentgradequery->grade >= 0) {
-                                $gradeExists = true;
+                                $gradeexists = true;
                             }
                         }
 
                         // Can grade and feedback be released to this student yet?
-                        $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || $gradeExists)));
+                        $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || $gradeexists)));
 
                         // Show link to open grademark.
                         if ($config->usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))

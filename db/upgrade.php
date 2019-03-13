@@ -283,6 +283,11 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->add_key($table, $key);
     }
 
+    if ($oldversion < 2019031301) {
+        // Reset all error code 13s so that we are on a clean slate with the new implementation.
+        $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', errorcode = NULL WHERE errorcode = 13");
+    }
+
     return $result;
 }
 

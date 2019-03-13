@@ -1,3 +1,37 @@
+### Date:       2019-March-13
+### Release:    v2019031301
+
+#### :zap: What's new
+
+---
+
+#### Welcome to our new help site!
+
+We’ve updated the help links within the product to take you to our new help site [https://help.turnitin.com](https://help.turnitin.com). The site has been designed around actionable tasks to help you to find the guidance you need when you need it.
+
+
+### :wrench: Fixes and enhancements
+
+---
+
+#### Error code 13 will now only display when appropriate
+
+In a previous release, we introduced ‘Error Code 13’. This error is shown when we’ve managed to upload to our servers but weren’t able to generate a similarity report at the time of submission. Since then, we’ve reconsidered how this error state should be handled. With this release, we will reset all instances of Error code 13. Going forward, we will only accept an upload if the plugin is able to connect to Turnitin and generate a similarity report.
+
+#### Use Marking Workflows without errors
+
+In a rare number of cases, it was possible when using Marking Workflows for students to receive an error message when they attempt to view their submissions after grades have been released. We’ve reworked how the grade release happens when using Marking Workflows so that students will no longer see this error.
+
+#### Forum users can use Turnitin without seeing extraneous notifications
+
+When creating a forum post with Turnitin available we were showing information about our report regeneration times when resubmitting to Turnitin. As information about resubmissions is not relevant to forum users, we’ve removed this notification from this view. 
+
+#### Students can’t access the online grading view prematurely
+
+When using our online grading functionality, it was possible for students to launch the viewer despite there being no grading having been completed. To help reduce confusion, this link will now be disabled for students until after the post-date has passed.
+
+---
+
 ### Date:       2018-October-29
 ### Release:    v2018082802
 
@@ -83,7 +117,7 @@ We've made the Moodle Plagiarism Plugin repository settings much clearer, by pro
 
 Moodle has released two plugins with privacy features to assist with GDPR compliance. While we've successfully implemented [Moodle's new privacy features](https://docs.moodle.org/dev/Privacy_API), Moodle's update is only available to those using Moodle 3.3.5+, 3.4.2+, or 3.5. Therefore, if you're using an earlier version, you must upgrade to have access to these new features.
 
-To inform you about the data we store in relation to our users, we now provide a detailed list via the Moodle Privacy and Policies page. Learn more about the data we're reporting on via our [Moodle Plugins and GDPR](https://guides.turnitin.com/03_Integrations/Turnitin_Partner_Integrations/Moodle/Moodle_Plugins_and_GDPR) page.
+To inform you about the data we store in relation to our users, we now provide a detailed list via the Moodle Privacy and Policies page. Learn more about the data we're reporting on via our [Moodle Plugins and GDPR](https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm) page.
 
 #### Students can request to download their data
 
@@ -93,7 +127,7 @@ Students have the ability to request an export of their data stored in Moodle. T
 
 Students can also request their data to be removed from Moodle. This requested can be accepted or declined by their Moodle administrator. If accepted, the administrator will remove the student data from Moodle. However, administrators must contact support@turnitin.com to request that student data be removed from Turnitin itself.
   
-> If you're a Moodle administrator, and using version 3.3.5+, 3.4.2+, or 3.5, follow the steps on the [Moodle Plugins and GDPR](https://guides.turnitin.com/03_Integrations/Turnitin_Partner_Integrations/Moodle/Moodle_Plugins_and_GDPR) page to view the data we store in Moodle.
+> If you're a Moodle administrator, and using version 3.3.5+, 3.4.2+, or 3.5, follow the steps on the [Moodle Plugins and GDPR](https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm) page to view the data we store in Moodle.
 
 #### You can now send all papers to your institutional repository by default!
 
@@ -161,7 +195,7 @@ Revision Assistant's genre-specific rubrics are now available in Feedback Studio
 
 #### K-12 QuickMark sets in Feedback Studio (North America only)
 
-QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instructors! But in finding that many of our default QuickMark sets failed to address the needs of our K-12 instructors and students, we've added two new sets to the Feedback Studio collection, available to our North American users! Our new drag-and-drop (and customizable!) comments will help instructors help their students to engage in revision, save time, and more importantly, achieve learning outcomes. [Read more](https://guides.turnitin.com/01_Manuals_and_Guides/Release_Notes/Turnitin_Release_Notes/Genre-specific_rubrics_in_Feedback_Studio).
+QuickMarks are Turnitin's most popular feedback tool among Feedback Studio instructors! But in finding that many of our default QuickMark sets failed to address the needs of our K-12 instructors and students, we've added two new sets to the Feedback Studio collection, available to our North American users! Our new drag-and-drop (and customizable!) comments will help instructors help their students to engage in revision, save time, and more importantly, achieve learning outcomes.
 > 
 > To view and edit your new QuickMarks, you can access the QuickMark manager from within the assignment settings of a new or existing assignment.
 >

@@ -283,7 +283,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->add_key($table, $key);
     }
 
-    if ($oldversion < 2019011701) {
+    if ($oldversion < 2019031302) {
         // If V2 is installed, copy the settings across to PP.
         if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
             // Get the settings for the V2 plugin.

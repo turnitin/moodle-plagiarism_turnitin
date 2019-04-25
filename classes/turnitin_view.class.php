@@ -143,13 +143,16 @@ class turnitin_view {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
-            $PAGE->requires->jquery();
+//            $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-            $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
+//            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
+//            $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
 
-            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
-            $PAGE->requires->css($cssurl);
+//            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
+//            $PAGE->requires->css($cssurl);
 
             // Refresh Grades.
             $refreshgrades = '';
@@ -168,13 +171,10 @@ class turnitin_view {
             // Quickmark Manager.
             $quickmarkmanagerlink = '';
             if ($config->plagiarism_turnitin_usegrademark) {
-                $quickmarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                                '/plagiarism/turnitin/extras.php?cmd=quickmarkmanager&view_context=box',
-                                                get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
-                                                array('class' => 'plagiarism_turnitin_quickmark_manager_launch',
-                                                    'title' => get_string('launchquickmarkmanager', 'plagiarism_turnitin')));
-                $quickmarkmanagerlink .= html_writer::tag('span', '',
-                                                array('class' => 'launch_form', 'id' => 'quickmark_manager_form'));
+                $quickmarkmanagerlink .= html_writer::tag('span',
+                    get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
+                    array('class' => 'plagiarism_turnitin_quickmark_manager_launch', 'id' => 'quickmark_manager_form')
+                );
                 $quickmarkmanagerlink = html_writer::tag('div', $quickmarkmanagerlink, array('class' => 'row_quickmark_manager'));
             }
 
@@ -184,15 +184,10 @@ class turnitin_view {
             $peermarkmanagerlink = '';
             if (!empty($config->plagiarism_turnitin_enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
-                    $peermarkmanagerlink .= html_writer::link($CFG->wwwroot.
-                                                    '/plagiarism/turnitin/ajax.php?cmid='.$cmid.
-                                                        '&action=peermarkmanager&view_context=box',
-                                                    get_string('launchpeermarkmanager', 'plagiarism_turnitin'),
-                                                    array('class' => 'peermark_manager_launch',
-                                                            'id' => 'peermark_manager_'.$cmid,
-                                                            'title' => get_string('launchpeermarkmanager', 'plagiarism_turnitin')));
-                    $peermarkmanagerlink .= html_writer::tag('span', '', array('class' => 'launch_form',
-                                                                            'id' => 'peermark_manager_form'));
+                    $peermarkmanagerlink .= html_writer::tag('span',
+                        get_string('launchpeermarkmanager', 'plagiarism_turnitin'),
+                        array('class' => 'peermark_manager_launch', 'id' => 'peermark_manager_form')
+                    );
                     $peermarkmanagerlink = html_writer::tag('div', $peermarkmanagerlink, array('class' => 'row_peermark_manager'));
                 }
             }
@@ -623,6 +618,7 @@ class turnitin_view {
         $lti->setUserId($user->tiiuserid);
         $lti->setRole($userrole);
         $lti->setFormTarget('');
+        $lti->setWideMode(true);
 
         switch ($type) {
             case "messages_inbox":

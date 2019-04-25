@@ -590,6 +590,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
 
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');
     }
@@ -1060,14 +1062,25 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 // Show Peermark Reviews link.
                                 if (($istutor && count($_SESSION["peermark_assignments"][$cm->id]) > 0) ||
                                                             (!$istutor && $peermarksactive)) {
-                                    $peermarkreviewslink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                '&action=peermarkreviews&view_context=box', '',
-                                                                array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
-                                                                    'class' => 'peermark_reviews_pp_launch tii_tooltip'));
-                                    $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',
-                                                                                                'id' => 'peermark_reviews_form'));
+//                                    $peermarkreviewslink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
+//                                                                '&action=peermarkreviews&view_context=box', '',
+//                                                                array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
+//                                                                    'class' => 'peermark_reviews_pp_launch tii_tooltip'));
+//                                    $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',
+//                                                                                                'id' => 'peermark_reviews_form'));
+//                                    $output .= html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
 
+
+
+
+
+                                    $peermarkreviewslink = html_writer::tag('span', '',
+                                        array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
+                                            'class' => 'peermark_reviews_pp_launch tii_tooltip', 'id' => 'peermark_reviews_form')
+                                    );
+//                                    $peermarkreviewslink = html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
                                     $output .= html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
+
                                 }
                             }
                         }

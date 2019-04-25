@@ -27,5 +27,5 @@ $plugins = array(
     'plagiarism-turnitin_module'        => array('files' => array('turnitin_module.js')),
     'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js')),
     'plagiarism-turnitin_datatables_columnfilter' => array('files' => array('jquery.dataTables.columnFilter.js')),
-    'plagiarism-turnitin_colorbox' => array('files' => array('jquery.colorbox.js'))
+//    'plagiarism-turnitin_colorbox' => array('files' => array('jquery.colorbox.js'))
 );

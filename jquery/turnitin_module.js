@@ -6,18 +6,6 @@ jQuery(document).ready(function($) {
         return false;
     });
 
-    // Open an iframe light box containing the Peermark Manager.
-    if ($('.plagiarism_turnitin_peermark_manager_pp_launch').length > 0) {
-        $('.plagiarism_turnitin_peermark_manager_pp_launch').colorbox({
-            iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager",
-            onLoad: function() { getLoadingGif(); },
-            onCleanup: function() { hideLoadingGif(); },
-            onClosed: function() {
-                refreshPPPeermarkAssignments();
-            }
-        });
-    }
-
     // Refresh submissions from settings page.
     $(document).on('click', '.plagiarism_turnitin_refresh_grades', function() {
         $('.plagiarism_turnitin_refresh_grades').hide();
@@ -46,6 +34,47 @@ jQuery(document).ready(function($) {
         });
         return false;
     });
+
+    // // Open an iframe light box containing the Peermark Manager.
+    // if ($('.plagiarism_turnitin_peermark_manager_pp_launch').length > 0) {
+    //     $('.plagiarism_turnitin_peermark_manager_pp_launch').colorbox({
+    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager",
+    //         onLoad: function() { getLoadingGif(); },
+    //         onCleanup: function() { hideLoadingGif(); },
+    //         onClosed: function() {
+    //             refreshPPPeermarkAssignments();
+    //         }
+    //     });
+    // }
+
+    // // Refresh submissions from settings page.
+    // $(document).on('click', '.plagiarism_turnitin_refresh_grades', function() {
+    //     $('.plagiarism_turnitin_refresh_grades').hide();
+    //     $('.plagiarism_turnitin_refreshing_grades').show();
+    //
+    //     $.ajax({
+    //         type: "POST",
+    //         url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+    //         dataType: "json",
+    //         data: {action: "update_grade", cmid: $('input[name="coursemodule"]').val(), sesskey: M.cfg.sesskey},
+    //         success: function(data) {
+    //             $('.plagiarism_turnitin_refresh_grades').show();
+    //             $('.plagiarism_turnitin_refreshing_grades').hide();
+    //         }
+    //     });
+    // });
+
+    // // Open an iframe light box containing the Peermark reviews.
+    // $(document).on('click', '.peermark_reviews_pp_launch', function() {
+    //     $('.peermark_reviews_pp_launch').colorbox({
+    //         open:true, iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews",
+    //         onLoad: function() {
+    //             getLoadingGif();
+    //         },
+    //         onCleanup: function() { hideLoadingGif(); }
+    //     });
+    //     return false;
+    // });
 
     // Open an iframe light box containing the Rubric Manager.
     if ($('.rubric_manager_launch').length > 0) {
@@ -152,65 +181,99 @@ jQuery(document).ready(function($) {
         }
     }
 
-    function lightBoxCloseButton() {
-        $('body').append('<div id="tii_close_bar"><a href="#" onclick="jQuery(\'#cboxClose\').click(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
-    }
+    // function lightBoxCloseButton() {
+    //     $('body').append('<div id="tii_close_bar"><a href="#" onclick="jQuery(\'#cboxClose\').click(); return false;">' + M.str.plagiarism_turnitin.closebutton + '</a></div>');
+    // }
+    //
+    // function getLoadingGif() {
+    //     var img = '<div class="loading_gif"></div>';
+    //     $('#cboxOverlay').after(img);
+    //     var top = $(window).scrollTop() + ($(window).height() / 2);
+    //     $('.loading_gif').css('top', top + 'px');
+    // }
+    //
+    // function hideLoadingGif() {
+    //     $('.loading_gif').remove();
+    // }
 
-    function getLoadingGif() {
-        var img = '<div class="loading_gif"></div>';
-        $('#cboxOverlay').after(img);
-        var top = $(window).scrollTop() + ($(window).height() / 2);
-        $('.loading_gif').css('top', top + 'px');
-    }
+    // // Refresh Peermark assignments stored locally for this module.
+    // function refreshPPPeermarkAssignments() {
+    //     $.ajax({
+    //         type: "POST",
+    //         url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+    //         dataType: "json",
+    //         data: {action: "refresh_peermark_assignments", cmid: $('input[name="coursemodule"]').val(), sesskey: M.cfg.sesskey},
+    //         success: function(data) {}
+    //     });
+    // }
+    //
+    // // Open an iframe light box containing the Peermark Manager.
+    // if ($('.peermark_manager_launch').length > 0) {
+    //     $('.peermark_manager_launch').colorbox({
+    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager", transition: "none",
+    //         onLoad: function() {
+    //             lightBoxCloseButton();
+    //             getLoadingGif();
+    //         },
+    //         onCleanup:function() {
+    //             $('#tii_close_bar').remove();
+    //             hideLoadingGif();
+    //         },
+    //         onClosed:function() {
+    //             var idStr = $(this).attr("id").split("_");
+    //             refreshPPPeermarkAssignments(idStr[2], 1);
+    //         }
+    //     });
+    // }
+    //
+    // // Open an iframe light box containing the Peermark Reviews.
+    // if ($('.peermark_reviews_launch').length > 0) {
+    //     $('.tii_peermark_reviews_launch').colorbox({
+    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews", transition: "none",
+    //         onLoad: function() {
+    //             lightBoxCloseButton();
+    //             getLoadingGif();
+    //         },
+    //         onCleanup: function() {
+    //             $('#tii_close_bar').remove();
+    //             hideLoadingGif();
+    //         }
+    //     });
+    // }
 
-    function hideLoadingGif() {
-        $('.loading_gif').remove();
-    }
+    // // Open an iframe light box containing the Peermark Manager.
+    // if ($('.peermark_manager_launch').length > 0) {
+    //     $('.peermark_manager_launch').colorbox({
+    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager", transition: "none",
+    //         onLoad: function() {
+    //             lightBoxCloseButton();
+    //             getLoadingGif();
+    //         },
+    //         onCleanup:function() {
+    //             $('#tii_close_bar').remove();
+    //             hideLoadingGif();
+    //         },
+    //         onClosed:function() {
+    //             var idStr = $(this).attr("id").split("_");
+    //             refreshPPPeermarkAssignments(idStr[2], 1);
+    //         }
+    //     });
+    // }
 
-    // Refresh Peermark assignments stored locally for this module.
-    function refreshPPPeermarkAssignments() {
-        $.ajax({
-            type: "POST",
-            url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-            dataType: "json",
-            data: {action: "refresh_peermark_assignments", cmid: $('input[name="coursemodule"]').val(), sesskey: M.cfg.sesskey},
-            success: function(data) {}
-        });
-    }
-
-    // Open an iframe light box containing the Peermark Manager.
-    if ($('.peermark_manager_launch').length > 0) {
-        $('.peermark_manager_launch').colorbox({
-            iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager", transition: "none",
-            onLoad: function() {
-                lightBoxCloseButton();
-                getLoadingGif();
-            },
-            onCleanup:function() {
-                $('#tii_close_bar').remove();
-                hideLoadingGif();
-            },
-            onClosed:function() {
-                var idStr = $(this).attr("id").split("_");
-                refreshPPPeermarkAssignments(idStr[2], 1);
-            }
-        });
-    }
-
-    // Open an iframe light box containing the Peermark Reviews.
-    if ($('.peermark_reviews_launch').length > 0) {
-        $('.tii_peermark_reviews_launch').colorbox({
-            iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews", transition: "none",
-            onLoad: function() {
-                lightBoxCloseButton();
-                getLoadingGif();
-            },
-            onCleanup: function() {
-                $('#tii_close_bar').remove();
-                hideLoadingGif();
-            }
-        });
-    }
+    // // Open an iframe light box containing the Peermark Reviews.
+    // if ($('.peermark_reviews_launch').length > 0) {
+    //     $('.tii_peermark_reviews_launch').colorbox({
+    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews", transition: "none",
+    //         onLoad: function() {
+    //             lightBoxCloseButton();
+    //             getLoadingGif();
+    //         },
+    //         onCleanup: function() {
+    //             $('#tii_close_bar').remove();
+    //             hideLoadingGif();
+    //         }
+    //     });
+    // }
 
     // Show warning when changing the rubric linked to an assignment.
     $('#id_plagiarism_rubric').mousedown(function () {
@@ -221,20 +284,20 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Open an iframe light box containing the Quickmark Manager.
-    if ($('.plagiarism_turnitin_quickmark_manager_launch').length > 0) {
-        $('.plagiarism_turnitin_quickmark_manager_launch').colorbox({
-            iframe: true, width: "770px", height: "600px", opacity: "0.7", className: "quickmark_manager", transition: "none",
-            onLoad: function () {
-                lightBoxCloseButton();
-                getLoadingGif();
-            },
-            onCleanup: function () {
-                $('#tii_close_bar').remove();
-                hideLoadingGif();
-            }
-        });
-    }
+    // // Open an iframe light box containing the Quickmark Manager.
+    // if ($('.plagiarism_turnitin_quickmark_manager_launch').length > 0) {
+    //     $('.plagiarism_turnitin_quickmark_manager_launch').colorbox({
+    //         iframe: true, width: "770px", height: "600px", opacity: "0.7", className: "quickmark_manager", transition: "none",
+    //         onLoad: function () {
+    //             lightBoxCloseButton();
+    //             getLoadingGif();
+    //         },
+    //         onCleanup: function () {
+    //             $('#tii_close_bar').remove();
+    //             hideLoadingGif();
+    //         }
+    //     });
+    // }
 
     // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
     function refreshRubricSelect() {

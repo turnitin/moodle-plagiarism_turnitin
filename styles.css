@@ -206,13 +206,22 @@
     padding: 4px 16px 4px 40px;
     display: inline;
     line-height: 28px;
+    color: #0070a8;
+}
+.peermark_manager_launch:hover{
+    text-decoration: underline;
 }
 
 .plagiarism_turnitin_quickmark_manager_launch {
     background:url([[pix:plagiarism_turnitin|quickmark]]) no-repeat 0px 0px;
+    cursor:pointer;
     padding: 2px 0px 2px 40px;
     display: inline;
     line-height: 28px;
+    color: #0070a8;
+}
+.plagiarism_turnitin_quickmark_manager_launch:hover{
+    text-decoration: underline;
 }
 
 .tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_eula {
@@ -313,7 +322,7 @@ button.pp-resubmit-files {
 
 
 
-
+/* -- TO DO: Remove all colorbox styles*/
 
 
 /*
@@ -749,4 +758,9 @@ html .tooltipster-base {
 }
 .connection-test-failed {
     background-color: #d9534f;
+}
+
+.iframe-ltilaunch {
+    width: 100%;
+    height: 700px;
 }

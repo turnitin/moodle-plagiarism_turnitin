@@ -6,42 +6,6 @@ jQuery(document).ready(function($) {
         return false;
     });
 
-    $(document).on('click', '.pp_origreport_open', function() {
-        var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
-
-        for (var i = 0; i < classList.length; i++) {
-            if (classList[i].indexOf('origreport_') !== -1 && classList[i] != 'pp_origreport_open') {
-                var classStr = classList[i].split("_");
-                var url = "";
-                // URL must be stored in separate div on forums.
-                if ($('.origreport_forum_launch_' + classStr[1]).length > 0) {
-                    url = $('.origreport_forum_launch_' + classStr[1]).html();
-                } else {
-                    url = $(this).attr("id");
-                }
-                openDV("origreport", classStr[1], classStr[2], url);
-            }
-        }
-    });
-
-    $(document).on('click', '.pp_grademark_open', function() {
-        var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
-
-        for (var i = 0; i < classList.length; i++) {
-            if (classList[i].indexOf('grademark_') !== -1 && classList[i] != 'pp_grademark_open') {
-                var classStr = classList[i].split("_");
-                var url = "";
-                // URL must be stored in separate div on forums.
-                if ($('.grademark_forum_launch_' + classStr[1]).length > 0) {
-                    url = $('.grademark_forum_launch_' + classStr[1]).html();
-                } else {
-                    url = $(this).attr("id");
-                }
-                openDV("grademark", classStr[1], classStr[2], url);
-            }
-        }
-    });
-
     // Open an iframe light box containing the Peermark Manager.
     if ($('.plagiarism_turnitin_peermark_manager_pp_launch').length > 0) {
         $('.plagiarism_turnitin_peermark_manager_pp_launch').colorbox({
@@ -211,55 +175,6 @@ jQuery(document).ready(function($) {
             dataType: "json",
             data: {action: "refresh_peermark_assignments", cmid: $('input[name="coursemodule"]').val(), sesskey: M.cfg.sesskey},
             success: function(data) {}
-        });
-    }
-
-    // Open the DV in a new window in such a way as to not be blocked by popups.
-    function openDV(dvtype, submissionid, coursemoduleid, url) {
-        dvWindow = window.open('', 'turnitin_viewer');
-        var loading = '<div class="tii_dv_loading" style="text-align:center;">';
-        loading += '<img src="' + M.cfg.wwwroot + '/plagiarism/turnitin/pix/tiiIcon.svg" style="width:100px; height: 100px">';
-        loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + M.str.plagiarism_turnitin.loadingdv + '</p>';
-        loading += '</div>';
-        $(dvWindow.document.body).html(loading);
-
-        // Get html to launch DV.
-        $.ajax({
-            type: "POST",
-            url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-            dataType: "json",
-            data: {action: "get_dv_html", submissionid: submissionid, dvtype: dvtype,
-                cmid: coursemoduleid, sesskey: M.cfg.sesskey},
-            success: function(data) {
-                $(dvWindow.document.body).html(loading + data);
-                dvWindow.document.forms[0].submit();
-                dvWindow.document.close();
-
-                checkDVClosed(submissionid, coursemoduleid);
-            }
-        });
-    }
-
-    // Check whether the DV is still open, refresh the opening window when it closes.
-    function checkDVClosed(submissionid, coursemoduleid) {
-        if (window.dvWindow.closed) {
-            refreshScores(submissionid, coursemoduleid);
-        } else {
-            setTimeout( function(){
-                checkDVClosed(submissionid, coursemoduleid);
-            }, 500);
-        }
-    }
-
-    function refreshScores(submission_id, coursemoduleid) {
-        $.ajax({
-            type: "POST",
-            url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-            dataType: "json",
-            data: {action: "update_grade", submission: submission_id, cmid: coursemoduleid, sesskey: M.cfg.sesskey},
-            success: function(data) {
-                window.location = window.location;
-            }
         });
     }
 

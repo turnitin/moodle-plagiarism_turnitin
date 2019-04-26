@@ -177,40 +177,6 @@ jQuery(document).ready(function($) {
     //         success: function(data) {}
     //     });
     // }
-    //
-    // // Open an iframe light box containing the Peermark Manager.
-    // if ($('.peermark_manager_launch').length > 0) {
-    //     $('.peermark_manager_launch').colorbox({
-    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_manager", transition: "none",
-    //         onLoad: function() {
-    //             lightBoxCloseButton();
-    //             getLoadingGif();
-    //         },
-    //         onCleanup:function() {
-    //             $('#tii_close_bar').remove();
-    //             hideLoadingGif();
-    //         },
-    //         onClosed:function() {
-    //             var idStr = $(this).attr("id").split("_");
-    //             refreshPPPeermarkAssignments(idStr[2], 1);
-    //         }
-    //     });
-    // }
-    //
-    // // Open an iframe light box containing the Peermark Reviews.
-    // if ($('.peermark_reviews_launch').length > 0) {
-    //     $('.tii_peermark_reviews_launch').colorbox({
-    //         iframe:true, width:"802px", height:"772px", opacity: "0.7", className: "peermark_reviews", transition: "none",
-    //         onLoad: function() {
-    //             lightBoxCloseButton();
-    //             getLoadingGif();
-    //         },
-    //         onCleanup: function() {
-    //             $('#tii_close_bar').remove();
-    //             hideLoadingGif();
-    //         }
-    //     });
-    // }
 
     // // Open an iframe light box containing the Peermark Manager.
     // if ($('.peermark_manager_launch').length > 0) {

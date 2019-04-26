@@ -149,6 +149,7 @@ class turnitin_view {
 //            $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
 
 //            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
@@ -295,15 +296,16 @@ class turnitin_view {
                     }
                 }
 
+                $rubricmanagerlink = html_writer::tag('span',
+                    get_string('launchrubricmanager', 'plagiarism_turnitin'),
+                    array('class' => 'rubric_manager_launch',
+                        'title' => get_string('launchrubricmanager',
+                            'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
+                    )
+                );
+                $rubricmanagerlink = html_writer::tag('div', $rubricmanagerlink, array('class' => 'row_rubric_manager'));
                 $mform->addElement('selectgroups', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubrics);
-                $mform->addElement('static', 'rubric_link', '',
-                                        html_writer::link($CFG->wwwroot.
-                                                    '/plagiarism/turnitin/extras.php?cmd=rubricmanager&view_context=box',
-                                                    get_string('launchrubricmanager', 'plagiarism_turnitin'),
-                                                    array('class' => 'rubric_manager_launch',
-                                                        'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'))).
-                                                    html_writer::tag('span', '', array('class' => 'launch_form',
-                                                                                    'id' => 'rubric_manager_form')));
+                $mform->addElement('static', 'rubric_link', '', $rubricmanagerlink);
                 $mform->setDefault('plagiarism_rubric', '');
 
                 $mform->addElement('hidden', 'rubric_warning_seen', '');

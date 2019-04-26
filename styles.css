@@ -52,6 +52,16 @@
     display: block;
 }
 
+.tii_links_container .rubric_view_pp_launch_upload {
+    background:url([[pix:plagiarism_turnitin|rubric]]) no-repeat 0px 0px;
+    cursor: pointer;
+    padding: 2px 0px 2px 40px;
+    display: inline;
+    line-height: 28px;
+    margin-left:6px;
+    color: #0070A8;
+}
+
 .tii_disclosure_links {
     display:block;
 }
@@ -202,7 +212,7 @@
 
 .peermark_manager_launch {
     background:url([[pix:plagiarism_turnitin|peermark-settings]]) no-repeat 0px 0px;
-    cursor:pointer;
+    cursor: pointer;
     padding: 4px 16px 4px 40px;
     display: inline;
     line-height: 28px;
@@ -214,7 +224,7 @@
 
 .plagiarism_turnitin_quickmark_manager_launch {
     background:url([[pix:plagiarism_turnitin|quickmark]]) no-repeat 0px 0px;
-    cursor:pointer;
+    cursor: pointer;
     padding: 2px 0px 2px 40px;
     display: inline;
     line-height: 28px;
@@ -282,6 +292,7 @@ button.pp-resubmit-files {
 
 .rubric_manager_launch {
     background:url([[pix:plagiarism_turnitin|rubric]]) no-repeat 0px 0px;
+    cursor: pointer;
     padding: 2px 0px 2px 40px;
     display: inline;
     line-height: 28px;

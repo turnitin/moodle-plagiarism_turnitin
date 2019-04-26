@@ -557,15 +557,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Update assignment in case rubric is not stored in Turnitin yet.
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-            $rubricviewlink = html_writer::tag('div', html_writer::link(
-                                                    $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                    '&action=rubricview&view_context=box',
-                                                    get_string('launchrubricview', 'plagiarism_turnitin'),
-                                                    array('class' => 'rubric_view_pp_launch', 'id' => 'rubric_view_launch',
-                                                            'title' => get_string('launchrubricview', 'plagiarism_turnitin'))).
-                                                                html_writer::tag('span', '',
-                                                                array('class' => 'launch_form', 'id' => 'rubric_view_form')),
-                                                    array('class' => 'row_rubric_view'));
+            $rubricviewlink = html_writer::tag('span',
+                get_string('launchrubricview', 'plagiarism_turnitin'),
+                array('class' => 'rubric_view rubric_view_pp_launch_upload tii_tooltip',
+                    'title' => get_string('launchrubricview',
+                        'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
+                )
+            );
+            $rubricviewlink = html_writer::tag('div', $rubricviewlink, array('class' => 'row_rubric_view'));
 
             $output .= html_writer::tag('div', $rubricviewlink, array('class' => 'tii_links_container tii_disclosure_links'));
         }
@@ -577,6 +576,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS needed by the page.
      */
     public function load_page_components() {
+        echo 'aaa';
         global $CFG, $PAGE;
 
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-3.3.1.min.js');
@@ -591,6 +591,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');
@@ -1026,14 +1027,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Update assignment in case rubric is not stored in Turnitin yet.
                             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-                            $rubricviewlink = html_writer::tag('div', html_writer::link(
-                                                            $CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-                                                                    '&action=rubricview&view_context=box', '',
-                                                            array('class' => 'tii_tooltip rubric_view_pp_launch', 'id' => 'rubric_view_launch',
-                                                                    'title' => get_string('launchrubricview', 'plagiarism_turnitin'))).
-                                                                        html_writer::tag('span', '',
-                                                                        array('class' => 'launch_form', 'id' => 'rubric_view_form')),
-                                                            array('class' => 'row_rubric_view'));
+                            $rubricviewlink = html_writer::tag('span','',
+                                array('class' => 'rubric_view rubric_view_pp_launch tii_tooltip',
+                                    'title' => get_string('launchrubricview',
+                                        'plagiarism_turnitin'), 'id' => 'rubric_view_launch'
+                                )
+                            );
+                            $rubricviewlink = html_writer::tag('div', $rubricviewlink, array('class' => 'row_rubric_view'));
+
                             $output .= $rubricviewlink;
                         }
 
@@ -1062,18 +1063,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 // Show Peermark Reviews link.
                                 if (($istutor && count($_SESSION["peermark_assignments"][$cm->id]) > 0) ||
                                                             (!$istutor && $peermarksactive)) {
-//                                    $peermarkreviewslink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/ajax.php?cmid='.$cm->id.
-//                                                                '&action=peermarkreviews&view_context=box', '',
-//                                                                array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
-//                                                                    'class' => 'peermark_reviews_pp_launch tii_tooltip'));
-//                                    $peermarkreviewslink .= html_writer::tag('span', '', array('class' => 'launch_form',
-//                                                                                                'id' => 'peermark_reviews_form'));
-//                                    $output .= html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
-
-
-
-
-
                                     $peermarkreviewslink = html_writer::tag('span', '',
                                         array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
                                             'class' => 'peermark_reviews_pp_launch tii_tooltip', 'id' => 'peermark_reviews_form')

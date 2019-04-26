@@ -587,6 +587,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $PAGE->requires->js($jsurl);
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.tooltipster.js');
         $PAGE->requires->js($jsurl);
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');

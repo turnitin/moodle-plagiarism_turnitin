@@ -304,3 +304,4 @@ $string['tiiusergeterror'] = 'There was an error when trying to get the user det
 $string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';
 $string['usercreationerror'] = 'Turnitin user creation failed';
 $string['ppassignmentcreateerror'] = 'This module could not be created on Turnitin, please consult your API logs for further information';
+$string['turnitineula'] = 'Turnitin EULA';

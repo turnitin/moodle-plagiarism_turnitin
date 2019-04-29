@@ -577,14 +577,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function load_page_components() {
         global $CFG, $PAGE;
 
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-3.3.1.min.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/turnitin_module.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.colorbox.js');
-        $PAGE->requires->js($jsurl);
-        $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery.tooltipster.js');
-        $PAGE->requires->js($jsurl);
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
 

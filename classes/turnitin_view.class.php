@@ -143,17 +143,11 @@ class turnitin_view {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
-//            $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('ui');
-//            $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-//            $PAGE->requires->jquery_plugin('plagiarism-turnitin_colorbox', 'plagiarism_turnitin');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
-
-//            $cssurl = new moodle_url('/plagiarism/turnitin/css/colorbox.css');
-//            $PAGE->requires->css($cssurl);
 
             // Refresh Grades.
             $refreshgrades = '';

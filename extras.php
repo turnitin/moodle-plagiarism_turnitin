@@ -47,7 +47,6 @@ require_login();
 
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('ui');
-$PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
 
 switch ($cmd) {
     case "rubricmanager":

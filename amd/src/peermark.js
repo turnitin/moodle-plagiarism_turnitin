@@ -23,7 +23,6 @@ define(['jquery',
                 });
 
                 $(document).on('click', '.peermark_reviews_pp_launch', function() {
-                // $('.peermark_reviews_pp_launch').on('click', function() {
                     that.peermarkCreateModal(ModalPeermarkReviewsLaunch.TYPE);
                 });
             },

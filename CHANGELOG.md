@@ -1,3 +1,37 @@
+### Date:       2019-March-13
+### Release:    v2019031301
+
+#### :zap: What's new
+
+---
+
+#### Welcome to our new help site!
+
+We’ve updated the help links within the product to take you to our new help site [https://help.turnitin.com](https://help.turnitin.com). The site has been designed around actionable tasks to help you to find the guidance you need when you need it.
+
+
+### :wrench: Fixes and enhancements
+
+---
+
+#### Error code 13 will now only display when appropriate
+
+In a previous release, we introduced ‘Error Code 13’. This error is shown when we’ve managed to upload to our servers but weren’t able to generate a similarity report at the time of submission. Since then, we’ve reconsidered how this error state should be handled. With this release, we will reset all instances of Error code 13. Going forward, we will only accept an upload if the plugin is able to connect to Turnitin and generate a similarity report.
+
+#### Use Marking Workflows without errors
+
+In a rare number of cases, it was possible when using Marking Workflows for students to receive an error message when they attempt to view their submissions after grades have been released. We’ve reworked how the grade release happens when using Marking Workflows so that students will no longer see this error.
+
+#### Forum users can use Turnitin without seeing extraneous notifications
+
+When creating a forum post with Turnitin available we were showing information about our report regeneration times when resubmitting to Turnitin. As information about resubmissions is not relevant to forum users, we’ve removed this notification from this view. 
+
+#### Students can’t access the online grading view prematurely
+
+When using our online grading functionality, it was possible for students to launch the viewer despite there being no grading having been completed. To help reduce confusion, this link will now be disabled for students until after the post-date has passed.
+
+---
+
 ### Date:       2018-October-29
 ### Release:    v2018082802
 

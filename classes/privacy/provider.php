@@ -77,6 +77,7 @@ class provider implements
             'lastname' => 'privacy:metadata:plagiarism_turnitin_client:lastname',
             'submission_title' => 'privacy:metadata:plagiarism_turnitin_client:submission_title',
             'submission_filename' => 'privacy:metadata:plagiarism_turnitin_client:submission_filename',
+            'submission_content' => 'privacy:metadata:plagiarism_turnitin_client:submission_content',
         ], 'privacy:metadata:plagiarism_turnitin_client');
 
         return $collection;

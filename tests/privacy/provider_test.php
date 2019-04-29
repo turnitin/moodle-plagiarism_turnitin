@@ -80,6 +80,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('lastname', $privacyfields);
         $this->assertArrayHasKey('submission_title', $privacyfields);
         $this->assertArrayHasKey('submission_filename', $privacyfields);
+        $this->assertArrayHasKey('submission_content', $privacyfields);
 
         $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[2]->get_summary());
     }

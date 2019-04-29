@@ -514,11 +514,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
 
             if ($eulaaccepted != 1) {
-                // Moodle strips out form and script code for forum posts so we have to do the Eula Launch differently.
-                $eulalink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$cmid.'&cmd=useragreement&view_context=box_solid',
-                                        get_string('turnitinppulapre', 'plagiarism_turnitin'),
-                                        array("class" => "pp_turnitin_eula_link"));
-
+                $eulalink = html_writer::tag('span',
+                    get_string('turnitinppulapre', 'plagiarism_turnitin'),
+                    array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
+                );
                 $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_eula_ignored' : '';
                 $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula'.$eulaignoredclass,
                                             'data-userid' => $user->id));
@@ -576,7 +575,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS needed by the page.
      */
     public function load_page_components() {
-        echo 'aaa';
         global $CFG, $PAGE;
 
         $jsurl = new moodle_url($CFG->wwwroot.'/plagiarism/turnitin/jquery/jquery-3.3.1.min.js');
@@ -592,6 +590,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');
@@ -797,11 +797,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $userid = $linkarray["userid"];
 
                         if ($eulaaccepted != 1) {
-                            $eulalink = html_writer::link($CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"].
-                                    '&cmd=useragreement&view_context=box_solid',
-                                    get_string('turnitinppulapost', 'plagiarism_turnitin'),
-                                    array("class" => "pp_turnitin_eula_link"));
-
+                            $eulalink = html_writer::tag('span',
+                                get_string('turnitinppulapost', 'plagiarism_turnitin'),
+                                array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
+                            );
                             $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
                         }
 
@@ -1067,13 +1066,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         array('title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
                                             'class' => 'peermark_reviews_pp_launch tii_tooltip', 'id' => 'peermark_reviews_form')
                                     );
-//                                    $peermarkreviewslink = html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
                                     $output .= html_writer::tag('div', $peermarkreviewslink, array('class' => 'row_peermark_reviews'));
 
                                 }
                             }
                         }
-
                     } else if ($plagiarismfile->statuscode == 'error') {
 
                         // Deal with legacy error issues.
@@ -1111,7 +1108,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $output .= html_writer::tag('div', $erroricon, array('class' => 'clear'));
                         } else {
                             $output .= html_writer::tag('div', $erroricon.' '.get_string('resubmittoturnitin', 'plagiarism_turnitin'),
-                                                        array('class' => 'clear pp_resubmit_link',
+                                                        array('class' => 'clear plagiarism_turnitin_resubmit_link',
                                                                 'id' => 'pp_resubmit_'.$plagiarismfile->id));
 
                             $output .= html_writer::tag('div',

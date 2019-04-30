@@ -55,6 +55,9 @@ switch ($cmd) {
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
             array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
         break;
 
     case "quickmarkmanager":
@@ -62,6 +65,9 @@ switch ($cmd) {
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
             array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
         break;
     case "useragreement":
         $PAGE->set_pagelayout('embedded');

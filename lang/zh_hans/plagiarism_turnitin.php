@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin 剽窃 Plugin';
-$string['turnitintooltwo'] = 'Turnitin 工具';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 剽窃 Plugin 任务';
 $string['connecttesterror'] = '连接至 Turnitin 时出错。返回的错误消息如下：<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin 剽窃 Plugin 配置';
 $string['tiiexplain'] = 'Turnitin 为商务产品。您必须付订购费才能使用此服务。有关更多信息，请访问 <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = '启用 Turnitin';
 $string['useturnitin_mod'] = '启用 Turnitin {$a}';
-$string['pp_configuredesc'] = '您必须在 turnitintooltwo 单元内配置此单元。请单击<a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>此处</a>安装此 plugin';
 $string['turnitindefaults'] = 'Turnitin 剽窃 Plugin 默认设置';
 $string['defaultsdesc'] = '以下设置为在活动单元内启用 Turnitin 时设置的默认值';
 $string['turnitinpluginsettings'] = 'Turnitin 剽窃 Plugin 设置';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '我们遇到临时问题。请稍后再�
 $string['defaultinserterror'] = '尝试将默认设置值插入数据库时出错';
 $string['defaultupdateerror'] = '尝试更新数据库中的默认设置值时出错';
 $string['tiiassignmentgeterror'] = '尝试从 Turnitin 中获取作业时出错';
-$string['assigngeterror'] = '无法获得 turnitintooltwo 数据';
+$string['assigngeterror'] = '无法获得 Turnitin 数据';
 $string['classupdateerror'] = '无法更新 Turnitin 课程数据';
 $string['pp_createsubmissionerror'] = '尝试在 Turnitin 中创建提交内容时出错';
 $string['pp_updatesubmissionerror'] = '尝试将提交内容重新提交至 Turnitin 时出错';
@@ -200,3 +198,74 @@ $string['pending'] = '未决';
 $string['because'] = '这是因为，管理员从处理队列中删除了待处理的作业并中止向 Turnitin 提交内容。<br /><strong>相应文件仍存在于 Moodle 中，请联系您的导师。</strong><br />请看下面的错误代码：';
 $string['submitpapersto_help'] = '<strong>无存储库: </strong><br />Turnitin 被设定为不将上传文件储存至任何知识库。文件仅用于初始查重。<br /><br /><strong>标准存储库: </strong><br />Turnitin 将只在标准知识库中储存上传文件的副本。选择此选项，Turnitin 对日后上传文件的查重工作将只使用已储存文件。<br /><br /><strong>机构存储库（适用时）: </strong><br />选择此选项，将 Turnitin 设定为只添加文件至您机构的私有知识库。上传文件的查重工作将只由您机构的其他教员完成。';
 $string['errorcode12'] = '该文件未能上传至 Turnitin，因其所在任务课程已删除。行 ID: ({$a->id}) | 课程模块 ID: ({$a->cm}) | 用户 ID: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Turnitin 帐户配置';
+$string['turnitinaccountid'] = 'Turnitin 帐户代号';
+$string['turnitinsecretkey'] = 'Turnitin 共享密钥';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = '调试和记录';
+$string['turnitindiagnostic'] = '启用诊断模式';
+$string['turnitindiagnostic_desc'] = '<b>[警告]</b><br />启用诊断模式来追踪 Turnitin API 的问题。';
+$string['tiiaccountsettings_desc'] = '请确保这些设置与您的 Turnitin 帐户中配置的相符，否则您可能会在作业创建和/或学生提交时遇到问题。';
+$string['tiiaccountsettings'] = 'Turnitin 帐户设置';
+$string['turnitinusegrademark'] = '使用 GradeMark';
+$string['turnitinusegrademark_desc'] = '选择是否使用 GradeMark 或 Moodle 为提交内容评分。<br /><i>（仅适用于已为其帐户配置了 GradeMark 的用户）</i>';
+$string['turnitinenablepeermark'] = '启用 PeerMark 作业';
+$string['turnitinenablepeermark_desc'] = '选择是否允许创建 Peermark 作业。<br/><i>（仅适用于已为其帐户配置了 Peermark 的用户）</i>';
+$string['turnitinuseerater'] = '启用 ETS&copy;';
+$string['turnitinuseerater_desc'] = '选择是否启用 ETS&copy; 语法检查。<br /><i>（只有已在您的 Turnitin 帐户中启用了 ETS&copy; 批改系统的情况下才能启用此选项）</i>';
+$string['transmatch_desc'] = '确定已翻译的相符功能是否将作为作业设置屏幕上的设置来提供。<br /><i>（只有在您的 Turnitin 帐户中启用了已翻译的相符功能时，才会启用此选项）</i>';
+$string['repositoryoptions_0'] = '启用导师标准存储库选项';
+$string['repositoryoptions_1'] = '启用导师扩展存储库选项';
+$string['repositoryoptions_2'] = '将所有论文提交至标准存储库';
+$string['repositoryoptions_3'] = '请勿将任何论文提交至存储库';
+$string['turnitinrepositoryoptions'] = '论文存储库作业';
+$string['turnitinrepositoryoptions_desc'] = '为 Turnitin 作业选择存储库选项。<br /><i>（机构存储库仅用于为其帐户启用了此选项的用户）</i>';
+$string['tiimiscsettings'] = '其他插件设置';
+$string['pp_agreement_default'] = '我确认此提交内容是我的作品，并且接受所有可能因此提交而产生的侵权的责任。';
+$string['pp_agreement_desc'] = '<b>[可选]</b><br />输入协议确认声明以供提交。<br />（<b>注意：</b>如果协议完全留空，则学生在提交时就无需确认协议）';
+$string['pp_agreement'] = '免责声明/协议';
+$string['studentdataprivacy'] = '学生数据隐私设置';
+$string['studentdataprivacy_desc'] = '可以配置以下设置以确保学生的个人数据不会通过 API 传送至 Turnitin。';
+$string['enablepseudo'] = '启用学生隐私';
+$string['enablepseudo_desc'] = '如果选择此选项，学生电子邮件地址将转换为 Turnitin API 调用的伪等效内容。<br /><i>（<b>注意：</b>如果有任何 Moodle 用户数据已与 Turnitin 同步，则无法更改此选项）</i>';
+$string['pseudofirstname'] = '学生的假名';
+$string['pseudofirstname_desc'] = '<b>[可选]</b><br />要显示在 Turnitin 文档查看器中的学生名字';
+$string['pseudolastname'] = '学生的假姓';
+$string['pseudolastname_desc'] = '学生的姓在Turnitin 文档查看器内显示';
+$string['pseudolastnamegen'] = '自动生成姓氏';
+$string['pseudolastnamegen_desc'] = '如果设为“是”并且假姓设为用户个人资料字段，则将自动用唯一标识符填充该字段。';
+$string['pseudoemailsalt'] = '拟加密盐';
+$string['pseudoemailsalt_desc'] = '<b>[可选]</b><br />可选的盐旨在增强生成的假学生电子邮件地址的复杂性。<br />（<b>注意：</b>盐应该保存不变，以确保一致的假电子邮件地址）';
+$string['pseudoemaildomain'] = '假的电子邮件网域';
+$string['pseudoemaildomain_desc'] = '<b>[选择性的]</b><br />假的电子邮件地址的可选域。（如果留空，则默认为 @tiimoodle.com）';
+$string['pseudoemailaddress'] = '假电子邮件地址';
+$string['connecttest'] = '测试 Turnitin 连接';
+$string['connecttestsuccess'] = 'Moodle 已成功地连线至 Turnitin。';
+$string['diagnosticoptions_0'] = '关闭';
+$string['diagnosticoptions_1'] = '标准';
+$string['diagnosticoptions_2'] = '调试';
+$string['repositoryoptions_4'] = '将所有文件上传至机构资源库';
+$string['turnitinrepositoryoptions_help'] = '<strong>启用导师标准存储库选项: </strong><br />教员可将 Turnitin 设定为添加文件至标准知识库、至机构的私有知识库、或不添加至知识库。<br /><br /><strong>启用导师扩展存储库选项: </strong><br />这一选项将允许教员查看作业设置，该作业设置允许学生通过 Turnitin 设定文件的储存位置。学生可以选择添加文件至标准学生知识库或添加至您机构的私有知识库。<br /><br /><strong>将所有论文提交至标准存储库: </strong><br />所有文件都默认添加至标准学生知识库。<br /><br /><strong>请勿将任何论文提交至存储库: </strong><br />文件通过 Turnitin 将只用于供教员查看评分和初始查重。<br /><br /><strong>将所有文件上传至机构资源库: </strong><br />Turnitin 被设定为将所有论文储存至机构论文知识库。上传文件的查重工作将由您机构内的其他教员完成。';
+$string['turnitinuseanon'] = '使用匿名标记';
+$string['turnitinuseanon_desc'] = '选择在为提交内容评分时是否允许匿名标记。<br /><i>（仅适用于已为其帐户配置了匿名标记的用户）</i>';
+$string['createassignmenterror'] = '尝试在 Turnitin 中创建作业时出错';
+$string['editassignmenterror'] = '尝试在 Turnitin 中编辑作业时出错';
+$string['ppassignmentediterror'] = '单元 {$a->title}（TII ID：{$a->assignmentid}）无法在 Turnitin 上编辑，请查看您的 API 日志了解更多信息';
+$string['pp_classcreationerror'] = '此课程无法在 Turnitin 上创建，请查阅您的 API 日志以获得更多信息';
+$string['unlinkusers'] = '停止链接用户';
+$string['relinkusers'] = '重新链接用户';
+$string['unlinkrelinkusers'] = '解除链接/重新链接 Turnitin 用户';
+$string['nointegration'] = '无整合';
+$string['sprevious'] = '前';
+$string['snext'] = '次';
+$string['slengthmenu'] = '显示 _MENU_ 条目';
+$string['ssearch'] = '搜索：';
+$string['sprocessing'] = '正在从 Turnitin 加载数据...';
+$string['szerorecords'] = '无法显示任何记录。';
+$string['sinfo'] = '正在显示第 _START_ 到 _END_ 个条目，共 _TOTAL_ 个条目。';
+$string['userupdateerror'] = '无法更新用户数据';
+$string['connecttestcommerror'] = '无法连线至 Turnitin。请再次检查您的 API URL 设置。';
+$string['userfinderror'] = '尝试在 Turnitin 中查找用户时出错';
+$string['tiiusergeterror'] = '尝试从 Turnitin 中获取用户细节时出错';
+$string['usercreationerror'] = 'Turnitin 用户创建失败';
+$string['ppassignmentcreateerror'] = '此单元无法在 Turnitin 上创建，请查阅您的 API 日志以获得更多信息';

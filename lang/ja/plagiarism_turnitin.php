@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin Plagiarismプラグイン';
-$string['turnitintooltwo'] = 'Turnitinツール';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin Plagiarismプラグインのタスク';
 $string['connecttesterror'] = 'Turnitinへの接続中にエラーが発生しました。エラーメッセージは以下の通りです。<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin Plagiarismプラグインの構成';
 $string['tiiexplain'] = 'Turnitinは商用製品であり、このサービスを利用するにはサービス料のお支払いが必要です。詳しくは、<a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>をご覧ください。';
 $string['useturnitin'] = 'Turnitinを有効にする';
 $string['useturnitin_mod'] = 'Turnitinを有効にする： {$a}';
-$string['pp_configuredesc'] = 'このモジュールはturnitintooltwoモジュール内で設定する必要があります。このプラグインを設定するには<a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>こちら</a>をクリックしてください。';
 $string['turnitindefaults'] = 'Turnitin Plagiarismプラグインデフォルト設定';
 $string['defaultsdesc'] = '次の設定はアクティビティーモジュール内のTurnitinを有効にする際のデフォルト設定です';
 $string['turnitinpluginsettings'] = 'Turnitin Plagiarismプラグイン設定';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '現在一時的な問題が発生して�
 $string['defaultinserterror'] = 'データベースのデフォルト設定値を挿入中にエラーが発生しました';
 $string['defaultupdateerror'] = 'データベースのデフォルト設定値を更新中にエラーが発生しました';
 $string['tiiassignmentgeterror'] = 'Turnitinから課題を入手する際にエラーが発生しました';
-$string['assigngeterror'] = 'turnitintooltwoデータを取得できませんでした';
+$string['assigngeterror'] = 'Turnitinデータを取得できませんでした';
 $string['classupdateerror'] = 'Turnitinクラスのデータを更新できませんでした';
 $string['pp_createsubmissionerror'] = 'Turnitinで提出物を作成する際にエラーが発生しました';
 $string['pp_updatesubmissionerror'] = '提出物をTurnitinへ再提出する際にエラーが発生しました';
@@ -200,3 +198,74 @@ $string['pending'] = '保留中';
 $string['because'] = 'これは、管理者が保留中の課題をプロセスキューから削除し、Turnitinへの提出を中止したためです。<br /><strong>ファイルはMoodleに残ります。インストラクタにお問い合わせください。</strong><br />エラーコードは次の通りです。';
 $string['submitpapersto_help'] = '<strong>リポジトリなし: </strong><br />Turnitin は、提出された文書を他のレポジトリに保管するように指定されていません。Turnitin によるレポートの処理は、初回の類似性チェックのときにのみ行われます。<br /><br /><strong>標準リポジトリ: </strong><br />Turnitin は提出された文書のコピーを標準のレポジトリにのみ保管します。このオプションを選択すると、Turnitin は将来提出されるすべての文書への類似性チェックを行うときにだけ、保管された文書を使用します。<br /><br /><strong>所属機関リポジトリ（適用する場合）: </strong><br />このオプションを選択すると、Turnitin は提出された文書を所属機関専用のレポジトリにのみ追加します。提出された文書への類似性チェックは、所属機関内の別の講師によってのみ行われます。';
 $string['errorcode12'] = '削除されたコースの課題であるため、このファイルは Turnitin に提出されませんでした。列 ID: ({$a->id}) | コース モジュール ID: ({$a->cm}) | ユーザー ID: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Turnitinアカウントの構成';
+$string['turnitinaccountid'] = 'TurnitinアカウントID';
+$string['turnitinsecretkey'] = 'Turnitin共有キー';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = 'デバッグとログ';
+$string['turnitindiagnostic'] = '診断モードをオンにする';
+$string['turnitindiagnostic_desc'] = '<b>[注意]</b><br />Turnitin APIを使用して診断モードを有効にするのは、問題を追跡するときにだけにしてください。';
+$string['tiiaccountsettings_desc'] = 'これらの設定がTurnitinアカウントでの構成と一致していることを確認してください。一致していないと、課題の作成や学生の提出物に問題が発生することがあります。';
+$string['tiiaccountsettings'] = 'Turnitinアカウントの設定';
+$string['turnitinusegrademark'] = 'GradeMarkを使用する';
+$string['turnitinusegrademark_desc'] = 'GradeMarkを使用して提出物を評価するかどうかを選択してください。<br /><i>（このオプションは、アカウントでGradeMarkの使用を設定している方にのみ利用可能です）</i>';
+$string['turnitinenablepeermark'] = 'Peermark課題のみを有効にする';
+$string['turnitinenablepeermark_desc'] = 'Peermark課題の作成を許可するかどうかを選択してください。<br/><i>（Peermarkがアカウントに設定されている場合のみに使用可能です）</i>';
+$string['turnitinuseerater'] = 'ETS&copy;を有効にする';
+$string['turnitinuseerater_desc'] = 'ETS&copy;文法チェックを有効にするかどうかを選択します。<br /><i>（これは、TurnitinのアカウントでETS&copy; e-raterが有効になっている場合にのみ選択してください）</i>';
+$string['transmatch_desc'] = '課題の設定画面で翻訳一致機能を利用するかどうかを決めます。<br /><i>（Turnitinアカウントで翻訳一致機能を有効にしている場合にのみ、このオプションを使用してください）</i>';
+$string['repositoryoptions_0'] = 'インストラクタの標準リポジトリ オプションを有効にする';
+$string['repositoryoptions_1'] = '講師の拡大リポジトリオプションを有効にする';
+$string['repositoryoptions_2'] = 'すべてのレポートを標準リポジトリに提出する';
+$string['repositoryoptions_3'] = 'レポートをリポジトリに提出しない';
+$string['turnitinrepositoryoptions'] = 'レポートリポジトリの課題';
+$string['turnitinrepositoryoptions_desc'] = 'Turnitin課題のリポジトリ オプションを選択してください。<br /><i>（所属機関リポジトリは、アカウントで有効にしている場合にのみ利用可能です）</i>';
+$string['tiimiscsettings'] = 'その他のプラグインの設定';
+$string['pp_agreement_default'] = 'このボックスをチェックすることによって、私はこの提出物が私自身の物であることを確認し、この提出物に関しての全ての著作権侵害の責任を負うこと誓います。';
+$string['pp_agreement_desc'] = '<b>[オプション]</b><br />提出物への同意確認を入力してください。<br />（<b>注意：</b>同意欄が空白のまま残されると、学生の提出時に同意確認を要求しません）';
+$string['pp_agreement'] = '免責事項／契約';
+$string['studentdataprivacy'] = '受講生データプライバシー設定';
+$string['studentdataprivacy_desc'] = '次の設定では、API経由で学生の個人情報をTurnitinに送信しないことを選択できます。';
+$string['enablepseudo'] = '学生プライバシーを有効にする';
+$string['enablepseudo_desc'] = 'このオプションを選択すると、学生の電子メール アドレスがTurnitin APIコールに変更されます。<br /><i>（<b>注意：</b>このオプションは、MoodleのユーザーデータがすでにTurnitinと同期されている場合は、変更できません）</i>';
+$string['pseudofirstname'] = '学生の疑似の名前';
+$string['pseudofirstname_desc'] = '<b>[オプション]</b><br />Turnitinの文書閲覧に学生の名だけが表示されます。';
+$string['pseudolastname'] = '学生の疑似の姓';
+$string['pseudolastname_desc'] = '文書閲覧に学生の名字が表示されます。';
+$string['pseudolastnamegen'] = '名字を自動作成する';
+$string['pseudolastnamegen_desc'] = 'これを有効にすると、疑似の姓がユーザーのプロファイルフィールドに設定され、このフィールドが固有のIDとして自動的に入力されます。';
+$string['pseudoemailsalt'] = '擬似暗号化ソルト';
+$string['pseudoemailsalt_desc'] = '<b>[オプション]</b><br />作成された学生の疑似電子メール アドレスをさらに複雑にするために、ソルトを使用できます。<br />（<b>注意：</b>疑似電子メール アドレスの一貫性を保つためには、ソルトを変更しないでください）';
+$string['pseudoemaildomain'] = '疑似電子メールドメイン';
+$string['pseudoemaildomain_desc'] = '<b>[オプション]</b><br />疑似電子メール アドレスのオプションドメイン（空白のままにすると、デフォルトで@tiimoodle.comに設定されます）';
+$string['pseudoemailaddress'] = '疑似電子メール アドレス';
+$string['connecttest'] = 'Turnitin接続のテスト';
+$string['connecttestsuccess'] = 'MoodleはTurnitinに正しく接続しました。';
+$string['diagnosticoptions_0'] = 'オフ';
+$string['diagnosticoptions_1'] = '標準';
+$string['diagnosticoptions_2'] = 'デバッグ';
+$string['repositoryoptions_4'] = 'すべてのレポートを機関レポジトリに提出';
+$string['turnitinrepositoryoptions_help'] = '<strong>インストラクタの標準リポジトリ オプションを有効にする: </strong><br />講師は、文書の追加先として標準のレポジトリを使う、所属機関専用のレポジトリを使う、またはレポジトリを使わないことを Turnitin で指定できます。<br /><br /><strong>講師の拡大リポジトリオプションを有効にする: </strong><br />このオプションは、講師が課題の設定を表示し、受講生が文書をどこに保管するかを Turnitin で指定できるようにするためのものです。受講生は自分の文書を標準の受講生レポジトリに追加することも、所属機関の専用レポジトリに保管することもできます。<br /><br /><strong>すべてのレポートを標準リポジトリに提出する: </strong><br />すべての文書は、既定で標準の受講者レポジトリに追加されます。<br /><br /><strong>レポートをリポジトリに提出しない: </strong><br />文書が使用されるのは、Turnitin での初回チェック時と講師による評価時のみです。<br /><br /><strong>すべてのレポートを機関レポジトリに提出: </strong><br />Turnitin は、すべてのレポートを所属機関のレポートレポジトリ内に保管するように指定されています。同様に、提出された文書のチェックは、所属機関内の別の講師によってのみ行われます。';
+$string['turnitinuseanon'] = '匿名コメント記入（マーキング）を使用';
+$string['turnitinuseanon_desc'] = '提出物評価時に匿名コメントの記入（マーキング）を許可するかどうかを設定してください。<br /><i>（このオプションは、アカウントで匿名コメントの記入を設定している方にのみ利用可能です）</i>';
+$string['createassignmenterror'] = '課題をTurnitinで作成する際にエラーが発生しました';
+$string['editassignmenterror'] = '課題をTurnitinで編集する際にエラーが発生しました';
+$string['ppassignmentediterror'] = 'モジュール{$a->title}（TII ID：{$a->assignmentid}）をTurnitin上で作成できませんでした。詳しい情報については、APIログをご覧ください。';
+$string['pp_classcreationerror'] = 'このクラスをTurnitin上で作成できませんでした。詳しい情報については、APIログをご覧ください。';
+$string['unlinkusers'] = 'ユーザーのリンクを削除する';
+$string['relinkusers'] = 'ユーザーを再リンクする';
+$string['unlinkrelinkusers'] = 'ユーザーのリンクを削除／再リンクする';
+$string['nointegration'] = '統合無し';
+$string['sprevious'] = '前';
+$string['snext'] = '次';
+$string['slengthmenu'] = '表示 _MENU_ 項目';
+$string['ssearch'] = '検索：';
+$string['sprocessing'] = 'Turnitinからデータをロード中...';
+$string['szerorecords'] = '表示できる記録がありません。';
+$string['sinfo'] = '_START_～_END_（全_TOTAL_）エントリを表示';
+$string['userupdateerror'] = 'ユーザーデータを講師できませんでした';
+$string['connecttestcommerror'] = 'Turnitinに接続できませんでした。APIのURL設定を確認してください。';
+$string['userfinderror'] = 'Turnitinのユーザーを検索中にエラーが発生しました';
+$string['tiiusergeterror'] = 'ユーザー情報をTurnitinから入手する際にエラーが発生しました';
+$string['usercreationerror'] = 'Turnitinユーザー作成に失敗';
+$string['ppassignmentcreateerror'] = 'このモジュールをTurnitin上で作成できませんでした。詳しい情報については、APIログをご覧ください。';

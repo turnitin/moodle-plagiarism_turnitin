@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin plagiátorství Turnitin';
-$string['turnitintooltwo'] = 'Nástroj Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Úloha pluginu plagiátorství Turnitin';
 $string['connecttesterror'] = 'Došlo k chybě během připojení k Turnitin. Následuje chybové hlášení níže:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Konfigurace pluginu plagiátorství Turnitin';
 $string['tiiexplain'] = 'Turnitin je komerční produkt, tudíž musíte mít pro využívání této služby předplatné. Pro více informací se obraťte na <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Povolit Turnitin';
 $string['useturnitin_mod'] = 'Aktivovat Turnitin pro {$a}';
-$string['pp_configuredesc'] = 'Tento modul musíte nakonfigurovat v rámci modulu turnitintooltwo. Kliknutím <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>zde</a> nakonfigurujete tento modul plugin';
 $string['turnitindefaults'] = 'Výchozí nastavení pro plugin plagiátorství Turnitin';
 $string['defaultsdesc'] = 'Následující nastavení jsou výchozí při povolení systému Turnitin v rámci modulu aktivity';
 $string['turnitinpluginsettings'] = 'Nastavení pro plugin plagiátorství Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Vyskytl se dočasný problém. Zkuste pro
 $string['defaultinserterror'] = 'Došlo k chybě při vkládání hodnoty výchozího nastavení do databáze';
 $string['defaultupdateerror'] = 'Došlo k chybě při aktualizaci hodnoty výchozího nastavení v databázi';
 $string['tiiassignmentgeterror'] = 'Došlo k chybě při získávání úkolu ze systému Turnitin';
-$string['assigngeterror'] = 'Nelze získat turnitintooltwo údaje';
+$string['assigngeterror'] = 'Nelze získat Turnitin údaje';
 $string['classupdateerror'] = 'Nebylo možné aktualizovat údaje kurzu Turnitin';
 $string['pp_createsubmissionerror'] = 'Došlo k chybě při tvoření odevzdání v systému Turnitin';
 $string['pp_updatesubmissionerror'] = 'Došlo k chybě při opětovném odeslání vaší odevzdané práce do systému Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'Probíhá';
 $string['because'] = 'Je to způsobeno smazáním probíhajícího úkolu z fronty zpracování správcem a zrušeným odevzdáním do systému Turnitin.<br /><strong>Soubor se stále nachází v systému Moodle, obraťte se na svého instruktora.</strong><br />Níže naleznete všechny chybové kódy:';
 $string['submitpapersto_help'] = '<strong>Žádný archiv: </strong><br />Turnitin nebude odevzdané práce ukládat do žádného úložiště. Práci zpracujeme pouze pro účely kontroly podobnosti.<br /><br /><strong>Standardní archiv: </strong><br />Turnitin uloží kopii odevzdaného dokumentu pouze do standardního úložiště. Pokud je vybrána tato možnost, bude Turnitin používat uložené dokumenty pouze ke kontrole podobnosti s dokumenty, které budou odevzdány v budoucnu.<br /><br /><strong>Archiv instituce (v případě potřeby): </strong><br />Tato možnost znamená, že bude Turnitin odevzdané dokumenty přidávat pouze do soukromého úložiště vaší instituce. Kontroly podobnosti odevzdaných dokumentů budou provádět pouze jiní instruktoři ve vaší instituci.';
 $string['errorcode12'] = 'Tento soubor nebyl odevzdán do systému Turnitin, protože patří k úkolu v kursu, který byl  odstraněn. ID řádku: ({$a->id}) | ID modulu kurzu: ({$a->cm}) | ID uživatele: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Konfigurace účtu Turnitin';
+$string['turnitinaccountid'] = 'ID účtu Turnitin';
+$string['turnitinsecretkey'] = 'Sdílený klíč Turnitin';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = 'Ladění a protokolování';
+$string['turnitindiagnostic'] = 'Povolit diagnostický režim';
+$string['turnitindiagnostic_desc'] = '<b>[Caution]</b><br />Povolit diagnostický režim pouze za účelem vystopování problémů s Turnitin API.';
+$string['tiiaccountsettings_desc'] = 'Ověřte, zda se tato nastavení shodují s těmi nakonfigurovanými v účtu Turnitin, v opačném případě se můžete setkat s potížemi při vytváření úkolů a/nebo odevzdávání prací studenty.';
+$string['tiiaccountsettings'] = 'Nastavení účtu Turnitin';
+$string['turnitinusegrademark'] = 'Používání systému GradeMark';
+$string['turnitinusegrademark_desc'] = 'Zvolte, zda má být při hodnocení odevzdaných prací použit systém GradeMark.<br /><i>(Tato možnost je dostupná, pouze pokud máte na svém účtu nakonfigurován systém GradeMark)</i>';
+$string['turnitinenablepeermark'] = 'Povolit úkoly Peermark';
+$string['turnitinenablepeermark_desc'] = 'Zvolte, zda má být povoleno vytvoření úkolů Peermark<br/><i>(Tato možnost je dostupná pouze pro účty, které mají nakonfigurovánu funkci Peermark)</i>';
+$string['turnitinuseerater'] = 'Povolit ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Zvolte, zda má být povolena kontrola pravopisu ETS&copy;.<br /><i>(Aktivujte tuto možnost, pouze pokud je ETS&copy; e-rater povolen u vašeho účtu Turnitin)</i>';
+$string['transmatch_desc'] = 'Stanoví, zda bude Přeložená shoda dostupná jako možnost nastavení na obrazovce nastavení úkolu.<br /><i>(Povolte tuto možnost pouze tehdy, pokud je Přeložená shoda povolena na vašem Turnitin účtu)</i>';
+$string['repositoryoptions_0'] = 'Dát instruktorovi standardní volby archivu';
+$string['repositoryoptions_1'] = 'Aktivovat instruktorské rozšířené možnosti archivu';
+$string['repositoryoptions_2'] = 'Odevzdat všechny práce do standardního archivu';
+$string['repositoryoptions_3'] = 'Neodesílejte žádné práce do archivu';
+$string['turnitinrepositoryoptions'] = 'Úkoly archivu prací';
+$string['turnitinrepositoryoptions_desc'] = 'Zvolte možnosti archivu pro úkoly Turnitin. <br /><i>(Archiv instituce mají k dispozici pouze ti, kdo si ho aktivovali u svého účtu)</i>';
+$string['tiimiscsettings'] = 'Různé nastavení pluginu';
+$string['pp_agreement_default'] = 'Potvrzuji, že tato odevzdaná práce je moje vlastní práce, a přijímám veškerou zodpovědnost za případná porušení autorských práv, která mohou nastat v důsledku tohoto odevzdání.';
+$string['pp_agreement_desc'] = '<b>[Optional]</b><br />Zadejte prohlášení o potvrzení dohody pro odevzdání prací.<br />(<b>Poznámka:</b> Pokud je dohoda ponechána zcela prázdná, nebude od studentů během odevzdání požadováno její potvrzení)';
+$string['pp_agreement'] = 'Prohlášení / Dohoda';
+$string['studentdataprivacy'] = 'Nastavení ochrany osobních údajů studenta';
+$string['studentdataprivacy_desc'] = 'Následující nastavení lze nakonfigurovat tak, aby bylo zajištěno, že osobní údaje studentů nebudou předány do systému Turnitin prostřednictvím API.';
+$string['enablepseudo'] = 'Povolit soukromí studenta';
+$string['enablepseudo_desc'] = 'Je-li tato možnost vybrána, e-mailové adresy studentů budou přeměněny na zástupný ekvivalent pro hovory Turnitin API.<br /><i>(<b>Poznámka:</b> Tuto možnost nelze změnit, pokud již byly jakékoli údaje Moodle uživatele synchronizovány se systémem Turnitin)</i>';
+$string['pseudofirstname'] = 'Zástupné křestní jméno studenta';
+$string['pseudofirstname_desc'] = '<b>[Optional]</b><br />Křestní jméno studenta pro zobrazení v prohlížeči dokumentů Turnitin';
+$string['pseudolastname'] = 'Zástupné příjmení studenta';
+$string['pseudolastname_desc'] = 'Příjmení studenta pro zobrazení v prohlížeči dokumentů Turnitin';
+$string['pseudolastnamegen'] = 'Automatické generování příjmení';
+$string['pseudolastnamegen_desc'] = 'V případě nastavení na ano a pseudo příjmení je nastaveno na pole uživatelského profilu, pak bude pole automaticky vyplněno pomocí jedinečného identifikátoru.';
+$string['pseudoemailsalt'] = 'Náhodný řetězec zástupného šifrování';
+$string['pseudoemailsalt_desc'] = '<b>[Optional]</b><br />Volitelný řetězec pro zvýšení složitosti generovaných Pseudo studentských e-mailových adres.<br />(<b>Poznámka:</b> Řetězec nesmí být změněn, aby se zachovala konzistence pseudo e-mailových adres)';
+$string['pseudoemaildomain'] = 'E-mailová pseudo-doména';
+$string['pseudoemaildomain_desc'] = '<b>[Optional]</b><br />Volitelná doména pro zástupné e-mailové adresy. (Je-li pole prázdné, výchozí hodnota je @tiimoodle.com)';
+$string['pseudoemailaddress'] = 'Zástupná e-mailová adresa';
+$string['connecttest'] = 'Prověřit připojení Turnitin';
+$string['connecttestsuccess'] = 'Moodle byl úspěšně připojen k Turnitin.';
+$string['diagnosticoptions_0'] = 'Vypnuto';
+$string['diagnosticoptions_1'] = 'Standardní';
+$string['diagnosticoptions_2'] = 'Ladění';
+$string['repositoryoptions_4'] = 'Odeslat všechy práce do archivu instituce';
+$string['turnitinrepositoryoptions_help'] = '<strong>Dát instruktorovi standardní volby archivu: </strong><br />Instruktoři mohou Turnitin nastavit tak, aby dokumenty přidával buď do standardního úložiště, do soukromého úložiště vaší instituce nebo do žádného úložiště.<br /><br /><strong>Aktivovat instruktorské rozšířené možnosti archivu: </strong><br />Tato možnost instruktorům umožňuje zobrazit nastavení úkolu, aby mohli dát studentům instrukce, kde jejich dokumenty budou uloženy. Studenti mohou své dokumenty přidat do standardního úložiště pro studenty nebo do soukromého úložiště vaší instituce.<br /><br /><strong>Odevzdat všechny práce do standardního archivu: </strong><br />Ve výchozím nastavení se všechny dokumenty přidávají do stadnardního úložiště pro studenty.<br /><br /><strong>Neodesílejte žádné práce do archivu: </strong><br />Dokumenty se budou používat pouze k úvodní kontrole v systému Turnitin a zobrazí se pouze instruktorovi pro účely známkování.<br /><br /><strong>Odeslat všechy práce do archivu instituce: </strong><br />Turnitim bude všechny práce ukládat do archivu prací instituce. Kontroly podobnosti odevzdaných prací budou provádět pouze jiní instruktoři ve vaší instituci.';
+$string['turnitinuseanon'] = 'Použijte anonymní známkování';
+$string['turnitinuseanon_desc'] = 'Zvolte, zda má být anonymní známkování povoleno při hodnocení odevzdaných prací.<br /><i>(Tato možnost je dostupná, pouze pokud máte na svém účtu anonymní známkování nakonfigurováno)</i>';
+$string['createassignmenterror'] = 'Došlo k chybě při tvoření úkolu v systému Turnitin';
+$string['editassignmenterror'] = 'Došlo k chybě při úpravách úkolu v systému Turnitin';
+$string['ppassignmentediterror'] = 'Modul: {$a->title} (TII ID: {$a->assignmentid}) nelze v systému Turnitin upravit. Další informace najdete v API protokolu.';
+$string['pp_classcreationerror'] = 'Tuto třídu nelze v systému Turnitin vytvořit. Další informace najdete v API protokolu.';
+$string['unlinkusers'] = 'Odpojit studenty';
+$string['relinkusers'] = 'Opětovně propojit uživatele';
+$string['unlinkrelinkusers'] = 'Odpojit / Opětovně propojit uživatele Turnitin';
+$string['nointegration'] = 'Žádná integrace';
+$string['sprevious'] = 'Předchozí';
+$string['snext'] = 'Další';
+$string['slengthmenu'] = 'Show _MENU_ Entries';
+$string['ssearch'] = 'Vyhledat:';
+$string['sprocessing'] = 'Načítání dat ze systému Turnitin...';
+$string['szerorecords'] = 'Žádné záznamy k zobrazení.';
+$string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
+$string['userupdateerror'] = 'Nelze aktualizovat uživatelské údaje';
+$string['connecttestcommerror'] = 'Nebylo možné se k Turnitin připojit. Zkontrolujte své API URL nastavení.';
+$string['userfinderror'] = 'Došlo k chybě při hledání uživatele v systému Turnitin';
+$string['tiiusergeterror'] = 'Došlo k chybě při získávání uživatelských detailů ze systému Turnitin';
+$string['usercreationerror'] = 'Vytvoření uživatele Turnitin se nezdařilo';
+$string['ppassignmentcreateerror'] = 'Tento modul nelze v systému Turnitin vytvořit. Další informace najdete v API protokolu.';

@@ -18,7 +18,8 @@
  * Privacy provider tests.
  *
  * @package    plagiarism_turnitin
- * @copyright  2018 David Winn
+ * @copyright  2018 Turnitin
+ * @author     David Winn <dwinn@turnitin.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -70,7 +71,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('orcapable', $privacyfields);
         $this->assertArrayHasKey('student_read', $privacyfields);
 
-        // Verify turnitintooltwo_client data is returned.
+        // Verify plagiarism_turnitin_client data is returned.
         $this->assertEquals('plagiarism_turnitin_client', $itemcollection[2]->get_name());
 
         $privacyfields = $itemcollection[2]->get_privacy_fields();
@@ -79,6 +80,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('lastname', $privacyfields);
         $this->assertArrayHasKey('submission_title', $privacyfields);
         $this->assertArrayHasKey('submission_filename', $privacyfields);
+        $this->assertArrayHasKey('submission_content', $privacyfields);
 
         $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[2]->get_summary());
     }

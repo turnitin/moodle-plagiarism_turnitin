@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin-plagiaat-plugin';
-$string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin-plagiaat-plugin-taak';
 $string['connecttesterror'] = 'Er is een fout opgetreden bij het maken van verbinding met Turnitin. De foutmelding staat hieronder:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Configuratie van Turnitin-plagiaat-plugin';
 $string['tiiexplain'] = 'Turnitin is een commercieel product en u moet betalen voor een abonnement om gebruik te maken van deze dienst. Zie <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a> voor meer informatie.';
 $string['useturnitin'] = 'Turnitin inschakelen';
 $string['useturnitin_mod'] = 'Turnitin inschakelen voor {$a}';
-$string['pp_configuredesc'] = 'U moet deze module binnen de turnitintooltwo-module configureren. Klik <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>hier</a> om deze plugin te configureren.';
 $string['turnitindefaults'] = 'Standaardinstellingen voor plagiaat-plugin van Turnitin';
 $string['defaultsdesc'] = 'De volgende instellingen worden standaard ingesteld wanneer Turnitin wordt ingeschakeld binnen een Activiteitenmodule';
 $string['turnitinpluginsettings'] = 'Instellingen voor plagiaat-plugin van Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Er is een tijdelijke fout opgetreden. Pro
 $string['defaultinserterror'] = 'Er is een fout opgetreden bij een poging een standaardinstellingswaarde in te voegen in de database';
 $string['defaultupdateerror'] = 'Er is een fout opgetreden bij een poging een standaardinstellingswaarde bij te werken in de database';
 $string['tiiassignmentgeterror'] = 'Er is een fout opgetreden bij het ophalen van een opdracht van Turnitin';
-$string['assigngeterror'] = 'Kan turnitintooltwo-gegevens niet ophalen';
+$string['assigngeterror'] = 'Kan Turnitin-gegevens niet ophalen';
 $string['classupdateerror'] = 'Kan Turnitin-cursusgegevens niet bijwerken';
 $string['pp_createsubmissionerror'] = 'Er is een fout opgetreden bij een poging de inzending in Turnitin te maken';
 $string['pp_updatesubmissionerror'] = 'Er is een fout opgetreden bij een poging uw inzending opnieuw in te dienen bij Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'In afwachting van behandeling';
 $string['because'] = 'Dit komt doordat een beheerder de opdracht, die in afwachting van behandeling was, uit de verwerkingswachtrij heeft verwijderd en de inzending naar Turnitin heeft afgebroken.<br /><strong>Het bestand bestaat nog in Moodle. Neem contact op met uw docent.</strong><br />Foutcodes staan hieronder:';
 $string['submitpapersto_help'] = '<strong>Geen online opslag: </strong><br />Turnitin heeft de opdracht ontvangen om ingediende documenten in geen enkele bibliotheek op te slaan. We verwerken de paper alleen om de eerste controle op overeenkomsten uit te kunnen voeren.<br /><br /><strong>Standaard online opslag: </strong><br />Turnitin slaat alleen in de standaardbibliotheek een kopie op van het ingediende document. Door deze optie te kiezen, krijgt Turnitin de opdracht om alleen opgeslagen documenten te gebruiken om te controleren op overeenkomsten tussen alle documenten die in de toekomst worden ingediend. <br /><br /><strong>Online opslag van instelling (indien van toepassing): </strong><br />Als er voor deze optie wordt gekozen, krijgt Turnitin de opdracht om alleen ingediende documenten toe te voegen aan een privébibliotheek van uw instelling. Controles op overeenkomsten tussen de ingediende documenten worden alleen uitgevoerd door andere instructeurs binnen uw instelling.';
 $string['errorcode12'] = 'Dit bestand is niet verzonden naar Turnitin omdat het bij een opdracht hoort waarvan de cursus is verwijderd. Serie-ID: ({$a->id}) | Cursusmodule-ID: ({$a->cm}) | Gebruikers-ID: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Turnitin-accountconfiguratie';
+$string['turnitinaccountid'] = 'Turnitin-account-id';
+$string['turnitinsecretkey'] = 'Gedeelde sleutel van Turnitin';
+$string['turnitinapiurl'] = 'URL naar Turnitin API';
+$string['tiidebugginglogs'] = 'Foutopsporing en logboekregistratie';
+$string['turnitindiagnostic'] = 'Diagnostische modus inschakelen';
+$string['turnitindiagnostic_desc'] = '<b>[Let op]</b><br />Schakel Diagnostische modus alleen in om problemen met de Turnitin API op te sporen.';
+$string['tiiaccountsettings_desc'] = 'Zorg ervoor dat deze instellingen overeenkomen met de instellingen die zijn geconfigureerd in uw Turnitin-account, anders kunt u problemen krijgen met het maken van opdrachten en/of inzendingen van studenten.';
+$string['tiiaccountsettings'] = 'Turnitin-accountinstellingen';
+$string['turnitinusegrademark'] = 'GradeMark gebruiken';
+$string['turnitinusegrademark_desc'] = 'Kies of u GradeMark wilt gebruiken om inzendingen te beoordelen.<br /><i>(Dit is alleen beschikbaar voor degenen die GradeMark hebben geconfigureerd voor hun account)</i>';
+$string['turnitinenablepeermark'] = 'Peermark-opdrachten inschakelen';
+$string['turnitinenablepeermark_desc'] = 'Kies of u het maken van Peermark-opdrachten wilt toestaan.<br/><i>(Dit is alleen beschikbaar voor degenen die Peermark hebben geconfigureerd voor hun account)</i>';
+$string['turnitinuseerater'] = 'ETS&copy; inschakelen';
+$string['turnitinuseerater_desc'] = 'Kies of u ETS&copy;-grammaticacontrole wilt inschakelen<br /><i>(Schakel deze optie alleen in als ETS&copy; e-rater is ingeschakeld op uw Turnitin-account)</i>';
+$string['transmatch_desc'] = 'Bepaalt of &#39;Vertaald matchen&#39; beschikbaar is als instelling in het configuratiescherm van de opdracht.<br /><i>(Schakel deze optie alleen in als &#39;Vertaald matchen&#39; is ingeschakeld in uw Turnitin-account)</i>';
+$string['repositoryoptions_0'] = 'Standaard online opties voor opslag inschakelen voor docent';
+$string['repositoryoptions_1'] = 'Uitgebreide online opties voor opslag inschakelen voor docenten';
+$string['repositoryoptions_2'] = 'Alle papers indienen bij de standaard online opslag';
+$string['repositoryoptions_3'] = 'Geen papers indienen bij een online opslag';
+$string['turnitinrepositoryoptions'] = 'Online opslag van opdrachten voor papers';
+$string['turnitinrepositoryoptions_desc'] = 'Kies de opties voor online opslag voor Turnitin-opdrachten.<br /><i>(Een instellingsopslag is alleen beschikbaar voor diegenen die deze functie hebben ingeschakeld voor hun account)</i>';
+$string['tiimiscsettings'] = 'Diverse plugin-instellingen';
+$string['pp_agreement_default'] = 'Ik bevestig dat deze inzending mijn eigen werk is en ik accepteer alle verantwoordelijkheid voor eventuele auteursrechtschendingen die kunnen optreden als gevolg van deze inzending.';
+$string['pp_agreement_desc'] = '<b>[Optioneel]</b><br />Voer een bevestigingsverklaring voor de overeenkomst in voor inzendingen.<br />(<b>Opmerking:</b> als de overeenkomst blanco wordt gelaten, is er geen bevestiging van de overeenkomst vereist voor studenten tijdens het indienen)';
+$string['pp_agreement'] = 'Disclaimer/Overeenkomst';
+$string['studentdataprivacy'] = 'Privacyinstellingen voor gegevens van studenten';
+$string['studentdataprivacy_desc'] = 'De volgende instellingen kunnen worden geconfigureerd om ervoor te zorgen dat de persoonsgegevens van studenten niet via de API worden doorgegeven aan Turnitin.';
+$string['enablepseudo'] = 'Privacy inschakelen (student)';
+$string['enablepseudo_desc'] = 'Als deze optie is geselecteerd worden e-mailadressen van studenten omgezet in een pseudo-equivalent voor Turnitin API-oproepen.<br /><i>(<b>Opmerking:</b> deze optie kan niet worden gewijzigd als er al Moodle-gebruikersgegevens zijn gesynchroniseerd met Turnitin)</i>';
+$string['pseudofirstname'] = 'Pseudo-voornaam student';
+$string['pseudofirstname_desc'] = '<b>[Optioneel]</b><br />De voornaam van de student wordt weergegeven in Turnitin Document Viewer';
+$string['pseudolastname'] = 'Pseudo-achternaam student';
+$string['pseudolastname_desc'] = 'De achternaam van de student wordt weergegeven in Turnitin Document Viewer';
+$string['pseudolastnamegen'] = 'Achternaam automatisch genereren';
+$string['pseudolastnamegen_desc'] = 'Indien ingesteld op Ja en indien de pseudo-achternaam is ingesteld op een gebruikersprofielveld, wordt het veld automatisch ingevuld met een unieke identificatiecode.';
+$string['pseudoemailsalt'] = 'Pseudo-encryptie salt';
+$string['pseudoemailsalt_desc'] = '<b>[Optioneel]</b><br />Een optioneel &#39;salt&#39; om de complexiteit van gegenereerde pseudomailadressen van studenten te verhogen.<br />(<b>Opmerking:</b> het &#39;salt&#39; dient ongewijzigd te blijven om consistente pseudomailadressen te behouden)';
+$string['pseudoemaildomain'] = 'Pseudo-e-maildomein';
+$string['pseudoemaildomain_desc'] = '<b>[Optioneel]</b><br />Een optioneel domein voor pseudo-e-mailadressen. (Standaard @tiimoodle.com wanneer dit veld wordt leeggelaten)';
+$string['pseudoemailaddress'] = 'Pseudo-e-mailadres';
+$string['connecttest'] = 'Turnitin-verbinding testen';
+$string['connecttestsuccess'] = 'Moodle is nu verbonden met Turnitin';
+$string['diagnosticoptions_0'] = 'Uit';
+$string['diagnosticoptions_1'] = 'Standaard';
+$string['diagnosticoptions_2'] = 'Foutopsporing';
+$string['repositoryoptions_4'] = 'Verzend alle papers naar de online opslag van de instelling';
+$string['turnitinrepositoryoptions_help'] = '<strong>Standaard online opties voor opslag inschakelen voor docent: </strong><br />Instructeurs kunnen Turnitin de opdracht geven documenten toe te voegen aan de standaardbibliotheek , aan de privébibliotheek van uw instelling of aan géén bibliotheek.<br /><br /><strong>Uitgebreide online opties voor opslag inschakelen voor docenten: </strong><br />Met deze optie kunnen instructeurs opdrachtinstellingen bekijken om studenten aan te kunnen laten geven waar Turnitin hun documenten op moet slaan. Studenten kunnen ervoor kiezen hun documenten toe te voegen aan de standaardbibliotheek of aan de privébibliotheek van uw instelling.<br /><br /><strong>Alle papers indienen bij de standaard online opslag: </strong><br />Alle documenten worden standaard aan de studentbibliotheek toegevoegd.<br /><br /><strong>Geen papers indienen bij een online opslag: </strong><br />Documenten worden uitsluitend gebruikt om de eerste controle uit te voeren met Turnitin en om ter beoordeling aan de instructeur weer te geven.<br /><br /><strong>Verzend alle papers naar de online opslag van de instelling: </strong><br />Turnitin heeft de opdracht ontvangen om alle papers op te slaan in de paperbibliotheek van de instelling. Controles op overeenkomsten tussen de ingediende documenten worden alleen uitgevoerd door andere instructeurs binnen uw instelling.';
+$string['turnitinuseanon'] = 'Anonieme beoordeling gebruiken';
+$string['turnitinuseanon_desc'] = 'Kies of Anonieme beoordeling is toegestaan bij het beoordelen van inzendingen.<br /><i>(Dit is alleen beschikbaar voor degenen die Anonieme beoordeling hebben geconfigureerd voor hun account)</i>';
+$string['createassignmenterror'] = 'Er is een fout opgetreden bij een poging de opdracht aan te maken in Turnitin';
+$string['editassignmenterror'] = 'Er is een fout opgetreden bij een poging de opdracht te bewerken in Turnitin';
+$string['ppassignmentediterror'] = 'Module {$a->title} (TII-id: {$a->assignmentid}) kan niet worden bewerkt op Turnitin. Raadpleeg uw API-registratiegegevens voor meer informatie.';
+$string['pp_classcreationerror'] = 'Deze cursus kan niet worden gemaakt op Turnitin. Raadpleeg uw API-registratiegegevens voor meer informatie.';
+$string['unlinkusers'] = 'Gebruikers ontkoppelen';
+$string['relinkusers'] = 'Gebruikers opnieuw koppelen';
+$string['unlinkrelinkusers'] = 'Turnitin-gebruikers ontkoppelen/opnieuw koppelen';
+$string['nointegration'] = 'Geen integratie';
+$string['sprevious'] = 'Vorige';
+$string['snext'] = 'Volgende';
+$string['slengthmenu'] = 'Toon _MENU_ Items';
+$string['ssearch'] = 'Zoeken:';
+$string['sprocessing'] = 'Gegevens van Turnitin worden geladen...';
+$string['szerorecords'] = 'Geen gegevens beschikbaar.';
+$string['sinfo'] = 'Toont _START_ tot _END_ van _TOTAL_ items.';
+$string['userupdateerror'] = 'Kan gebruikersgegevens niet bijwerken';
+$string['connecttestcommerror'] = 'Kan geen verbinding maken met Turnitin. Controleer uw API URL-instelling';
+$string['userfinderror'] = 'Er is een fout opgetreden tijdens het zoeken naar de gebruiker in Turnitin';
+$string['tiiusergeterror'] = 'Er is een fout opgetreden bij een poging gebruikersgegevens op te halen bij Turnitin';
+$string['usercreationerror'] = 'Maken van Turnitin-gebruiker mislukt';
+$string['ppassignmentcreateerror'] = 'Deze module kan niet worden gemaakt op Turnitin. Raadpleeg uw API-registratiegegevens voor meer informatie.';

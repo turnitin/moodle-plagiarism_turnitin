@@ -116,6 +116,7 @@ class pp_receipt_message {
      */
     public function send_instructor_message($instructors, $message) {
         global $CFG;
+
         $subject = get_string('receipt_instructor_copy_subject', 'plagiarism_turnitin');
 
         // Pre 2.9 does not have \core\message\message()

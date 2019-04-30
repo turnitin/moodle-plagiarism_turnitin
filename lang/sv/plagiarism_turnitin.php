@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin plagiatplugin';
-$string['turnitintooltwo'] = 'Turnitin-verktyg';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Pluginuppgiften plagiat i Turnitin';
 $string['connecttesterror'] = 'Det uppstod ett fel vid försök att ansluta till Turnitin. Inkommande felmeddelande visas nedan:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Konfiguration av plagiatplugin i Turnitin';
 $string['tiiexplain'] = 'Turnitin är en kommersiell produkt och du måste ha ett betalt abonnemang för att använda den här tjänsten. För mer information se <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Aktivera Turnitin';
 $string['useturnitin_mod'] = 'Aktivera Turnitin för {$a}';
-$string['pp_configuredesc'] = 'Du måste konfigurera denna modul inom turnitintooltwo modulen. Var god klicka <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>här</a> för att konfigurera denna plugin';
 $string['turnitindefaults'] = 'Turnitin plagiatplugin, standardinställningar';
 $string['defaultsdesc'] = 'Följande inställningar är standardvärden som fastställs vid aktivering av Turnitin inom en Aktivitetsmodul';
 $string['turnitinpluginsettings'] = 'Turnitin plagiatplugin, inställningar';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Vi har ett tillfälligt problem. Försök
 $string['defaultinserterror'] = 'Det uppstod ett fel vid försök att infoga en standardvärdeinställning i databasen';
 $string['defaultupdateerror'] = 'Det uppstod ett fel vid försök att uppdatera en standardvärdeinställning i databasen';
 $string['tiiassignmentgeterror'] = 'Det uppstod ett fel vid försök att hämta en uppgift från Turnitin';
-$string['assigngeterror'] = 'Gick inte att hämta turnitintooltwo data';
+$string['assigngeterror'] = 'Gick inte att hämta Turnitin data';
 $string['classupdateerror'] = 'Kunde inte uppdatera Turnitin-klassinformation';
 $string['pp_createsubmissionerror'] = 'Det uppstod ett fel vid försök att skapa en inlämning i Turnitin';
 $string['pp_updatesubmissionerror'] = 'Det uppstod ett fel vid försök att återinlämna din uppgift till Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'Väntar på bekräftelse';
 $string['because'] = 'Detta beror på att administratören raderade uppgiften som väntade på bekräftelse från uppgiftskön och avbröt inlämningen till Turnitin.<br /><strong>Filen finns fortfarande i Moodle. Kontakta din lärare.</strong><br />Se nedanstående felkoder:';
 $string['submitpapersto_help'] = '<strong>Inget arkiv: </strong><br />Enligt anvisning sparar Turnitin inte dokument i något arkiv. Uppsatser behandlas endast för den första likhetsgranskningen.<br /><br /><strong>Standardarkiv: </strong><br />Turnitin sparar en kopia av det inlämnade dokumentet endast i standardarkivet. Om alternativet väljs, använder Turnitin endast sparade dokument i framtida likhetsgranskningar av andra dokument.<br /><br /><strong>Institutionellt arkiv (Om tillämpligt): </strong><br />Om alternativet väljs, sparar Turnitin inlämnade dokument endast i institutionens privata arkiv. Likhetsgranskningar av inlämnade dokument görs endast av andra instruktörer vid institutionen.';
 $string['errorcode12'] = 'Den här filen har inte skickats till Turnitin eftersom den tillhör en uppgift där kursen har tagits bort. Rad-ID: ({$a->id}) | Kursmodul-ID: ({$a->cm}) | Användar-ID: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Kontokonfigurering för Turnitin';
+$string['turnitinaccountid'] = 'Turnitin Konto-ID';
+$string['turnitinsecretkey'] = 'Turnitin Delad Nyckel';
+$string['turnitinapiurl'] = 'Turnitin API-URL';
+$string['tiidebugginglogs'] = 'Felsökning och loggning';
+$string['turnitindiagnostic'] = 'Aktivera Diagnostikläge';
+$string['turnitindiagnostic_desc'] = '<b>[Varning]</b><br />Aktivera Diagnostikläge endast för att spåra problem med Turnitin API.';
+$string['tiiaccountsettings_desc'] = 'Kontrollera att dessa inställningar matchar de som du har konfiguerat i ditt Turnitin-konto. Annars kan du få problem med att skapa uppgifter och/eller studentinlämningar.';
+$string['tiiaccountsettings'] = 'Kontoinställningar för Turnitin';
+$string['turnitinusegrademark'] = 'Använd GradeMark';
+$string['turnitinusegrademark_desc'] = 'Välj om du vill använda GradeMark eller Moodle för att betygsätta inlämningar.<br /><i>(Detta är endast tillgängligt för dem som har GradeMark konfigurerat för sitt konto)</i>';
+$string['turnitinenablepeermark'] = 'Aktivera Peermark Uppgifter';
+$string['turnitinenablepeermark_desc'] = 'Välj om du vill tillåta skapandet av PeerMark Uppgifter<br/><i>(Detta är endast tillgängligt för de som har PeerMark konfigurerat för sitt konto)</i>';
+$string['turnitinuseerater'] = 'Aktivera ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Välj om du vill aktivera grammatikkontrollen ETS&copy;.<br /><i>(Aktivera detta alternativ endast om ETS&copy; e-rater är aktiverat på ditt Turnitin konto)</i>';
+$string['transmatch_desc'] = 'Avgör om Matchande översättning ska vara en aktiv inställning på inställningsskärmen för uppgiften.<br /><i>(Aktivera endast detta alternativ om Matchande översättning är aktiverat för ditt Turnitin-konto)</i>';
+$string['repositoryoptions_0'] = 'Aktivera instruktörens alternativ för standardarkiv';
+$string['repositoryoptions_1'] = 'Aktivera utvidgade arkiveringsalternativ för lärare';
+$string['repositoryoptions_2'] = 'Skicka alla uppsatser till standardarkivet';
+$string['repositoryoptions_3'] = 'Skicka inte in några uppsatser till ett arkiv';
+$string['turnitinrepositoryoptions'] = 'Arkiv för uppgifter';
+$string['turnitinrepositoryoptions_desc'] = 'Välj arkivalternativen för Turnitin-uppgifter. <br /><i>(Institutionellt arkiv är endast tillgängligt för de som har det aktiverat på sitt konto)</i>';
+$string['tiimiscsettings'] = 'Övriga plugin-inställningar';
+$string['pp_agreement_default'] = 'Jag bekräftar att detta inlämnande är mitt eget arbete och jag accepterar allt ansvar för eventuella intrång i upphovsrätten som kan uppstå som en följd av detta inlämnande.';
+$string['pp_agreement_desc'] = '<b>[Valfritt]</b><br />Ange en avtalsbekräftelse för inlämningar. <br />(<b>Obs:</b> Om avtalsdelen lämnas helt tom kommer ingen avtalsbekräftelse att krävas av studenterna under deras inlämnande.';
+$string['pp_agreement'] = 'Friskrivningsklausul/avtal';
+$string['studentdataprivacy'] = 'Sekretessinställningar för Studentdata';
+$string['studentdataprivacy_desc'] = 'Följande inställningar kan konfigureras så att studentens personuppgifter inte överförs till Turnitin via API.';
+$string['enablepseudo'] = 'Aktivera studentsekretess';
+$string['enablepseudo_desc'] = 'Om detta alternativ väljs kommer studenternas e-postadresser att omvandlas till en pseudo motsvarighet för Turnitin API-samtal.<br /><i>(<b>Obs:</b> Detta alternativ går inte att ändra om Moodle användardata redan har synkroniserats med Turnitin vid ett tidigare tillfälle)</i>';
+$string['pseudofirstname'] = 'Pseudonym, förnamn (Student)';
+$string['pseudofirstname_desc'] = '<b>[Tillval]</b><br />Studentens förnamn som ska visas i Turnitins dokumentvisare';
+$string['pseudolastname'] = 'Pseudonym, efternamn (Student)';
+$string['pseudolastname_desc'] = 'Studentens efternamn som ska visas i Turnitins dokumentvisare';
+$string['pseudolastnamegen'] = 'Generera Efternamn Automatiskt';
+$string['pseudolastnamegen_desc'] = 'Om inställt på ja och pseudo efternamnet är inställt på ett användarprofil-fält, så kommer fältet automatiskt att fyllas i med en unik identifierare.';
+$string['pseudoemailsalt'] = 'Pseudokryptering, salt';
+$string['pseudoemailsalt_desc'] = '<b>[Valfritt]</b><br />Ett valfritt salt för att öka komplexiteten i den genererade Pseudo Student-epostadressen.<br />(<b>Obs:</b> Saltet bör förbli oförändrat för att bibehålla konsekventa pseudo e-postadresser)';
+$string['pseudoemaildomain'] = 'Pseudo-epostdomän';
+$string['pseudoemaildomain_desc'] = '<b>[Valfritt]</b><br />En valfri domän för pseudo-epostadresser. (@tiimoddle.com är standard om fältet lämnas tomt)';
+$string['pseudoemailaddress'] = 'Pseudonym, e-postadress';
+$string['connecttest'] = 'Testa anslutningen till Turnitin';
+$string['connecttestsuccess'] = 'Moodle har nu anslutits till Turnitin.';
+$string['diagnosticoptions_0'] = 'Av';
+$string['diagnosticoptions_1'] = 'Standardklass';
+$string['diagnosticoptions_2'] = 'Felsökning';
+$string['repositoryoptions_4'] = 'Skicka alla uppsatser till institutionens datalager';
+$string['turnitinrepositoryoptions_help'] = '<strong>Aktivera instruktörens alternativ för standardarkiv: </strong><br />Instruktörer kan instruera Turnitin att antingen lägga till dokument i standardarkivet eller i institutionens privata arkiv eller inte lägga till dokument i något arkiv.<br /><br /><strong>Aktivera utvidgade arkiveringsalternativ för lärare: </strong><br />Med detta alternativ kan instruktörer visa en uppgiftsinställning som tillåter studenter att bestämma vart Turnitin sparar deras dokument. Studenter kan välja att spara sina dokument i standardarkivet eller i institutionens privata arkiv.<br /><br /><strong>Skicka alla uppsatser till standardarkivet: </strong><br />Alla dokument läggs till i standardarkivet som standard.<br /><br /><strong>Skicka inte in några uppsatser till ett arkiv: </strong><br />Dokument används endast för den första kontrollen med Turnitin och för visning för instruktören för betygsättning.<br /><br /><strong>Skicka alla uppsatser till institutionens datalager: </strong><br />Enligt anvisning sparar Turnitin alla uppsatser i institutionens arkiv. Likhetsgranskningar av inlämnade uppsatser görs endast av instruktörer vid institutionen.';
+$string['turnitinuseanon'] = 'Använd Anonyma Kommentarer';
+$string['turnitinuseanon_desc'] = 'Välj om du vill möjliggöra Anonyma kommentarer vid betygsättning av inlämningar.<br /><i>(Detta är endast tillgängligt för dem som har Anonyma Kommentarer konfigurerat för sitt konto)</i>';
+$string['createassignmenterror'] = 'Det uppstod ett fel vid försök att skapa uppgiften i Turnitin';
+$string['editassignmenterror'] = 'Det uppstod ett fel vid försök att redigera uppgiften i Turnitin';
+$string['ppassignmentediterror'] = 'Modulen {$a->title} (TII ID: {$a->assignmentid}) kunde inte redigeras i Turnitin. Mer information finns i dina API-loggar.';
+$string['pp_classcreationerror'] = 'Den här klassen kunde inte skapas i Turnitin. Hänvisa till dina API-loggar för mer information.';
+$string['unlinkusers'] = 'Ta bort länk från användare';
+$string['relinkusers'] = 'Återkoppla Användare';
+$string['unlinkrelinkusers'] = 'Lösgör / Återkoppla Turnitin Användare';
+$string['nointegration'] = 'Ingen Integration';
+$string['sprevious'] = 'Föregående';
+$string['snext'] = 'Nästa';
+$string['slengthmenu'] = 'Visa_MENU_Inlägg';
+$string['ssearch'] = 'Sök:';
+$string['sprocessing'] = 'Hämtar information från Turnitin...';
+$string['szerorecords'] = 'Inga uppgifter att visa.';
+$string['sinfo'] = 'Visar _START_till_END_av_TOTAL_inlägg.';
+$string['userupdateerror'] = 'Kunde inte uppdatera användardata';
+$string['connecttestcommerror'] = 'Kunde inte ansluta till Turnitin. Dubbelkolla din inställningen för API-webbadressen.';
+$string['userfinderror'] = 'Det uppstod ett fel vid försök att hitta användaren i Turnitin';
+$string['tiiusergeterror'] = 'Det uppstod ett fel vid försök att hämta användaruppgifterna från Turnitin';
+$string['usercreationerror'] = 'Turnitin användare gick inte att skapa';
+$string['ppassignmentcreateerror'] = 'Den här modulen kunde inte skapas i Turnitin. Hänvisa till dina API-loggar för mer information.';

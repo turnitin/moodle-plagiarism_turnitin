@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Phần bổ trợ chống đạo văn của Turnitin';
-$string['turnitintooltwo'] = 'Công cụ Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tác vụ của Phần bổ trợ Chống đạo văn của Turnitin';
 $string['connecttesterror'] = 'Xảy ra lỗi khi kết nối với Turnitin, thông báo lỗi như sau:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Cấu hình phần Bổ trợ về Đạo văn củ
 $string['tiiexplain'] = 'Turnitin là một sản phẩm thương mại và bạn phải trả phí thuê bao đăng ký để sử dụng dịch vụ này. Để biết thêm thông tin, vui lòng xem <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Cho phép Turnitin';
 $string['useturnitin_mod'] = 'Cho phép Turnitin cho {$a}';
-$string['pp_configuredesc'] = 'Bạn phải định cấu hình mô-đun này bên trong mô-đun turnitintooltwo. Vui lòng nhấp vào <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>đây</a> để định cấu hình phần bổ trợ này';
 $string['turnitindefaults'] = 'Cài đặt mặc định phần bổ trợ chống đạo văn của Turnitin';
 $string['defaultsdesc'] = 'Các cài đặt sau đây là mặc định khi cho phép Turnitin bên trong một Mô-đun Hoạt động';
 $string['turnitinpluginsettings'] = 'Cài đặt phần bổ trợ chống đạo văn của Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Chúng tôi hiện đang gặp một sự
 $string['defaultinserterror'] = 'Xảy ra lỗi khi cố gắng chèn một giá trị cài đặt mặc định vào cơ sở dữ liệu';
 $string['defaultupdateerror'] = 'Xảy ra lỗi khi cố gắng cập nhật một giá trị cài đặt mặc định vào cơ sở dữ liệu';
 $string['tiiassignmentgeterror'] = 'Xảy ra lỗi khi cố gắng lấy một bài tập từ Turnitin';
-$string['assigngeterror'] = 'Không thể lấy dữ liệu turnitintooltwo';
+$string['assigngeterror'] = 'Không thể lấy dữ liệu Turnitin';
 $string['classupdateerror'] = 'Không thể cập nhật dữ liệu Lớp Turnitin';
 $string['pp_createsubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng tạo bài nộp trên Turnitin';
 $string['pp_updatesubmissionerror'] = 'Xảy ra lỗi khi đang cố gắng nộp lại bài nộp trên Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'Đang chờ';
 $string['because'] = 'Điều này là do quản trị viên đã xóa bài tập đang chờ khỏi hàng đợi xử lý và hủy bỏ bài nộp cho Turnitin.<br /><strong>Tập tin vẫn tồn tại trong Moodle, vui lòng liên lạc người hướng dẫn của bạn.</strong><br />Vui lòng xem thông tin dưới đây để biết mọi mã lỗi:';
 $string['submitpapersto_help'] = '<strong>Không có Kho dữ liệu: </strong><br />Turnitin được hướng dẫn không lưu trữ các tài liệu đã nộp vào bất kỳ kho dữ liệu nào. Chúng tôi sẽ chỉ xử lý bài nộp giấy để thực hiện hoạt động kiểm tra tính tương đồng ban đầu.<br /><br /><strong>Kho dữ liệu Chuẩn: </strong><br />Turnitin sẽ chỉ lưu trữ một bản sao của tài liệu đã nộp trong Kho dữ liệu tiêu chuẩn. Bằng việc chọn tùy chọn này, Turnitin được hướng dẫn chỉ sử dụng tài liệu đã lưu trữ để thực hiện các hoạt động kiểm tra tính tương đồng đối với mọi tài liệu được nộp trong tương lai.<br /><br /><strong>Kho dữ liệu của Tổ chức (Nếu có): </strong><br />Việc chọn tùy chọn này sẽ hướng dẫn Turnitin chỉ thêm tài liệu đã nộp vào kho dữ liệu riêng của trường bạn. Các hoạt động kiểm tra tính tương đồng với tài liệu đã nộp sẽ do những người hướng dẫn khác trong trường của bạn thực hiện.';
 $string['errorcode12'] = 'Tệp này chưa được gửi đến Turnitin vì tệp thuộc một bài tập trong khóa học đã bị xóa. ID hàng: ({$a->id}) | ID mô-đun khóa học: ({$a->cm}) | ID người dùng: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Cấu hình Tài khoản Turnitin';
+$string['turnitinaccountid'] = 'ID Tài khoản Turnitin';
+$string['turnitinsecretkey'] = 'Khóa Chia sẻ Turnitin';
+$string['turnitinapiurl'] = 'URL API Turnitin';
+$string['tiidebugginglogs'] = 'Gỡ lỗi và Ghi nhật ký';
+$string['turnitindiagnostic'] = 'Bật Cho phép Chế độ Chẩn đoán';
+$string['turnitindiagnostic_desc'] = '<b>[Cẩn thận]</b><br />Bật chế độ Chẩn đoán chỉ để tìm các sự cố với API Turnitin.';
+$string['tiiaccountsettings_desc'] = 'Vui lòng đảm bảo rằng các cài đặt này phù hợp với những cài đặt được định cấu hình trong tài khoản Turnitin của bạn, nếu không bạn có thể gặp sự cố với việc tạo bài tập và/hoặc bài nộp của học sinh.';
+$string['tiiaccountsettings'] = 'Cài đặt Tài khoản Turnitin';
+$string['turnitinusegrademark'] = 'Sử dụng GradeMark';
+$string['turnitinusegrademark_desc'] = 'Chọn có hay không sử dụng GradeMark để chấm điểm các bài nộp.<br /><i>(Tùy chọn này chỉ khả dụng cho những ai có tài khoản được định cấu hình GradeMark)</i>';
+$string['turnitinenablepeermark'] = 'Cho phép Bài tập Peermark';
+$string['turnitinenablepeermark_desc'] = 'Chọn có hay không cho phép Bài tập PeerMark .<br/><i>(Tùy chọn này chỉ khả dụng cho những ai có tài khoản được định cấu hình Peermark)</i>';
+$string['turnitinuseerater'] = 'Cho phép ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Chọn có hay không cho phép kiểm tra ngữ pháp bằng ETS&copy;.<br /><i>(Tùy chọn này chỉ khả dụng nếu ETS&copy; e-rater được cho phép trong tài khoản của bạn)</i>';
+$string['transmatch_desc'] = 'Quyết định có cho hay không cho phép Đối chiếu Bản dịch có sẵn như một cài đặt trên màn hình cài đặt bài tập.<br /><i>(Chỉ bật tùy chọn này nếu tài khoản Turnitin của bạn cho phép Đối chiếu Bản dịch)</i>';
+$string['repositoryoptions_0'] = 'Cho phép các tùy chọn kho dữ liệu chuẩn cho người hướng dẫn';
+$string['repositoryoptions_1'] = 'Cho phép người hướng dẫn mở rộng các tùy chọn kho lưu trữ';
+$string['repositoryoptions_2'] = 'Nộp tất cả các bài vào kho lưu trữ chuẩn';
+$string['repositoryoptions_3'] = 'Không nộp bất kỳ bài nào vào kho lưu trữ';
+$string['turnitinrepositoryoptions'] = 'Các bài tập từ kho lưu trữ bài';
+$string['turnitinrepositoryoptions_desc'] = 'Chọn các tùy chọn kho dữ liệu cho Bài tập Turnitin.<br /><i>(Kho dữ liệu của Tổ chức chỉ khả dụng cho những ai có tài khoản được bật tùy chọn này)</i>';
+$string['tiimiscsettings'] = 'Cài đặt Phần bổ trợ Khác';
+$string['pp_agreement_default'] = 'Tôi xác nhận bài nộp này là bài làm của chính tôi và tôi nhận trách nhiệm về mọi vi phạm bản quyền có thể xảy ra do nộp bài này.';
+$string['pp_agreement_desc'] = '<b>[Tùy chọn]</b><br />Nhập một câu xác nhận chấp thuận cho các bài nộp.<br />(<b>Lưu ý:</b> Nếu thỏa thuận bị bỏ trống hoàn toàn thì học sinh sẽ không cần xác nhận chấp thuận trong quá trình nộp)';
+$string['pp_agreement'] = 'Tuyên bố Miễn trừ trách nhiệm/ Thỏa thuận';
+$string['studentdataprivacy'] = 'Cài đặt Bảo mật Dữ liệu Học sinh';
+$string['studentdataprivacy_desc'] = 'Có thể định cấu hình các cài đặt sau đây để đảm bảo rằng dữ liệu cá nhân của học sinh sẽ không được chuyển đến Turnitin thông qua API.';
+$string['enablepseudo'] = 'Cho phép Bảo mật Học sinh';
+$string['enablepseudo_desc'] = 'Nếu chọn tùy chọn này, địa chỉ email của học sinh sẽ được chuyển thành một địa chỉ ảo tương đương cho các cuộc gọi vào API Turnitin.<br /><i>(<b>Lưu ý:</b> Không thể thay đổi tùy chọn này nếu dữ liệu người dùng Moodle bất kỳ đã được đồng bộ hóa với Turnitin)</i>';
+$string['pseudofirstname'] = 'Tên Ảo của Học sinh';
+$string['pseudofirstname_desc'] = '<b>[Tùy chọn]</b><br />Tên của học sinh sẽ hiển thị trên trình xem tài liệu Turnitin';
+$string['pseudolastname'] = 'Họ Ảo của Học sinh';
+$string['pseudolastname_desc'] = 'Họ của học sinh sẽ hiển thị trên trình xem tài liệu Turnitin';
+$string['pseudolastnamegen'] = 'Tự động tạo Họ';
+$string['pseudolastnamegen_desc'] = 'Nếu đặt thành có và họ ảo được đặt cho một trường hồ sơ người dùng thì trường đó sẽ tự động được gán một id duy nhất.';
+$string['pseudoemailsalt'] = 'Chìa khóa Mã hóa Ảo';
+$string['pseudoemailsalt_desc'] = '<b>[Tùy chọn]</b><br />Một chìa khóa tùy chọn để tăng độ phức tạp cho địa chỉ email Ảo đã tạo của Học sinh.<br />(<b>Lưu ý:</b> Chìa khóa này nên được giữ nguyên để duy trì các địa chỉ email ảo nhất quán)';
+$string['pseudoemaildomain'] = 'Tên Miền Email Ảo';
+$string['pseudoemaildomain_desc'] = '<b>[Tùy chọn]</b><br />Một tên miền tùy chọn cho các địa chỉ email ảo. (Mặc định thành @tiimoodle.com nếu bị để trống)';
+$string['pseudoemailaddress'] = 'Địa chỉ Email Ảo';
+$string['connecttest'] = 'Kiểm tra Kết nối với Turnitin';
+$string['connecttestsuccess'] = 'Moodle đã nối kết thành công với Turnitin.';
+$string['diagnosticoptions_0'] = 'Tắt';
+$string['diagnosticoptions_1'] = 'Chuẩn';
+$string['diagnosticoptions_2'] = 'Gỡ lỗi';
+$string['repositoryoptions_4'] = 'Gửi tất cả bài giấy đến kho lưu trữ của trường học';
+$string['turnitinrepositoryoptions_help'] = '<strong>Cho phép các tùy chọn kho dữ liệu chuẩn cho người hướng dẫn: </strong><br />Người hướng dẫn có thể hướng dẫn Turnitin thêm tài liệu vào kho dữ liệu tiêu chuẩn, kho dữ liệu riêng của trường hoặc không thêm vào kho dữ liệu.<br /><br /><strong>Cho phép người hướng dẫn mở rộng các tùy chọn kho lưu trữ: </strong><br />Tùy chọn này sẽ cho phép người hướng dẫn xem mục cài đặt bài tập để giúp học sinh hướng dẫn Turnitin nơi sẽ lưu trữ tài liệu. Học sinh có thể chọn thêm tài liệu của họ vào kho dữ liệu tiêu chuẩn dành cho học sinh hoặc vào kho dữ liệu riêng của trường.<br /><br /><strong>Nộp tất cả các bài vào kho lưu trữ chuẩn: </strong><br />Theo mặc định, tất cả tài liệu sẽ được thêm vào kho dữ liệu tiêu chuẩn dành cho học sinh.<br /><br /><strong>Không nộp bất kỳ bài nào vào kho lưu trữ: </strong><br />Các tài liệu sẽ chỉ được Turnitin dùng để thực hiện hoạt động kiểm tra ban đầu và để hiển thị cho người hướng dẫn chấm điểm.<br /><br /><strong>Gửi tất cả bài giấy đến kho lưu trữ của trường học: </strong><br />Turnitin được hướng dẫn lưu trữ tất cả bài nộp giấy trong kho dữ liệu bài nộp giấy của trường học. Các hoạt động kiểm tra tính tương đồng đối với tài liệu đã nộp sẽ chỉ do những người hướng dẫn khác trong trường học của bạn  thực hiện.';
+$string['turnitinuseanon'] = 'Sử dụng Chấm điểm Ẩn danh';
+$string['turnitinuseanon_desc'] = 'Chọn có hay không cho phép Chấm điểm Ẩn danh khi chấm các bài nộp.<br /><i>(Tùy chọn này chỉ khả dụng cho những ai có tài khoản được định cấu hình Chấm điểm Ẩn danh)</i>';
+$string['createassignmenterror'] = 'Xảy ra lỗi khi đang cố gắng tạo bài tập trên Turnitin';
+$string['editassignmenterror'] = 'Xảy ra lỗi khi đang cố gắng hiệu chỉnh bài tập trên Turnitin';
+$string['ppassignmentediterror'] = 'Không thể hiệu chỉnh Mô-đun {$a->title} (ID TII: {$a->assignmentid}) trên Turnitin, vui lòng xem bản ghi API của bạn để biết thêm thông tin';
+$string['pp_classcreationerror'] = 'Không thể tạo lớp này trên Turnitin, vui lòng xem log API của bạn để biết thêm thông tin.';
+$string['unlinkusers'] = 'Hủy kết nối Người dùng';
+$string['relinkusers'] = 'Kết nối lại người dùng';
+$string['unlinkrelinkusers'] = 'Hủy Kết nối / Kết nối lại Người Dùng Turnitin';
+$string['nointegration'] = 'Không có Liên kết';
+$string['sprevious'] = 'Trước';
+$string['snext'] = 'Tiếp theo';
+$string['slengthmenu'] = 'Xem _MENU_ mục';
+$string['ssearch'] = 'Tìm:';
+$string['sprocessing'] = 'Đang tải dữ liệu từ Turnitin...';
+$string['szerorecords'] = 'Không có kết quả nào để hiển thị.';
+$string['sinfo'] = 'Hiển thị _START_ đến _END_ trong _TOTAL_ mục.';
+$string['userupdateerror'] = 'Không thể cập nhật dữ liệu người dùng';
+$string['connecttestcommerror'] = 'Không thể kết nối với Turnitin. Hãy kiểm tra lại cài đặt URL API của bạn.';
+$string['userfinderror'] = 'Xảy ra lỗi khi đang cố gắng tìm một người dùng trên Turnitin';
+$string['tiiusergeterror'] = 'Xảy ra lỗi khi đang cố gắng lấy thông tin người dùng từ Turnitin';
+$string['usercreationerror'] = 'Tạo Người dùng Turnitin không thành công';
+$string['ppassignmentcreateerror'] = 'Không thể tạo Mô đun này trên Turnitin, vui lòng xem log API của bạn để biết thêm thông tin';

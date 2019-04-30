@@ -15,13 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugins = array(
-    'plagiarism-turnitin_module'        => array('files' => array('turnitin_module.js')),
-    'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js'))
+    'plagiarism-turnitin_dataTables' => array('files' => array('jquery.dataTables.js', 'jquery.dataTables.css')),
+    'plagiarism-turnitin_dataTables_plugins' => array('files' => array('jquery.dataTables.plugins.js')),
+    'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js')),
+    'plagiarism-turnitin_datatables_columnfilter' => array('files' => array('jquery.dataTables.columnFilter.js'))
 );

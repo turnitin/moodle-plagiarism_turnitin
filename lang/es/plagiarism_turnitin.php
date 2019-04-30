@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin de plagio de Turnitin';
-$string['turnitintooltwo'] = 'Herramienta Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Tarea del plugin de plagio de Turnitin';
 $string['connecttesterror'] = 'Ha ocurrido un error al conectarse a Turnitin, el mensaje del error se muestra abajo:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Configuración del plugin de plagio de Turnitin';
 $string['tiiexplain'] = 'Turnitin es un producto comercial y debes estar suscrito para utilizar el servicio. Para obtener más información visita <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Habilitar Turnitin';
 $string['useturnitin_mod'] = 'Habilitar Turnitin para  {$a}';
-$string['pp_configuredesc'] = 'Debes configurar este módulo dentro del módulo de turnitintooltwo. Haz clic <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>aquí</a> para configurar este plugin';
 $string['turnitindefaults'] = 'Configuración predeterminada del plugin de plagio de Turnitin';
 $string['defaultsdesc'] = 'Los siguientes son los ajustes predeterminados cuando se habilita Turnitin dentro de un módulo de actividad';
 $string['turnitinpluginsettings'] = 'Configuración del plugin de plagio de Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Estamos experimentando un problema tempor
 $string['defaultinserterror'] = 'Ha ocurrido un error al intentar insertar un ajuste predeterminado en la base de datos';
 $string['defaultupdateerror'] = 'Ha ocurrido un error al intentar actualizar un ajuste predeterminado en la base de datos';
 $string['tiiassignmentgeterror'] = 'Ha ocurrido un error al intentar obtener un ejercicio de Turnitin';
-$string['assigngeterror'] = 'No se han podido obtener los datos de turnitintooltwo';
+$string['assigngeterror'] = 'No se han podido obtener los datos de Turnitin';
 $string['classupdateerror'] = 'No se pudieron actualizar los datos de la clase de Turnitin';
 $string['pp_createsubmissionerror'] = 'Ha ocurrido un error al intentar crear la entrega en Turnitin';
 $string['pp_updatesubmissionerror'] = 'Ha ocurrido un error al intentar entregar de nuevo tu entrega en Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'Pendiente';
 $string['because'] = 'Se debe a que un administrador eliminó el ejercicio pendiente de la lista de procesamiento y abortó la entrega a Turnitin.<br /><strong>El archivo aún existe en Moodle, póngase en contacto con su instructor.</strong><br />Vea los detalles a continuación para identificar los códigos de errores:';
 $string['submitpapersto_help'] = '<strong>No hay depósitos: </strong><br />Se indica a Turnitin que no almacene los documentos enviados a un depósito. El trabajo solo se procesará para realizar la comprobación de similitud inicial.<br /><br /><strong>Depósito estándar: </strong><br />Turnitin almacena una copia del documento enviado solamente en el depósito estándar. Al elegir esta opción, se indica a Turnitin que solo use los documentos almacenados para hacer comprobaciones de similitud de los documentos que se envíen a futuro.<br /><br /><strong>Depósito institucional (cuando existe): </strong><br />Al elegir esta opción, se indica a Turnitin que solo agregue los documentos enviados a un depósito privado de la institución. Las comprobaciones de similitud de los documentos entregados solamente estarán a cargo de otros instructores de la institución.';
 $string['errorcode12'] = 'Este archivo no se entregó a Turnitin porque pertenece a un ejercicio en el que se eliminó el curso. Id. de fila: ({$a->id}) | Id. de módulo de curso: ({$a->cm}) | Id. de usuario: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Configuración de la cuenta Turnitin';
+$string['turnitinaccountid'] = 'Identificador de la cuenta Turnitin';
+$string['turnitinsecretkey'] = 'Clave compartida de Turnitin';
+$string['turnitinapiurl'] = 'URL del API de Turnitin';
+$string['tiidebugginglogs'] = 'Depuración y registro';
+$string['turnitindiagnostic'] = 'Habilitar Modo de Diagnóstico';
+$string['turnitindiagnostic_desc'] = '<b>[Precaución]</b><br />Habilitar Modo de diagnóstico solo para detectar problemas con el API de Turnitin';
+$string['tiiaccountsettings_desc'] = 'Asegúrate de que estas configuraciones coincidan con las de tu cuenta de Turnitin, de no hacerlo podrías tener problemas con la creación de ejercicios o con las entregas de estudiantes.';
+$string['tiiaccountsettings'] = 'Configuración de la cuenta Turnitin';
+$string['turnitinusegrademark'] = 'Usar GradeMark';
+$string['turnitinusegrademark_desc'] = 'Seleccionar si desea usar GradeMark para calificar entregas.<br /><i>(Esta opción solo está disponible para aquellos que tienen GradeMark configurado en su cuenta)</i>';
+$string['turnitinenablepeermark'] = 'Habilitar los ejercicios de Peermark';
+$string['turnitinenablepeermark_desc'] = 'Elige si quieres permitir la creación de ejercicios de Peermark <br/><i>(Esta función solo está disponible para aquellos que tengan Peermark configurado para su cuenta)</i>';
+$string['turnitinuseerater'] = 'Habilitar ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Elige habilitar o no la revisión de gramática ETS&copy;.<br /><i>(Habilitar esta opción solo si ETS&copy; e-rater está habilitado en su cuenta Turnitin)</i>';
+$string['transmatch_desc'] = 'Determina si las coincidencias traducidas estarán disponibles como un ajuste en la pantalla donde aparece el ejercicio. <br /><i>(Habilita esta opción solo si la función Coincidencias traducidas está habilitada en tu cuenta de Turnitin)</i>';
+$string['repositoryoptions_0'] = 'Habilitar las opciones de depósito estándar del instructor';
+$string['repositoryoptions_1'] = 'Habilitar las opciones ampliadas del depósito del instructor';
+$string['repositoryoptions_2'] = 'Entregar todos los trabajos al depósito estándar';
+$string['repositoryoptions_3'] = 'No entregar ningún trabajo al depósito';
+$string['turnitinrepositoryoptions'] = 'Ejercicios del depósito de trabajos';
+$string['turnitinrepositoryoptions_desc'] = 'Elija las opciones de depósitos para los ejercicios de Turnitin.<br /><i>(El depósito institucional solo está disponible para quienes tengan la opción habilitada en su cuenta)</i>';
+$string['tiimiscsettings'] = 'Configuraciones misceláneas del plugin';
+$string['pp_agreement_default'] = 'Al marcar esta casilla, confirmo que este trabajo es de mi autoría y asumo toda responsabilidad relacionada con cualquier violación de derechos de autor que pueda ocurrir como resultado de la entrega.';
+$string['pp_agreement_desc'] = '<b>[Opcional]</b><br />Introduce una declaración de confirmación de acuerdo para las entregas. <br />(<b>Nota:</b> Si el acuerdo se deja completamente en blanco, entonces no se requerirá confirmación por parte de los estudiantes durante la entrega)';
+$string['pp_agreement'] = 'Aviso legal / Acuerdo';
+$string['studentdataprivacy'] = 'Configuración de privacidad de los datos del estudiante';
+$string['studentdataprivacy_desc'] = 'Las siguientes opciones pueden configurarse para asegurarse de que la información personal de los estudiantes&#39; no se transmita a Turnitin a través del API.';
+$string['enablepseudo'] = 'Habilitar privacidad del estudiante';
+$string['enablepseudo_desc'] = 'Si se selecciona esta opción, las direcciones de correo electrónico de los estudiantes se transformarán en un pseudo equivalente para las llamadas API de Turnitin.<br /><i>(<b>Nota:</b> Esta opción no puede cambiarse si los datos de algún estudiante de Moodle ya se han sincronizado con Turnitin)</i>';
+$string['pseudofirstname'] = 'Pseudo nombre del estudiante';
+$string['pseudofirstname_desc'] = '<b>[Opcional]</b><br />Nombre del estudiante que se muestra en el visor de documentos de Turnitin';
+$string['pseudolastname'] = 'Pseudo apellido del estudiante';
+$string['pseudolastname_desc'] = 'Apellido del estudiante para mostrarlo en el visor de documentos de Turnitin';
+$string['pseudolastnamegen'] = 'Autogenerar apellido';
+$string['pseudolastnamegen_desc'] = 'Si está establecido en sí y el pseudo apellido está asignado a un campo de perfil de usuario, el campo se completará automáticamente con un identificador único.';
+$string['pseudoemailsalt'] = 'Pseudo elemento de criptografía';
+$string['pseudoemailsalt_desc'] = '<b>[Opcional]</b><br />Un elemento opcional para incrementar la complejidad de la pseudo dirección de correo electrónico del estudiante generada.<br />(<b>Nota:</b> El elemento debe permanecer igual para poder mantener las pseudo direcciones de correo electrónico consistentes)';
+$string['pseudoemaildomain'] = 'Pseudo dominio de correo electrónico';
+$string['pseudoemaildomain_desc'] = '<b>[Opcional]</b><br />Un dominio opcional para pseudo direcciones de correo electrónico. (@tiimoodle.com si se deja vacío)';
+$string['pseudoemailaddress'] = 'Pseudo dirección de correo electrónico';
+$string['connecttest'] = 'Probar la conexión de Turnitin';
+$string['connecttestsuccess'] = 'Moodle ha conectado correctamente con Turnitin.';
+$string['diagnosticoptions_0'] = 'Desactivado';
+$string['diagnosticoptions_1'] = 'Estándar';
+$string['diagnosticoptions_2'] = 'Depuración';
+$string['repositoryoptions_4'] = 'Enviar todos los trabajos al depósito de la institución';
+$string['turnitinrepositoryoptions_help'] = '<strong>Habilitar las opciones de depósito estándar del instructor: </strong><br />Los instructores pueden indicar a Turnitin que agregue documentos al depósito estándar, al depósito privado de la institución o a ningún depósito. <br /><br /><strong>Habilitar las opciones ampliadas del depósito del instructor: </strong><br />Esta opción permite que los instructores vean la configuración de un ejercicio para que los estudiantes puedan indicar a Turnitin dónde se almacenarán sus documentos. Los estudiantes pueden elegir agregar sus documentos en un depósito estándar de estudiantes o en el depósito privado de la institución.<br /><br /><strong>Entregar todos los trabajos al depósito estándar: </strong><br />Todos los documentos se agregarán al depósito estándar de estudiantes de forma predeterminada.<br /><br /><strong>No entregar ningún trabajo al depósito: </strong><br />Los documentos solo se usarán para realizar la revisión original en Turnitin y para que el instructor pueda verlos y calificarlos.<br /><br /><strong>Enviar todos los trabajos al depósito de la institución: </strong><br />Se indica a Turnitin que almacene todos los trabajos dentro del depósito de trabajos de la institución. Las comprobaciones de similitud de los documentos entregados solo estarán a cargo de otros instructores de la institución.';
+$string['turnitinuseanon'] = 'Utilizar Anotaciones Anónimas';
+$string['turnitinuseanon_desc'] = 'Selecciona si deseas permitir Correcciones anónimas para evaluar entregas.<br /><i>(Esta opción solo está disponible para aquellos que han configurado las correcciones anónimas en sus cuentas)</i>';
+$string['createassignmenterror'] = 'Ha ocurrido un error al intentar crear un ejercicio en Turnitin';
+$string['editassignmenterror'] = 'Ha ocurrido un error al intentar editar el ejercicio en Turnitin';
+$string['ppassignmentediterror'] = 'El módulo {$a->title} (ID de TII: {$a->assignmentid}) no ha podido editarse en Turnitin. Consulta tu registro API para obtener más información';
+$string['pp_classcreationerror'] = 'Esta clase no ha podido crearse en Turnitin. Consulta tu registro API para obtener más información';
+$string['unlinkusers'] = 'Desvincular los usuarios';
+$string['relinkusers'] = 'Volver a vincular usuarios';
+$string['unlinkrelinkusers'] = 'Desvincular/ volver a vincular usuarios';
+$string['nointegration'] = 'Sin integración';
+$string['sprevious'] = 'Previo';
+$string['snext'] = 'Siguiente';
+$string['slengthmenu'] = 'Mostrar entradas_MENU_';
+$string['ssearch'] = 'Buscar:';
+$string['sprocessing'] = 'Procesando datos de Turnitin...';
+$string['szerorecords'] = 'No hay registros que mostrar.';
+$string['sinfo'] = 'Mostrando _TOTAL_ de entradas de _START_ a _END_';
+$string['userupdateerror'] = 'No se han podido actualizar los datos del usuario';
+$string['connecttestcommerror'] = 'No se pudo conectar a Turnitin. Comprueba nuevamente tu configuración de URL de API.';
+$string['userfinderror'] = 'Ha ocurrido un error al intentar encontrar al usuario en Turnitin';
+$string['tiiusergeterror'] = 'Ha ocurrido un error al intentar obtener los detalles del usuario de Turnitin';
+$string['usercreationerror'] = 'Creación de usuario Turnitin fallida';
+$string['ppassignmentcreateerror'] = 'Este módulo no ha podido crearse en Turnitin. Consulta tu registro API para obtener más información';

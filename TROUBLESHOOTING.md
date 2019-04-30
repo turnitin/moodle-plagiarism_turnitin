@@ -1,12 +1,10 @@
-#Moodle Direct V2 Troubleshooting
+#Turnitin Plagiarism Plugin Troubleshooting
 
-1) You may need to ensure that within your designated moodledata directory; the turnitintooltwo subdirectory and the subsequent logs subdirectory have the correct permissions to be able to create directories and files.
+1) You may need to ensure that within your designated moodledata directory; the plagiarism_turnitin subdirectory and the subsequent logs subdirectory have the correct permissions to be able to create directories and files.
 
-2) You may need to ensure that the turnitintooltwo directory within your designated data directory and it's logs subdirectory have the correct permissions to be able to create directories and files.
+2) Pop-ups will need to be enabled on the browser being used if access to the Turnitin Document Viewer is required.
 
-3) Pop-ups will need to be enabled on the browser being used if access to the Turnitin Document Viewer is required.
-
-4) There have been very isolated reports of the settings not showing for the Plagiarism plugin despite it being enabled, this is due to it not showing in Moodle cache. The solution is for an administrator to purge all caches and it should then appear.
+3) There have been very isolated reports of the settings not showing for the Plagiarism plugin despite it being enabled, this is due to it not showing in Moodle cache. The solution is for an administrator to purge all caches and it should then appear.
 
 ##Required PHP Extensions
 

@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  */
 class plagiarism_turnitin_lib_testcase extends advanced_testcase {
 
-    public function test_handle_exceptions() {
+    public function test_is_plugin_configured() {
         $this->resetAfterTest();
 
         $plagiarismturnitin = new plagiarism_plugin_turnitin();
@@ -45,17 +45,17 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with only account id set.
-        set_config('accountid', '1001', 'turnitintooltwo');
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with account id and apiurl set.
-        set_config('apiurl', 'http://www.test.com', 'turnitintooltwo');
+        set_config('plagiarism_turnitin_apiurl', 'http://www.test.com', 'plagiarism');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with account id, apiurl and secretkey set.
-        set_config('secretkey', 'ABCDEFGH', 'turnitintooltwo');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(true, $ispluginconfigured);
     }
@@ -73,10 +73,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         ));
         $assignmodule = $result['assign'];
         $student = $result['student'];
-        $teacher = $result['teacher'];
         $course = $result['course'];
-        $context = context_course::instance($course->id);
-        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
         $group = $this->getDataGenerator()->create_group(array('courseid' => $course->id));
         $cm = get_coursemodule_from_instance('assign', $assignmodule->id);
         $context = context_module::instance($cm->id);
@@ -108,10 +105,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         ));
         $assignmodule = $result['assign'];
         $student = $result['student'];
-        $teacher = $result['teacher'];
         $course = $result['course'];
-        $context = context_course::instance($course->id);
-        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
         $cm = get_coursemodule_from_instance('assign', $assignmodule->id);
         $context = context_module::instance($cm->id);
         $assign = new testable_assign($context, $cm, $course);
@@ -191,5 +185,48 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $response = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
 
         $this->assertEquals($expected, $response);
+    }
+
+    /**
+     * Test that the set config function saves a config.
+     */
+    public function test_plagiarism_set_config() {
+        $this->resetAfterTest();
+
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+
+        // Check that we can set config value when a full property name is given.
+        $data = new stdClass();
+        $data->plagiarism_turnitin_accountid = 123456789;
+        $property = "plagiarism_turnitin_accountid";
+
+        $plagiarismturnitin->plagiarism_set_config($data, $property);
+
+        // Get the config.
+        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+
+        $this->assertEquals(123456789, $config->plagiarism_turnitin_accountid);
+
+        // Check that we can set config value when a partial property name is given.
+        $data = new stdClass();
+        $data->secretkey = "Test";
+        $property = "secretkey";
+        $plagiarismturnitin->plagiarism_set_config($data, $property);
+
+        // Get the config.
+        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+
+        $this->assertEquals("Test", $config->plagiarism_turnitin_secretkey);
+
+        // Check that an undefined property does not set a config value.
+        $data = new stdClass();
+        $data->test = "Test";
+        $property = "NotTest";
+        $plagiarismturnitin->plagiarism_set_config($data, $property);
+
+        // Get the config.
+        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+
+        $this->assertObjectNotHasAttribute("plagiarism_turnitin_test", $config);
     }
 }

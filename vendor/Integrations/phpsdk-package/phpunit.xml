@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         verbose="true">
+
+    <testsuites>
+        <testsuite name="PHPSDK">
+            <directory suffix="Test.php">tests/tiiapi/launchtests</directory>
+            <directory suffix="Test.php">tests/tiiapi/assignmenttests</directory>
+            <directory suffix="Test.php">tests/tiiapi/basetests</directory>
+            <directory suffix="Test.php">tests/tiiapi/classtests</directory>
+            <directory suffix="Test.php">tests/tiiapi/gettersettertests</directory>
+            <directory suffix="Test.php">tests/tiiapi/membershiptests</directory>
+            <directory suffix="Test.php">tests/tiiapi/submissiontests</directory>
+            <directory suffix="Test.php">tests/tiiapi/usertests</directory>
+        </testsuite>
+    </testsuites>
+
+    <logging>
+        <log type="coverage-html" target="tests/_reports/coverage" title="PHPSDK"
+             charset="UTF-8" yui="true" highlight="true"
+             lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="tests/_reports/logs/clover.xml"/>
+        <log type="junit" target="tests/_reports/logs/junit.xml" logIncompleteSkipped="false"/>
+    </logging>
+
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
+            <exclude>
+                <file>src/bootstrap.php</file>
+                <file>src/KLogger.php</file>
+                <file>src/OAuthSimple.php</file>
+                <file>src/OAuthSimpleException.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+
+</phpunit>

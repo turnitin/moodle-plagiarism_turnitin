@@ -16,6 +16,9 @@ define(['jquery',
     function($, Templates, ModalFactory, ModalEvents, ModalEulaLaunch) {
         return {
             eulaLaunch: function() {
+                var turnitinEulaClass = $(".pp_turnitin_eula");
+                turnitinEulaClass.show();
+
                 $(document).on('click', '.pp_turnitin_eula_link', function() {
                     ModalFactory.create({
                         type: ModalEulaLaunch.TYPE,
@@ -36,8 +39,8 @@ define(['jquery',
                     if ($('.editsubmissionform').length > 0) {
                         $('.editsubmissionform').hide();
                     }
-                    if ($('.pp_turnitin_eula').siblings('.mform').length > 0) {
-                        $('.pp_turnitin_eula').siblings('.mform').hide();
+                    if (turnitinEulaClass.siblings('.mform').length > 0) {
+                        turnitinEulaClass.siblings('.mform').hide();
                     }
                 }
             }

@@ -50,8 +50,8 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I press "Add submission"
     Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept."
     And I click on ".pp_turnitin_eula_link" "css_element"
-    And I wait until ".cboxIframe" "css_element" exists
-    And I switch to iframe with locator ".cboxIframe"
+    And I wait until ".iframe-ltilaunch-eula" "css_element" exists
+    And I switch to iframe with locator ".iframe-ltilaunch-eula"
     And I wait until the page is ready
     And I click on ".disagree-button" "css_element"
     And I wait until the page is ready

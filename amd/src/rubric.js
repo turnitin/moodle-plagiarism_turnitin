@@ -53,6 +53,8 @@ define(['jquery',
                 })
                     .then(function (modal) {
                         modal.show();
+                        modal.getRoot().find('.modal').addClass('tii_pp_modal_rubric');
+                        modal.getRoot().find('.modal-content').addClass('tii_pp_modal_rubric_content');
                     });
             }
         };

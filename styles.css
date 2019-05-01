@@ -355,17 +355,15 @@ iframe html{background:none;}
 }
 
 .iframe-ltilaunch-eula {
-    width: 766px;
-    height: 640px;
+    width: 870px;
+    height: 680px;
 }
 
-.tii_pp_modal_eula {
-    max-width: 766px !important;
+.tii_pp_modal_rubric {
+    max-width: 1027px !important;
 }
 
-.tii_pp_modal_body_eula {
-    padding: 0 !important;
-    width: 766px;
-    height: 640px;
-    background-color: #EEE;
+.tii_pp_modal_rubric_content {
+    width: 1032px !important;
+    left: -116px;
 }

@@ -25,12 +25,11 @@ define(['jquery',
                         templateContext: {
                             cmid: $('input[name="coursemodule"]').val(),
                             wwwroot: M.cfg.wwwroot
-                        }
+                        },
+                        large: true
                     })
                         .then(function (modal) {
                             modal.show();
-                            modal.getBody().addClass('tii_pp_modal_body_eula');
-                            modal.getRoot().find('.modal').addClass('tii_pp_modal_eula');
                         });
                 });
 

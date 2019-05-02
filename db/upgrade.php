@@ -21,6 +21,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+
 /**
  * @global moodle_database $DB
  * @param int $oldversion
@@ -292,7 +294,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // If V2 is installed, copy the settings across to PP.
         if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
             // Get the settings for the V2 plugin.
-            $data = turnitintooltwo_admin_config();
+            $data = get_config('turnitintooltwo');
 
             $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark",
                 "enablepeermark", "useerater", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",

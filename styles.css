@@ -52,6 +52,16 @@
     display: block;
 }
 
+.tii_links_container .rubric_view_pp_launch_upload {
+    background:url([[pix:plagiarism_turnitin|rubric]]) no-repeat 0px 0px;
+    cursor: pointer;
+    padding: 2px 0px 2px 40px;
+    display: inline;
+    line-height: 28px;
+    margin-left:6px;
+    color: #0070A8;
+}
+
 .tii_disclosure_links {
     display:block;
 }
@@ -202,33 +212,42 @@
 
 .peermark_manager_launch {
     background:url([[pix:plagiarism_turnitin|peermark-settings]]) no-repeat 0px 0px;
-    cursor:pointer;
+    cursor: pointer;
     padding: 4px 16px 4px 40px;
     display: inline;
     line-height: 28px;
+    color: #0070a8;
+}
+.peermark_manager_launch:hover{
+    text-decoration: underline;
 }
 
 .plagiarism_turnitin_quickmark_manager_launch {
     background:url([[pix:plagiarism_turnitin|quickmark]]) no-repeat 0px 0px;
+    cursor: pointer;
     padding: 2px 0px 2px 40px;
     display: inline;
     line-height: 28px;
+    color: #0070a8;
+}
+.plagiarism_turnitin_quickmark_manager_launch:hover{
+    text-decoration: underline;
 }
 
-.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_ula {
+.tii_links_container .forum_eula_launch_noscript, .tii_links_container .forum_eula_launch span, .pp_turnitin_eula {
     cursor:pointer;
     text-decoration: underline;
 	text-align: center;
 	border: 1px solid #CC0000;
     padding: 24px 12px 12px;
-	color: #FF0000;
+	color: #1177d1;
 	margin-top:12px;
 	font-size: 14px;
 	font-weight: bold;
 	display: block;
 }
 
-.pp_turnitin_ula {
+.pp_turnitin_eula {
 	display: none;
     margin-bottom:16px;
     padding-top: 40px;
@@ -253,7 +272,7 @@ noscript.turnitin_ula_noscript {
     display:none;
 }
 
-.tii_links_container .pp_resubmit_link {
+.tii_links_container .plagiarism_turnitin_resubmit_link {
     cursor: pointer;
 }
 
@@ -273,6 +292,7 @@ button.pp-resubmit-files {
 
 .rubric_manager_launch {
     background:url([[pix:plagiarism_turnitin|rubric]]) no-repeat 0px 0px;
+    cursor: pointer;
     padding: 2px 0px 2px 40px;
     display: inline;
     line-height: 28px;
@@ -306,430 +326,54 @@ button.pp-resubmit-files {
     margin-bottom: 16px;
 }
 
-
-
-
-
-
-
-
-
-
-
-/*
-    ColorBox Core Style:
-    The following CSS is consistent between example themes and should not be altered.
-*/
-#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
-#cboxOverlay{position:fixed; width:100%; height:100%;}
-#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
-#cboxContent{position:relative;}
-#cboxLoadedContent{overflow:auto;}
-#cboxTitle{margin:0;}
-#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%; height:100%;}
-#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
-.cboxPhoto{float:left; margin:auto; border:0; display:block; max-width:none;}
-.cboxIframe{width:100%; height:100%; display:block; border:0;}
-#colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box; -moz-box-sizing:content-box; -webkit-box-sizing:content-box;}
-
-/*
-    User Style:
-    Change the following styles to modify the appearance of ColorBox.  They are
-    ordered & tabbed in a way that represents the nesting of the generated HTML.
-*/
-#cboxOverlay{background:#000;}
-#colorbox{}
-    #cboxContent{margin-top:32px; overflow:visible;}
-        .cboxIframe{background:none;}/*#FFF*/
-        #cboxError{padding:50px; border:1px solid #ccc;}
-        #cboxLoadedContent{background:none; padding:1px;}
-        #cboxLoadingGraphic{background:url([[pix:turnitintooltwo|colorbox/loading]]) no-repeat center center;}
-        #cboxLoadingOverlay{background:none;}
-        #cboxTitle{position:absolute; top:-22px; left:0; color:#000; display:none !important;}
-        #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-        #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url([[pix:turnitintooltwo|colorbox/controls]]) no-repeat 0 0;}
-        #cboxClose{background-position:-50px 0px; right:0;}
-        #cboxClose:hover{background-position:-50px -25px;}
-
-
 iframe html{background:none;}
-
-/* Messages Inbox, Migration, Upload, Rubric and Quickmark boxes */
-.messages #cboxLoadedContent, .messages .cboxIframe, .rubric_manager #cboxLoadedContent, .rubric_manager .cboxIframe, .quickmark_manager #cboxLoadedContent, .quickmark_manager .cboxIframe,
-.peermark_reviews #cboxLoadedContent, .peermark_reviews .cboxIframe, .peermark_manager #cboxLoadedContent, .peermark_manager .cboxIframe { background:none; }
-
-.migration #cboxLoadedContent, .migration #cboxIframe, .downloadpdf_window #cboxLoadedContent, .downloadpdf_window .cboxIframe,
-.gmpdfzip_window #cboxLoadedContent, .gmpdfzip_window .cboxIframe, .course_creation #cboxLoadedContent, .course_creation #cboxIframe {
-    background: #FFF;
-}
-
-#cboxClose { text-indent:-36px; display:none; }
-
-.messages #cboxClose, .unanonymise_reveal_form #cboxClose, .downloadpdf_window #cboxClose, .gmpdfzip_window #cboxClose, .rubric_manager #cboxClose,
-.rubric_view #cboxClose, .quickmark_manager #cboxClose, .peermark_manager #cboxClose, .peermark_reviews #cboxClose, .course_creation #cboxClose,
-.unanonymise_reveal_form #cboxClose, .unanonymise_reveal_form #cboxClose, .migration #cboxClose {
-    display:none !important;
-}
-
-.upload #cboxClose {
-    top: 2px;
-}
-
-.upload #cboxClose .closeText {
-    position: relative;
-    top: 2px;
-}
-
-.unanonymise_reveal_form #cboxLoadedContent, .edit_end_date_form #cboxLoadedContent {
-    height:100%;
-    overflow: hidden !important;
-}
-
-#cboxOverlay{
-    z-index:9997;
-}
-
-.loading_gif {
-    padding:16px;
-    margin:0 auto;
-    position: absolute;
-    top: 48%;
-    left: 48%;
-    background:url([[pix:turnitintooltwo|colorbox/loading]]) no-repeat center center #000;
-    height: 32px;
-    width: 32px;
-    -moz-border-radius: 12px;
-    -webkit-border-radius: 12px;
-    -khtml-border-radius: 12px;
-    border-radius: 12px;
-    z-index:9998;
-}
-
-.unanonymise_reveal_form #cboxClose, .edit_end_date_form #cboxClose {
-    top: 4px;
-    right:4px;
-}
-
-.edit_end_date_form #cboxLoadedContent .mform .fitem .fitemtitle  {
-    width: 25%;
-}
-
-.edit_end_date_form #cboxLoadedContent .mform .fitem .felement {
-    width: 70%;
-}
-
-.edit_end_date_form #cboxLoadedContent .mform .fitem fieldset.felement {
-    margin-left: 25%;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-html .tooltipster-base {
-	 -webkit-font-smoothing: antialiased;
-}
-
-
-/* This is the default Tooltipster theme (feel free to modify or duplicate and create multiple themes!): */
-.tooltipster-default {
-	border-radius: 5px;
-	border: 2px solid #000;
-	background: #4c4c4c;
-	color: #fff;
-}
-
-/* Use this next selector to style things like font-size and line-height: */
-.tooltipster-default .tooltipster-content {
-	font-family: Arial, sans-serif;
-	font-size: 14px;
-	line-height: 16px;
-	padding: 8px 10px;
-	overflow: hidden;
-}
-
-/* This next selector defines the color of the border on the outside of the arrow. This will automatically match the color and size of the border set on the main tooltip styles. Set display: none; if you would like a border around the tooltip but no border around the arrow */
-.tooltipster-default .tooltipster-arrow .tooltipster-arrow-border {
-	/* border-color: ... !important; */
-}
-
-
-/* If you're using the icon option, use this next selector to style them */
-.tooltipster-icon {
-	cursor: help;
-	margin-left: 4px;
-}
-
-
-
-
-
-
-
-
-/* This is the base styling required to make all Tooltipsters work */
-.tooltipster-base {
-	padding: 0;
-	font-size: 0;
-	line-height: 0;
-	position: absolute;
-	z-index: 9999999;
-	pointer-events: none;
-	width: auto;
-	overflow: visible;
-}
-.tooltipster-base .tooltipster-content {
-	overflow: hidden;
-}
-
-
-/* These next classes handle the styles for the little arrow attached to the tooltip. By default, the arrow will inherit the same colors and border as what is set on the main tooltip itself. */
-.tooltipster-arrow {
-	display: block;
-	text-align: center;
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: -1;
-}
-.tooltipster-arrow span, .tooltipster-arrow-border {
-	display: block;
-	width: 0;
-	height: 0;
-	position: absolute;
-}
-.tooltipster-arrow-top span, .tooltipster-arrow-top-right span, .tooltipster-arrow-top-left span {
-	border-left: 8px solid transparent !important;
-	border-right: 8px solid transparent !important;
-	border-top: 8px solid;
-	bottom: -8px;
-}
-.tooltipster-arrow-top .tooltipster-arrow-border, .tooltipster-arrow-top-right .tooltipster-arrow-border, .tooltipster-arrow-top-left .tooltipster-arrow-border {
-	border-left: 9px solid transparent !important;
-	border-right: 9px solid transparent !important;
-	border-top: 9px solid;
-	bottom: -8px;
-}
-
-.tooltipster-arrow-bottom span, .tooltipster-arrow-bottom-right span, .tooltipster-arrow-bottom-left span {
-	border-left: 8px solid transparent !important;
-	border-right: 8px solid transparent !important;
-	border-bottom: 8px solid;
-	top: -8px;
-}
-.tooltipster-arrow-bottom .tooltipster-arrow-border, .tooltipster-arrow-bottom-right .tooltipster-arrow-border, .tooltipster-arrow-bottom-left .tooltipster-arrow-border {
-	border-left: 9px solid transparent !important;
-	border-right: 9px solid transparent !important;
-	border-bottom: 9px solid;
-	top: -8px;
-}
-.tooltipster-arrow-top span, .tooltipster-arrow-top .tooltipster-arrow-border, .tooltipster-arrow-bottom span, .tooltipster-arrow-bottom .tooltipster-arrow-border {
-	left: 0;
-	right: 0;
-	margin: 0 auto;
-}
-.tooltipster-arrow-top-left span, .tooltipster-arrow-bottom-left span {
-	left: 6px;
-}
-.tooltipster-arrow-top-left .tooltipster-arrow-border, .tooltipster-arrow-bottom-left .tooltipster-arrow-border {
-	left: 5px;
-}
-.tooltipster-arrow-top-right span,  .tooltipster-arrow-bottom-right span {
-	right: 6px;
-}
-.tooltipster-arrow-top-right .tooltipster-arrow-border, .tooltipster-arrow-bottom-right .tooltipster-arrow-border {
-	right: 5px;
-}
-.tooltipster-arrow-left span, .tooltipster-arrow-left .tooltipster-arrow-border {
-	border-top: 8px solid transparent !important;
-	border-bottom: 8px solid transparent !important;
-	border-left: 8px solid;
-	top: 50%;
-	margin-top: -7px;
-	right: -8px;
-}
-.tooltipster-arrow-left .tooltipster-arrow-border {
-	border-top: 9px solid transparent !important;
-	border-bottom: 9px solid transparent !important;
-	border-left: 9px solid;
-	margin-top: -8px;
-}
-.tooltipster-arrow-right span, .tooltipster-arrow-right .tooltipster-arrow-border {
-	border-top: 8px solid transparent !important;
-	border-bottom: 8px solid transparent !important;
-	border-right: 8px solid;
-	top: 50%;
-	margin-top: -7px;
-	left: -8px;
-}
-.tooltipster-arrow-right .tooltipster-arrow-border {
-	border-top: 9px solid transparent !important;
-	border-bottom: 9px solid transparent !important;
-	border-right: 9px solid;
-	margin-top: -8px;
-}
-
-
-/* Some CSS magic for the awesome animations - feel free to make your own custom animations and reference it in your Tooltipster settings! */
-
-.tooltipster-fade {
-	opacity: 0;
-	-webkit-transition-property: opacity;
-	-moz-transition-property: opacity;
-	-o-transition-property: opacity;
-	-ms-transition-property: opacity;
-	transition-property: opacity;
-}
-.tooltipster-fade-show {
-	opacity: 1;
-}
-
-.tooltipster-grow {
-	-webkit-transform: scale(0,0);
-	-moz-transform: scale(0,0);
-	-o-transform: scale(0,0);
-	-ms-transform: scale(0,0);
-	transform: scale(0,0);
-	-webkit-transition-property: -webkit-transform;
-	-moz-transition-property: -moz-transform;
-	-o-transition-property: -o-transform;
-	-ms-transition-property: -ms-transform;
-	transition-property: transform;
-	-webkit-backface-visibility: hidden;
-}
-.tooltipster-grow-show {
-	-webkit-transform: scale(1,1);
-	-moz-transform: scale(1,1);
-	-o-transform: scale(1,1);
-	-ms-transform: scale(1,1);
-	transform: scale(1,1);
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-moz-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-ms-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-o-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-}
-
-.tooltipster-swing {
-	opacity: 0;
-	-webkit-transform: rotateZ(4deg);
-	-moz-transform: rotateZ(4deg);
-	-o-transform: rotateZ(4deg);
-	-ms-transform: rotateZ(4deg);
-	transform: rotateZ(4deg);
-	-webkit-transition-property: -webkit-transform, opacity;
-	-moz-transition-property: -moz-transform;
-	-o-transition-property: -o-transform;
-	-ms-transition-property: -ms-transform;
-	transition-property: transform;
-}
-.tooltipster-swing-show {
-	opacity: 1;
-	-webkit-transform: rotateZ(0deg);
-	-moz-transform: rotateZ(0deg);
-	-o-transform: rotateZ(0deg);
-	-ms-transform: rotateZ(0deg);
-	transform: rotateZ(0deg);
-	-webkit-transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 1);
-	-webkit-transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
-	-moz-transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
-	-ms-transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
-	-o-transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
-	transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
-}
-
-.tooltipster-fall {
-	top: 0;
-	-webkit-transition-property: top;
-	-moz-transition-property: top;
-	-o-transition-property: top;
-	-ms-transition-property: top;
-	transition-property: top;
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-moz-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-ms-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-o-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-}
-.tooltipster-fall-show {
-}
-.tooltipster-fall.tooltipster-dying {
-	-webkit-transition-property: all;
-	-moz-transition-property: all;
-	-o-transition-property: all;
-	-ms-transition-property: all;
-	transition-property: all;
-	top: 0px !important;
-	opacity: 0;
-}
-
-.tooltipster-slide {
-	left: -40px;
-	-webkit-transition-property: left;
-	-moz-transition-property: left;
-	-o-transition-property: left;
-	-ms-transition-property: left;
-	transition-property: left;
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-moz-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-ms-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	-o-transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-	transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
-}
-.tooltipster-slide.tooltipster-slide-show {
-}
-.tooltipster-slide.tooltipster-dying {
-	-webkit-transition-property: all;
-	-moz-transition-property: all;
-	-o-transition-property: all;
-	-ms-transition-property: all;
-	transition-property: all;
-	left: 0px !important;
-	opacity: 0;
-}
-
-
-/* CSS transition for when contenting is changing in a tooltip that is still open. The only properties that will NOT transition are: width, height, top, and left */
-.tooltipster-content-changing {
-	opacity: 0.5;
-	-webkit-transform: scale(1.1, 1.1);
-	-moz-transform: scale(1.1, 1.1);
-	-o-transform: scale(1.1, 1.1);
-	-ms-transform: scale(1.1, 1.1);
-	transform: scale(1.1, 1.1);
-}
 
 .selectlong {
     width: 530px;
+}
+
+.connection-test-success,
+.connection-test-failed {
+    background-image: none;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+.connection-test-success button:focus,
+.connection-test-failed button:focus{
+    outline: 0;
+}
+.connection-test-success {
+    background-color: #51a351;
+}
+.connection-test-failed {
+    background-color: #d9534f;
+}
+
+.iframe-ltilaunch {
+    width: 100%;
+    height: 700px;
+}
+
+.iframe-ltilaunch-eula {
+    width: 767px;
+    height: 680px;
+}
+
+.tii_pp_modal_eula {
+    width: 800px !important;
+    height: 700px;
+    background-color: #EEE !important;
+}
+
+.tii_pp_modal_eula_content {
+    height: 735px;
+}
+
+.tii_pp_modal_rubric {
+    max-width: 1027px !important;
+}
+
+.tii_pp_modal_rubric_content {
+    width: 1032px !important;
+    left: -116px;
 }

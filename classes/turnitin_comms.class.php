@@ -21,10 +21,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/* We can't currently use the sdk classes as the class is already declared from mod/turnitintooltwo.
- * require_once(__DIR__.'/../sdk/api.class.php');
- */
-require_once($CFG->dirroot.'/mod/turnitintooltwo/turnitintooltwo_perflog.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+
+use Integrations\PhpSdk\TurnitinAPI;
 
 class turnitin_comms {
 
@@ -36,20 +36,20 @@ class turnitin_comms {
     private $langcode;
 
     public function __construct($accountid = null, $accountshared = null, $url = null) {
-        $config = turnitintooltwo_admin_config();
+        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        $tiiapiurl = (substr($config->apiurl, -1) == '/') ? substr($config->apiurl, 0, -1) : $config->apiurl;
+        $tiiapiurl = (substr($config->plagiarism_turnitin_apiurl, -1) == '/') ? substr($config->plagiarism_turnitin_apiurl, 0, -1) : $config->plagiarism_turnitin_apiurl;
 
         $this->tiiintegrationid = 12;
-        $this->tiiaccountid = is_null($accountid) ? $config->accountid : $accountid;
+        $this->tiiaccountid = is_null($accountid) ? $config->plagiarism_turnitin_accountid : $accountid;
         $this->tiiapiurl = is_null($url) ? $tiiapiurl : $url;
-        $this->tiisecretkey = is_null($accountshared) ? $config->secretkey : $accountshared;
+        $this->tiisecretkey = is_null($accountshared) ? $config->plagiarism_turnitin_secretkey : $accountshared;
 
         if (empty($this->tiiaccountid) || empty($this->tiiapiurl) || empty($this->tiisecretkey)) {
-            turnitintooltwo_print_error( 'configureerror', 'plagiarism_turnitin' );
+            plagiarism_turnitin_print_error( 'configureerror', 'plagiarism_turnitin' );
         }
 
-        $this->diagnostic = $config->enablediagnostic;
+        $this->diagnostic = $config->plagiarism_turnitin_enablediagnostic;
         $this->langcode = $this->get_lang();
     }
 
@@ -63,9 +63,10 @@ class turnitin_comms {
 
         $api = new TurnitinAPI($this->tiiaccountid, $this->tiiapiurl, $this->tiisecretkey,
                                 $this->tiiintegrationid, $this->langcode);
+
         // Enable logging if diagnostic mode is turned on.
         if ($this->diagnostic) {
-            $api->setLogPath($CFG->tempdir.'/turnitintooltwo/logs/');
+            $api->setLogPath($CFG->tempdir.'/plagiarism_turnitin/logs/');
         }
 
         // Use Moodle's proxy settings if specified.
@@ -103,10 +104,8 @@ class turnitin_comms {
 
         // Offline mode provided by Androgogic.
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
-            turnitintooltwo_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
+            plagiarism_turnitin_print_error('turnitintoolofflineerror', 'plagiarism_turnitin');
         }
-        $api->setTestingConnection($istestingconnection);
-        $api->setPerformanceLog(new turnitintooltwo_performancelog());
 
         return $api;
     }
@@ -118,7 +117,7 @@ class turnitin_comms {
      * @param string $tterrorstr
      * @param boolean $toscreen
      */
-    public static function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
+    public function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
         $errorstr = "";
         if (!empty($tterrorstr)) {
             $errorstr = get_string($tterrorstr, 'plagiarism_turnitin')."<br/><br/>";
@@ -147,9 +146,9 @@ class turnitin_comms {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
-        turnitintooltwo_activitylog($errorstr, "API_ERROR");
+        plagiarism_turnitin_activitylog($errorstr, "API_ERROR");
         if ($toscreen) {
-            turnitintooltwo_print_error($errorstr, null);
+            plagiarism_turnitin_print_error($errorstr, null);
         } else if ($embedded) {
             return $errorstr;
         }
@@ -188,5 +187,12 @@ class turnitin_comms {
         );
         $langcode = (isset($langarray[$langcode])) ? $langarray[$langcode] : 'en_us';
         return $langcode;
+    }
+
+    /**
+     * @param int $diagnostic Set diagnostic setting.
+     */
+    public function set_diagnostic($diagnostic) {
+        $this->diagnostic = $diagnostic;
     }
 }

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin plagiarism plugin';
-$string['turnitintooltwo'] = 'Turnitin Tool';
 $string['turnitin'] = 'Turnitin';
 $string['connecttesterror'] = 'There was an error connecting to Turnitin the return error message is below:<br />';
 
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin Plagiarism Plugin Configuration';
 $string['tiiexplain'] = 'Turnitin is a commercial product and you must have a paid subscription to use this service for more information see <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Enable Turnitin';
 $string['useturnitin_mod'] = 'Enable Turnitin for {$a}';
-$string['pp_configuredesc'] = 'You must configure this module within the turnitintooltwo module. Please click <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>here</a> to configure this plugin';
 $string['turnitindefaults'] = 'Turnitin plagiarism plugin default settings';
 $string['defaultsdesc'] = 'The following settings are the defaults set when enabling Turnitin within an Activity Module';
 $string['turnitinpluginsettings'] = 'Turnitin plagiarism plugin settings';
@@ -125,6 +123,57 @@ $string['id'] = 'Id';
 $string['student'] = 'Student';
 $string['course'] = 'Course';
 $string['module'] = 'Module';
+
+$string['tiiaccountconfig'] = 'Turnitin Account Configuration';
+$string['turnitinaccountid'] = 'Turnitin Account ID';
+$string['turnitinsecretkey'] = 'Turnitin Shared Key';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = 'Debugging and Logging';
+$string['turnitindiagnostic'] = 'Enable Diagnostic Mode';
+$string['turnitindiagnostic_desc'] = '<b>[Caution]</b><br />Enable Diagnostic mode only to track down problems with the Turnitin API.';
+$string['tiiaccountsettings_desc'] = 'Please ensure these settings match those configured in your Turnitin account, otherwise you may experience issues with assignment creation and/or student submissions.';
+$string['tiiaccountsettings'] = 'Turnitin Account Settings';
+$string['turnitinusegrademark'] = 'Use GradeMark';
+$string['turnitinusegrademark_desc'] = 'Choose whether to use GradeMark to grade submissions.<br /><i>(This is only available to those that have GradeMark configured for their account)</i>';
+$string['turnitinenablepeermark'] = 'Enable Peermark Assignments';
+$string['turnitinenablepeermark_desc'] = 'Choose whether to allow the creation of Peermark Assignments<br/><i>(This is only available to those that have Peermark configured for their account)</i>';
+$string['turnitinuseerater'] = 'Enable ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Choose whether to enable ETS&copy; grammar checking.<br /><i>(Enable this option only if ETS&copy; e-rater is enabled on your Turnitin account)</i>';
+$string['transmatch_desc'] = 'Determines whether Translated Matching will be available as a setting on the assignment set up screen.<br /><i>(Enable this option only if Translated Matching is enabled on your Turnitin account)</i>';
+$string['repositoryoptions_0'] = 'Enable instructor standard repository options';
+$string['repositoryoptions_1'] = 'Enable instructor expanded repository options';
+$string['repositoryoptions_2'] = 'Submit all papers to the standard repository';
+$string['repositoryoptions_3'] = 'Do not submit any papers into a repository';
+$string['repositoryoptions_4'] = 'Submit all papers to the institutional repository';
+$string['turnitinrepositoryoptions'] = 'Paper Repository Assignments';
+$string['turnitinrepositoryoptions_desc'] = 'Choose the repository options for Turnitin Assignments.<br /><i>(An Institutional Repository is only available to those that have this enabled for their account)</i>';
+$string['tiimiscsettings'] = 'Miscellaneous Plugin Settings';
+$string['pp_agreement_default'] = 'I confirm that this submission is my own work and I accept all responsibility for any copyright infringement that may occur as a result of this submission.';
+$string['pp_agreement_desc'] = '<b>[Optional]</b><br />Enter an agreement confirmation statement for submissions.<br />(<b>Note:</b> If the agreement is left completely blank then no agreement confirmation will be required by students during submission)';
+$string['pp_agreement'] = 'Disclaimer / Agreement';
+$string['studentdataprivacy'] = 'Student Data Privacy Settings';
+$string['studentdataprivacy_desc'] = 'The following settings can be configured to ensure that student&#39;s personal data is not transmitted to Turnitin via the API.';
+$string['enablepseudo'] = 'Enable Student Privacy';
+$string['enablepseudo_desc'] = 'If this option is selected student email addresses will be transformed into a pseudo equivalent for Turnitin API calls.<br /><i>(<b>Note:</b> This option can not be changed if any Moodle user data has already been synced with Turnitin)</i>';
+$string['pseudofirstname'] = 'Student Pseudo First Name';
+$string['pseudofirstname_desc'] = '<b>[Optional]</b><br />The student first name to display in the Turnitin document viewer';
+$string['pseudolastname'] = 'Student Pseudo Last Name';
+$string['pseudolastname_desc'] = 'The student last name to display in the Turnitin document viewer';
+$string['pseudolastnamegen'] = 'Auto Generate Lastname';
+$string['pseudolastnamegen_desc'] = 'If set to yes and the pseudo lastname is set to a user profile field, then the field will be automatically populated with a unique identifier.';
+$string['pseudoemailsalt'] = 'Pseudo Encryption Salt';
+$string['pseudoemailsalt_desc'] = '<b>[Optional]</b><br />An optional salt to increase the complexity of the generated Pseudo Student email address.<br />(<b>Note:</b> The salt should remain unchanged in order to maintain consistent pseudo email addresses)';
+$string['pseudoemaildomain'] = 'Pseudo Email Domain';
+$string['pseudoemaildomain_desc'] = '<b>[Optional]</b><br />An optional domain for pseudo email addresses. (Defaults to @tiimoodle.com if left empty)';
+$string['pseudoemailaddress'] = 'Pseudo Email Address';
+$string['connecttest'] = 'Test Turnitin Connection';
+$string['diagnosticoptions_0'] = 'Off';
+$string['diagnosticoptions_1'] = 'Standard';
+$string['diagnosticoptions_2'] = 'Debugging';
+
+$string['savesuccess'] = 'Changes saved';
+$string['connecttestsuccess'] = 'Connection test successful';
+$string['connecttestfailed'] = 'Connection test failed.';
 
 // Grade book/View assignment page.
 $string['turnitin:viewfullreport'] = 'View Originality Report';
@@ -181,7 +230,7 @@ $string['turnitintoolofflineerror'] = 'We are experiencing a temporary problem. 
 $string['defaultinserterror'] = 'There was an error when trying to insert a default setting value into the database';
 $string['defaultupdateerror'] = 'There was an error when trying to update a default setting value in the database';
 $string['tiiassignmentgeterror'] = 'There was an error when trying to get an assignment from Turnitin';
-$string['assigngeterror'] = 'Could not get turnitintooltwo data';
+$string['assigngeterror'] = 'Could not get Turnitin data';
 $string['classupdateerror'] = 'Could not update Turnitin Class data';
 $string['pp_createsubmissionerror'] = 'There was an error trying to create the submission in Turnitin';
 $string['pp_updatesubmissionerror'] = 'There was an error trying to resubmit your submission to Turnitin';
@@ -216,12 +265,44 @@ $string['privacy:metadata:plagiarism_turnitin_files:grade'] = 'The grade applied
 $string['privacy:metadata:plagiarism_turnitin_files:orcapable'] = 'Indicates whether Turnitin was able to produce an originality report for the user\'s submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:student_read'] = 'Indicates whether a student has read their feedback.';
 
-$string['privacy:metadata:plagiarism_turnitin_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin.';
+$string['privacy:metadata:plagiarism_turnitin_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
 $string['privacy:metadata:plagiarism_turnitin_client:email'] = 'The user\'s email address is shared by Moodle to enable the creation of a Turnitin account.';
 $string['privacy:metadata:plagiarism_turnitin_client:firstname'] = 'The user\'s first name is sent to Turnitin so that the user can be identified.';
 $string['privacy:metadata:plagiarism_turnitin_client:lastname'] = 'The user\'s last name is sent to Turnitin so that the user can be identified.';
 $string['privacy:metadata:plagiarism_turnitin_client:submission_title'] = 'The title of the submission is sent to Turntin so that it is identifiable.';
 $string['privacy:metadata:plagiarism_turnitin_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
+$string['privacy:metadata:plagiarism_turnitin_client:submission_content'] = 'Please be aware that the content of a file/submission is sent to Turnitin for processing.';
 
 $string['privacy:metadata:core_files'] = 'Turnitin Assignment stores files that have been uploaded to Moodle to form a Turnitin submission.';
+
 $string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';
+$string['turnitinrepositoryoptions_help'] = '<strong>Enable instructor standard repository options: </strong><br />Instructors can instruct Turnitin to add documents to either the standard repository or no repository<br /><br /><strong>Enable instructor expanded repository options: </strong><br />This option will allow instructors to view an assignment setting to allow students to instruct Turnitin where their documents will be stored. Students can choose to add their documents to the standard student repository or to your institution’s private repository.<br /><br /><strong>Submit all papers to the standard repository: </strong><br />All documents will be added to the standard student repository by default.<br /><br /><strong>Do not submit any papers into a repository: </strong><br />Documents will only ever be used to perform the initial check with Turnitin and to display to the instructor for grading.<br /><br /><strong>Submit all papers to the institutional repository: </strong><br />Turnitin is instructed to store all papers within the institutional paper repository. Similarity checks to the submitted documents will only be made by other instructors within your institution.';
+
+$string['turnitinuseanon'] = 'Use Anonymous Marking';
+$string['turnitinuseanon_desc'] = 'Choose whether to allow Anonymous Marking when grading submissions.<br /><i>(This is only available to those that have Anonymous Marking configured for their account)</i>';
+
+$string['createassignmenterror'] = 'There was an error trying to create the assignment in Turnitin';
+$string['editassignmenterror'] = 'There was an error trying to edit the assignment in Turnitin';
+$string['ppassignmentediterror'] = 'Module {$a->title} (TII ID: {$a->assignmentid}) could not be edited on Turnitin, please consult your API logs for further information';
+$string['pp_classcreationerror'] = 'This class could not be created on Turnitin, please consult your API logs for further information';
+$string['unlinkusers'] = 'Unlink Users';
+$string['relinkusers'] = 'Relink Users';
+$string['unlinkrelinkusers'] = 'Unlink / Relink Turnitin Users';
+$string['nointegration'] = 'No Integration';
+$string['sprevious'] = 'Previous';
+$string['snext'] = 'Next';
+$string['semptytable'] = 'No results found.';
+$string['slengthmenu'] = 'Show _MENU_ Entries';
+$string['ssearch'] = 'Search:';
+$string['sprocessing'] = 'Loading data from Turnitin...';
+$string['szerorecords'] = 'No records to display.';
+$string['sinfo'] = 'Showing _START_ to _END_ of _TOTAL_ entries.';
+$string['userupdateerror'] = 'Could not update user data';
+$string['connecttestcommerror'] = 'Could not connect to Turnitin. Double check your API URL setting.';
+
+$string['userfinderror'] = 'There was an error trying to find the user in Turnitin';
+$string['tiiusergeterror'] = 'There was an error when trying to get the user details from Turnitin';
+$string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in Turnitin. Unable to retrieve similarity score and other submission data.';
+$string['usercreationerror'] = 'Turnitin user creation failed';
+$string['ppassignmentcreateerror'] = 'This module could not be created on Turnitin, please consult your API logs for further information';
+$string['turnitineula'] = 'Turnitin EULA';

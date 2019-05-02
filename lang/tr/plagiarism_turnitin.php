@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin, intihal eklentisi';
-$string['turnitintooltwo'] = 'Turnitin Aracı';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin İntihal Eklenti Görevi';
 $string['connecttesterror'] = 'Turnitin&#39;e bağlanırken bir hata oluştu. Hata aşağıda belirtilmiştir:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin İntihal Eklenti Yapılandırması';
 $string['tiiexplain'] = 'Turnitin ticari bir üründür ve bu servisi kullanmak için ücretli üyeliğe ihtiyacınız vardır, daha fazla bilgi için bkz. <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Turnitin&#39;i Etkinleştir';
 $string['useturnitin_mod'] = 'Şunun için Turnitin&#39;i Etkinleştir {$a}';
-$string['pp_configuredesc'] = 'Bu modülü, turnitintooltwo modülünde yapılandırmalısınız. Bu eklentiyi yapılandırmak için lütfen <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>buraya</a> tıklayın';
 $string['turnitindefaults'] = 'Turnitin, intihal eklentisi varsayılan ayarları';
 $string['defaultsdesc'] = 'Etkinlik Modülünde Turnitin etkinleştirilirken aşağıdaki ayarlar, varsayılan ayarlar olarak belirlendi';
 $string['turnitinpluginsettings'] = 'Turnitin, intihal eklentisi ayarları';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Geçici bir sorun yaşıyoruz. Lütfen k�
 $string['defaultinserterror'] = 'Veritabanına varsayılan ayar değeri girilirken bir hata oluştu';
 $string['defaultupdateerror'] = 'Veritabanında varsayılan ayar değerleri güncellenirken bir hata oluştu';
 $string['tiiassignmentgeterror'] = 'Turnitin&#39;den ödev alınırken bir sorun oluştu';
-$string['assigngeterror'] = 'Turnitintooltwo verileri alınamadı';
+$string['assigngeterror'] = 'Turnitin verileri alınamadı';
 $string['classupdateerror'] = 'Turnitin Sınıf verileri güncellenemedi';
 $string['pp_createsubmissionerror'] = 'Turnitin&#39;de bir gönderi oluşturulurken sorun oluştu';
 $string['pp_updatesubmissionerror'] = 'Turnitin&#39;e ödevinizi yeniden gönderirken bir sorun oluştu';
@@ -200,3 +198,74 @@ $string['pending'] = 'Bekliyor';
 $string['because'] = 'Bunun nedeni bir yöneticinin bekleyen ödevi işlem kuyruğundan silmesi ve Turnitin&#39;e gönderiyi iptal etmesidir.<br /><strong>Dosya Moodle&#39;da kalacaktır, lütfen eğitmeninizle iletişime geçin.</strong><br />Lütfen hata kodları için aşağıya bakın:';
 $string['submitpapersto_help'] = '<strong>Havuz Yok: </strong><br />Turnitin\'e, gönderilen belgeleri herhangi bir havuzda depolamama talimatı verilir. Yazılı ödevi yalnızca ilk benzerlik kontrolünü gerçekleştirmek üzere işleyeceğiz.<br /><br /><strong>Standart Havuz: </strong><br />Turnitin, gönderilen belgenin bir kopyasını yalnızca Standart Havuzda depolayacaktır. Bu seçeneğin belirlenmesi Turnitin\'e, depolanan belgeleri yalnızca ileride gönderilecek herhangi bir belgeyle karşılaştırarak benzerlik kontrolleri gerçekleştirmek için kullanma talimatı verir.<br /><br /><strong>Kurum Havuzu (Uygulanabilir Yer): </strong><br />Bu seçeneğin belirlenmesi Turnitin\'e yalnızca gönderilen belgeleri kurumunuza özel bir havuza ekleme talimatı verir. Gönderilen belgeler üzerindeki benzerlik kontrolleri, kurumunuzdaki diğer eğitmenler tarafından gerçekleştirilecektir.';
 $string['errorcode12'] = 'Bu dosya, dersin silindiği bir ödeve ait olduğundan Turnitin\'e gönderilmedi. Satır Kimliği: ({$a->id}) | Ders Modülü Kimliği: ({$a->cm}) | Kullanıcı Kimliği: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Turnitin Hesap Yapılandırması';
+$string['turnitinaccountid'] = 'Turnitin Hesap Numarası';
+$string['turnitinsecretkey'] = 'Turnitin Ortak Anahtarı';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = 'Hata Ayıklama ve Günlük Oluşturma';
+$string['turnitindiagnostic'] = 'Teşhis Modunu Etkinleştir';
+$string['turnitindiagnostic_desc'] = '<b>[Dikkat]</b><br />Teşhis modunu sadece Turnitin API ile ilgili problemleri ortaya çıkarmak için etkinleştirin.';
+$string['tiiaccountsettings_desc'] = 'Lütfen bu ayarların Turnitin hesabınızda yapılandırdığınız ayarlarla aynı olduğundan emin olun, aksi taktirde ödev oluştururken ve/veya öğrenci gönderimlerinde sorun yaşayabilirsiniz.';
+$string['tiiaccountsettings'] = 'Turnitin Hesap Ayarları';
+$string['turnitinusegrademark'] = 'GradeMark&#39;ı Kullan';
+$string['turnitinusegrademark_desc'] = 'Gönderileri puanlamak için GradeMark&#39;ı kullanıp kullanmayacağınızı seçin.<br /><i>(Bu özelliği yalnızca hesaplarında GradeMark&#39;ı yapılandırmış olanlar kullanabilir)</i>';
+$string['turnitinenablepeermark'] = 'Peermark Ödevlerini Etkinleştir';
+$string['turnitinenablepeermark_desc'] = 'Peermark Ödevlerinin oluşturulmasına izin verilip verilmeyeceğini seçin<br/><i>(Bu özelliği yalnızca hesaplarına PeerMark&#39;ı yapılandırmış olanlar kullanabilir)</i>';
+$string['turnitinuseerater'] = 'ETS&copy; Etkinleştir';
+$string['turnitinuseerater_desc'] = 'ETS&copy; dil bilgisi kontrolünün etkinleştirilip etkinleştirilmeyeceğini seçin.<br /><i>(Bu seçeneği ETS&copy; e-rater Turnitin hesabınızda etkin ise etkin hale getiriniz)</i>';
+$string['transmatch_desc'] = 'Ödev kurulum ekranında Çeviri Eşleştirmenin bir ayar olarak gösterilip gösterilmeyeceğini belirler.<br /><i>(Bu seçeneği Turnitin hesabınızda Çeviri Eşleştirme etkin ise etkinleştiriniz)</i>';
+$string['repositoryoptions_0'] = 'Standart eğitmen havuz seçeneklerini etkinleştir';
+$string['repositoryoptions_1'] = 'Genişletilmiş eğitmen havuz seçeneklerini etkinleştir';
+$string['repositoryoptions_2'] = 'Tüm yazılı ödevleri standart havuza gönder';
+$string['repositoryoptions_3'] = 'Havuza hiçbir yazılı ödev göndermeyin';
+$string['turnitinrepositoryoptions'] = 'Yazılı Ödev Havuzları';
+$string['turnitinrepositoryoptions_desc'] = 'Turnitin ödevleri için havuz ayarlarını seçin.<br /><i>(Kurumsal Havuz, yalnızca bu seçeneği hesaplarında etkinleştiren kullanıcılar tarafından kullanılabilir)</i>';
+$string['tiimiscsettings'] = 'Diğer Eklenti Ayarları';
+$string['pp_agreement_default'] = 'Bu kutuyu işaretleyerek, bu gönderinin kendi çalışmam olduğunu onaylıyor ve bu gönderi sonrasında ortaya çıkabilecek telif hakkı ihlalinin sorumluluğunu kabul ediyorum.';
+$string['pp_agreement_desc'] = '<b>[İsteğe Bağlı]</b><br />Bu gönderi için bir sözleşme onayı ifadesi girin.<br />(<b>Not:</b> Sözleşme boş bırakıldıysa, öğrenci ödev gönderimi sırasında sözleşme onayı gerekmeyecektir)';
+$string['pp_agreement'] = 'Feragatname / Sözleşme';
+$string['studentdataprivacy'] = 'Öğrenci Veri Gizlilik Ayarları';
+$string['studentdataprivacy_desc'] = 'Aşağıdaki ayarlar, öğrenci kişisel verilerinin API aracılığıyla Turnitin&#39;e aktarılmadığından emin olmak için yapılandırılabilir.';
+$string['enablepseudo'] = 'Öğrenci Gizliliğini Etkinleştir';
+$string['enablepseudo_desc'] = 'Bu seçenek seçildiğinde, öğrenci e-posta adresi sahte bir Turnitin API arama e-posta adresine dönüştürülecektir.<br /><i>(<b>Not:</b> Bu seçenek, Turnitin ile eşitlenmiş herhangi bir Moodle kullanıcı verisi mevcutsa değiştirilemez)</i>';
+$string['pseudofirstname'] = 'Sahte Öğrenci Adı';
+$string['pseudofirstname_desc'] = '<b>[İsteğe Bağlı]</b><br />Turnitin doküman görüntüleyicide görüntülenecek öğrenci adı';
+$string['pseudolastname'] = 'Sahte Öğrenci Soyadı';
+$string['pseudolastname_desc'] = 'Turnitin doküman görüntüleyicide görüntülenecek öğrenci soyadı';
+$string['pseudolastnamegen'] = 'Otomatik Soyadı Oluştur';
+$string['pseudolastnamegen_desc'] = 'Evet olarak ayarlanmışsa ve sahte soyadı kullanıcı profil alanına ayarlanmışsa, bu alan otomatik olarak özel bir tanımlayıcıyla doldurulacaktır.';
+$string['pseudoemailsalt'] = 'Sahte Kripto Verisi';
+$string['pseudoemailsalt_desc'] = '<b>[İsteğe Bağlı]</b><br />Oluşturulan Sahte Öğrenci e-posta adresinin karmaşıklığını arttırmak için bir şifre kodlaması.<br />(<b>Not:</b> Kodlama sahte e-posta adresinin tutarlılığı için değiştirilmeden bırakılmalıdır.)';
+$string['pseudoemaildomain'] = 'Sahte E-posta Alanı';
+$string['pseudoemaildomain_desc'] = '<b>[İsteğe Bağlı]</b><br />Sahte e-posta adresleri için isteğe bağlı alan adı. (Boş bırakılırsa varsayılan: @tiimoodle.com)';
+$string['pseudoemailaddress'] = 'Sahte E-posta Adresi';
+$string['connecttest'] = 'Turnitin Bağlantısını Test Et';
+$string['connecttestsuccess'] = 'Moodle başarılı bir biçimde Turnitin&#39;e bağlandı.';
+$string['diagnosticoptions_0'] = 'Kapalı';
+$string['diagnosticoptions_1'] = 'Standart';
+$string['diagnosticoptions_2'] = 'Hata Ayıklama';
+$string['repositoryoptions_4'] = 'Tüm yazılı ödevleri kurum havuzuna gönder';
+$string['turnitinrepositoryoptions_help'] = '<strong>Standart eğitmen havuz seçeneklerini etkinleştir: </strong><br />Eğitmenler Turnitin\'e, belgeleri standart havuza veya kurumun özel havuzuna ekleme ya da hiçbir havuza eklememe talimatı verebilirler.<br /><br /><strong>Genişletilmiş eğitmen havuz seçeneklerini etkinleştir: </strong><br />Bu seçenek, öğrencilerin Turnitin\'e belgelerinin nerede depolanacağı konusunda talimat verebilmelerini sağlamak için eğitmenlerin bir ödev ayarını görüntüleyebilmelerini sağlar. Öğrenciler belgelerini standart öğrenci havuzuna veya kurumunuzun özel havuzuna eklemeyi tercih edebilirler.<br /><br /><strong>Tüm yazılı ödevleri standart havuza gönder: </strong><br />Tüm belgeler varsayılan olarak standart öğrenci havuzuna eklenecektir.<br /><br /><strong>Havuza hiçbir yazılı ödev göndermeyin: </strong><br />Belgeler yalnızca Turnitin\'de ilk kontrolü gerçekleştirmek ve puanlama için eğitmene gösterilmek üzere kullanılacaktır.<br /><br /><strong>Tüm yazılı ödevleri kurum havuzuna gönder: </strong><br />Turnitin\'e, tüm yazılı ödevleri kurum yazılı ödev havuzunda depolama talimatı verilir. Gönderilen belgeler üzerindeki benzerlik kontrolleri, yalnızca kurumunuzdaki diğer eğitmenler tarafından gerçekleştirilecektir.';
+$string['turnitinuseanon'] = 'Anonim İşaretleme Kullan';
+$string['turnitinuseanon_desc'] = 'Gönderiler puanlanırken Anonim İşaretlemeye izin verilip verilmeyeceğini seçin.<br /><i>(Bu özelliği yalnızca hesaplarında Anonim İşaretlemeyi yapılandırmış olanlar kullanabilir)</i>';
+$string['createassignmenterror'] = 'Turnitin&#39;de bir ödev oluşturulurken sorun oluştu';
+$string['editassignmenterror'] = 'Turnitin&#39;de bir ödevle ilgili düzenleme yapılırken bir sorun oluştu';
+$string['ppassignmentediterror'] = 'Modül {$a->title} (TII Numarası: {$a->assignmentid}) Turnitin&#39;de düzenlenemedi, daha ayrıntılı bilgi için lütfen API kayıtlarınıza bakın';
+$string['pp_classcreationerror'] = 'Bu sınıf Turnitin&#39;de oluşturulamadı, daha ayrıntılı bilgi için lütfen API kayıtlarınıza bakın';
+$string['unlinkusers'] = 'Kullanıcıların Bağlantısını Kaldır';
+$string['relinkusers'] = 'Kullanıcıları yeniden bağlantılandır';
+$string['unlinkrelinkusers'] = 'Kullanıcıların Bağlantısını Kaldır/Yeniden Bağlantılandır';
+$string['nointegration'] = 'Bütünleştirme yok';
+$string['sprevious'] = 'Önceki';
+$string['snext'] = 'Sonraki';
+$string['slengthmenu'] = 'MENU_ Girişlerini_Göster';
+$string['ssearch'] = 'Arama:';
+$string['sprocessing'] = 'Veriler Turnitin&#39;den yükleniyor...';
+$string['szerorecords'] = 'Gösterilecek kayıt yok.';
+$string['sinfo'] = '_START_ /_END_ of _TOTAL_ giriş gösteriliyor.';
+$string['userupdateerror'] = 'Kullanıcı verileri güncellenemedi';
+$string['connecttestcommerror'] = 'Turnitin&#39; e bağlanılamadı. API URL ayarlarını tekrar kontrol edin.';
+$string['userfinderror'] = 'Kullanıcı Turnitin&#39;de aranırken bir sorun oluştu';
+$string['tiiusergeterror'] = 'Turnitin&#39;den kullanıcı detayları alınırken bir sorun oluştu';
+$string['usercreationerror'] = 'Turnitin kullanıcı oluşturma işlemi başarısız oldu';
+$string['ppassignmentcreateerror'] = 'Bu modül Turnitin&#39;de oluşturulamadı, daha ayrıntılı bilgi için lütfen API kayıtlarınıza bakın';

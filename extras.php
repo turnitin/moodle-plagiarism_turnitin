@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/tablelib.php');
-require_once(__DIR__."/lib.php");
+require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
-require_once($CFG->dirroot."/mod/turnitintooltwo/lib.php");
-require_once($CFG->dirroot."/mod/turnitintooltwo/turnitintooltwo_view.class.php");
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
-$turnitintooltwoview = new turnitintooltwo_view();
+$turnitinview = new turnitin_view();
 
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
@@ -35,25 +35,53 @@ $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
 $output = "";
 $jsrequired = false;
 
-$cmid = required_param('cmid', PARAM_INT);
-$cm = get_coursemodule_from_id('', $cmid);
-$context = context_course::instance($cm->course);
+$cmid = optional_param('cmid', 0, PARAM_INT);
+
+if ($cmid) {
+    $cm = get_coursemodule_from_id('', $cmid);
+    $context = context_course::instance($cm->course);
+}
 
 $PAGE->set_context(context_system::instance());
 require_login();
 
+$PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('ui');
+
 switch ($cmd) {
+    case "rubricmanager":
+        $PAGE->set_pagelayout('embedded');
+        $tiicourseid = optional_param('tiicourseid', 0, PARAM_INT);
+
+        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
+            array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        break;
+
+    case "quickmarkmanager":
+        $PAGE->set_pagelayout('embedded');
+
+        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
+            array("class" => "launch_form"));
+        echo html_writer::script("<!--
+                                    window.document.forms[0].submit();
+                                    //-->");
+        break;
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
 
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('ui');
-        $PAGE->requires->jquery_plugin('plagiarism-turnitin_module', 'plagiarism_turnitin');
-
-        $user = new turnitintooltwo_user($USER->id, "Learner");
+        $user = new turnitin_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= turnitintooltwo_view::output_dv_launch_form("useragreement", 0, $user->tiiuserid, "Learner", '');
+        $output .= turnitin_view::output_launch_form(
+            "useragreement",
+            0,
+            $user->tiiuserid,
+            "Learner",
+            ''
+        );
         $output .= $OUTPUT->box_end(true);
         echo $output;
 
@@ -65,7 +93,7 @@ switch ($cmd) {
 }
 
 // Build page.
-echo $turnitintooltwoview->output_header($_SERVER["REQUEST_URI"]);
+echo $turnitinview->output_header($_SERVER["REQUEST_URI"]);
 
 echo html_writer::tag("div", $viewcontext, array("id" => "tii_view_context"));
 

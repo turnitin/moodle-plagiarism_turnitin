@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Plugin de detectare a plagiatului Turnitin';
-$string['turnitintooltwo'] = 'Instrument Turnitin';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Procesul plugin de detectare a plagiatului Turnitin';
 $string['connecttesterror'] = 'Eroare la conectarea la Turnitin. S-a returnat mesajul de eroare de mai jos:<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Configurarea pluginului de detectare a plagiatului 
 $string['tiiexplain'] = 'Turnitin este un produs comercial și trebuie să aveți un abonament plătit pentru a folosi acest serviciu. Pentru mai multe informații citiți <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>';
 $string['useturnitin'] = 'Activare Turnitin';
 $string['useturnitin_mod'] = 'Activare Turnitin pentru {$a}';
-$string['pp_configuredesc'] = 'Trebuie să configurați acest modul în modulul turnitintooltwo. Faceți clic <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>aici</a> pentru a configura acest plugin';
 $string['turnitindefaults'] = 'Setările implicite ale pluginului de detectare a plagiatului Turnitin';
 $string['defaultsdesc'] = 'Următoarele setări sunt valorile implicite setate la activarea Turnitin într-un modul de activitate';
 $string['turnitinpluginsettings'] = 'Setări plugin de detectare a plagiatului Turnitin';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = 'Avem o problemă temporară. Încercați 
 $string['defaultinserterror'] = 'Eroare la încercarea de a introduce o valoare de setare implicită în baza de date';
 $string['defaultupdateerror'] = 'Eroare la încercarea de a actualiza o valoare de setare implicită în baza de date';
 $string['tiiassignmentgeterror'] = 'Eroare la încercarea de a obține o temă de la Turnitin';
-$string['assigngeterror'] = 'Imposibil de obținut datele turnitintooltwo';
+$string['assigngeterror'] = 'Imposibil de obținut datele Turnitin';
 $string['classupdateerror'] = 'Nu au putut fi actualizate datele cursului Turnitin';
 $string['pp_createsubmissionerror'] = 'Eroare la încercarea de a crea depunerea în Turnitin';
 $string['pp_updatesubmissionerror'] = 'Eroare la încercarea de a redepune lucrarea în Turnitin';
@@ -200,3 +198,74 @@ $string['pending'] = 'În așteptare';
 $string['because'] = 'Cauza este faptul că un administrator a șters o temă în așteptare din coada de procesare și a întrerupt depunerea în Turnitin.<br /><strong>Fișierul există în continuare în Moodle, contactați profesorul.</strong><br />Căutați mai jos codul de eroare:';
 $string['submitpapersto_help'] = '<strong>Niciun depozit: </strong><br />Turnitin este configurat să nu stocheze documentele depuse în niciun depozit. Vom procesa lucrarea numai pentru o verificare inițială de similaritate.<br /><br /><strong>Depozit standard: </strong><br />Turnitin va trimite un exemplar al documentului depus numai în Depozitul standard. Alegând această opțiune, Turnitin va fi configurat să folosească numai documentele depuse pentru a efectua verificări de similaritate pentru documente depuse în viitor.<br /><br /><strong>Depozitul instituțional (dacă este cazul): </strong><br />Prin alegerea acestei opțiuni, Turnitin este configurat să adauge documentele depuse într-un depozit privat al instituției. Verificările de similaritate pentru documentele depuse se vor efectua de către alți profesori din instituția dvs.';
 $string['errorcode12'] = 'Fișierul nu a fost depus la Turnitin deoarece aparține unei teme la care cursul a fost șters. ID rând: ({$a->id}) | ID modul de curs: ({$a->cm}) |  ID de utilizator: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Configurarea contului Turnitin';
+$string['turnitinaccountid'] = 'ID de cont Turnitin';
+$string['turnitinsecretkey'] = 'Cheia partajată Turnitin';
+$string['turnitinapiurl'] = 'URL-ul API Turnitin';
+$string['tiidebugginglogs'] = 'Depanare și înregistrare în jurnal';
+$string['turnitindiagnostic'] = 'Activați Modul diagnostic';
+$string['turnitindiagnostic_desc'] = '<b>[Atenție]</b><br />Activați Modul diagnostic numai pentru a identifica problemele cu API Turnitin.';
+$string['tiiaccountsettings_desc'] = 'Asigurați-vă că aceste setări sunt identice cu cele pe care le-ați configurat în contul Turnitin, în caz contrar puteți întâmpina probleme în crearea temelor și/dau în lucrul cu materialele depuse de studenți.';
+$string['tiiaccountsettings'] = 'Setările contului Turnitin';
+$string['turnitinusegrademark'] = 'Utilizare GradeMark';
+$string['turnitinusegrademark_desc'] = 'Stabiliți dacă depunerile se vor nota prin GradeMark.<br /><i>(Opțiunea este disponibilă doar utilizatorilor pentru conturile cărora s-a configurat GradeMark)</i>';
+$string['turnitinenablepeermark'] = 'Activarea temelor Peermark';
+$string['turnitinenablepeermark_desc'] = 'Stabiliți dacă se vor putea crea teme Peermark.<br/><i>(Opțiunea este disponibilă doar utilizatorilor pentru conturile cărora s-a configurat Peermark)</i>';
+$string['turnitinuseerater'] = 'Activare ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Alegeți dacă activați verificarea gramaticii cu ETS&copy;.<br /><i>(Activați această opțiune doar dacă ETS&copy; e-rater este activat în contul Turnitin)</i>';
+$string['transmatch_desc'] = 'Determină dacă setarea Similitudini cu traduceri va fi disponibilă în ecranul de configurare a temei.<br /><i>(Activați această opțiune doar dacă Similitudini cu traduceri este activată la contul Turnitin)</i>';
+$string['repositoryoptions_0'] = 'Activarea opțiunilor de depozit standard pentru profesor';
+$string['repositoryoptions_1'] = 'Activarea opțiunilor de depozit extinse pentru profesor';
+$string['repositoryoptions_2'] = 'Toate lucrările se trimit în depozitul standard';
+$string['repositoryoptions_3'] = 'Nu se trimite nicio lucrare în niciun depozit';
+$string['turnitinrepositoryoptions'] = 'Teme – depozit de lucrări';
+$string['turnitinrepositoryoptions_desc'] = 'Alegeți opțiunile de depozit pentru temele Turnitin.<br /><i>(Depozitul instituțional este disponibil doar utilizatorilor pentru ale căror conturi s-a activat acest lucru)</i>';
+$string['tiimiscsettings'] = 'Diverse setări de plugin';
+$string['pp_agreement_default'] = 'Confirm că această depunere este munca mea și îmi asum toată răspunderea pentru orice violare a drepturilor de autor care se poate acea loc ca rezultat al acestei depuneri.';
+$string['pp_agreement_desc'] = '<b>[Opțional]</b><br />Introduceți o declarație de confirmare a acordului pentru depuneri.<br />(<b>Observație:</b> Dacă acordul este lăsat complet gol, studenților nu li se va cere nicio confirmare a acordului în momentul depunerii)';
+$string['pp_agreement'] = 'Exonerare de răspundere/Acord';
+$string['studentdataprivacy'] = 'Setările de confidențialitate a datelor studenților';
+$string['studentdataprivacy_desc'] = 'Următoarele setări pot fi configurate pentru a împiedica transmiterea datelor personale ale studentului către Turnitin, prin API.';
+$string['enablepseudo'] = 'Activarea confidențialității studentului';
+$string['enablepseudo_desc'] = 'Dacă această opțiune este selectată, adresele de e-mail ale studenților vor fi transformate în pseudoadrese echivalente în apelurile API Turnitin.<br /><i>(<b>Observație:</b> Această opțiune nu se poate modifica dacă s-au sincronizat deja date ale utilizatorului din Moodle în Turnitin)</i>';
+$string['pseudofirstname'] = 'Pseudoprenumele studentului';
+$string['pseudofirstname_desc'] = '<b>[Opțional]</b><br />Prenumele studentului care se va afișa în vizualizatorul de documente Turnitin';
+$string['pseudolastname'] = 'Pseudonumele de familie al studentului';
+$string['pseudolastname_desc'] = 'Numele de familie al studentului care se va afișa în vizualizatorul de documente Turnitin';
+$string['pseudolastnamegen'] = 'Generarea automată a numelui de familie';
+$string['pseudolastnamegen_desc'] = 'Dacă opțiunea este setată la valoarea da și presudonumele de familie este setat la un câmp din profilul de utilizator, câmpul se va completa automat cu un identificator unic.';
+$string['pseudoemailsalt'] = 'Completare cu numere pseudoaleatoare la criptare';
+$string['pseudoemailsalt_desc'] = '<b>[Opțional]</b><br />O completare opțională pentru a mări complexitatea pseudoadresei de e-mail generate a studentului.<br />(<b>Observație:</b> Completarea trebuie să rămână neschimbată pentru a avea pseudoadrese de e-mail uniforme)';
+$string['pseudoemaildomain'] = 'Pseudodomeniu de e-mail';
+$string['pseudoemaildomain_desc'] = '<b>[Opțional]</b><br />Un domeniu opțional pentru pseudoadresele de e-mail. (Dacă rămâne necompletat, primește valoarea implicită @tiimoodle.com)';
+$string['pseudoemailaddress'] = 'Pseudoadresă de e-mail';
+$string['connecttest'] = 'Testarea conexiunii Turnitin';
+$string['connecttestsuccess'] = 'Moodle s-a conectat cu succes la Turnitin.';
+$string['diagnosticoptions_0'] = 'Dezactivat';
+$string['diagnosticoptions_1'] = 'Standard';
+$string['diagnosticoptions_2'] = 'Depanare';
+$string['repositoryoptions_4'] = 'Depuneți toate lucrările la depozitul instituției';
+$string['turnitinrepositoryoptions_help'] = '<strong>Activarea opțiunilor de depozit standard pentru profesor: </strong><br />Profesorii pot configura Turnitin să adauge documente în depozitul standard, în depozitul privat al instituţiei sau în niciun depozit.<br /><br /><strong>Activarea opțiunilor de depozit extinse pentru profesor: </strong><br />Această opțiune le permite profesorilor să vizualizeze o setare a temei care îi lasă pe studenți să specifice sistemului Turnitin unde vor fi stocate documentele lor. Studenții pot alege să adauge documentele în depozitul standard de documente sau în depozitul privat al instituției dumneavoastră.<br /><br /><strong>Toate lucrările se trimit în depozitul standard: </strong><br />În mod implicit, toate documentele vor fi adăugate în depozitul standard al studentului.<br /><br /><strong>Nu se trimite nicio lucrare în niciun depozit: </strong><br />Documentele vor fi folosite numai pentru a efectua verificarea inițială de sistemul Turnitin și pentru a le afișa profesorului pentru evaluare.<br /><br /><strong>Depuneți toate lucrările la depozitul instituției: </strong><br />Turnitin este configurat să stocheze toate lucrările în depozitul de lucrări al instituției. Verificările de similaritate pentru documentele depuse se vor efectua de către alți profesori din instituția dumneavoastră.';
+$string['turnitinuseanon'] = 'Utilizarea însemnărilor anonime';
+$string['turnitinuseanon_desc'] = 'Stabiliți dacă însemnările anonime vor fi permise la notarea depunerilor.<br /><i>(Opțiunea este disponibilă doar utilizatorilor pentru conturile cărora s-au configurat însemnările anonima)</i>';
+$string['createassignmenterror'] = 'Eroare la încercarea de a crea tema în Turnitin';
+$string['editassignmenterror'] = 'Eroare la încercarea de a modifica tema în Turnitin';
+$string['ppassignmentediterror'] = 'Modulul {$a->title} (ID TII: {$a->assignmentid}) nu s-a putut edita în Turnitin, consultați jurnalele API pentru mai multe informații';
+$string['pp_classcreationerror'] = 'Acest curs nu a putut fi creat în Turnitin, consultați jurnalele API pentru mai multe informații';
+$string['unlinkusers'] = 'Dezasocierea utilizatorilor';
+$string['relinkusers'] = 'Reasocierea utilizatorilor';
+$string['unlinkrelinkusers'] = 'Dezasocierea/reasocierea utilizatorilor Turnitin';
+$string['nointegration'] = 'Fără integrare';
+$string['sprevious'] = 'Anterior';
+$string['snext'] = 'Următorul';
+$string['slengthmenu'] = 'Afișarea intrărilor din _MENU_';
+$string['ssearch'] = 'Căutare:';
+$string['sprocessing'] = 'Se încarcă datele din Turnitin...';
+$string['szerorecords'] = 'Nu există date de afișat.';
+$string['sinfo'] = 'Se afișează intrările _START_ – _END_ din _TOTAL_.';
+$string['userupdateerror'] = 'Imposibil de actualizat datele utilizatorilor';
+$string['connecttestcommerror'] = 'Imposibil de conectat la Turnitin. Verificați setarea URL-ului API.';
+$string['userfinderror'] = 'Eroare la încercarea de a găsi utilizatorul în Turnitin';
+$string['tiiusergeterror'] = 'Eroare la încercarea de obține detaliile utilizatorului de la Turnitin';
+$string['usercreationerror'] = 'Crearea utilizatorului Turnitin nu a reușit';
+$string['ppassignmentcreateerror'] = 'Acest modul nu a putut fi creat în Turnitin, consultați jurnalele API pentru mai multe informații';

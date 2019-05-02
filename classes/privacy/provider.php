@@ -17,9 +17,10 @@
 /**
  * Privacy Subsystem implementation for mod_turnitintool.
  *
- * @package    plagiarism_turnitin
- * @copyright  2018 David Winn <dwinn@turnitin.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_turnitin
+ * @copyright 2018 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_turnitin\privacy;
@@ -76,6 +77,7 @@ class provider implements
             'lastname' => 'privacy:metadata:plagiarism_turnitin_client:lastname',
             'submission_title' => 'privacy:metadata:plagiarism_turnitin_client:submission_title',
             'submission_filename' => 'privacy:metadata:plagiarism_turnitin_client:submission_filename',
+            'submission_content' => 'privacy:metadata:plagiarism_turnitin_client:submission_content',
         ], 'privacy:metadata:plagiarism_turnitin_client');
 
         return $collection;

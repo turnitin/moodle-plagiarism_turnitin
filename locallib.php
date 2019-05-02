@@ -18,7 +18,8 @@
  * Extra helper methods for plagiarism_turnitin component
  *
  * @package   plagiarism_turnitin
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @authior   John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,9 +33,9 @@ if (!defined('MOODLE_INTERNAL')) {
  * @return $submitpapersto int - The repository to submit to.
  */
 function plagiarism_turnitin_override_repository($submitpapersto) {
-    $config = turnitintooltwo_admin_config();
+    $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-    switch ($config->repositoryoption) {
+    switch ($config->plagiarism_turnitin_repositoryoption) {
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
             break;

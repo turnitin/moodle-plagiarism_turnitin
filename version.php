@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
-$plugin->version = 2019031301;
-$plugin->release = "2.7+";
-$plugin->requires = 2014051200;
+$plugin->version = 2019050201;
+$plugin->release = "3.1+";
+$plugin->requires = 2016052300;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
 
@@ -32,6 +32,5 @@ if (!empty($CFG->version)) {
 }
 
 $plugin->dependencies = array(
-    'mod_turnitintooltwo' => 2018102601,
     'mod_assign' => 2013110500
 );

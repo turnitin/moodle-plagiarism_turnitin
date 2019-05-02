@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   turnitintooltwo
+ * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
  */
 
@@ -26,7 +26,6 @@
 
 // General.
 $string['pluginname'] = 'Turnitin 표절 플러그인';
-$string['turnitintooltwo'] = 'Turnitin 도구';
 $string['turnitin'] = 'Turnitin';
 $string['task_name'] = 'Turnitin 표절 플러그인 작업';
 $string['connecttesterror'] = 'Turnitin에 연결하는 데 오류가 생겼습니다. 오류 메시지가 아래에 있습니다.<br />';
@@ -105,7 +104,6 @@ $string['turnitinconfig'] = 'Turnitin 표절 Plugin 구성';
 $string['tiiexplain'] = 'Turnitin은 상업 제품이며 이 서비스를 사용하려면 사용료를 지불하여야 합니다. 자세한 사항은 <a href=http://docs.moodle.org/en/Turnitin_administration>http://docs.moodle.org/en/Turnitin_administration</a>를 참조하십시오.';
 $string['useturnitin'] = 'Turnitin 활성화 하기';
 $string['useturnitin_mod'] = 'Turnitin 활성화 대상 {$a}';
-$string['pp_configuredesc'] = 'turnitintooltwo 모듈 내에서 이 모듈을 구성해야 합니다. <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>여기</a>를 클릭하여 이 플러그인을 구성하십시오.';
 $string['turnitindefaults'] = 'Turnitin 표절 플러그인 기본 환경';
 $string['defaultsdesc'] = '다음의 환경들은 Turnitin을 활동 모듈에서 활성화시킬 때의 기본 세트입니다';
 $string['turnitinpluginsettings'] = 'Turnitin 표절 플러그인 환경';
@@ -181,7 +179,7 @@ $string['turnitintoolofflineerror'] = '일시적인 문제가 발생했습니다
 $string['defaultinserterror'] = '데이타베이스에 기본 환경값을 삽입하는 데 오류가 생겼습니다.';
 $string['defaultupdateerror'] = '데이타베이스에 있는 기본 환경값을 업데이트하는 데 오류가 생겼습니다.';
 $string['tiiassignmentgeterror'] = 'Turnitin에서 과제를 가져오는데 오류가 발생하였습니다';
-$string['assigngeterror'] = 'turnitintooltwo 데이타를 취득할 수 없었음';
+$string['assigngeterror'] = 'Turnitin 데이타를 취득할 수 없었음';
 $string['classupdateerror'] = 'Turnitin 클래스 데이타를 업데이트할 수 없었습니다';
 $string['pp_createsubmissionerror'] = 'Turnitin에서 제출물을 생성하는데 오류가 발생하였습니다';
 $string['pp_updatesubmissionerror'] = 'Turnitin에 대해 제출물을 재제출하는데 오류가 발생하였습니다';
@@ -200,3 +198,74 @@ $string['pending'] = '보류 중';
 $string['because'] = '관리자가 처리 queue에 보류 중인 과제를 삭제하고 Turnitin에 대한 제출을 중단했기 때문입니다.<br /><strong>파일이 아직 Moodle에 있습니다. 담당 강사에게 문의하십시오.</strong><br />오류 코드는 아래에서 확인하십시오.';
 $string['submitpapersto_help'] = '<strong>보관소 없음: </strong><br />Turnitin은 제출된 문서를 데이터베이스에 저장하지 않습니다. 보고서는 초기 유사성 검사를 수행할 목적으로만 처리됩니다.<br /><br /><strong>표준 보관소: </strong><br />Turnitin은 제출된 문서의 사본을 표준 데이터베이스에만 저장합니다. 이 옵션을 선택하면 Turnitin은 저장된 문서만 사용하여 향후 제출되는 모든 문서에 대해 유사성 검사를 수행합니다.<br /><br /><strong>기관 보관소(적용 가능시): </strong><br />이 옵션을 선택하면 Turnitin이 제출된 문서를 기관의 개인 데이터베이스에만 추가합니다.  제출된 문서의 유사성 검사는 기관 내의 다른 강사가 수행합니다.';
 $string['errorcode12'] = '이 파일은 Turnitin에 제출되지 않았습니다. 삭제된 코스의 과제물에 속해 있기 때문입니다. 행 ID: ({$a->id}) | 코스 모듈 ID: ({$a->cm}) | 사용자 ID: ({$a->userid})';
+$string['tiiaccountconfig'] = 'Turnitin 계정 구성';
+$string['turnitinaccountid'] = 'Turnitin 계정 아이디';
+$string['turnitinsecretkey'] = 'Turnitin 공유 키';
+$string['turnitinapiurl'] = 'Turnitin API URL';
+$string['tiidebugginglogs'] = '디버깅 및 로깅';
+$string['turnitindiagnostic'] = '진단 모드를 활성화 시키기';
+$string['turnitindiagnostic_desc'] = '<b>[주의]</b><br />Turnitin API의 문제들을 찾아내기 위해서만 진단 모드를 활성화 시킵니다.';
+$string['tiiaccountsettings_desc'] = '이 설정은 귀하의 Turnitin 계정에서 구성한 설정과 일치해야 합니다. 그렇지 않으면 과제 생성 및/또는 학생 제출물에 문제가 발생할 수 있습니다.';
+$string['tiiaccountsettings'] = 'Turnitin 계정 설정';
+$string['turnitinusegrademark'] = 'GradeMark 사용하기';
+$string['turnitinusegrademark_desc'] = '제출물을 채점하는 데 GradeMark를 사용할 지 Moodle을 사용할 지 결정하십시오.<br /><i>(이는 계정에 GradeMark가 구성되어 있는 분만 사용할 수 있습니다)</i>';
+$string['turnitinenablepeermark'] = 'Peermark 과제 활성화 하기';
+$string['turnitinenablepeermark_desc'] = 'Peermark 과제의 생성을 허용할 것인지를 선택하십시오.<br/><i>(T이는 계정에 Peermark 구성이 있을 경우에만 사용가능합니다)</i>';
+$string['turnitinuseerater'] = 'ETS&copy; 활성화';
+$string['turnitinuseerater_desc'] = 'ETS&copy; 문법 검토를 활성화할지 결정하십시오.<br /><i>(Turnitin 계정에서 ETS&copy; e-rater를 활성화한 경우에만 이 옵션을 활성화하십시오)</i>';
+$string['transmatch_desc'] = '번역된 일치를 과제 셋업 스크린에서 설정으로 사용할 것인지 결정하십시오.<br /><i>(Turnitin 계정에서 번역된 일치를 활성화한 경우에만 이 옵션을 활성화하십시오)</i>';
+$string['repositoryoptions_0'] = '강사에게 Turnitin 보관소 보관 옵션을 활성화하기';
+$string['repositoryoptions_1'] = '강사 확장 보관소 옵션 활성화';
+$string['repositoryoptions_2'] = '표준 보관소에 모든 보고서를 제출하십시오';
+$string['repositoryoptions_3'] = '보관소에 어떤 보고서도 제출하지 마십시오';
+$string['turnitinrepositoryoptions'] = '보고서 보관소 설정';
+$string['turnitinrepositoryoptions_desc'] = 'Turnitin 과제의 보관소 옵션을 선택하십시오.<br /><i>(기관 사용자 계정이 활성화된 사용자만 기관 보관소 이용 가능)</i>';
+$string['tiimiscsettings'] = '기타 플러그인 설정';
+$string['pp_agreement_default'] = '이 박스에 체크함으로써 본 제출물이 나의 저작임을 확인하며 이의 제출 결과로 발생할 수 있는 모든 저작권 침해에 대해 책임을 받아들입니다.';
+$string['pp_agreement_desc'] = '<b>[선택]</b><br />제출물에 대한 동의 확인 문장을 입력하십시오.<br />(<b>주의:</b> 본 동의서가 공백일 경우, 제출 도중 학생에 의한 동의 확인이 요구되지 않을 것입니다)';
+$string['pp_agreement'] = '면책조항/동의';
+$string['studentdataprivacy'] = '학생 데이타 개인 정보 환경';
+$string['studentdataprivacy_desc'] = 'API를 통해 Turnitin으로 학생의 개인 데이타가 전송되지 않도록 하려면 다음 설정을 구성할 수 있습니다.';
+$string['enablepseudo'] = '학생 개인 정보 보호 활성화하기';
+$string['enablepseudo_desc'] = '본 옵션을 선택할 경우, 학생 이메일들이 Turnitin API 콜을 위해 가명으로 전환될 것입니다.<br /><i>(<b>참고:</b>  본 옵션은 Moodle 사용자 데이타가 벌써 동시화된 경우 변경할 수 없습니다)</i>';
+$string['pseudofirstname'] = '학생 가명 (이름)';
+$string['pseudofirstname_desc'] = '<b>[옵션]</b><br />Turnitin의 문서보기 창에 나타날 학생의 이름';
+$string['pseudolastname'] = '학생 가명 (성)';
+$string['pseudolastname_desc'] = 'Turnitin의 문서보기 창에 나타날 학생의 (가족) 성';
+$string['pseudolastnamegen'] = '(가족) 성 자동 작성하기';
+$string['pseudolastnamegen_desc'] = '가명 (가족) 성에 대해 동의하고, 이를 사용자 프로파일 필드에 설정한 경우, 본 필드는 자동적으로 고유한 식별력을 갖게 됩니다.';
+$string['pseudoemailsalt'] = '가 암호 Salt';
+$string['pseudoemailsalt_desc'] = '<b>[옵션]</b><br />학생의 가이메일의 복합성을 높이기 위한 salt 옵션.<br />(<b>참고:</b> 지속적인 가이메일을 유지하기 위해서는 이 salt를 변경할 수 없습니다)';
+$string['pseudoemaildomain'] = '가 이메일 도메인';
+$string['pseudoemaildomain_desc'] = '<b>[옵션]</b><br />가이메일 주소의 옵션 도메인. (비워둘 경우 기본 값인 @tiimoodle.com으로 설정)';
+$string['pseudoemailaddress'] = '가 이메일 주소';
+$string['connecttest'] = 'Turnitin 접속을 시험';
+$string['connecttestsuccess'] = 'Moodle이 Turnitin에 성공적으로 연결되었습니다.';
+$string['diagnosticoptions_0'] = '꺼짐';
+$string['diagnosticoptions_1'] = '표준';
+$string['diagnosticoptions_2'] = '디버깅';
+$string['repositoryoptions_4'] = '기관 보관소에 모든 보고서 제출';
+$string['turnitinrepositoryoptions_help'] = '<strong>강사에게 Turnitin 보관소 보관 옵션을 활성화하기: </strong><br />강사는 문서를 표준 데이터베이스에 추가하거나, 기관의 개인 데이터베이스에 추가하거나, 데이터베이스에 추가하지 않도록 Turnitin에 지정할 수 있습니다.<br /><br /><strong>강사 확장 보관소 옵션 활성화: </strong><br />강사는 이 옵션을 사용하여 과제 설정을 보고 Turnitin에서  학생들이 문서 저장 위치를 지정하도록 허용할 수 있습니다. 학생들은 문서를 표준 학생 데이터베이스에 추가할지 아니면 기관의 개인 데이터베이스에 추가할지를 선택할 수 있습니다.<br /><br /><strong>표준 보관소에 모든 보고서를 제출하십시오: </strong><br />기본적으로 모든 문서는 표준 학생 데이터베이스에 추가됩니다.<br /><br /><strong>보관소에 어떤 보고서도 제출하지 마십시오: </strong><br />문서는 Turnitin에서 초기 검사를 수행하여 강사에게 채점 결과를 표시하는 데에만 사용됩니다.<br /><br /><strong>기관 보관소에 모든 보고서 제출: </strong><br />Turnitin은 기관의 보고서 데이터베이스 내에 모든 보고서를 저장합니다. 제출된 문서에 대한 유사성 검사는 기관 내의 다른 강사에 의해서만 수행됩니다.';
+$string['turnitinuseanon'] = '익명 채점 사용하기';
+$string['turnitinuseanon_desc'] = '제출물을 채점할 때 익명 채점을 허용할 것인지 결정하십시오.<br /><i>(이는 계정에 익명 채점이 구성되어 있는 분만 사용할 수 있습니다)</i>';
+$string['createassignmenterror'] = 'Turnitin에서 과제를 생성하는데 오류가 발생하였습니다';
+$string['editassignmenterror'] = 'Turnitin에 있는 과제를 수정하는데 오류가 발생하였습니다';
+$string['ppassignmentediterror'] = '모듈{$a->title}(TII ID: {$a->assignmentid})은 Turnitin에서 편집되지 못했습니다. 자세한 정보는 해당 API 로그를 참조하십시오.';
+$string['pp_classcreationerror'] = '이 클래스는 Turnitin에서 생성되지 못했습니다. 자세한 정보는 해당 API 로그를 참조하십시오.';
+$string['unlinkusers'] = '사용자 링크 취소하기';
+$string['relinkusers'] = '사용자 재연결하기';
+$string['unlinkrelinkusers'] = 'Turnitin 사용자 연결 취소/재연결하기';
+$string['nointegration'] = '통합이 없음';
+$string['sprevious'] = '이전';
+$string['snext'] = '다음';
+$string['slengthmenu'] = '보기_MENU_입력사항';
+$string['ssearch'] = '검색:';
+$string['sprocessing'] = '처리중...';
+$string['szerorecords'] = '기록이 없음';
+$string['sinfo'] = '_START_ to _END_ 의 _TOTAL_ 사항 표시';
+$string['userupdateerror'] = '사용자 데이타를 업데이트할 수 없었음';
+$string['connecttestcommerror'] = 'Turnitin에 연결할 수 없었습니다. API URL 환경을 재확인하시기 바랍니다.';
+$string['userfinderror'] = 'Turnitin에 있는 사용자를 찾는 데 오류가 발생하였습니다';
+$string['tiiusergeterror'] = 'Turnitin에서 사용자 상세사항을 가져오는 데 오류가 발생하였습니다';
+$string['usercreationerror'] = 'Turnitin 사용자 생성 실패';
+$string['ppassignmentcreateerror'] = '이 모듈은 Turnitin에서 생성되지 못했습니다. 자세한 정보는 해당 API 로그를 참조하십시오.';

@@ -1,3 +1,28 @@
+### Date:       2019-May-02
+### Release:    v2019050201
+
+#### :zap: What's new
+
+---
+
+#### Moodle Plagiarism Plugin no longer dependant on Moodle V2
+
+Previously, the Plagiarism Plugin was bundled along with Moodle Direct V2. Now, the Plagiarism Plugin is installed and configured separately. 
+     
+If you are upgrading from a previous version of the Plagiarism Plugin, your existing configuration will be migrated over from Moodle V2.
+     
+For more details on how to configure your instance of Moodle Plagiarism Plugin, [please see the guidance](https://help.turnitin.com/feedback-studio/moodle/plagiarism-plugin/administrator/getting-started/step-3-configuring-turnitin-in-moodle.htm).
+     
+#### Forum messaging error resolved
+
+When creating a forum post within Turnitin, we were showing information about report regeneration times when resubmitting. As information about resubmissions is not relevant to forum users, we’ve removed this notification from this view.
+
+#### Improvements to plugin stability and modals
+
+We’ve improved the stability of the plugin and made changes to our modals (dialog boxes) within Moodle. Modals will now be clearer and adapt to the browser theme that you’re using to improve the usability of the plugin.
+
+---
+
 ### Date:       2019-March-13
 ### Release:    v2019031301
 

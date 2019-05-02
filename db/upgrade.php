@@ -288,7 +288,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', errorcode = NULL WHERE errorcode = 13");
     }
 
-    if ($oldversion < 2019031302) {
+    if ($oldversion < 2019050201) {
         // If V2 is installed, copy the settings across to PP.
         if ($DB->get_record('config_plugins', array('plugin' => 'mod_turnitintooltwo'))) {
             // Get the settings for the V2 plugin.

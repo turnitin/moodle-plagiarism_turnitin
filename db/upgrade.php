@@ -240,7 +240,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2017013101) {
+    if ($oldversion < 2017012601) {
         $table = new xmldb_table('plagiarism_turnitin_files');
 
         // Due to an inconsistency with install and upgrade scripts, some users will
@@ -269,7 +269,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
     }
 
-    if ($oldversion < 2017012601) {
+    if ($oldversion < 2017013101) {
         // Add new column that has to be unique.
         $table = new xmldb_table('plagiarism_turnitin_config');
         $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'value');

@@ -23,7 +23,7 @@
                 <FIELD NAME="orcapable" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="submissiontype" NEXT="errorcode"/>
                 <FIELD NAME="errorcode" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="orcapable" NEXT="errormsg"/>
                 <FIELD NAME="errormsg" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="errorcode" NEXT="student_read"/>
-                <FIELD NAME="student_read" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="errormsg" NEXT="gm_feedback"/>
+                <FIELD NAME="student_read" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="errormsg" NEXT="gm_feedback"/>
                 <FIELD NAME="gm_feedback" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="student_read" NEXT="duedate_report_refresh"/>
                 <FIELD NAME="duedate_report_refresh" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 => Report does not need updating, 1 => Originality report needs to be updated, 2 => Report has been updated" PREVIOUS="gm_feedback"/>
             </FIELDS>

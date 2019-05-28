@@ -34,7 +34,7 @@ require_once $CFG->dirroot.'/webservice/tests/helpers.php';
  * @copyright  2017 Turnitin
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class test_lib extends advanced_testcase {
+abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
 
     /**
      * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database association work.

@@ -1,5 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_resubmission
-Feature: Plagiarism plugin works with a Moodle Assignment
+Feature: Plagiarism plugin works with a Moodle Assignment when making a resubmission
   In order to allow students to resubmit assignment submissions to Turnitin
   As a user
   I need to create an assignment with the plugin enabled, resubmissions allowed and the student can resubmit.

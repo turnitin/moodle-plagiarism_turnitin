@@ -1,6 +1,6 @@
 @plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_drafts
-Feature: Plagiarism plugin works with a Moodle Assignment
-  In order to allow students to send assignment submissions to Turnitin
+Feature: Plagiarism plugin works with a Moodle Assignment utilising the draft submission feature
+  In order to allow students to send draft assignment submissions to Turnitin
   As a user
   I need to create an assignment with the plugin enabled and the assignment to launch successfully.
 

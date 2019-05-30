@@ -1,6 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_groups
-
-Feature: Group assignment submissions
+Feature: Plagiarism plugin works with a Moodle Assignment for group submissions
   In order to allow students to work collaboratively on an assignment
   As a teacher
   I need to group submissions in groups

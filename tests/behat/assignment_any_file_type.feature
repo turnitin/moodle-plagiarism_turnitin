@@ -1,5 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_sanity @plagiarism_turnitin_assignment @plagiarism_turnitin_assignment_any_file_type
-Feature: Plagiarism plugin works with a Moodle Assignment
+Feature: Plagiarism plugin works with a Moodle Assignment for a filetype which won't generate an originality report
   In order to allow students to send assignment submissions to Turnitin
   As a user
   I need to create an assignment with the plugin enabled and the assignment to launch successfully.

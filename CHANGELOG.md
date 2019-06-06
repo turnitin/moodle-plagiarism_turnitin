@@ -11,6 +11,8 @@ You can find out more about Moodle 3.7 via Moodle's [release notes](https://docs
 
 #### :wrench: Fixes and enhancements
 
+---
+
 We’ve been doing bug fixing behind the scenes to improve the usability of the Moodle Plagiarism Plugin. 
 
 This includes fixing a bug that was erroneously displaying rubric options when creating a forum in Moodle with the Plagiarism Plugin enabled. This has been resolved and rubric options will no longer be available during forum creation.

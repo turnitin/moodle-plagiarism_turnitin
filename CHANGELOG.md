@@ -1,3 +1,18 @@
+### Date:		2019-June-06
+### Release:	v2019060601
+
+#### :wrench: Fixes and enhancements
+
+#### Bug fixes
+
+We’ve been doing bug fixing behind the scenes to improve the usability of the Moodle Plagiarism Plugin. 
+
+This includes fixing a bug that was erroneously displaying rubric options when creating a forum in Moodle with the Plagiarism Plugin enabled. This has been resolved and rubric options will no longer be available during forum creation.
+
+Download the latest version from the above link.
+
+---
+
 ### Date:       2019-May-02
 ### Release:    v2019050201
 

@@ -89,8 +89,8 @@ class turnitin_view {
      * @param type $plugin_defaults
      * @return type
      */
-    public function add_elements_to_settings_form($mform, $course, $location = "activity", $cmid = 0, $currentrubric = 0) {
-        global $CFG, $PAGE, $USER, $DB;
+    public function add_elements_to_settings_form($mform, $course, $location = "activity", $modulename = "", $cmid = 0, $currentrubric = 0) {
+        global $PAGE, $USER, $DB;
 
         // Include JS strings
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
@@ -100,7 +100,7 @@ class turnitin_view {
         $configwarning = '';
         $rubrics = array();
 
-        if ($location == "activity") {
+        if ($location == "activity" && $modulename != 'mod_forum') {
             $instructor = new turnitin_user($USER->id, 'Instructor');
 
             $instructor->join_user_to_class($course->turnitin_cid);
@@ -282,7 +282,7 @@ class turnitin_view {
                 $mform->addHelpButton('plagiarism_locked_message', 'locked_message', 'plagiarism_turnitin');
             }
 
-            if ($location == "activity" && $config->plagiarism_turnitin_usegrademark) {
+            if ($location == "activity" && $modulename != "mod_forum" && $config->plagiarism_turnitin_usegrademark) {
                 if (!empty($currentrubric)) {
                     $attachrubricstring = get_string('attachrubric', 'plagiarism_turnitin');
                     if (!isset($rubrics[$attachrubricstring][$currentrubric])) {
@@ -297,6 +297,7 @@ class turnitin_view {
                             'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
                     )
                 );
+
                 $rubricmanagerlink = html_writer::tag('div', $rubricmanagerlink, array('class' => 'row_rubric_manager'));
                 $mform->addElement('selectgroups', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'), $rubrics);
                 $mform->addElement('static', 'rubric_link', '', $rubricmanagerlink);

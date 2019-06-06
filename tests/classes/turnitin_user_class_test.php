@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_user_class_testcase extends test_lib {
+class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_lib {
 
     public $faketiicomms;
 

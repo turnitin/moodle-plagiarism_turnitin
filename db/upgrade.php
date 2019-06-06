@@ -92,7 +92,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 }
             }
         }
-
         upgrade_plugin_savepoint(true, 2014012405, 'plagiarism', 'turnitin');
     }
 
@@ -187,6 +186,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2016011101, ‘plagiarism’, ‘turnitin’);
     }
 
     if ($oldversion < 2016011104) {
@@ -195,6 +195,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2016011104, ‘plagiarism’, ‘turnitin’);
     }
 
     if ($oldversion < 2016011105) {
@@ -238,9 +239,10 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2016091402, ‘plagiarism’, ‘turnitin’);
     }
 
-    if ($oldversion < 2017013101) {
+    if ($oldversion < 2017012601) {
         $table = new xmldb_table('plagiarism_turnitin_files');
 
         // Due to an inconsistency with install and upgrade scripts, some users will
@@ -267,9 +269,11 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Remove old PP event from the database if it exists.
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
+
+        upgrade_plugin_savepoint(true, 2017012601, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2017012601) {
+    if ($oldversion < 2017013101) {
         // Add new column that has to be unique.
         $table = new xmldb_table('plagiarism_turnitin_config');
         $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'value');
@@ -283,11 +287,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Add hash as key after update.
         $key = new xmldb_key('config_hash', XMLDB_KEY_UNIQUE, array('config_hash'));
         $dbman->add_key($table, $key);
+
+        upgrade_plugin_savepoint(true, 2017013101, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2019031301) {
         // Reset all error code 13s so that we are on a clean slate with the new implementation.
         $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', errorcode = NULL WHERE errorcode = 13");
+
+        upgrade_plugin_savepoint(true, 2019031301, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2019050201) {
@@ -391,6 +399,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 plagiarism_turnitin_activitylog('Unable to copy users table during version upgrade because they already exist.', 'PP_UPGRADE');
             }
         }
+        upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
     }
 
     return $result;

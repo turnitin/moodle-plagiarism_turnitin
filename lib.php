@@ -29,7 +29,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 // Constants.
-define('PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE', 41943040);
+define('PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE', 104857600);
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
@@ -320,7 +320,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
                 // Create/Edit course in Turnitin and join user to class.
                 $course = $this->get_course_data($cmid, $COURSE->id);
-                $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $cmid, $plagiarismvalues["plagiarism_rubric"]);
+                $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }
 
             // Disable all plagiarism elements if turnitin is not enabled.
@@ -1887,47 +1887,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Call functions to be run by cron
-     */
-    public function cron() {
-        global $DB, $CFG, $pptaskcall;
-
-        // 2.7 onwards we would like to be called from task calls.
-        if ( $CFG->version > 2014051200 AND !$pptaskcall ) {
-            mtrace("[Turnitin Plagiarism Plugin] Aborted Cron call because of active task mode");
-            return;
-        }
-
-        // Reset task call flag.
-        if ( $pptaskcall ) {
-            $pptaskcall = false;
-        }
-
-        // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
-        if (!$this->test_turnitin_connection()) {
-            mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
-            return false;
-        }
-
-        // Update scores by separate submission type.
-        $submissiontypes = array('file', 'text_content', 'forum_post');
-        foreach ($submissiontypes as $submissiontype) {
-            try {
-                $typefield = ($CFG->dbtype == "oci") ? " to_char(submissiontype) " : " submissiontype ";
-                $submissions = $DB->get_records_select('plagiarism_turnitin_files',
-                " statuscode = ? AND ".$typefield." = ?
-                  AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
-                  AND ( orcapable = ? OR orcapable IS NULL ) ",
-                array('success', $submissiontype, 1), 'externalid DESC');
-                $this->cron_update_scores($submissiontype, $submissions);
-            } catch (Exception $ex) {
-                mtrace("Exception in TII cron while updating scores for '$submissiontype' submission types: ".$ex);
-            }
-        }
-        return true;
-    }
-
-    /**
      * Updates the database field duedate_report_refresh for any given submission ID.
      * @param int $id - the ID of the submission to update.
      * @param int $newvalue - the value to which the field should be set.
@@ -1946,13 +1905,22 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param array $submissions - the submissions to be processed
      * @return boolean
      */
-    public function cron_update_scores($submissiontype = 'file', $submissions) {
+    public function cron_update_scores() {
         global $DB;
 
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
         $validatedsubmissions = array();
+
+        $submissions = $DB->get_records_select(
+          'plagiarism_turnitin_files',
+          'statuscode = ?
+          AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
+          AND ( orcapable = ? OR orcapable IS NULL ) ',
+          array('success', 1),
+          'externalid DESC'
+        );
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
@@ -2800,7 +2768,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
  */
 function plagiarism_turnitin_update_reports() {
     $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->cron();
+    return $pluginturnitin->cron_update_scores();
 }
 
 /**

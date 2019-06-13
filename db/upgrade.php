@@ -186,7 +186,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016011101, ‘plagiarism’, ‘turnitin’);
+        upgrade_plugin_savepoint(true, 2016011101, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2016011104) {
@@ -195,7 +195,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016011104, ‘plagiarism’, ‘turnitin’);
+        upgrade_plugin_savepoint(true, 2016011104, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2016011105) {
@@ -239,7 +239,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016091402, ‘plagiarism’, ‘turnitin’);
+        upgrade_plugin_savepoint(true, 2016091402, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2017012601) {

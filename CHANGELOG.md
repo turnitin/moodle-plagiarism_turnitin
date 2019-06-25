@@ -1,5 +1,5 @@
-### Date:       2019-June-06
-### Release:	v2019060601
+### Date:       2019-June-25
+### Release:	v2019062501
 
 #### :wrench: Fixes and enhancements
 

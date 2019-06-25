@@ -19,7 +19,7 @@
  * @copyright 2012 iParadigms LLC
  */
 
-$plugin->version = 2019060601;
+$plugin->version = 2019062501;
 $plugin->release = "3.1+";
 $plugin->requires = 2016052300;
 $plugin->component = 'plagiarism_turnitin';

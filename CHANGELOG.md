@@ -1,3 +1,15 @@
+### Date:       2019-June-25
+### Release:	v2019062501
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Upgrade issues resolved
+
+There was an issue affecting users trying to upgrade the latest version of Moodle Plagiarism Plugin. It was discovered that users attempting to upgrade to v2019060601 from versions older than v2016011101 weren't able to do so. This latest version will allow for all users to upgrade to the latest version from any of the previous versions.
+
+---
 ### Date:       2019-June-06
 ### Release:	v2019060601
 

@@ -36,12 +36,7 @@ class pp_receipt_message {
 
         $subject = get_string('digital_receipt_subject', 'plagiarism_turnitin');
 
-        // Pre 2.9 does not have \core\message\message()
-        if ($CFG->branch >= 29) {
-            $eventdata = new \core\message\message();
-        } else {
-            $eventdata = new stdClass();
-        }
+        $eventdata = new \core\message\message();
         $eventdata->component         = 'plagiarism_turnitin'; // Your component name.
         $eventdata->name              = 'submission'; // This is the message name from messages.php.
         $eventdata->userfrom          = \core_user::get_noreply_user();

@@ -141,11 +141,11 @@ class turnitin_user {
             $userinfoob->userid = $this->id;
             $userinfoob->fieldid = $config->plagiarism_turnitin_pseudolastname;
             $userinfoob->data = $uniqueid;
-            if (isset($userinfoob->data)) {
+            if ($userinfo != false) {
                 $userinfoob->id = $userinfo->id;
-                $DB->update_record('user_info_data', $userinfo);
+                $DB->update_record('user_info_data', $userinfoob);
             } else {
-                $DB->insert_record('user_info_data', $userinfo);
+                $DB->insert_record('user_info_data', $userinfoob);
             }
         } else if ($config->plagiarism_turnitin_pseudolastname != 0) {
             $uniqueid = $userinfo->data;

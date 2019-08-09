@@ -30,6 +30,10 @@ define(['jquery',
 
                 if ($('input[name="coursemodule"]').val()) {
                     var cmid = $('input[name="coursemodule"]').val();
+                } else if (typeof URLSearchParams === 'undefined') {
+                    // Workaround for IE11.
+                    var match = /[?&]id=([^&]+)/.exec(window.location.search);
+                    var cmid = match === null ? null : match[1];
                 } else {
                     var urlParams = new URLSearchParams(window.location.search);
                     var cmid = urlParams.get('id');

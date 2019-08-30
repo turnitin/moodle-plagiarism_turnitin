@@ -90,22 +90,8 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
      */
     public function test_get_contexts_for_userid() {
         $this->resetAfterTest();
-        global $DB;
 
         $csresponse = $this->create_submission();
-
-        // Set the cm to the correct one for our submission.
-        $cms = $DB->get_records('course_modules');
-        $cm = reset($cms);
-        $submissions = $DB->get_records('plagiarism_turnitin_files');
-        $submission = reset($submissions);
-
-        $update = new stdClass();
-        $update->id = $submission->id;
-        $update->cm = $cm->instance;
-        $DB->update_record('plagiarism_turnitin_files', $update);
-
-        $this->assertEquals(1, count($submissions));
 
         $contextlist = provider::get_contexts_for_userid($csresponse["Student"]->id);
 

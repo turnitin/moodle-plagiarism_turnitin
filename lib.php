@@ -2909,7 +2909,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                         plagiarism_turnitin_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
                         mtrace('File not found for submission. Identifier: '.$queueditem->id);
                         $errorcode = 9;
-                        continue;
+                        continue 2;
                     }
 
                     $title = $file->get_filename();
@@ -2922,7 +2922,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                         mtrace($e);
                         mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                         $errorcode = 9;
-                        continue;
+                        continue 2;
                     }
                 } else {
                     // Get the actual text content for a submission.

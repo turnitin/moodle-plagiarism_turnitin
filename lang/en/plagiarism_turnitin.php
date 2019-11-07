@@ -280,7 +280,7 @@ $string['turnitinrepositoryoptions_help'] = '<strong>Enable instructor standard 
 
 $string['turnitinuseanon'] = 'Use Anonymous Marking';
 $string['turnitinuseanon_desc_old'] = 'Choose whether to allow Anonymous Marking when grading submissions.<br /><i>(This is only available to those that have Anonymous Marking configured for their account)</i>';
-$string['turnitinuseanon_desc'] = 'Choose whether to allow Anonymous Marking when grading submissions.<br /> Anonymous Marking will be set when Moodles blind marking is set on an assignment<br /><i>(This is only available to those that have Anonymous Marking configured for their Turnitin account)</i>';
+$string['turnitinuseanon_desc'] = 'Choose whether to allow Anonymous Marking when grading submissions.<br /> Anonymous Marking will be set when Moodles blind marking is enabled on an assignment<br /><i>(This is only available to those that have Anonymous Marking configured for their Turnitin account)</i>';
 
 $string['createassignmenterror'] = 'There was an error trying to create the assignment in Turnitin';
 $string['editassignmenterror'] = 'There was an error trying to edit the assignment in Turnitin';

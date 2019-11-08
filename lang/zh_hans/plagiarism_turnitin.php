@@ -247,7 +247,6 @@ $string['diagnosticoptions_2'] = '调试';
 $string['repositoryoptions_4'] = '将所有文件上传至机构资源库';
 $string['turnitinrepositoryoptions_help'] = '<strong>启用导师标准存储库选项: </strong><br />教员可将 Turnitin 设定为添加文件至标准知识库、至机构的私有知识库、或不添加至知识库。<br /><br /><strong>启用导师扩展存储库选项: </strong><br />这一选项将允许教员查看作业设置，该作业设置允许学生通过 Turnitin 设定文件的储存位置。学生可以选择添加文件至标准学生知识库或添加至您机构的私有知识库。<br /><br /><strong>将所有论文提交至标准存储库: </strong><br />所有文件都默认添加至标准学生知识库。<br /><br /><strong>请勿将任何论文提交至存储库: </strong><br />文件通过 Turnitin 将只用于供教员查看评分和初始查重。<br /><br /><strong>将所有文件上传至机构资源库: </strong><br />Turnitin 被设定为将所有论文储存至机构论文知识库。上传文件的查重工作将由您机构内的其他教员完成。';
 $string['turnitinuseanon'] = '使用匿名标记';
-$string['turnitinuseanon_desc'] = '选择在为提交内容评分时是否允许匿名标记。<br /><i>（仅适用于已为其帐户配置了匿名标记的用户）</i>';
 $string['createassignmenterror'] = '尝试在 Turnitin 中创建作业时出错';
 $string['editassignmenterror'] = '尝试在 Turnitin 中编辑作业时出错';
 $string['ppassignmentediterror'] = '单元 {$a->title}（TII ID：{$a->assignmentid}）无法在 Turnitin 上编辑，请查看您的 API 日志了解更多信息';

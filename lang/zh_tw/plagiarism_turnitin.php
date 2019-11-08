@@ -247,7 +247,6 @@ $string['diagnosticoptions_2'] = '偵錯';
 $string['repositoryoptions_4'] = '將所有文件上傳至機構資源庫';
 $string['turnitinrepositoryoptions_help'] = '<strong>啟用指導教師標準存放庫選項: </strong><br />教員可將 Turnitin 設置為添加文件至標準知識庫、機構私有知識庫或不添加至知識庫。<br /><br /><strong>啟用指導教師的擴充存放庫選項: </strong><br />這一選項將允許教員查看作業設置，該作業設置允許學生通過 Turnitin 設定文件的儲存位置。學生可以選擇添加文件至標準學生知識庫或添加至您機構的私有知識庫。<br /><br /><strong>將所有報告提交至標準存放庫: </strong><br />所有文件都默認添加至標準學生知識庫。<br /><br /><strong>不要將任何報告提交至存放庫: </strong><br />文件通過 Turnitin 將只用于供教員查看評分和初始查重。<br /><br /><strong>將所有文件上傳至機構資源庫: </strong><br />Turnitin 被設定為將所有論文儲存至機構論文知識庫。上傳文件的查重工作將由您機構內的其他教員完成。';
 $string['turnitinuseanon'] = '使用匿名標示';
-$string['turnitinuseanon_desc'] = '選擇在為提交物件評分時是否允許匿名標示。<br /><i>(唯有帳戶設定可匿名標示的使用者才可使用此功能)</i>';
 $string['createassignmenterror'] = '嘗試在 Turnitin 內建立作業時發生錯誤';
 $string['editassignmenterror'] = '嘗試在 Turnitin 內編輯作業時發生錯誤';
 $string['ppassignmentediterror'] = '無法在 Turnitin 上編輯單元 {$a->title} (TII ID：{$a->assignmentid})，請參閱您的 API 記錄檔以取得進一步資訊';

@@ -10,40 +10,22 @@ cache:
     - $HOME/.composer/cache
 
 php:
- - 5.5
  - 7.0
- - 7.2
 
 env:
  global:
   - IGNORE_PATHS=sdk/,pix/,vendor/
   - IGNORE_NAMES=jquery*,styles.css,autoload_static.php
  matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-
-
-#TODO: Readd these once the split is complete.
-
-#  - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
-#  - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-#  - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-#  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
 
 matrix:
   exclude:
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-    php: 7.2
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-    php: 7.2
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
-    php: 5.5
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-    php: 5.5
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-    php: 5.5
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-    php: 5.5
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+    php: 7.0
+  - env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+    php: 7.0
 
 before_install:
   - phpenv config-rm xdebug.ini

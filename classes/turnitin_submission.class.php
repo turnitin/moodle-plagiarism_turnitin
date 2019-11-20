@@ -130,7 +130,7 @@ class turnitin_submission {
                 $forum = $DB->get_record("forum", array("id" => $this->cm->instance));
 
                 // Some forum types don't pass in certain values on main forum page.
-                if ((empty($discussionid) || $querystrid != 0) && ($forum->type == 'blog' || $forum->type == 'single')) {
+                if ((empty($discussionid)) && ($forum->type == 'blog' || $forum->type == 'single')) {
                     $discussion = $DB->get_record_sql('SELECT FD.id
                                                                 FROM {forum_posts} FP JOIN {forum_discussions} FD
                                                                 ON FP.discussion = FD.id
@@ -187,7 +187,6 @@ class turnitin_submission {
      * Get the file information from Moodle. We really specifically only need the itemid.
      */
     public function get_file_info() {
-        global $DB;
         $fs = get_file_storage();
 
         if (!$file = $fs->get_file_by_hash($this->submissiondata->identifier)) {

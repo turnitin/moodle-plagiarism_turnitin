@@ -10,7 +10,7 @@ cache:
     - $HOME/.composer/cache
 
 php:
- - 7.0
+ - 7.2
 
 env:
  global:
@@ -23,15 +23,15 @@ env:
 matrix:
   exclude:
   - env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
-    php: 7.0
+    php: 7.2
   - env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
-    php: 7.0
+    php: 7.2
 
 before_install:
   - phpenv config-rm xdebug.ini
   - cd ../..
   - composer selfupdate
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^1
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:

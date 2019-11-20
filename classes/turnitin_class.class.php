@@ -16,10 +16,8 @@
 
 use Integrations\PhpSdk\TiiClass;
 
-/**
- * @package   plagiarism_turnitin
- * @copyright 2012 iParadigms LLC *
- */
+// @package   plagiarism_turnitin
+// @copyright 2012 iParadigms LLC
 
 defined('MOODLE_INTERNAL') || die();
 

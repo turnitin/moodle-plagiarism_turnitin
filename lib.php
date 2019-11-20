@@ -1018,7 +1018,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // Update assignment in case rubric is not stored in Turnitin yet.
                             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-                            $rubricviewlink = html_writer::tag('span','',
+                            $rubricviewlink = html_writer::tag('span', '',
                                 array('class' => 'rubric_view rubric_view_pp_launch tii_tooltip',
                                     'title' => get_string('launchrubricview',
                                         'plagiarism_turnitin'), 'id' => 'rubric_view_launch'

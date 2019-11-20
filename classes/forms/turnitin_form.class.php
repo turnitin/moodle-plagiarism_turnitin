@@ -33,8 +33,7 @@ require_once($CFG->libdir."/formslib.php");
 class turnitin_form extends moodleform {
 
     // Define the form.
-    public function definition()
-    {
+    public function definition() {
         $mform =& $this->_form;
 
         foreach ($this->_customdata["elements"] as $element) {
@@ -128,8 +127,7 @@ class turnitin_form extends moodleform {
      *
      * @return the form as an object to print to screen at our convenience
      */
-    public function display()
-    {
+    public function display() {
         ob_start();
         parent::display();
         $form = ob_get_contents();

@@ -61,8 +61,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
     }
 
     public function test_check_group_submission() {
-
-        global $DB, $CFG;
+        global $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
         $this->resetAfterTest(true);

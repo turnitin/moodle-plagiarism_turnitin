@@ -68,7 +68,8 @@ class turnitin_assign {
      *
      * @param $assignid
      */
-    public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod, $attemptreopened = null) {
+    public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod,
+                                            $attemptreopened = null) {
         global $DB, $CFG;
 
         // Get the maximum number of file submissions allowed.

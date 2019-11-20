@@ -222,7 +222,7 @@ class turnitin_setupform extends moodleform {
      */
     public function save($data) {
         // Save whether the plugin is enabled for individual modules.
-        $mods = core_component::get_plugin_list('mod');
+        $mods = array_keys(core_component::get_plugin_list('mod'));
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $property = "turnitin_use_mod_" . $mod;

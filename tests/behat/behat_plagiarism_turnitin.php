@@ -233,7 +233,7 @@ class behat_plagiarism_turnitin extends behat_base {
             $newdata[] = $row;
         }
         $tablenode = new TableNode($newdata);
-        $this->execute('behat_data_generators::the_following_exist', array('users', $tablenode));
+        $this->execute('behat_data_generators::the_following_entities_exist', array('users', $tablenode));
     }
 
     /**

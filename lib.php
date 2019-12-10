@@ -1290,7 +1290,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $updaterequired = false;
 
         if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
-                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback')) {
+                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback, errorcode')) {
 
             // Build Plagiarism file object.
             $plagiarismfile = new stdClass();
@@ -1304,6 +1304,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
             $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
             $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
+
+            // If error code is 13, set the status to success otherwise resetting the errorcode will hide the submission.
+            if ($submissiondata->errorcode == 13) {
+                $plagiarismfile->statuscode = 'success';
+            }
 
             // Reset Error Values.
             $plagiarismfile->errorcode = null;

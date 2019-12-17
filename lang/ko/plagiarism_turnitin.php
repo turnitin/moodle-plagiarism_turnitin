@@ -247,7 +247,6 @@ $string['diagnosticoptions_2'] = '디버깅';
 $string['repositoryoptions_4'] = '기관 보관소에 모든 보고서 제출';
 $string['turnitinrepositoryoptions_help'] = '<strong>강사에게 Turnitin 보관소 보관 옵션을 활성화하기: </strong><br />강사는 문서를 표준 데이터베이스에 추가하거나, 기관의 개인 데이터베이스에 추가하거나, 데이터베이스에 추가하지 않도록 Turnitin에 지정할 수 있습니다.<br /><br /><strong>강사 확장 보관소 옵션 활성화: </strong><br />강사는 이 옵션을 사용하여 과제 설정을 보고 Turnitin에서  학생들이 문서 저장 위치를 지정하도록 허용할 수 있습니다. 학생들은 문서를 표준 학생 데이터베이스에 추가할지 아니면 기관의 개인 데이터베이스에 추가할지를 선택할 수 있습니다.<br /><br /><strong>표준 보관소에 모든 보고서를 제출하십시오: </strong><br />기본적으로 모든 문서는 표준 학생 데이터베이스에 추가됩니다.<br /><br /><strong>보관소에 어떤 보고서도 제출하지 마십시오: </strong><br />문서는 Turnitin에서 초기 검사를 수행하여 강사에게 채점 결과를 표시하는 데에만 사용됩니다.<br /><br /><strong>기관 보관소에 모든 보고서 제출: </strong><br />Turnitin은 기관의 보고서 데이터베이스 내에 모든 보고서를 저장합니다. 제출된 문서에 대한 유사성 검사는 기관 내의 다른 강사에 의해서만 수행됩니다.';
 $string['turnitinuseanon'] = '익명 채점 사용하기';
-$string['turnitinuseanon_desc'] = '제출물을 채점할 때 익명 채점을 허용할 것인지 결정하십시오.<br /><i>(이는 계정에 익명 채점이 구성되어 있는 분만 사용할 수 있습니다)</i>';
 $string['createassignmenterror'] = 'Turnitin에서 과제를 생성하는데 오류가 발생하였습니다';
 $string['editassignmenterror'] = 'Turnitin에 있는 과제를 수정하는데 오류가 발생하였습니다';
 $string['ppassignmentediterror'] = '모듈{$a->title}(TII ID: {$a->assignmentid})은 Turnitin에서 편집되지 못했습니다. 자세한 정보는 해당 API 로그를 참조하십시오.';

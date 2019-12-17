@@ -147,11 +147,10 @@ class behat_plagiarism_turnitin extends behat_base {
      * @throws ElementNotFoundException
      * @throws Exception
      */
-    public function i_obtain_an_originality_report_for_student_on_modtype_assignmentname_on_course_coursename($student, $modtype, $modname, $coursename)
-    {
-        $reportFound = false;
+    public function i_obtain_an_originality_report_for_student_on_modtype_assignmentname_on_course_coursename($student, $modtype, $modname, $coursename) {
+        $reportfound = false;
         $count = 1;
-        while (!$reportFound) {
+        while (!$reportfound) {
             $this->execute('behat_general::i_run_the_scheduled_task', "\plagiarism_turnitin\\task\update_reports");
             $this->execute('behat_general::i_wait_seconds', 1);
             $this->execute('behat_navigation::i_am_on_course_homepage', $coursename);
@@ -234,7 +233,7 @@ class behat_plagiarism_turnitin extends behat_base {
             $newdata[] = $row;
         }
         $tablenode = new TableNode($newdata);
-        $this->execute('behat_data_generators::the_following_exist', array('users', $tablenode));
+        $this->execute('behat_data_generators::the_following_entities_exist', array('users', $tablenode));
     }
 
     /**

@@ -48,8 +48,8 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', null, array(0, 1));
 
         // Loop through all modules that support Plagiarism.
-        $mods = core_component::get_plugin_list('mod');
-        foreach ($mods as $mod => $modpath) {
+        $mods = array_keys(core_component::get_plugin_list('mod'));
+        foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $mform->addElement('advcheckbox',
                     'turnitin_use_mod_'.$mod,
@@ -97,7 +97,7 @@ class turnitin_setupform extends moodleform {
         );
 
         // Debugging and logging settings.
-        $mform->addElement('select', 'plagiarism_turnitin_enablediagnostic', get_string('turnitindiagnostic', 'plagiarism_turnitin'), $ynoptions);
+        $mform->addElement('select', 'plagiarism_turnitin_enablediagnostic', get_string('turnitindiagnostic', 'plagiarism_turnitin'), $diagnosticoptions);
         $mform->addElement('static', 'plagiarism_turnitin_enablediagnostic_desc', null, get_string('turnitindiagnostic_desc', 'plagiarism_turnitin'));
 
         $mform->addElement('header', 'plagiarism_accountsettings', get_string('tiiaccountsettings', 'plagiarism_turnitin'));
@@ -222,8 +222,8 @@ class turnitin_setupform extends moodleform {
      */
     public function save($data) {
         // Save whether the plugin is enabled for individual modules.
-        $mods = core_component::get_plugin_list('mod');
-        foreach ($mods as $mod => $modpath) {
+        $mods = array_keys(core_component::get_plugin_list('mod'));
+        foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $property = "turnitin_use_mod_" . $mod;
                 ${ "turnitin_use_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
@@ -234,7 +234,7 @@ class turnitin_setupform extends moodleform {
             }
         }
 
-        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark", "useerater",
+        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark", "useerater", "useanon",
             "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
 
         foreach ($properties as $property) {

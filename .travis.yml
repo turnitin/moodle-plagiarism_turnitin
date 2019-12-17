@@ -2,54 +2,35 @@ language: php
 
 sudo: false
 
-addons:
-  postgresql: "9.3"
-
 cache:
   directories:
     - $HOME/.composer/cache
 
 php:
- - 5.5
- - 7.0
- - 7.2
+  - 7.1
+  - 7.2
+
+services:
+  - mysql
+  - postgresql
 
 env:
  global:
   - IGNORE_PATHS=sdk/,pix/,vendor/
   - IGNORE_NAMES=jquery*,styles.css,autoload_static.php
  matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-
-
-#TODO: Readd these once the split is complete.
-
-#  - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
-#  - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-#  - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-#  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-
-matrix:
-  exclude:
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-    php: 7.2
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-    php: 7.2
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
-    php: 5.5
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-    php: 5.5
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-    php: 5.5
-  - env: DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-    php: 5.5
+  - DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
 
 before_install:
   - phpenv config-rm xdebug.ini
   - cd ../..
   - composer selfupdate
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^1
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
@@ -61,4 +42,4 @@ script:
   - moodle-plugin-ci csslint
   - moodle-plugin-ci shifter
   - moodle-plugin-ci validate
-#  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci phpunit

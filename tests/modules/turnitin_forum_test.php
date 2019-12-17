@@ -65,7 +65,6 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
      * Test to check that content returned by set content is the same as passed in array.
      */
     public function test_to_check_content_in_array_is_returned_by_set_content() {
-        global $DB;
 
         $this->resetAfterTest(true);
 
@@ -85,7 +84,6 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
      * if post id is passed in.
      */
     public function test_to_check_content_from_database_is_returned_by_set_content_if_postid_present() {
-        global $DB;
 
         $this->resetAfterTest(true);
 

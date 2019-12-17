@@ -1,3 +1,28 @@
+### Date:       2019-December-17
+### Release:	v2019121701
+
+#### :zap: What's new
+
+---
+
+#### We now support Moodle 3.8
+
+You can find out more about Moodle 3.8 via Moodle's [release notes](https://docs.moodle.org/dev/Moodle_3.8_release_notes).
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Anonymous marking is now available again
+
+A bug had prevented the use of Anonymous marking when configuring the integration. This bug has now been fixed and the anonymous marketing will remain enabled when navigating away from the configuration page.
+
+#### Submissions will still display when error code 13 is detected
+
+Error code 13 can appear in various circumstances where a score is not returned to Turnitin. A bug caused submissions with this error code to no longer display in the inbox. While the error code can still occur, it will no longer prevent access to the submission and it will be displayed within the inbox as intended.
+
+---
+
 ### Date:       2019-June-25
 ### Release:	v2019062501
 
@@ -10,6 +35,7 @@
 There was an issue affecting users trying to upgrade the latest version of Moodle Plagiarism Plugin. It was discovered that users attempting to upgrade to v2019060601 from versions older than v2016011101 weren't able to do so. This latest version will allow for all users to upgrade to the latest version from any of the previous versions.
 
 ---
+
 ### Date:       2019-June-06
 ### Release:	v2019060601
 

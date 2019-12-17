@@ -27,7 +27,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and utilise student da
     And I configure Turnitin URL
     And I configure Turnitin credentials
     And I set the following fields to these values:
-      | Enable Diagnostic Mode | Yes |
+      | Enable Diagnostic Mode | Standard |
       | Enable Student Privacy | Yes |
     And I press "Save changes"
     And I navigate to "Plugins > Plagiarism > Turnitin" in site administration

@@ -33,7 +33,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for group submissions
     And I configure Turnitin URL
     And I configure Turnitin credentials
     And I set the following fields to these values:
-      | Enable Diagnostic Mode | Yes |
+      | Enable Diagnostic Mode | Standard |
     And I press "Save changes"
     # Create Assignment.
     And I am on "Course 1" course homepage with editing mode on

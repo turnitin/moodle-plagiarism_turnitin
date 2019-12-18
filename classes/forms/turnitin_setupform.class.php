@@ -162,7 +162,7 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_enablepseudo_desc', null, get_string('enablepseudo_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_enablepseudo', 0);
 
-        if (isset($config->plagiarism_turnitin_enablepseudo) AND $config->plagiarism_turnitin_enablepseudo) {
+        if (!empty($config->plagiarism_turnitin_enablepseudo)) {
             $mform->addElement('text', 'plagiarism_turnitin_pseudofirstname', get_string('pseudofirstname', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
             $mform->addElement('static', 'plagiarism_turnitin_pseudofirstname_desc', null,
                 get_string('pseudofirstname_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));

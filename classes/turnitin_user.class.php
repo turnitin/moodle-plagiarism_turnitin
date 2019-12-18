@@ -203,7 +203,8 @@ class turnitin_user {
 
         if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
             $user = new TiiPseudoUser($this->get_pseudo_domain());
-            $user->setPseudoSalt($config->plagiarism_turnitin_pseudosalt);
+            $salt = empty($config->plagiarism_turnitin_pseudosalt) ? null : $config->plagiarism_turnitin_pseudosalt;
+            $user->setPseudoSalt($salt);
         } else {
             $user = new TiiUser();
         }
@@ -245,7 +246,8 @@ class turnitin_user {
         // Unless the user is already logged as a tutor then use real details.
         if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
             $user = new TiiPseudoUser($this->get_pseudo_domain());
-            $user->setPseudoSalt($config->plagiarism_turnitin_pseudosalt);
+            $salt = empty($config->plagiarism_turnitin_pseudosalt) ? null : $config->plagiarism_turnitin_pseudosalt;
+            $user->setPseudoSalt($salt);
             $user->setFirstName($this->get_pseudo_firstname());
             $user->setLastName($this->get_pseudo_lastname());
         } else {

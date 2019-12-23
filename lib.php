@@ -122,7 +122,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return mixed if plugin is enabled then an array of config settings is returned or false if not
      */
     public static function get_config_settings($modulename) {
-        $pluginconfig = get_config('plagiarism', 'turnitin_use_'.$modulename);
+        $pluginconfig = get_config('plagiarism_turnitin', 'turnitin_use_'.$modulename);
 
         return $pluginconfig;
     }
@@ -131,7 +131,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return mixed the admin config settings for the plugin
      */
     public static function plagiarism_turnitin_admin_config() {
-        return get_config('plagiarism');
+        return get_config('plagiarism_turnitin');
     }
 
     /**
@@ -2763,7 +2763,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         if (isset($data->$property)) {
-            set_config($field, $data->$property, 'plagiarism');
+            set_config($field, $data->$property, 'plagiarism_turnitin');
         }
     }
 }

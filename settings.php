@@ -145,7 +145,7 @@ switch ($do) {
             $output = $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitin'), 'notifysuccess');
         }
 
-        $pluginconfig = get_config('plagiarism');
+        $pluginconfig = get_config('plagiarism_turnitin');
         $tiisetupform->set_data($pluginconfig);
 
         echo $tiisetupform->display();

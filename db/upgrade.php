@@ -63,7 +63,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         upgrade_dm_successful_uploads();
 
-        upgrade_plugin_savepoint(true, 2013081202, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2013081202, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2014012403) {
@@ -74,17 +74,17 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         } else {
             $dbman->change_field_default($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2014012403, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012403, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2014012405) {
-        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
+        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism_turnitin'))) {
             if ($turnitinsetting->value == 1) {
                 $supportedmods = array('assign', 'forum', 'workshop');
                 foreach ($supportedmods as $mod) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
-                    $configfield->plugin = 'plagiarism';
+                    $configfield->plugin = 'plagiarism_turnitin';
                     $configfield->name = 'turnitin_use_mod_'.$mod;
                     if (!$DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod))) {
                         $DB->insert_record('config_plugins', $configfield);
@@ -92,7 +92,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 }
             }
         }
-        upgrade_plugin_savepoint(true, 2014012405, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012405, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2014012406) {
@@ -105,7 +105,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2014012406, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012406, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2014012413) {
@@ -155,7 +155,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_precision($table, $field5);
         }
 
-        upgrade_plugin_savepoint(true, 2014012413, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2014012413, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2015040107) {
@@ -168,7 +168,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2015040107, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2015040107, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2015040110) {
@@ -177,7 +177,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2015040110, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2015040110, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2016011101) {
@@ -186,7 +186,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016011101, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2016011101, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2016011104) {
@@ -195,7 +195,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016011104, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2016011104, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2016011105) {
@@ -215,7 +215,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Re-add foreign key for cm field.
         $dbman->add_key($table, $key);
 
-        upgrade_plugin_savepoint(true, 2016011105, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2016011105, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2016091402) {
@@ -239,7 +239,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2016091402, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2016091402, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2017012601) {
@@ -270,7 +270,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Remove old PP event from the database if it exists.
         $DB->delete_records('task_scheduled', array('component' => 'plagiarism_turnitin', 'classname' => '\plagiarism_turnitin\task\plagiarism_turnitin_task'));
 
-        upgrade_plugin_savepoint(true, 2017012601, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2017012601, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2017013101) {
@@ -288,14 +288,14 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $key = new xmldb_key('config_hash', XMLDB_KEY_UNIQUE, array('config_hash'));
         $dbman->add_key($table, $key);
 
-        upgrade_plugin_savepoint(true, 2017013101, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2017013101, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2019031301) {
         // Reset all error code 13s so that we are on a clean slate with the new implementation.
         $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success', errorcode = NULL WHERE errorcode = 13");
 
-        upgrade_plugin_savepoint(true, 2019031301, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2019031301, 'plagiarism_turnitin', 'turnitin');
     }
 
     if ($oldversion < 2019050201) {
@@ -399,7 +399,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 plagiarism_turnitin_activitylog('Unable to copy users table during version upgrade because they already exist.', 'PP_UPGRADE');
             }
         }
-        upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2019050201, 'plagiarism_turnitin', 'turnitin');
     }
 
     return $result;

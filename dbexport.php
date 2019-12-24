@@ -42,7 +42,6 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 $table = optional_param('table', null, PARAM_ALPHANUMEXT);
 $dataformat = optional_param('dataformat', null, PARAM_ALPHANUMEXT);
 
-
 $turnitinview = new turnitin_view();
 
 $exportfile = "export_".$table."_".date('Y-m-d_His');

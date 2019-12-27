@@ -377,3 +377,9 @@ iframe html{background:none;}
     width: 1032px !important;
     left: -116px;
 }
+
+.turnitin_setup_download_links label {
+    width: 300px;
+    line-height: 50px;
+    justify-content: left;
+}

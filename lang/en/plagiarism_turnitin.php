@@ -306,3 +306,6 @@ $string['errorcode13'] = 'This submissionid - {$a->externalid} was not found in 
 $string['usercreationerror'] = 'Turnitin user creation failed';
 $string['ppassignmentcreateerror'] = 'This module could not be created on Turnitin, please consult your API logs for further information';
 $string['turnitineula'] = 'Turnitin EULA';
+$string['dbexport'] = 'Database Export';
+$string['dbexporttable'] = 'Export {$a} data';
+$string['invalidtablename'] = 'Table {$a} could not be exported';

@@ -64,10 +64,7 @@ class turnitin_view {
                         get_string('config', 'plagiarism_turnitin'), get_string('config', 'plagiarism_turnitin'), false);
         $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
                         get_string('defaults', 'plagiarism_turnitin'), get_string('defaults', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinshowusage', 'settings.php?do=viewreport',
-                        get_string('showusage', 'plagiarism_turnitin'), get_string('showusage', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinsaveusage', 'settings.php?do=savereport',
-                        get_string('saveusage', 'plagiarism_turnitin'), get_string('saveusage', 'plagiarism_turnitin'), false);
+        $tabs[] = new tabobject('dbexport', new moodle_url('/plagiarism/turnitin/dbexport.php'), get_string('dbexport', 'plagiarism_turnitin'));
         $tabs[] = new tabobject('apilog', 'settings.php?do=apilog',
                         get_string('logs'), get_string('logs'), false);
         $tabs[] = new tabobject('unlinkusers', 'settings.php?do=unlinkusers',

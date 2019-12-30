@@ -197,6 +197,10 @@ class provider implements
     public static function _delete_plagiarism_for_user($userid, \context $context) {
         global $DB;
 
-        $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid]);
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid, 'cm' => $context->instanceid]);
     }
 }

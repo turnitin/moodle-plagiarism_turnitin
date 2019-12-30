@@ -100,7 +100,7 @@ class provider implements
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {assign} a ON cm.instance = a.id
                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
-             LEFT JOIN {plagiarism_turnitin_files} tf ON cm.instance = cm
+                  JOIN {plagiarism_turnitin_files} tf ON tf.cm = cm.id
                  WHERE tf.userid = :userid";
 
         $contextlist = new contextlist();

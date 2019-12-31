@@ -101,6 +101,11 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_course
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
+     * Static variable to load the function from js files by using js_call_amd only once.
+     */
+    private static $amdcomponentsloaded = false;
+
+    /**
      * Get the fields to be used in the form to configure each activities Turnitin settings.
      *
      * @return array of settings fields.
@@ -576,7 +581,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     public function load_page_components() {
         global $CFG, $PAGE;
-
+        // The function from js files by using js_call_amd will be loaded only once.
+        if (static::$amdcomponentsloaded) {
+            return;
+        }
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
 
@@ -587,6 +595,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('loadingdv', 'plagiarism_turnitin');
+        if (!static::$amdcomponentsloaded) {
+            static::$amdcomponentsloaded = true;
+        }
     }
 
     /**

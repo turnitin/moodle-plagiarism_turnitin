@@ -71,6 +71,14 @@ class provider implements
             'privacy:metadata:plagiarism_turnitin_files'
         );
 
+        $collection->add_database_table(
+            'plagiarism_turnitin_users',
+            [
+                'userid' => 'privacy:metadata:plagiarism_turnitin_users:userid',
+            ],
+            'privacy:metadata:plagiarism_turnitin_users'
+        );
+
         $collection->link_external_location('plagiarism_turnitin_client', [
             'email' => 'privacy:metadata:plagiarism_turnitin_client:email',
             'firstname' => 'privacy:metadata:plagiarism_turnitin_client:firstname',

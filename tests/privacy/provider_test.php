@@ -51,7 +51,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(3, $itemcollection);
+        $this->assertCount(4, $itemcollection);
 
         // Verify core_files data is returned.
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
@@ -72,9 +72,9 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('student_read', $privacyfields);
 
         // Verify plagiarism_turnitin_client data is returned.
-        $this->assertEquals('plagiarism_turnitin_client', $itemcollection[2]->get_name());
+        $this->assertEquals('plagiarism_turnitin_client', $itemcollection[3]->get_name());
 
-        $privacyfields = $itemcollection[2]->get_privacy_fields();
+        $privacyfields = $itemcollection[3]->get_privacy_fields();
         $this->assertArrayHasKey('email', $privacyfields);
         $this->assertArrayHasKey('firstname', $privacyfields);
         $this->assertArrayHasKey('lastname', $privacyfields);
@@ -82,7 +82,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('submission_filename', $privacyfields);
         $this->assertArrayHasKey('submission_content', $privacyfields);
 
-        $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[2]->get_summary());
+        $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[3]->get_summary());
     }
 
     /**

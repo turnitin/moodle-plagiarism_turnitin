@@ -402,6 +402,21 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism_turnitin', 'turnitin');
     }
 
+    // Update plagiarism to plagiarism_turnitin so a new table is not created.
+            $data = get_config('plagiarism');
+
+            $properties = array("accountid", "apiurl", "secretkey", "enablediagnostic", "enablepeermark",
+                 "enableperformancelogs", "repositoryoption", "transmatch", "useerater", "usegrademark", "agreement", "enablepseudo", "pseudofirstname",
+                "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
+
+            foreach ($properties as $property) {
+                $key = "plagiarism_turnitin_".$property;
+                if (isset($data->$key)) {
+                    set_config($key, $data->$key, 'plagiarism_turnitin');
+                    unset_config($key, 'plagiarism');
+                }
+            }
+
     return $result;
 }
 

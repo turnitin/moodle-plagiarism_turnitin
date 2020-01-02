@@ -78,7 +78,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2014012405) {
-        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism_turnitin'))) {
+        if ($turnitinsetting = $DB->get_record('config_plugins', array('name' => 'turnitin_use', 'plugin' => 'plagiarism'))) {
             if ($turnitinsetting->value == 1) {
                 $supportedmods = array('assign', 'forum', 'workshop');
                 foreach ($supportedmods as $mod) {
@@ -402,20 +402,24 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism_turnitin', 'turnitin');
     }
 
-    // Update plagiarism to plagiarism_turnitin so a new table is not created.
-            $data = get_config('plagiarism');
+    if ($oldversion < 2019121709) {
+        // Update plagiarism to plagiarism_turnitin for consistency.
+        $data = get_config('plagiarism');
 
-            $properties = array("accountid", "apiurl", "secretkey", "enablediagnostic", "enablepeermark",
-                 "enableperformancelogs", "repositoryoption", "transmatch", "useerater", "usegrademark", "agreement", "enablepseudo", "pseudofirstname",
-                "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
+        $properties = array("accountid", "apiurl", "secretkey", "enablediagnostic", "enablepeermark",
+             "enableperformancelogs", "repositoryoption", "transmatch", "useerater", "usegrademark", "agreement", "enablepseudo", "pseudofirstname",
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
 
-            foreach ($properties as $property) {
-                $key = "plagiarism_turnitin_".$property;
-                if (isset($data->$key)) {
-                    set_config($key, $data->$key, 'plagiarism_turnitin');
-                    unset_config($key, 'plagiarism');
-                }
+        foreach ($properties as $property) {
+            $key = "plagiarism_turnitin_".$property;
+            if (isset($data->$key)) {
+                set_config($key, $data->$key, 'plagiarism_turnitin');
+                unset_config($key, 'plagiarism');
             }
+        }
+
+        upgrade_plugin_savepoint(true, 2019121709, 'plagiarism_turnitin', 'turnitin');
+    }
 
     return $result;
 }

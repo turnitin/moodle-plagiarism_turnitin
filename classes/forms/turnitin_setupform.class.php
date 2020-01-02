@@ -229,7 +229,7 @@ class turnitin_setupform extends moodleform {
                 ${ "turnitin_use_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
                 set_config('turnitin_use_mod_'.$mod, ${ "turnitin_use_mod_" . "$mod" }, 'plagiarism_turnitin');
                 if (${ "turnitin_use_mod_" . "$mod" }) {
-                    set_config('turnitin_use', 1, 'plagiarism_turnitin');
+                    set_config('turnitin_use', 1, 'plagiarism');
                 }
             }
         }

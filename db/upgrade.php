@@ -63,7 +63,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         upgrade_dm_successful_uploads();
 
-        upgrade_plugin_savepoint(true, 2013081202, 'plagiarism_turnitin', 'turnitin');
+        upgrade_plugin_savepoint(true, 2013081202, 'plagiarism', 'turnitin');
     }
 
     if ($oldversion < 2014012403) {
@@ -411,7 +411,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
 
         foreach ($properties as $property) {
-            $key = "plagiarism_turnitin_".$property;
+            $key = "plagiarism_".$property;
             if (isset($data->$key)) {
                 set_config($key, $data->$key, 'plagiarism_turnitin');
                 unset_config($key, 'plagiarism');

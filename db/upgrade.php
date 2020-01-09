@@ -406,7 +406,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         // Update plagiarism to plagiarism_turnitin for consistency.
         $data = get_config('plagiarism');
 
-        $properties = array("accountid", "apiurl", "secretkey", "enablediagnostic", "enablepeermark",
+        $properties = array("use_mod_assign", "use_mod_forum", "use_mod_workshop","accountid", "apiurl", "secretkey", "enablediagnostic", "enablepeermark",
              "enableperformancelogs", "repositoryoption", "transmatch", "useerater", "usegrademark", "agreement", "enablepseudo", "pseudofirstname",
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon");
 

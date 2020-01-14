@@ -402,18 +402,18 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2019121717) {
+    if ($oldversion < 2019121718) {
         // Update plagiarism to plagiarism_turnitin for consistency.
         $data = get_config('plagiarism');
 
         foreach ($data as $key => $value) {
-            if (strpos($key, 'turnitin_') !== false) {
+            if ((strpos($key, 'turnitin_') !== false) && ($key != 'turnitin_use')) {
                 set_config($key, $value, 'plagiarism_turnitin');
                 unset_config($key, 'plagiarism');
             }
         }
 
-        upgrade_plugin_savepoint(true, 2019121717, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2019121718, 'plagiarism', 'turnitin');
     }
 
     return $result;

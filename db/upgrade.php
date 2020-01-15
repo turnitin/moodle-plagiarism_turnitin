@@ -84,7 +84,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 foreach ($supportedmods as $mod) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
-                    $configfield->plugin = 'plagiarism';
+                    $configfield->plugin = 'plagiarism_turnitin';
                     $configfield->name = 'turnitin_use_mod_'.$mod;
                     if (!$DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod))) {
                         $DB->insert_record('config_plugins', $configfield);
@@ -400,6 +400,20 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2019121719) {
+        // Update plagiarism to plagiarism_turnitin for consistency.
+        $data = get_config('plagiarism');
+
+        foreach ($data as $key => $value) {
+            if ((strpos($key, 'turnitin_') !== false) && ($key != 'turnitin_use')) {
+                set_config($key, $value, 'plagiarism_turnitin');
+                unset_config($key, 'plagiarism');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
     }
 
     return $result;

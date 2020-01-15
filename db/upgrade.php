@@ -402,7 +402,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2019121718) {
+    if ($oldversion < 2019121719) {
         // Update plagiarism to plagiarism_turnitin for consistency.
         $data = get_config('plagiarism');
 
@@ -413,7 +413,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2019121718, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
     }
 
     return $result;

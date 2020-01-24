@@ -246,10 +246,15 @@ class turnitin_view {
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_compare_student_papers', 'spapercheck', 'plagiarism_turnitin');
+
             $mform->addElement('select', 'plagiarism_compare_internet', get_string("internetcheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_compare_internet', 'internetcheck', 'plagiarism_turnitin');
+
             $mform->addElement('select', 'plagiarism_compare_journals', get_string("journalcheck", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_compare_journals', 'journalcheck', 'plagiarism_turnitin');
 
             if ($config->plagiarism_turnitin_repositoryoption == 1) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
@@ -257,16 +262,24 @@ class turnitin_view {
                 $this->lock($mform, $location, $locks);
             }
 
-            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "plagiarism_turnitin"), $genoptions, array('class' => 'selectlong'));
+            $mform->addElement('select', 'plagiarism_report_gen', get_string("reportgenspeed", "plagiarism_turnitin"), $genoptions);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_report_gen', 'reportgenspeed', 'plagiarism_turnitin');
+
             $mform->addElement('select', 'plagiarism_exclude_biblio', get_string("excludebiblio", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_exclude_biblio', 'excludebiblio', 'plagiarism_turnitin');
+
             $mform->addElement('select', 'plagiarism_exclude_quoted', get_string("excludequoted", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_exclude_quoted', 'excludequoted', 'plagiarism_turnitin');
 
             $mform->addElement('select', 'plagiarism_exclude_matches', get_string("excludevalue", "plagiarism_turnitin"),
                                                                                 $excludetypeoptions);
             $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_exclude_matches', 'excludevalue', 'plagiarism_turnitin');
+
+
             $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
             $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');

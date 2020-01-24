@@ -279,7 +279,6 @@ class turnitin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_exclude_matches', 'excludevalue', 'plagiarism_turnitin');
 
-
             $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
             $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');

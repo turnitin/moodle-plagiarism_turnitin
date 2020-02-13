@@ -36,6 +36,7 @@ $string['excludebiblio_help'] = 'This setting allows the instructor to choose to
 $string['excludequoted'] = 'Exclude Quoted Material';
 $string['excludequoted_help'] = 'This setting allows the instructor to choose to exclude text appearing in the quotes from being checked for matches when generating Similarity Reports. This setting can be overridden in individual Similarity Reports.';
 $string['excludevalue'] = 'Exclude Small Matches';
+$string['excludesmallmatchesvalue'] = 'Exclude Small Matches';
 $string['excludevalue_help'] = 'This setting allows the instructor to choose to exclude matches that are not of sufficient length (determined by the instructor) from being considered when generating Similarity Reports. This setting can be overridden in individual Similarity Reports.';
 $string['excludewords'] = 'Words';
 $string['excludepercent'] = 'Percent';

@@ -959,8 +959,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Output container for OR Score.
                             $ordivclass = 'row_score pp_origreport '.$useropenclass.' origreport_'.$plagiarismfile->externalid.'_'.$linkarray["cmid"];
-                            $ordivid = $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"];
-                            $output .= html_writer::tag('div', $orscorehtml, array('class' => $ordivclass, 'id' => $ordivid));
+                            $output .= html_writer::tag('div', $orscorehtml, array('class' => $ordivclass, 'tabindex' => '0', 'role' => 'link'));
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
@@ -994,14 +993,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                                 get_string('grademark', 'plagiarism_turnitin'), 'plagiarism_turnitin'),
                                                     array('title' => get_string('grademark', 'plagiarism_turnitin'),
                                                         'class' => 'pp_grademark_open tii_tooltip grademark_'.$plagiarismfile->externalid.
-                                                                        '_'.$linkarray["cmid"],
-                                                        'id' => $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"]));
+                                                                        '_'.$linkarray["cmid"], 'tabindex' => '0', 'role' => 'link'
+                                                    ));
 
-                            // Add url for launching DV from Forum post.
-                            if ($cm->modname == 'forum') {
-                                $gmicon .= html_writer::tag('div', $CFG->wwwroot.'/plagiarism/turnitin/extras.php?cmid='.$linkarray["cmid"],
-                                                        array('class' => 'grademark_forum_launch grademark_forum_launch_'.$plagiarismfile->externalid));
-                            }
                             // Put in div placeholder for DV launch form.
                             $gmicon .= html_writer::tag('div', '', array('class' => 'launch_form grademark_form_'.$plagiarismfile->externalid));
                             $output .= html_writer::tag('div', $gmicon, array('class' => 'grade_icon'));

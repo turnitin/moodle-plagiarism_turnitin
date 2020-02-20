@@ -119,17 +119,17 @@
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
-.tii_links_container .score_colour_0 { background: #3552B7; color:#FFFFFF; }
-.tii_links_container .score_colour_10 { background: #617B8D; color:#FFFFFF; }
-.tii_links_container .score_colour_20 { background: #A1B556; color:#FFFFFF; }
+.tii_links_container .score_colour_0 { background: #3A51B2; color:#FFFFFF; }
+.tii_links_container .score_colour_10 { background: #4A5B6B; color:#FFFFFF; }
+.tii_links_container .score_colour_20 { background: #A1B556; }
 .tii_links_container .score_colour_30 { background: #DAE235; }
 .tii_links_container .score_colour_40 { background: #EDAC28; }
 .tii_links_container .score_colour_50 { background: #EDD42F; }
 .tii_links_container .score_colour_60 { background: #ECAD28; }
-.tii_links_container .score_colour_70 { background: #E15A21; }
-.tii_links_container .score_colour_80 { background: #E05A21; color:#FFFFFF; }
-.tii_links_container .score_colour_90 { background: #DC4321; color:#FFFFFF; }
-.tii_links_container .score_colour_100 { background: #DB4221; color:#FFFFFF; }
+.tii_links_container .score_colour_70 { background: #FB763E; }
+.tii_links_container .score_colour_80 { background: #FA763D; }
+.tii_links_container .score_colour_90 { background: #DC4321; }
+.tii_links_container .score_colour_100 { background: #A92409; color:#FFFFFF; }
 
 .tii_links_container .origreport_score {
     white-space:nowrap;

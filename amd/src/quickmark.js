@@ -16,7 +16,8 @@ define(['jquery',
     function($, Templates, ModalFactory, ModalEvents, ModalQuickmarkLaunch) {
         return {
             quickmarkLaunch: function() {
-                $('.plagiarism_turnitin_quickmark_manager_launch').on('click', function () {
+                $('.plagiarism_turnitin_quickmark_manager_launch').on('click', function (event) {
+                    event.preventDefault();
                     ModalFactory.create({
                         type: ModalQuickmarkLaunch.TYPE,
                         templateContext: {

@@ -152,8 +152,18 @@ class turnitin_view {
                 // If assignment has submissions then show a refresh grades button.
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', array('cm' => $cmid));
                 if ($numsubs > 0) {
-                    $refreshgrades = html_writer::tag('div', html_writer::tag('span', get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')),
-                                                                    array('class' => 'plagiarism_turnitin_refresh_grades'));
+                    $refreshgrades = html_writer::tag(
+                        'div',
+                        html_writer::tag(
+                            'span',
+                            get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')
+                        ),
+                        array(
+                            'class' => 'plagiarism_turnitin_refresh_grades',
+                            'tabindex' => 0,
+                            'role' => 'link'
+                        )
+                    );
 
                     $refreshgrades .= html_writer::tag('div', html_writer::tag('span', get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
                                                                     array('class' => 'plagiarism_turnitin_refreshing_grades'));
@@ -163,10 +173,18 @@ class turnitin_view {
             // Quickmark Manager.
             $quickmarkmanagerlink = '';
             if ($config->plagiarism_turnitin_usegrademark) {
-                $quickmarkmanagerlink .= html_writer::tag('span',
+
+                $quickmarkmanagerlink .= html_writer::tag(
+                    'a',
                     get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
-                    array('class' => 'plagiarism_turnitin_quickmark_manager_launch', 'id' => 'quickmark_manager_form')
+                    array(
+                        'href' => '#',
+                        'class' => 'plagiarism_turnitin_quickmark_manager_launch',
+                        'id' => 'quickmark_manager_form',
+                        'tabindex' => 0
+                    )
                 );
+
                 $quickmarkmanagerlink = html_writer::tag('div', $quickmarkmanagerlink, array('class' => 'row_quickmark_manager'));
             }
 
@@ -176,9 +194,15 @@ class turnitin_view {
             $peermarkmanagerlink = '';
             if (!empty($config->plagiarism_turnitin_enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
-                    $peermarkmanagerlink .= html_writer::tag('span',
+                    $peermarkmanagerlink .= html_writer::tag(
+                        'a',
                         get_string('launchpeermarkmanager', 'plagiarism_turnitin'),
-                        array('class' => 'peermark_manager_launch', 'id' => 'peermark_manager_form')
+                        array(
+                            'href' => '#',
+                            'class' => 'peermark_manager_launch',
+                            'id' => 'peermark_manager_form',
+                            'tabindex' => 0
+                        )
                     );
                     $peermarkmanagerlink = html_writer::tag('div', $peermarkmanagerlink, array('class' => 'row_peermark_manager'));
                 }
@@ -279,7 +303,7 @@ class turnitin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_exclude_matches', 'excludevalue', 'plagiarism_turnitin');
 
-            $mform->addElement('text', 'plagiarism_exclude_matches_value', '');
+            $mform->addElement('text', 'plagiarism_exclude_matches_value', get_string("excludesmallmatchesvalue", "plagiarism_turnitin"));
             $mform->setType('plagiarism_exclude_matches_value', PARAM_INT);
             $mform->addRule('plagiarism_exclude_matches_value', null, 'numeric', null, 'client');
             $mform->disabledIf('plagiarism_exclude_matches_value', 'plagiarism_exclude_matches', 'eq', 0);
@@ -299,11 +323,15 @@ class turnitin_view {
                     }
                 }
 
-                $rubricmanagerlink = html_writer::tag('span',
+                $rubricmanagerlink = html_writer::tag(
+                    'span',
                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
-                    array('class' => 'rubric_manager_launch',
-                        'title' => get_string('launchrubricmanager',
-                            'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
+                    array(
+                        'class' => 'rubric_manager_launch',
+                        'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'),
+                        'id' => 'rubric_manager_form',
+                        'role' => 'link',
+                        'tabindex' => '0'
                     )
                 );
 

@@ -265,6 +265,9 @@ $string['privacy:metadata:plagiarism_turnitin_files:grade'] = 'The grade applied
 $string['privacy:metadata:plagiarism_turnitin_files:orcapable'] = 'Indicates whether Turnitin was able to produce a similarity report for the user\'s submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:student_read'] = 'Indicates whether a student has read their feedback.';
 
+$string['privacy:metadata:plagiarism_turnitin_users'] = 'Information that links a Moodle submission to a Turnitin submission.';
+$string['privacy:metadata:plagiarism_turnitin_users:userid'] = 'The ID of the user who has made a submission.';
+
 $string['privacy:metadata:plagiarism_turnitin_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
 $string['privacy:metadata:plagiarism_turnitin_client:email'] = 'The user\'s email address is shared by Moodle to enable the creation of a Turnitin account.';
 $string['privacy:metadata:plagiarism_turnitin_client:firstname'] = 'The user\'s first name is sent to Turnitin so that the user can be identified.';

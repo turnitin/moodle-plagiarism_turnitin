@@ -265,8 +265,12 @@ $string['privacy:metadata:plagiarism_turnitin_files:grade'] = 'The grade applied
 $string['privacy:metadata:plagiarism_turnitin_files:orcapable'] = 'Indicates whether Turnitin was able to produce a similarity report for the user\'s submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:student_read'] = 'Indicates whether a student has read their feedback.';
 
-$string['privacy:metadata:plagiarism_turnitin_users'] = 'Information that links a Moodle submission to a Turnitin submission.';
-$string['privacy:metadata:plagiarism_turnitin_users:userid'] = 'The ID of the user who has made a submission.';
+$string['privacy:metadata:plagiarism_turnitin_users'] = 'Information that links a Moodle user to a Turnitin user account and any preferences specific to Turnitin. These include default assignment settings and any Turnitin rubrics owned by them.';
+$string['privacy:metadata:plagiarism_turnitin_users:userid'] = 'The ID of the user being linked to a Turnitin account.';
+$string['privacy:metadata:plagiarism_turnitin_users:turnitin_uid'] = 'The user\'s Turnitin account ID.';
+$string['privacy:metadata:plagiarism_turnitin_users:instructor_defaults'] = 'The instructor\'s default assignment settings';
+$string['privacy:metadata:plagiarism_turnitin_users:instructor_rubrics'] = 'The Turnitin rubric scorecards that belong to the instructor';
+$string['privacy:metadata:plagiarism_turnitin_users:user_agreement_accepted'] = 'Indicates whether this user has accepted the Turnitin End User Licence Agreement (EULA).';
 
 $string['privacy:metadata:plagiarism_turnitin_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
 $string['privacy:metadata:plagiarism_turnitin_client:email'] = 'The user\'s email address is shared by Moodle to enable the creation of a Turnitin account.';

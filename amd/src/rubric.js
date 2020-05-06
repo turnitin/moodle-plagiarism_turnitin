@@ -37,7 +37,7 @@ define(['jquery',
             },
             rubricCreateModal: function(modalType) {
                 var courseid = ($('input[name="course"]')) ? $('input[name="course"]').val() : 0;
-console.log(courseid);
+
                 ModalFactory.create({
                     type: modalType,
                     templateContext: {

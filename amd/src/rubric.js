@@ -36,17 +36,12 @@ define(['jquery',
                 });
             },
             rubricCreateModal: function(modalType) {
-                if ($('input[name="coursemodule"]').val()) {
-                    var cmid = $('input[name="coursemodule"]').val();
-                } else {
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var cmid = urlParams.get('id');
-                }
+                var courseid = ($('input[name="course"]')) ? $('input[name="course"]').val() : 0;
 
                 ModalFactory.create({
                     type: modalType,
                     templateContext: {
-                        cmid: cmid,
+                        courseid: courseid,
                         wwwroot: M.cfg.wwwroot
                     },
                     large: true

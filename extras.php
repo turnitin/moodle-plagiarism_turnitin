@@ -53,8 +53,9 @@ switch ($cmd) {
         $PAGE->set_pagelayout('embedded');
         $courseid = optional_param('courseid', 0, PARAM_INT);
         $tiicourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid));
+        $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
 
-        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourse->turnitin_cid),
+        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
             array("class" => "launch_form"));
         echo html_writer::script("<!--
                                     window.document.forms[0].submit();

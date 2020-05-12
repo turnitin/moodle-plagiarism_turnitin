@@ -63,16 +63,6 @@ global $tiipp;
 $tiipp = new stdClass();
 $tiipp->in_use = true;
 
-// Required classes from Moodle.
-if ($CFG->branch < 28) {
-    $pluginlib = $CFG->libdir.'/pluginlib.php';
-    // See MDL-46122, lib/pluginlib.php was removed in Moodle 2.9.
-    // The variable $CFG->branch will be the old branch number when upgrading Moodle, the file could be missing.
-    if (file_exists($pluginlib)) {
-        require_once($pluginlib);
-    }
-}
-
 require_once($CFG->libdir.'/gradelib.php');
 
 // Get global class.
@@ -783,9 +773,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $userid = 0;
                 }
 
-                // Condition added to test for Moodle 2.7 as it calls this function twice.
-                if ($CFG->branch >= 27 || $userid != $linkarray["userid"]) {
-                    // Show EULA if necessary and we have a connection to Turnitin.
+                // Show EULA if necessary and we have a connection to Turnitin.
+                if ($userid != $linkarray["userid"]) {
                     static $eulashown;
                     if (empty($eulashown)) {
                         $eulashown = false;

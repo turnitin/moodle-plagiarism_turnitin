@@ -47,6 +47,10 @@ $observers = array (
         'callback'  => 'plagiarism_turnitin_observer::coursework_submitted'
     ),
     array(
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback' => 'plagiarism_turnitin_observer::quiz_submitted'
+    ),
+    array(
         'eventname' => '\core\event\course_module_deleted',
         'callback'  => 'plagiarism_turnitin_observer::course_module_deleted'
     ),

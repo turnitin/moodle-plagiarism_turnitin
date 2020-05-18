@@ -22,10 +22,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
-global $tiipp;
-$tiipp = new stdClass();
-$tiipp->in_use = true;
-
 class turnitin_view {
 
     /**

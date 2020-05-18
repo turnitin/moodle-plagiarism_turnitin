@@ -42,12 +42,6 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$supportedmods = array('assign', 'forum', 'workshop');
-
-if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
-    $supportedmods[] = 'coursework';
-}
-
 $plugindefaults = $plagiarismpluginturnitin->get_settings();
 
 // Save Settings.

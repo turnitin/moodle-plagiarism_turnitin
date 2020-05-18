@@ -20,17 +20,8 @@
  */
 
 $plugin->version = 2020051105;
-$plugin->release = "3.1+";
-$plugin->requires = 2016052300;
+$plugin->release = "3.5+";
+$plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
-
-global $CFG;
 $plugin->cron = 0;
-if (!empty($CFG->version)) {
-    $plugin->cron = ($CFG->version > 2014051200) ? 0 : 300;
-}
-
-$plugin->dependencies = array(
-    'mod_assign' => 2013110500
-);

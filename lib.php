@@ -3021,7 +3021,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 $attempt = quiz_attempt::create($queueditem->itemid);
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ( $queueditem->identifier == sha1($qa->get_response_summary())) {
+                    if ($queueditem->identifier == sha1($qa->get_response_summary())) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

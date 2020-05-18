@@ -221,6 +221,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Save the form data associated with the plugin
      *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
+     *
      * @global type $DB
      * @param object $data the form data to save
      */
@@ -261,6 +264,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Add the Turnitin settings form to an add/edit activity page
+     *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
      *
      * @param object $mform
      * @param object $context
@@ -2786,6 +2792,35 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             set_config($field, $data->$property, 'plagiarism_turnitin');
         }
     }
+}
+
+/**
+ * Add the Turnitin settings form to an add/edit activity page
+ *
+ * @param moodleform $formwrapper
+ * @param MoodleQuickForm $mform
+ * @return type
+ */
+function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform) {
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+
+    $context = context_course::instance($formwrapper->get_course()->id);
+
+    $pluginturnitin->get_form_elements_module($mform, $context);
+}
+
+/**
+ * Handle saving data from the Turnitin settings form..
+ *
+ * @param stdClass $data
+ * @param stdClass $course
+ */
+function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
+    $pluginturnitin = new plagiarism_plugin_turnitin();
+
+    $pluginturnitin->save_form_elements($data);
+
+    return $data;
 }
 
 /**

@@ -300,7 +300,7 @@ class turnitin_user {
             try {
                 $turnitincall->updateUser($user);
             } catch (Exception $e) {
-                $toscreen = ($this->workflowcontext == "cron") == false;
+                $toscreen = ($this->workflowcontext == "cron") ? false : true;
                 $turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
                 return false;
             }

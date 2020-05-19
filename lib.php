@@ -3052,7 +3052,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
             $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
 
-            // This should be true but in case of an edge case where a user has been deleted in Tii.
+            // These should be true but in case of an edge case where a user has been deleted in Tii.
             $updatesuccess = $instructor->edit_tii_user();
             $enrollmentsuccess = $instructor->join_user_to_class($coursedata->turnitin_cid);
 

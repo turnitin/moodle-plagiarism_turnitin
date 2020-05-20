@@ -3118,15 +3118,19 @@ function plagiarism_turnitin_send_queued_submissions() {
         $submission->setAuthorUserId($user->tiiuserid);
 
         // Account for submission by teacher in assignment module.
-        if ($queueditem->userid == $queueditem->submitter) {
-            $submission->setSubmitterUserId($user->tiiuserid);
-            $submission->setRole('Learner');
-        } else {
-            $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
-            $instructor->edit_tii_user();
+        $submission->setSubmitterUserId($user->tiiuserid);
+        $submission->setRole('Learner');
 
-            $submission->setSubmitterUserId($instructor->tiiuserid);
-            $submission->setRole('Instructor');
+        if ($queueditem->userid != $queueditem->submitter) {
+
+            $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
+
+            // These should be true but in case of an edge case where a user has been deleted in Tii.
+            if ($instructor->edit_tii_user() && $instructor->join_user_to_class($coursedata->turnitin_cid)) {
+
+                $submission->setSubmitterUserId($instructor->tiiuserid);
+                $submission->setRole('Instructor');
+            }
         }
 
         $submission->setSubmissionDataPath($tempfile);

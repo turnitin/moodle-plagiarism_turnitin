@@ -280,6 +280,7 @@ class turnitin_user {
      *
      * @param object $user_details A data object for the user
      * @param var $role user role to create
+     * @return boolean
      */
     public function edit_tii_user() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
@@ -301,8 +302,10 @@ class turnitin_user {
             } catch (Exception $e) {
                 $toscreen = ($this->workflowcontext == "cron") ? false : true;
                 $turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
+                return false;
             }
         }
+        return true;
     }
 
 

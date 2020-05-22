@@ -45,14 +45,14 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
         $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin'));
 
-        $mform->addElement('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', null, array(0, 1));
+        $mform->addElement('advcheckbox', 'enabled', get_string('useturnitin', 'plagiarism_turnitin'), '', null, array(0, 1));
 
         // Loop through all modules that support Plagiarism.
         $mods = array_keys(core_component::get_plugin_list('mod'));
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $mform->addElement('advcheckbox',
-                    'turnitin_use_mod_'.$mod,
+                    'plagiarism_turnitin_mod_'.$mod,
                     get_string('useturnitin_mod', 'plagiarism_turnitin', ucfirst($mod)),
                     '',
                     null,
@@ -225,17 +225,20 @@ class turnitin_setupform extends moodleform {
         $mods = array_keys(core_component::get_plugin_list('mod'));
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                $property = "turnitin_use_mod_" . $mod;
-                ${ "turnitin_use_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
-                set_config('turnitin_use_mod_'.$mod, ${ "turnitin_use_mod_" . "$mod" }, 'plagiarism_turnitin');
-                if (${ "turnitin_use_mod_" . "$mod" }) {
+                $property = "plagiarism_turnitin_mod_" . $mod;
+                ${ "plagiarism_turnitin_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
+                set_config('plagiarism_turnitin_mod_'.$mod, ${ "plagiarism_turnitin_mod_" . "$mod" }, 'plagiarism_turnitin');
+                if (${ "plagiarism_turnitin_mod_" . "$mod" }) {
+                    set_config('enabled', 1, 'plagiarism_turnitin');
+                    // TODO: Remove turnitin_use when support for 3.8 is dropped.
                     set_config('turnitin_use', 1, 'plagiarism');
                 }
             }
         }
 
-        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark", "useerater", "useanon",
-            "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
+            "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

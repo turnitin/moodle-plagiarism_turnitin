@@ -129,7 +129,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get the Turnitin settings for a module
      *
-     * @param int $cm_id - the course module id, if this is 0 the default settings will be retrieved
+     * @param int $cmid - the course module id, if this is 0 the default settings will be retrieved
      * @param bool $uselockedvalues - use locked values in place of saved values
      * @return array of Turnitin settings for a module
      */
@@ -1212,11 +1212,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return $output;
     }
 
-    public function update_grades_from_tii($cm) {
-        global $DB;
+    // Query Turnitin for the papers that need updated locally.
+    public function fetch_updated_paper_ids_from_turnitin($cm) {
         $plagiarismvalues = $this->get_settings($cm->id);
-        $submissionids = array();
-        $return = true;
 
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
@@ -1235,16 +1233,28 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $response = $turnitincall->findSubmissions($submission);
             $findsubmission = $response->getSubmission();
 
-            $submissionids = $findsubmission->getSubmissionIds();
+            return $findsubmission->getSubmissionIds();
         } catch (Exception $e) {
             $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
-            $return = false;
+            return false;
         }
+    }
+
+    public function update_grades_from_tii($cm) {
+        global $DB;
+
+        $submissionids = $this->fetch_updated_paper_ids_from_turnitin($cm);
+        $return = ($submissionids === false) ? false : true;
 
         // Refresh updated submissions.
         if (count($submissionids) > 0) {
+            // Initialise Comms Object.
+            $turnitincomms = new turnitin_comms();
+            $turnitincall = $turnitincomms->initialise_api();
+
             // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
             $submissionbatches = array_chunk($submissionids, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
+
             foreach ($submissionbatches as $submissionsbatch) {
                 try {
                     $submission = new TiiSubmission();
@@ -1304,8 +1314,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
         $updaterequired = false;
 
-        if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid),
-                                                 'id, cm, userid, identifier, similarityscore, grade, submissiontype, orcapable, student_read, gm_feedback, errorcode')) {
+        $fields = 'id, cm, userid, identifier, itemid, similarityscore, grade, submissiontype, orcapable,';
+        $fields .= 'student_read, gm_feedback, errorcode';
+        if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $submissionid), $fields)) {
 
             // Build Plagiarism file object.
             $plagiarismfile = new stdClass();
@@ -1386,17 +1397,30 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($updaterequired) {
                 $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
 
+                // Coursework grading would be broken by syncing grades as Turnitin doesn't support Double marking.
                 if ($cm->modname == "coursework") {
-                    // At the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark as it would destroy the workflow.
                     return true;
                 }
 
-                $gradeitem = $DB->get_record('grade_items',
-                                    array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
-                                            'courseid' => $cm->course, 'itemnumber' => 0));
+                // Update grades, for the quiz we update marks for questions instead.
+                if ($cm->modname == "quiz") {
+                    $quiz = $DB->get_record('quiz', array('id' => $cm->instance));
+                    $tq = new turnitin_quiz();
+                    $tq->update_mark(
+                        $submissiondata->itemid,
+                        $submissiondata->identifier,
+                        $submissiondata->userid,
+                        $plagiarismfile->grade,
+                        $quiz->grade
+                    );
+                } else {
+                    $gradeitem = $DB->get_record('grade_items',
+                        array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
+                            'courseid' => $cm->course, 'itemnumber' => 0));
 
-                if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
-                    $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
+                    if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
+                        $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
+                    }
                 }
             }
         }
@@ -2805,11 +2829,11 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
     $context = context_course::instance($formwrapper->get_course()->id);
-    
+
     $pluginturnitin->get_form_elements_module(
         $mform,
         $context,
-        'mod_'.$formwrapper->get_coursemodule()->modname
+        'mod_'.$formwrapper->get_current()->modulename
     );
 }
 

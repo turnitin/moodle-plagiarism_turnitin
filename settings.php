@@ -140,7 +140,6 @@ switch ($do) {
         }
 
         $pluginconfig = get_config('plagiarism_turnitin');
-        $pluginconfig->turnitin_use = get_config('plagiarism', 'turnitin_use');
         $tiisetupform->set_data($pluginconfig);
 
         echo $tiisetupform->display();

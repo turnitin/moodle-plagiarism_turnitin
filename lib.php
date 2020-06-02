@@ -114,7 +114,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return mixed if plugin is enabled then an array of config settings is returned or false if not
      */
     public static function get_config_settings($modulename) {
-        $pluginconfig = get_config('plagiarism_turnitin', 'turnitin_use_'.$modulename);
+        $pluginconfig = get_config('plagiarism_turnitin', 'plagiarism_turnitin_'.$modulename);
 
         return $pluginconfig;
     }
@@ -2805,8 +2805,12 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
     $context = context_course::instance($formwrapper->get_course()->id);
-
-    $pluginturnitin->get_form_elements_module($mform, $context);
+    
+    $pluginturnitin->get_form_elements_module(
+        $mform,
+        $context,
+        'mod_'.$formwrapper->get_coursemodule()->modname
+    );
 }
 
 /**

@@ -21,6 +21,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
 // TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_quiz {
 
@@ -59,6 +61,49 @@ class turnitin_quiz {
 
         $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
         return $currentgradequery;
+    }
+
+    // Work out the mark to set.
+    public function calculate_mark($grade, $questionmaxmark, $quizgrade) {
+        $mark = $grade * ($questionmaxmark / $quizgrade);
+        return ($mark < 0) ? 0 : (float)$mark;
+    }
+
+    // Set a new mark for a question attempt based on the grade given for the answer in TFS.
+    public function update_mark($attemptid, $identifier, $userid, $grade, $quizgrade) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        $attempt = quiz_attempt::create($attemptid);
+        $quba = question_engine::load_questions_usage_by_activity($attemptid);
+
+        // Loop through each question slot.
+        foreach ($attempt->get_slots() as $slot) {
+            $answer = $attempt->get_question_attempt($slot)->get_response_summary();
+            // Check if this is the slot the mark is for by matching content.
+            if (sha1($answer) == $identifier) {
+                // Translate the TFS grade to a mark for the question.
+                $questionmaxmark = $attempt->get_question_attempt($slot)->get_max_mark();
+
+                $mark = $this->calculate_mark($grade, $questionmaxmark, $quizgrade);
+                $quba->get_question_attempt($slot)->manual_grade(
+                    'Graded using Turnitin Feedback Studio', $mark, FORMAT_HTML);
+            }
+        }
+
+        // Save changes.
+        question_engine::save_questions_usage_by_activity($quba);
+
+        $update = new stdClass();
+        $update->id = $attemptid;
+        $update->timemodified = time();
+        $update->sumgrades = $quba->get_total_mark();
+        $DB->update_record('quiz_attempts', $update);
+
+        quiz_save_best_grade($attempt->get_quiz(), $userid);
+
+        $transaction->allow_commit();
     }
 
 }

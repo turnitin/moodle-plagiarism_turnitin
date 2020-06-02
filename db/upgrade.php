@@ -416,16 +416,12 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2020052201) {
+    if ($oldversion < 2020060201) {
         // Convert plugin _use settings as they are bring deprecated.
         $data = get_config('plagiarism');
-
-        foreach ($data as $key => $value) {
-            if ((strpos($key, 'turnitin_') !== false) && ($key == 'turnitin_use')) {
-                // TODO: Delete the turnitin_use key when support for 3.8 is dropped.
-                set_config('enabled', $value, 'plagiarism_turnitin');
-            }
-        }
+        $value = (empty($data->turnitin_use)) ? 0 : 1;
+        set_config('enabled', $value, 'plagiarism_turnitin');
+        // TODO: Delete the turnitin_use setting when support for 3.8 is dropped.
 
         $data = get_config('plagiarism_turnitin');
         foreach ($data as $key => $value) {

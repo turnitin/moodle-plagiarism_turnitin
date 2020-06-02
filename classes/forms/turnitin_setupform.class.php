@@ -43,9 +43,19 @@ class turnitin_setupform extends moodleform {
         $mform->disable_form_change_checker();
 
         $mform->addElement('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
-        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin'));
+        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin').'</br></br>qx
 
-        $mform->addElement('advcheckbox', 'enabled', get_string('useturnitin', 'plagiarism_turnitin'), '', null, array(0, 1));
+
+
+
+
+:wq
+qq
+
+q
+q
+qxxxexit
+');
 
         // Loop through all modules that support Plagiarism.
         $mods = array_keys(core_component::get_plugin_list('mod'));

@@ -43,19 +43,7 @@ class turnitin_setupform extends moodleform {
         $mform->disable_form_change_checker();
 
         $mform->addElement('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
-        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin').'</br></br>qx
-
-
-
-
-
-:wq
-qq
-
-q
-q
-qxxxexit
-');
+        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin').'</br></br>');
 
         // Loop through all modules that support Plagiarism.
         $mods = array_keys(core_component::get_plugin_list('mod'));
@@ -233,18 +221,21 @@ qxxxexit
     public function save($data) {
         // Save whether the plugin is enabled for individual modules.
         $mods = array_keys(core_component::get_plugin_list('mod'));
+        $pluginenabled = 0;
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $property = "plagiarism_turnitin_mod_" . $mod;
                 ${ "plagiarism_turnitin_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
                 set_config('plagiarism_turnitin_mod_'.$mod, ${ "plagiarism_turnitin_mod_" . "$mod" }, 'plagiarism_turnitin');
                 if (${ "plagiarism_turnitin_mod_" . "$mod" }) {
-                    set_config('enabled', 1, 'plagiarism_turnitin');
-                    // TODO: Remove turnitin_use when support for 3.8 is dropped.
-                    set_config('turnitin_use', 1, 'plagiarism');
+                    $pluginenabled = 1;
                 }
             }
         }
+
+        set_config('enabled', $pluginenabled, 'plagiarism_turnitin');
+        // TODO: Remove turnitin_use when support for 3.8 is dropped.
+        set_config('turnitin_use', $pluginenabled, 'plagiarism');
 
         $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",

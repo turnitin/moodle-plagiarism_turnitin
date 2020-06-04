@@ -278,8 +278,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
-        $supportedmods = array("mod_assign", "mod_coursework", "mod_forum", "mod_workshop");
-        if (in_array($modulename, $supportedmods) && $source != "new_method" && $CFG->branch >= 39) {
+        if ($source != "new_method" && $CFG->branch >= 39) {
             return;
         }
 

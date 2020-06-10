@@ -272,8 +272,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param object $context
      * @return type
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB, $PAGE, $COURSE;
+    public function get_form_elements_module($mform, $context, $modulename = "", $source = "") {
+        global $CFG, $DB, $PAGE, $COURSE;
+
+        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
+        // twice. This won't be needed once this method goes away.
+        // TODO: Remove once this method goes away.
+        if ($source != "new_method" && $CFG->branch >= 39) {
+            return;
+        }
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
@@ -2833,7 +2840,8 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
     $pluginturnitin->get_form_elements_module(
         $mform,
         $context,
-        'mod_'.$formwrapper->get_current()->modulename
+        'mod_'.$formwrapper->get_current()->modulename,
+        "new_method"
     );
 }
 

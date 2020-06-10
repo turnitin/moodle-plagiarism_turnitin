@@ -435,7 +435,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2020052201, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2020060201, 'plagiarism', 'turnitin');
     }
 
     return $result;

@@ -94,7 +94,20 @@ define(['jquery'], function($) {
                       sesskey: M.cfg.sesskey
                   },
                   success: function() {
-                      window.location = window.location;
+                     $.ajax( {
+                         type: "GET",
+                         url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+                         dataType: "json",
+                         data: {
+                             action: "update_links",
+                             submission: submission_id,
+                             cmid: coursemoduleid,
+                             sesskey: M.cfg.sesskey
+                         },
+                         success: function() {
+                             $('tii_links_container').html('Lottie');
+                         }
+                     });
                   }
               });
          }

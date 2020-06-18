@@ -438,14 +438,10 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020060201, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2020061801) {
-
-        // Delete the _use value for pre 3.9 environments. We'll delete completely when we remove 3.8 support.
-        if ($CFG->branch >= 39) {
-            set_config('turnitin_use', null, 'plagiarism');
-        }
-
-        upgrade_plugin_savepoint(true, 2020061801, 'plagiarism', 'turnitin');
+    // Delete the _use value for pre 3.9 environments irrespective of plugin version.
+    // TODO: Delete completely when we remove 3.8 support.
+    if ($CFG->branch >= 39) {
+        set_config('turnitin_use', null, 'plagiarism');
     }
 
     return $result;

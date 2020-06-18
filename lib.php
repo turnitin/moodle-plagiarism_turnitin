@@ -227,7 +227,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @global type $DB
      * @param object $data the form data to save
      */
-    public function save_form_elements($data) {
+    public function save_form_elements_deprecated($data) {
         global $DB;
 
         $moduletiienabled = $this->get_config_settings('mod_'.$data->modulename);
@@ -272,7 +272,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param object $context
      * @return type
      */
-    public function get_form_elements_module($mform, $context, $modulename = "", $source = "") {
+    public function get_form_elements_module_deprecated($mform, $context, $modulename = "", $source = "") {
         global $CFG, $DB, $PAGE, $COURSE;
 
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
@@ -2837,7 +2837,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
 
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    $pluginturnitin->get_form_elements_module(
+    $pluginturnitin->get_form_elements_module_deprecated(
         $mform,
         $context,
         'mod_'.$formwrapper->get_current()->modulename,
@@ -2854,7 +2854,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
 function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
-    $pluginturnitin->save_form_elements($data);
+    $pluginturnitin->save_form_elements_deprecated($data);
 
     return $data;
 }

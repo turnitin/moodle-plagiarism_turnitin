@@ -421,7 +421,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $data = get_config('plagiarism');
         $value = (empty($data->turnitin_use)) ? 0 : 1;
         set_config('enabled', $value, 'plagiarism_turnitin');
-        // TODO: Delete the turnitin_use setting when support for 3.8 is dropped.
+        // TODO: Delete the turnitin_use setting completely when support for 3.8 is dropped.
 
         $data = get_config('plagiarism_turnitin');
         foreach ($data as $key => $value) {
@@ -436,6 +436,12 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2020060201, 'plagiarism', 'turnitin');
+    }
+
+    // Delete the _use value for pre 3.9 environments irrespective of plugin version.
+    // TODO: Delete completely when we remove 3.8 support.
+    if ($CFG->branch >= 39) {
+        set_config('turnitin_use', null, 'plagiarism');
     }
 
     return $result;

@@ -219,6 +219,8 @@ class turnitin_setupform extends moodleform {
      * Save the plugin config data
      */
     public function save($data) {
+        global $CFG;
+
         // Save whether the plugin is enabled for individual modules.
         $mods = array_keys(core_component::get_plugin_list('mod'));
         $pluginenabled = 0;
@@ -234,8 +236,10 @@ class turnitin_setupform extends moodleform {
         }
 
         set_config('enabled', $pluginenabled, 'plagiarism_turnitin');
-        // TODO: Remove turnitin_use when support for 3.8 is dropped.
-        set_config('turnitin_use', $pluginenabled, 'plagiarism');
+        // TODO: Remove turnitin_use completely when support for 3.8 is dropped.
+        if ($CFG->branch < 39) {
+            set_config('turnitin_use', $pluginenabled, 'plagiarism');
+        }
 
         $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",

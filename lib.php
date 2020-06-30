@@ -199,9 +199,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string
      */
     public function update_status($course, $cm) {
-        return '';
+        return html_writer::tag('div','&nbsp;', array('title' => get_string('refreshmessage',
+            'plagiarism_turnitin'), 'class' => 'my_update_message'));
     }
-
     /**
      * Check if plugin has been configured with Turnitin account details.
      * @return boolean whether the plugin is configured for Turnitin.

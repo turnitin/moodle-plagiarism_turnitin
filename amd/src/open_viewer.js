@@ -83,33 +83,25 @@ define(['jquery'], function($) {
          },
 
          refreshScores: function(submission_id, coursemoduleid) {
-              $.ajax({
-                  type: "POST",
-                  url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-                  dataType: "json",
-                  data: {
-                      action: "update_grade",
-                      submission: submission_id,
-                      cmid: coursemoduleid,
-                      sesskey: M.cfg.sesskey
-                  },
-                  success: function() {
-                     $.ajax( {
-                         type: "GET",
-                         url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-                         dataType: "json",
-                         data: {
-                             action: "update_links",
-                             submission: submission_id,
-                             cmid: coursemoduleid,
-                             sesskey: M.cfg.sesskey
-                         },
-                         success: function() {
-                             $('tii_links_container').html('Lottie');
+                 var refreshTimeout = new Date().getTime();
+                 $.ajax({
+                     type: "POST",
+                     url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+                     dataType: "json",
+                     data: {
+                         action: "update_grade",
+                         submission: submission_id,
+                         cmid: coursemoduleid,
+                         sesskey: M.cfg.sesskey
+                     },
+                     success: function() {
+                         if (refreshTimeout < 2000) {
+                             $('my_update_message').show();
+                         } else {
+                             window.location = window.location;
                          }
-                     });
-                  }
-              });
+                     }
+                 });
          }
     };
 });

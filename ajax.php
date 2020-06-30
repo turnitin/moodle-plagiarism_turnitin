@@ -372,11 +372,6 @@ switch ($action) {
 
         echo json_encode($options);
         break;
-
-    case "update_links":
-        echo 'anything';
-
-        break;
 }
 
 if (!empty($return)) {

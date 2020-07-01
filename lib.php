@@ -192,16 +192,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * This function is called from the inbox in mod assign.
-     * This plugin doesn't use it as it would impact negatively on the page loading.
+     * This will alert the user to refresh the assignment when there has been a change in scores.
      *
      * @param $course - Course the module is part of
      * @param $cm - Course module
      * @return string
      */
     public function update_status($course, $cm) {
-        return '';
+        return html_writer::div(get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin'),
+            'turnitin_score_refresh_alert', array('id' => 'turnitin_score_refresh_alert'));
     }
-
     /**
      * Check if plugin has been configured with Turnitin account details.
      * @return boolean whether the plugin is configured for Turnitin.

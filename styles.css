@@ -326,6 +326,14 @@ button.pp-resubmit-files {
     margin-bottom: 16px;
 }
 
+#turnitin_score_refresh_alert {
+    margin-top: 16px;
+    border: 1px solid #6FCAFF;
+    background: #BBE6FF;
+    padding: 10px;
+    margin-bottom: 16px;
+}
+
 iframe html{background:none;}
 
 .selectlong {

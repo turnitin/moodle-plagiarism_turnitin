@@ -83,7 +83,7 @@ define(['jquery'], function($) {
          },
 
          refreshScores: function(submission_id, coursemoduleid) {
-                 var refreshTimeout = new Date().getTime();
+                 var refreshStartTime = new Date().getTime();
                  $.ajax({
                      type: "POST",
                      url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
@@ -95,8 +95,9 @@ define(['jquery'], function($) {
                          sesskey: M.cfg.sesskey
                      },
                      success: function() {
-                         if (refreshTimeout < 2000) {
-                             $('my_update_message').show();
+                         var requestDuration = new Date().getTime() - refreshStartTime;
+                         if (requestDuration < 2000) {
+                             $('.turnitin_score_refresh_alert').show();
                          } else {
                              window.location = window.location;
                          }

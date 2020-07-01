@@ -199,7 +199,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string
      */
     public function update_status($course, $cm) {
-        return html_writer::div(get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin'), 'turnitin_score_refresh_alert', array('id' => 'turnitin_score_refresh_alert'));
+        return html_writer::div(get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin'),
+            'turnitin_score_refresh_alert', array('id' => 'turnitin_score_refresh_alert'));
     }
     /**
      * Check if plugin has been configured with Turnitin account details.

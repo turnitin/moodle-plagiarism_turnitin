@@ -80,29 +80,29 @@ define(['jquery'], function($) {
                     that.checkDVClosed(submissionid, coursemoduleid, dvWindow);
                 }, 500);
             }
-         },
+        },
 
-         refreshScores: function(submission_id, coursemoduleid) {
-                 var refreshStartTime = new Date().getTime();
-                 $.ajax({
-                     type: "POST",
-                     url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-                     dataType: "json",
-                     data: {
-                         action: "update_grade",
-                         submission: submission_id,
-                         cmid: coursemoduleid,
-                         sesskey: M.cfg.sesskey
-                     },
-                     success: function() {
-                         var requestDuration = new Date().getTime() - refreshStartTime;
-                         if (requestDuration < 3000) {
-                             window.location = window.location;
-                         } else {
-                             $('.turnitin_score_refresh_alert').show();
-                         }
-                     }
-                 });
-         }
+        refreshScores: function(submission_id, coursemoduleid) {
+            var refreshStartTime = new Date().getTime();
+            $.ajax({
+                type: "POST",
+                url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+                dataType: "json",
+                data: {
+                    action: "update_grade",
+                    submission: submission_id,
+                    cmid: coursemoduleid,
+                    sesskey: M.cfg.sesskey
+                },
+                success: function() {
+                    var requestDuration = new Date().getTime() - refreshStartTime;
+                    if (requestDuration < 3000) {
+                        window.location = window.location;
+                    } else {
+                        $('.turnitin_score_refresh_alert').show();
+                    }
+                }
+            });
+        }
     };
 });

@@ -2837,12 +2837,17 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
 
     $context = context_course::instance($formwrapper->get_course()->id);
 
+    $modulename = "";
+    if (!empty(get_class($formwrapper))) {
+        $formwrapperclass = explode("_", get_class($formwrapper));
+        $modulename = $formwrapperclass[1];
+    }
+
     $pluginturnitin->get_form_elements_module(
         $mform,
         $context,
-        'mod_'.$formwrapper->get_current()->modulename,
-        "new_method"
-    );
+        "mod_".$modulename,
+        "new_method");
 }
 
 /**

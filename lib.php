@@ -2840,9 +2840,8 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
     $pluginturnitin->get_form_elements_module(
         $mform,
         $context,
-        'mod_'.$formwrapper->get_current()->modulename,
-        "new_method"
-    );
+        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '',
+        "new_method");
 }
 
 /**

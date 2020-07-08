@@ -31,14 +31,7 @@ define(['jquery'], function($) {
                 for (var i = 0; i < classList.length; i++) {
                     if (classList[i].indexOf('grademark_') !== -1 && classList[i] != 'pp_grademark_open') {
                         var classStr = classList[i].split("_");
-                        var url = "";
-                        // URL must be stored in separate div on forums.
-                        if ($('.grademark_forum_launch_' + classStr[1]).length > 0) {
-                            url = $('.grademark_forum_launch_' + classStr[1]).html();
-                        } else {
-                            url = $(this).attr("id");
-                        }
-                        that.openDV("grademark", classStr[1], classStr[2], url);
+                        that.openDV("grademark", classStr[1], classStr[2]);
                     }
                 }
             });
@@ -87,23 +80,29 @@ define(['jquery'], function($) {
                     that.checkDVClosed(submissionid, coursemoduleid, dvWindow);
                 }, 500);
             }
-         },
+        },
 
-         refreshScores: function(submission_id, coursemoduleid) {
-              $.ajax({
-                  type: "POST",
-                  url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-                  dataType: "json",
-                  data: {
-                      action: "update_grade",
-                      submission: submission_id,
-                      cmid: coursemoduleid,
-                      sesskey: M.cfg.sesskey
-                  },
-                  success: function() {
-                      window.location = window.location;
-                  }
-              });
-         }
+        refreshScores: function(submission_id, coursemoduleid) {
+            var refreshStartTime = new Date().getTime();
+            $.ajax({
+                type: "POST",
+                url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+                dataType: "json",
+                data: {
+                    action: "update_grade",
+                    submission: submission_id,
+                    cmid: coursemoduleid,
+                    sesskey: M.cfg.sesskey
+                },
+                success: function() {
+                    var requestDuration = new Date().getTime() - refreshStartTime;
+                    if (requestDuration < 3000) {
+                        window.location = window.location;
+                    } else {
+                        $('.turnitin_score_refresh_alert').show();
+                    }
+                }
+            });
+        }
     };
 });

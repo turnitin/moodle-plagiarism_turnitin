@@ -126,7 +126,7 @@ class turnitin_assignment {
                 mtrace(get_string('pp_classcreationerror', 'plagiarism_turnitin'));
                 $toscreen = false;
             }
-            $this->turnitincomms->handle_exceptions($e, 'classcreationerror', $toscreen);
+            $this->turnitincomms->handle_exceptions($e, 'pp_classcreationerror', $toscreen);
         }
     }
 

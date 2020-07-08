@@ -51,7 +51,9 @@ $PAGE->requires->jquery_plugin('ui');
 switch ($cmd) {
     case "rubricmanager":
         $PAGE->set_pagelayout('embedded');
-        $tiicourseid = optional_param('tiicourseid', 0, PARAM_INT);
+        $courseid = optional_param('courseid', 0, PARAM_INT);
+        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid));
+        $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
             array("class" => "launch_form"));

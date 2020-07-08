@@ -51,7 +51,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(3, $itemcollection);
+        $this->assertCount(4, $itemcollection);
 
         // Verify core_files data is returned.
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
@@ -72,9 +72,9 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('student_read', $privacyfields);
 
         // Verify plagiarism_turnitin_client data is returned.
-        $this->assertEquals('plagiarism_turnitin_client', $itemcollection[2]->get_name());
+        $this->assertEquals('plagiarism_turnitin_client', $itemcollection[3]->get_name());
 
-        $privacyfields = $itemcollection[2]->get_privacy_fields();
+        $privacyfields = $itemcollection[3]->get_privacy_fields();
         $this->assertArrayHasKey('email', $privacyfields);
         $this->assertArrayHasKey('firstname', $privacyfields);
         $this->assertArrayHasKey('lastname', $privacyfields);
@@ -82,7 +82,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertArrayHasKey('submission_filename', $privacyfields);
         $this->assertArrayHasKey('submission_content', $privacyfields);
 
-        $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[2]->get_summary());
+        $this->assertEquals('privacy:metadata:plagiarism_turnitin_client', $itemcollection[3]->get_summary());
     }
 
     /**
@@ -94,16 +94,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
 
         $csresponse = $this->create_submission();
 
-        // Set the cm to the correct one for our submission.
-        $cms = $DB->get_records('course_modules');
-        $cm = reset($cms);
         $submissions = $DB->get_records('plagiarism_turnitin_files');
-        $submission = reset($submissions);
-
-        $update = new stdClass();
-        $update->id = $submission->id;
-        $update->cm = $cm->instance;
-        $DB->update_record('plagiarism_turnitin_files', $update);
 
         $this->assertEquals(1, count($submissions));
 
@@ -132,13 +123,18 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         global $DB;
 
         $csresponse = $this->create_submission();
+        $csresponse2 = $this->create_submission();
+
+        $submissions = $DB->get_records('plagiarism_turnitin_files');
+        $this->assertEquals(2, count($submissions));
+
+        // Delete all of the data for the user for the first submission.
+        provider::delete_plagiarism_for_user($csresponse["Student"]->id, $csresponse["Context"]);
 
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(1, count($submissions));
 
-        // Delete all of the data for the user.
-        provider::delete_plagiarism_for_user($csresponse["Student"]->id, $csresponse["Context"]);
-
+        provider::delete_plagiarism_for_user($csresponse2["Student"]->id, $csresponse2["Context"]);
         $submissions = $DB->get_records('plagiarism_turnitin_files');
         $this->assertEquals(0, count($submissions));
     }

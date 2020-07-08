@@ -71,6 +71,14 @@ class provider implements
             'privacy:metadata:plagiarism_turnitin_files'
         );
 
+        $collection->add_database_table(
+            'plagiarism_turnitin_users',
+            [
+                'userid' => 'privacy:metadata:plagiarism_turnitin_users:userid',
+            ],
+            'privacy:metadata:plagiarism_turnitin_users'
+        );
+
         $collection->link_external_location('plagiarism_turnitin_client', [
             'email' => 'privacy:metadata:plagiarism_turnitin_client:email',
             'firstname' => 'privacy:metadata:plagiarism_turnitin_client:firstname',
@@ -100,7 +108,7 @@ class provider implements
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {assign} a ON cm.instance = a.id
                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
-             LEFT JOIN {plagiarism_turnitin_files} tf ON cm.instance = cm
+                  JOIN {plagiarism_turnitin_files} tf ON tf.cm = cm.id
                  WHERE tf.userid = :userid";
 
         $contextlist = new contextlist();
@@ -197,6 +205,10 @@ class provider implements
     public static function _delete_plagiarism_for_user($userid, \context $context) {
         global $DB;
 
-        $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid]);
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        $DB->delete_records('plagiarism_turnitin_files', ['userid' => $userid, 'cm' => $context->instanceid]);
     }
 }

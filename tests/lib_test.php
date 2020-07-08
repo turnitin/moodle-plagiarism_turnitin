@@ -45,17 +45,17 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with only account id set.
-        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism');
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with account id and apiurl set.
-        set_config('plagiarism_turnitin_apiurl', 'http://www.test.com', 'plagiarism');
+        set_config('plagiarism_turnitin_apiurl', 'http://www.test.com', 'plagiarism_turnitin');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(false, $ispluginconfigured);
 
         // Check if plugin is configured with account id, apiurl and secretkey set.
-        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
         $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
         $this->assertEquals(true, $ispluginconfigured);
     }

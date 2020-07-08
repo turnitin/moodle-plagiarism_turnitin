@@ -84,7 +84,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 foreach ($supportedmods as $mod) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
-                    $configfield->plugin = 'plagiarism';
+                    $configfield->plugin = 'plagiarism_turnitin';
                     $configfield->name = 'turnitin_use_mod_'.$mod;
                     if (!$DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod))) {
                         $DB->insert_record('config_plugins', $configfield);
@@ -400,6 +400,48 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2019121719) {
+        // Update plagiarism to plagiarism_turnitin for consistency.
+        $data = get_config('plagiarism');
+
+        foreach ($data as $key => $value) {
+            if ((strpos($key, 'turnitin_') !== false) && ($key != 'turnitin_use')) {
+                set_config($key, $value, 'plagiarism_turnitin');
+                unset_config($key, 'plagiarism');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2020070801) {
+        // Convert plugin _use settings as they are bring deprecated.
+        $data = get_config('plagiarism');
+        $value = (empty($data->turnitin_use)) ? 0 : 1;
+        set_config('enabled', $value, 'plagiarism_turnitin');
+        // TODO: Delete the turnitin_use setting completely when support for 3.8 is dropped.
+
+        $data = get_config('plagiarism_turnitin');
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'turnitin_use_') !== false) {
+                // Modify key e.g. turnitin_use_mod_assign to plagiarism_turnitin_mod_assign.
+                $splitstr = explode("_", $key);
+                $newkey = 'plagiarism_turnitin_mod_' . $splitstr[3];
+                set_config($newkey, $value, 'plagiarism_turnitin');
+                // Remove old key.
+                set_config($key, null, 'plagiarism_turnitin');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2020070801, 'plagiarism', 'turnitin');
+    }
+
+    // Delete the _use value for pre 3.9 environments irrespective of plugin version.
+    // TODO: Delete completely when we remove 3.8 support.
+    if ($CFG->branch >= 39) {
+        set_config('turnitin_use', null, 'plagiarism');
     }
 
     return $result;

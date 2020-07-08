@@ -18,7 +18,8 @@ define(['jquery',
         return {
             peermarkLaunch: function() {
                 var that = this;
-                $('.peermark_manager_launch').on('click', function() {
+                $('.peermark_manager_launch').on('click', function(event) {
+                    event.preventDefault();
                     that.peermarkCreateModal(ModalPeermarkManagerLaunch.TYPE);
                 });
 

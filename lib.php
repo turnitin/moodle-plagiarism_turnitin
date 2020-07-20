@@ -278,7 +278,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
-        if ($source != "new_method" && $CFG->branch >= 39) {
+        static $contentdisplayed;
+        if ($source != "new_method" && $CFG->branch >= 39 && $contentdisplayed == true) {
             return;
         }
 

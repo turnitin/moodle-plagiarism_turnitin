@@ -273,12 +273,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function get_form_elements_module($mform, $context, $modulename = "", $source = "") {
-        global $CFG, $DB, $PAGE, $COURSE;
+        global $DB, $PAGE, $COURSE;
 
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
-        if ($source != "new_method" && $CFG->branch >= 39) {
+        static $settingsdisplayed;
+        if ($settingsdisplayed == true) {
             return;
         }
 

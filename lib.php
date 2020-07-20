@@ -279,7 +279,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
         static $settingsdisplayed;
-        if ($settingsdisplayed == true) {
+        if ($settingsdisplayed) {
             return;
         }
 

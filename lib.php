@@ -278,7 +278,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
-        if ($source != "new_method" && $CFG->branch >= 39) {
+        static $settingsdisplayed;
+        if ($source != "new_method" && $CFG->branch >= 39 && $settingsdisplayed == true) {
             return;
         }
 
@@ -327,6 +328,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $course = $this->get_course_data($cmid, $COURSE->id);
                 $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }
+            $settingsdisplayed = true;
 
             // Disable all plagiarism elements if turnitin is not enabled.
             foreach ($plagiarismelements as $element) {

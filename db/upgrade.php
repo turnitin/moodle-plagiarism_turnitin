@@ -416,7 +416,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2020072201) {
+    if ($oldversion < 2020070801) {
         // Convert plugin _use settings as they are being deprecated.
         $data = get_config('plagiarism');
         $value = (empty($data->turnitin_use)) ? 0 : 1;
@@ -435,7 +435,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2020072201, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2020070801, 'plagiarism', 'turnitin');
     }
 
     // Delete the _use value for pre 3.9 environments irrespective of plugin version.

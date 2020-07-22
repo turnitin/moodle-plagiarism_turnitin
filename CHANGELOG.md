@@ -1,3 +1,13 @@
+### Date:       2020-July-22
+### Release:	2020072201
+
+#### :wrench: Fixes and enhancements
+
+#### Plagiarism Plugin settings will only appear once
+
+A bug had caused the Plagiarism Plugin settings to display twice when creating an assignment in Moodle versions prior to 3.9. This has been fixed for all supported Moodle versions. 
+
+---
 ### Date:       2020-July-07
 ### Release:	2020070801
 

@@ -417,7 +417,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020070801) {
-        // Convert plugin _use settings as they are bring deprecated.
+        // Convert plugin _use settings as they are being deprecated.
         $data = get_config('plagiarism');
         $value = (empty($data->turnitin_use)) ? 0 : 1;
         set_config('enabled', $value, 'plagiarism_turnitin');

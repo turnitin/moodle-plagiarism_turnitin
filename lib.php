@@ -272,13 +272,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param object $context
      * @return type
      */
-    public function get_form_elements_module($mform, $context, $modulename = "", $source = "") {
-        global $CFG, $DB, $PAGE, $COURSE;
+    public function get_form_elements_module($mform, $context, $modulename = "") {
+        global $DB, $PAGE, $COURSE;
 
         // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
         // twice. This won't be needed once this method goes away.
         // TODO: Remove once this method goes away.
-        if ($source != "new_method" && $CFG->branch >= 39) {
+        static $settingsdisplayed;
+        if ($settingsdisplayed) {
             return;
         }
 
@@ -327,6 +328,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $course = $this->get_course_data($cmid, $COURSE->id);
                 $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }
+            $settingsdisplayed = true;
 
             // Disable all plagiarism elements if turnitin is not enabled.
             foreach ($plagiarismelements as $element) {
@@ -2840,8 +2842,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
     $pluginturnitin->get_form_elements_module(
         $mform,
         $context,
-        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '',
-        "new_method");
+        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '');
 }
 
 /**

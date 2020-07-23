@@ -24,6 +24,8 @@
 
 namespace plagiarism_turnitin\task;
 
+use plagiarism_plugin_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -39,6 +41,10 @@ class send_submissions extends \core\task\scheduled_task {
         global $CFG;
 
         require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        if (empty($config->plagiarism_turnitin_accountid) || empty($config->plagiarism_turnitin_secretkey)) {
+            return;
+        }
         plagiarism_turnitin_send_queued_submissions();
     }
 }

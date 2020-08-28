@@ -444,6 +444,23 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         set_config('turnitin_use', null, 'plagiarism');
     }
 
+    if ($oldversion < 2020082800) {
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'externalid');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        $field = new xmldb_field('student_read', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'externalid');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020082800, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }
 

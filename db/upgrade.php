@@ -318,7 +318,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_courses.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
         $table->add_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'courseid');
         $table->add_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
         $table->add_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
@@ -375,7 +375,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'userid');
         $table->add_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'turnitin_uid');
         $table->add_field('instructor_rubrics', XMLDB_TYPE_TEXT, null, null, false, null, null, 'turnitin_utp');
@@ -467,13 +467,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_precision($table, $field);
         }
 
-        // Set userid to not allow null
-        $table = new xmldb_table('plagiarism_turnitin_users');
-        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-
         // Set turnitin_uid to allow null
         $field = new xmldb_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
         if ($dbman->field_exists($table, $field)) {
@@ -486,23 +479,19 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_notnull($table, $field);
         }
 
-        // Set courseid to not allow null
-        $table = new xmldb_table('plagiarism_turnitin_courses');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-
+        // Set ownerid to not allow null
         $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'courseid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
         }
 
+        // Set turnitin_ctl to not allow null
         $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'ownerid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
         }
 
+        // Set turnitin_cid to not allow null
         $field = new xmldb_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'turnitin_ctl');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
@@ -510,8 +499,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2020091401, 'plagiarism', 'turnitin');
     }
-
-//public function __construct($name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null) {
 
     return $result;
 }

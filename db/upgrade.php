@@ -479,20 +479,20 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_notnull($table, $field);
         }
 
-        // Set ownerid to not allow null
-        $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'courseid');
+        // Set ownerid to allow null
+        $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'courseid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
         }
 
-        // Set turnitin_ctl to not allow null
-        $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'ownerid');
+        // Set turnitin_ctl to allow null
+        $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
         }
 
-        // Set turnitin_cid to not allow null
-        $field = new xmldb_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'turnitin_ctl');
+        // Set turnitin_cid to allow null
+        $field = new xmldb_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
         }

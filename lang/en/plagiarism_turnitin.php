@@ -181,8 +181,6 @@ $string['connecttest'] = 'Test Turnitin Connection';
 $string['diagnosticoptions_0'] = 'Off';
 $string['diagnosticoptions_1'] = 'Standard';
 $string['diagnosticoptions_2'] = 'Debugging';
-$string['remotelogoptions_0'] = 'Off';
-$string['remotelogoptions_1'] = 'On';
 
 $string['savesuccess'] = 'Changes saved';
 $string['connecttestsuccess'] = 'Connection test successful';

@@ -93,10 +93,17 @@ class turnitin_setupform extends moodleform {
             1 => get_string('diagnosticoptions_1', 'plagiarism_turnitin'),
             2 => get_string('diagnosticoptions_2', 'plagiarism_turnitin')
         );
+        $turnitinenableremotelogging = array(
+            0 => get_string('remotelogoptions_0', 'plagiarism_turnitin'),
+            1 => get_string('remotelogoptions_1', 'plagiarism_turnitin')
+        );
 
         // Debugging and logging settings.
         $mform->addElement('select', 'plagiarism_turnitin_enablediagnostic', get_string('turnitindiagnostic', 'plagiarism_turnitin'), $diagnosticoptions);
         $mform->addElement('static', 'plagiarism_turnitin_enablediagnostic_desc', null, get_string('turnitindiagnostic_desc', 'plagiarism_turnitin'));
+
+        $mform->addElement('select', 'plagiarism_turnitin_enableremotelogging', get_string('turnitinremotelogging', 'plagiarism_turnitin'), $turnitinenableremotelogging);
+        $mform->addElement('static', 'plagiarism_turnitin_enableremotelogging_desc', null, get_string('turnitinremotelogging_desc', 'plagiarism_turnitin'));
 
         $mform->addElement('header', 'plagiarism_accountsettings', get_string('tiiaccountsettings', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_accountsettings');
@@ -241,7 +248,7 @@ class turnitin_setupform extends moodleform {
             set_config('turnitin_use', $pluginenabled, 'plagiarism');
         }
 
-        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
+        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "enableremotelogging", "usegrademark", "enablepeermark",
             "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
 

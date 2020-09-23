@@ -53,6 +53,19 @@ define('PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN', '@tiimoodle.com');
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME', get_string('defaultcoursestudent'));
 
+// URLs
+define('PLAGIARISM_TURNITIN_URL_GLOBAL', 'https://api.turnitin.com');
+define('PLAGIARISM_TURNITIN_URL_UK', 'https://api.turnitinuk.com');
+define('PLAGIARISM_TURNITIN_URL_SANDBOX', 'https://sandbox.turnitin.com');
+define('PLAGIARISM_TURNITIN_REMOTE_LOGGING_ENDPOINT', '/remote-logging/api/log');
+// Set the logging URLs depending on the API URL.
+global $remotelogurl;
+$remotelogurl = [
+    PLAGIARISM_TURNITIN_URL_GLOBAL => 'https://external-production.us.turnitin.com',
+    PLAGIARISM_TURNITIN_URL_UK => 'https://external-production.eu.turnitin.com',
+    PLAGIARISM_TURNITIN_URL_SANDBOX => 'https://external-sandbox.eu.tii-sandbox.com'
+];
+
 // Define accepted files if the module is not accepting any file type.
 global $turnitinacceptedfiles;
 $turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx',

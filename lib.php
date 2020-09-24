@@ -62,8 +62,7 @@ define('PLAGIARISM_TURNITIN_REMOTE_LOGGING_ENDPOINT', '/remote-logging/api/log')
 global $remotelogurl;
 $remotelogurl = [
     PLAGIARISM_TURNITIN_URL_GLOBAL => 'https://external-production.us.turnitin.com',
-    PLAGIARISM_TURNITIN_URL_UK => 'https://external-production.eu.turnitin.com',
-    PLAGIARISM_TURNITIN_URL_SANDBOX => 'https://external-sandbox.eu.tii-sandbox.com'
+    PLAGIARISM_TURNITIN_URL_UK => 'https://external-production.eu.turnitin.com'
 ];
 
 // Define accepted files if the module is not accepting any file type.

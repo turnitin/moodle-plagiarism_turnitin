@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_remote_logging.class.php');
 
 use Integrations\PhpSdk\TurnitinAPI;
 
@@ -33,6 +34,7 @@ class turnitin_comms {
     private $tiisecretkey;
     private $tiiintegrationid;
     private $diagnostic;
+    private $remotelogging;
     private $langcode;
 
     public function __construct($accountid = null, $accountshared = null, $url = null) {
@@ -50,6 +52,7 @@ class turnitin_comms {
         }
 
         $this->diagnostic = $config->plagiarism_turnitin_enablediagnostic;
+        $this->remotelogging = $config->plagiarism_turnitin_enableremotelogging;
         $this->langcode = $this->get_lang();
     }
 
@@ -59,7 +62,7 @@ class turnitin_comms {
      * @return object \APITurnitin
      */
     public function initialise_api( $istestingconnection = false ) {
-        global $CFG, $tiipp;
+        global $CFG;
 
         $api = new TurnitinAPI($this->tiiaccountid, $this->tiiapiurl, $this->tiisecretkey,
                                 $this->tiiintegrationid, $this->langcode);
@@ -144,6 +147,11 @@ class turnitin_comms {
 
         if (is_callable(array($e, 'getCode'))) {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
+        }
+
+        if ($this->remotelogging) {
+            $remotelog = new turnitin_remote_logging_request();
+            $remotelog->send_remote_logs($errorstr);
         }
 
         plagiarism_turnitin_activitylog($errorstr, "API_ERROR");

@@ -67,10 +67,11 @@ class turnitin_setupform extends moodleform {
 
         $mform->addElement('passwordunmask', 'plagiarism_turnitin_secretkey', get_string('turnitinsecretkey', 'plagiarism_turnitin'));
 
+        // Build options array for selecting API URL.
         $options = array(
-            'https://api.turnitin.com' => 'https://api.turnitin.com',
-            'https://api.turnitinuk.com' => 'https://api.turnitinuk.com',
-            'https://sandbox.turnitin.com' => 'https://sandbox.turnitin.com'
+            PLAGIARISM_TURNITIN_URL_GLOBAL => PLAGIARISM_TURNITIN_URL_GLOBAL,
+            PLAGIARISM_TURNITIN_URL_UK => PLAGIARISM_TURNITIN_URL_UK,
+            PLAGIARISM_TURNITIN_URL_SANDBOX => PLAGIARISM_TURNITIN_URL_SANDBOX
         );
 
         // Set $CFG->turnitinqa and add URLs to $CFG->turnitinqaurls array in config.php file for testing other environments.

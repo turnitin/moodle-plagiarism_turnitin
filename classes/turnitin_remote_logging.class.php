@@ -49,7 +49,7 @@ class turnitin_remote_logging_request {
         global $remotelogurl;
 
         $tiiapiurl = get_config('plagiarism_turnitin', 'plagiarism_turnitin_apiurl');
-        $this->url = $remotelogurl[$tiiapiurl] . PLAGIARISM_TURNITIN_REMOTE_LOGGING_ENDPOINT;
+        $this->url = (!empty($remotelogurl[$tiiapiurl])) ? $remotelogurl[$tiiapiurl]. PLAGIARISM_TURNITIN_REMOTE_LOGGING_ENDPOINT : '' ;
 
         $this->set_basic_details();
     }

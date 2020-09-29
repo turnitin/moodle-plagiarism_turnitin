@@ -97,7 +97,7 @@ define(['jquery'], function($) {
                 success: function() {
                     var requestDuration = new Date().getTime() - refreshStartTime;
                     if (requestDuration < 3000) {
-                        window.location = window.location;
+                        window.location = window.location + '';
                     } else {
                         $('.turnitin_score_refresh_alert').show();
                     }

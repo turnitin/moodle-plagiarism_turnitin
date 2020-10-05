@@ -218,142 +218,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Save the form data associated with the plugin
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @global type $DB
-     * @param object $data the form data to save
-     */
-    public function save_form_elements($data) {
-        global $DB;
-
-        $moduletiienabled = $this->get_config_settings('mod_'.$data->modulename);
-        if (empty($moduletiienabled)) {
-            return;
-        }
-
-        $settingsfields = $this->get_settings_fields();
-        // Get current values.
-        $plagiarismvalues = $this->get_settings($data->coursemodule, false);
-
-        foreach ($settingsfields as $field) {
-            if (isset($data->$field)) {
-                $optionfield = new stdClass();
-                $optionfield->cm = $data->coursemodule;
-                $optionfield->name = $field;
-                $optionfield->value = $data->$field;
-
-                if (isset($plagiarismvalues[$field])) {
-                    $optionfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
-                                                 (array('cm' => $data->coursemodule, 'name' => $field)));
-                    if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
-                        plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
-                    }
-                } else {
-                    $optionfield->config_hash = $optionfield->cm."_".$optionfield->name;
-                    if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
-                        plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Add the Turnitin settings form to an add/edit activity page
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @param object $mform
-     * @param object $context
-     * @return type
-     */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB, $PAGE, $COURSE;
-
-        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
-        // twice. This won't be needed once this method goes away.
-        // TODO: Remove once this method goes away.
-        static $settingsdisplayed;
-        if ($settingsdisplayed) {
-            return;
-        }
-
-        if (has_capability('plagiarism/turnitin:enable', $context)) {
-            // Get Course module id and values.
-            $cmid = optional_param('update', null, PARAM_INT);
-
-            // Return no form if the plugin isn't configured.
-            if (!$this->is_plugin_configured()) {
-                return;
-            }
-
-            // Check if plagiarism plugin is enabled for this module if provided.
-            if (!empty($modulename)) {
-                $moduletiienabled = $this->get_config_settings($modulename);
-                if (empty($moduletiienabled)) {
-                    return;
-                }
-            }
-
-            // Get assignment settings, use default settings on assignment creation.
-            $plagiarismvalues = $this->get_settings($cmid);
-
-            /* If Turnitin is disabled and we don't have settings (we're editing an existing assignment
-             * that was created without Turnitin enabled)
-             * Then we pass NULL for the $cmid to ensure we have the default settings should they enable Turnitin.
-             */
-            if (empty($plagiarismvalues["use_turnitin"]) && count($plagiarismvalues) <= 2) {
-                $savedvalues = $plagiarismvalues;
-                $plagiarismvalues = $this->get_settings(null);
-
-                // Ensure we reuse the saved setting for use Turnitin.
-                if (isset($savedvalues["use_turnitin"])) {
-                    $plagiarismvalues["use_turnitin"] = $savedvalues["use_turnitin"];
-                }
-            }
-
-            $plagiarismelements = $this->get_settings_fields();
-
-            $turnitinview = new turnitin_view();
-            $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
-
-            // We don't require the settings form on Moodle 3.3's bulk completion feature.
-            if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
-                // Create/Edit course in Turnitin and join user to class.
-                $course = $this->get_course_data($cmid, $COURSE->id);
-                $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
-            }
-            $settingsdisplayed = true;
-
-            // Disable all plagiarism elements if turnitin is not enabled.
-            foreach ($plagiarismelements as $element) {
-                if ($element <> 'use_turnitin') { // Ignore this var.
-                    $mform->disabledIf($element, 'use_turnitin', 'eq', 0);
-                }
-            }
-
-            // Check if files have already been submitted and disable exclude biblio and quoted if turnitin is enabled.
-            if ($cmid != 0) {
-                if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
-                    $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
-                    $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
-                }
-            }
-
-            // Set the default value for each option as the value we have stored.
-            foreach ($plagiarismelements as $element) {
-                if (isset($plagiarismvalues[$element])) {
-                    $mform->setDefault($element, $plagiarismvalues[$element]);
-                }
-            }
-        }
-    }
-
-    /**
      * Remove Turnitin class and assignment links from database
      * so that new classes and assignments will be created.
      *
@@ -2893,37 +2757,135 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
     }
 }
-
 /**
  * Add the Turnitin settings form to an add/edit activity page
  *
  * @param moodleform $formwrapper
  * @param MoodleQuickForm $mform
- * @return type
  */
 function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform) {
+    global $DB, $PAGE, $COURSE;
+
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
     $context = context_course::instance($formwrapper->get_course()->id);
+    $modulename = isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '';
 
-    $pluginturnitin->get_form_elements_module(
-        $mform,
-        $context,
-        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '');
+    if (!has_capability('plagiarism/turnitin:enable', $context)) {
+        return;
+    }
+
+    // Get Course module id and values.
+    $cmid = optional_param('update', null, PARAM_INT);
+
+    // Return no form if the plugin isn't configured.
+    if (!$pluginturnitin->is_plugin_configured()) {
+        return;
+    }
+
+    // Check if plagiarism plugin is enabled for this module if provided.
+    if (!empty($modulename)) {
+        $moduletiienabled = plagiarism_plugin_turnitin::get_config_settings($modulename);
+        if (empty($moduletiienabled)) {
+            return;
+        }
+    }
+
+    // Get assignment settings, use default settings on assignment creation.
+    $plagiarismvalues = $pluginturnitin->get_settings($cmid);
+
+    /* If Turnitin is disabled and we don't have settings (we're editing an existing assignment
+     * that was created without Turnitin enabled)
+     * Then we pass NULL for the $cmid to ensure we have the default settings should they enable Turnitin.
+     */
+    if (empty($plagiarismvalues["use_turnitin"]) && count($plagiarismvalues) <= 2) {
+        $savedvalues = $plagiarismvalues;
+        $plagiarismvalues = $pluginturnitin->get_settings(null);
+
+        // Ensure we reuse the saved setting for use Turnitin.
+        if (isset($savedvalues["use_turnitin"])) {
+            $plagiarismvalues["use_turnitin"] = $savedvalues["use_turnitin"];
+        }
+    }
+
+    $plagiarismelements = $pluginturnitin->get_settings_fields();
+
+    $turnitinview = new turnitin_view();
+    $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
+
+    // We don't require the settings form on Moodle 3.3's bulk completion feature.
+    if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
+        // Create/Edit course in Turnitin and join user to class.
+        $course = $pluginturnitin->get_course_data($cmid, $COURSE->id);
+        $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
+    }
+
+    // Disable all plagiarism elements if turnitin is not enabled.
+    foreach ($plagiarismelements as $element) {
+        if ($element <> 'use_turnitin') { // Ignore this var.
+            $mform->disabledIf($element, 'use_turnitin', 'eq', 0);
+        }
+    }
+
+    // Check if files have already been submitted and disable exclude biblio and quoted if turnitin is enabled.
+    if ($cmid != 0) {
+        if ($DB->record_exists('plagiarism_turnitin_files', array('cm' => $cmid))) {
+            $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
+            $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
+        }
+    }
+
+    // Set the default value for each option as the value we have stored.
+    foreach ($plagiarismelements as $element) {
+        if (isset($plagiarismvalues[$element])) {
+            $mform->setDefault($element, $plagiarismvalues[$element]);
+        }
+    }
 }
 
 /**
- * Handle saving data from the Turnitin settings form..
+ * Handle saving modinfo from the Turnitin settings form..
  *
- * @param stdClass $data
+ * @param stdClass $modinfo
  * @param stdClass $course
  */
-function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
+function plagiarism_turnitin_coursemodule_edit_post_actions($modinfo, $course) {
+    global $DB;
+
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
-    $pluginturnitin->save_form_elements($data);
+    $moduletiienabled = plagiarism_plugin_turnitin::get_config_settings('mod_'.$modinfo->modulename);
+    if (empty($moduletiienabled)) {
+        return $modinfo;
+    }
 
-    return $data;
+    $settingsfields = $pluginturnitin->get_settings_fields();
+    // Get current values.
+    $plagiarismvalues = $pluginturnitin->get_settings($modinfo->coursemodule, false);
+
+    foreach ($settingsfields as $field) {
+        if (isset($modinfo->$field)) {
+            $optionfield = new stdClass();
+            $optionfield->cm = $modinfo->coursemodule;
+            $optionfield->name = $field;
+            $optionfield->value = $modinfo->$field;
+
+            if (isset($plagiarismvalues[$field])) {
+                $optionfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
+                    (array('cm' => $modinfo->coursemodule, 'name' => $field)));
+                if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
+                    plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                }
+            } else {
+                $optionfield->config_hash = $optionfield->cm."_".$optionfield->name;
+                if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
+                    plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                }
+            }
+        }
+    }
+
+    return $modinfo;
 }
 
 /**

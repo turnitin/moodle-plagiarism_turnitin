@@ -566,6 +566,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),
                 array('class' => 'rubric_view rubric_view_pp_launch_upload tii_tooltip',
+                    'data-courseid' => $cm->course,
+                    'data-cmid' => $cm->id,
                     'title' => get_string('launchrubricview',
                         'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
                 )
@@ -1044,6 +1046,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $rubricviewlink = html_writer::tag('span', '',
                                 array('class' => 'rubric_view rubric_view_pp_launch tii_tooltip',
+                                    'data-courseid' => $cm->course,
+                                    'data-cmid' => $cm->id,
                                     'title' => get_string('launchrubricview',
                                         'plagiarism_turnitin'), 'id' => 'rubric_view_launch'
                                 )

@@ -325,6 +325,8 @@ class turnitin_view {
                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
                     array(
                         'class' => 'rubric_manager_launch',
+                        'data-courseid' => $course->id,
+                        'data-cmid' => $cmid,
                         'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'),
                         'id' => 'rubric_manager_form',
                         'role' => 'link',

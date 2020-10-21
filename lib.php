@@ -1932,6 +1932,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
     }
 
+    /**
+     * Check for rubric and save to assignment.
+     */
     public function update_rubric_from_tii($cm) {
         global $DB;
 

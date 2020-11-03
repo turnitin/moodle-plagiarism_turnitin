@@ -250,7 +250,10 @@ switch ($action) {
 
         $tiisubmission = new turnitin_submission($submissionid,
                                                 array('forumdata' => $forumdata, 'forumpost' => $forumpost));
-        $tiisubmission->recreate_submission_event();
+
+        if ($tiisubmission->recreate_submission_event()) {
+            $return = array('success' => true);
+        }
         break;
 
     case "resubmit_events":

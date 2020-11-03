@@ -43,7 +43,7 @@ class turnitin_submission {
      * Get all relevant submission data to requeue submission for the cron to process.
      */
     public function recreate_submission_event() {
-        global $DB, $CFG;
+        global $DB;
 
         // Create module object.
         $moduleclass = "turnitin_".$this->cm->modname;

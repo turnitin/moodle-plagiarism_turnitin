@@ -20,7 +20,7 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Forum  | 1 |
@@ -42,32 +42,23 @@ Feature: Plagiarism plugin works with a Moodle forum
       | use_turnitin                      | 1                              |
       | plagiarism_compare_student_papers | 1                              |
       | plagiarism_show_student_report    | 1                              |
-    And I am on "Course 1" course homepage
-    And I follow "Test forum name"
-    And I click on "Add a new discussion topic" "button"
-    And I accept the Turnitin EULA if necessary
+    And I add a new discussion to "Test forum name" forum with:
+      | Subject | Forum post 1 |
+      | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I wait until the page is ready
     Then I should see "Test forum name"
-    And I set the following fields to these values:
-      | Subject | Forum post 1                                                                                                                |
-      | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
-    And I press "Post to forum"
     And I log out
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Add a post to a discussion with a file attached and retrieve the originality score
     # Student creates a forum discussion and replies to original post.
     Given I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test forum name"
-    And I click on "Add a new discussion topic" "button"
     And I accept the Turnitin EULA if necessary
-    And I wait until the page is ready
-    Then I should see "Test forum name"
-    And I set the following fields to these values:
-      | Subject | Forum post 2                                                                                                                |
-      | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
-    And I press "Post to forum"
+    And I add a new discussion to "Test forum name" forum with:
+       | Subject | Forum post 2 |
+       | Message | This is the body of the forum post that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
     And I reply "Forum post 1" post from "Test forum name" forum with:
       | Subject    | Reply with attachment                                                                                                          |
       | Message    | This is the body of the forum reply that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking   |

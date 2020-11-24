@@ -218,6 +218,29 @@ class behat_plagiarism_turnitin extends behat_base {
     }
 
     /**
+     * Generic clicking action. Click on the element of the specified type.
+     *
+     * @When /^I click save changes button "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/
+     * @param string $selector type of element like css or xpath
+     * @param string $locator to identify element
+     */
+    public function click_save_changes_button($selector, $locator, $exception = false, $node = false, $timeout = false) {
+        try {
+            $items = $this->find_all($selector, $locator, $exception, $node, $timeout);
+            foreach($items as $element){
+
+                if ($element->isVisible()) {
+                    echo "Element is visible ";
+                    $element->click();
+                }
+            }
+
+        } catch (Exception $e) {
+            throw new ElementNotFoundException($this->getSession());
+        }
+    }
+
+    /**
      * @Given /^the following users will be created if they do not already exist:$/
      * @param TableNode $data
      * @throws Exception

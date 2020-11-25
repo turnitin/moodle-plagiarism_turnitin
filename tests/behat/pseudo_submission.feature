@@ -83,7 +83,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and utilise student da
     And I log in as "admin"
     And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Course 1"
     # Check if we're using the pseudo domain.
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I click on "Unlink Users" "link"
     Then I should see "@behatmoodle.com"
     # Instructor opens viewer
@@ -100,5 +100,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment and utilise student da
     And I wait until the page is ready
     And I accept the Turnitin EULA from the EV if necessary
     And I wait until the page is ready
+    And I wait "10" seconds
     Then I should see "testfile.txt"
-    Then I should see "Pseudo User"
+

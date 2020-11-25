@@ -88,6 +88,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
     And I accept the Turnitin EULA from the EV if necessary
-    And I wait "20" seconds
+    And I wait "10" seconds
     And I wait until the page is ready
     Then I should see "testfile.txt"

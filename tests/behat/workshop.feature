@@ -68,12 +68,6 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I run the scheduled task "plagiarism_turnitin\task\update_reports"
     And I wait "10" seconds
     And I obtain an originality report for "student1 student1" on "workshop" "Test workshop" on course "Course 1"
-    # Instructor opens viewer
-    And I log out
-    And I log in as "instructor1"
-    And I am on "Course 1" course homepage
-    And I follow "Test workshop"
-    And I follow "Submission1"
     And I wait until "div.pp_origreport_open" "css_element" exists
     And I click on "div.pp_origreport_open" "css_element"
     And I switch to "turnitin_viewer" window

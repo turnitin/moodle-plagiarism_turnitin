@@ -9,7 +9,7 @@ Feature:  Plagiarism plugin can be installed and enabled
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -22,8 +22,8 @@ Feature:  Plagiarism plugin can be installed and enabled
       | Plugin name         |
       | plagiarism_turnitin |
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Test the plugin connectivity
-    Given I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    Given I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I press "Test Turnitin Connection"
     Then I should see "Connection test successful"

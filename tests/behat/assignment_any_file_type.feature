@@ -20,7 +20,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for a filetype which w
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -41,7 +41,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for a filetype which w
       | plagiarism_allow_non_or_submissions | 1                    |
     Then I should see "Test assignment name"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Student accepts eula, submits a non-OR file and instructor opens the viewer
     Given I log out
     # Student accepts eula.

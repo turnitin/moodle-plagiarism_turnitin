@@ -20,7 +20,7 @@ Feature: Plagiarism plugin works with a Moodle Workshop
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin              | 1 |
       | Enable Turnitin for Workshop | 1 |
@@ -45,57 +45,29 @@ Feature: Plagiarism plugin works with a Moodle Workshop
       | id_description__idx_1_editor | Aspect2 |
       | id_description__idx_2_editor |         |
 
-  @javascript
+  @javascript @_file_upload
   Scenario: A submission can be queued and sent to Turnitin for a workshop
     Given I change phase in workshop "Test workshop" to "Submission phase"
-    And I log out
-    # Student makes submission to workshop.
-    And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test workshop"
-    And I press "Start preparing your submission"
-    And I accept the Turnitin EULA if necessary
-    And I wait until the page is ready
-    Then I should see "Test workshop"
-    And I set the following fields to these values:
-      | Title              | Submission1                                                                                                                                            |
-      | Submission content | This is a workshop submission that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking and matched against any sources |
-      | Attachment         | plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                                        |
-    And I press "Save changes"
+    And I add a submission in workshop "Test workshop" as:"
+      | Title              | Submission1                                                                                                                                           |
+      | Submission content |This is a workshop submission that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking and matched against any sources |
+      | Attachment         |plagiarism/turnitin/tests/fixtures/testfile.txt                                                                                                        |
     Then I should see "My submission"
     And I should see "Queued" in the "div.turnitin_status" "css_element"
-    And I log out
-    # Trigger cron as admin for workshop and check results.
-    And I log in as "admin"
     And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
     And I am on "Course 1" course homepage
     And I follow "Test workshop"
     And I follow "Submission1"
     Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
-    And I log out
-    # Student can see submission has been sent to Turnitin.
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test workshop"
-    And I follow "Submission1"
-    Then I should see "Turnitin ID:" in the "div.turnitin_status" "css_element"
-    # Admin runs scheduled task to request an originality report.
-    And I log out
-    And I log in as "admin"
+    And I run the scheduled task "plagiarism_turnitin\task\update_reports"
+    And I wait "20" seconds
+    And I run the scheduled task "plagiarism_turnitin\task\update_reports"
+    And I wait "30" seconds
+    And I run the scheduled task "plagiarism_turnitin\task\update_reports"
+    And I wait "10" seconds
     And I obtain an originality report for "student1 student1" on "workshop" "Test workshop" on course "Course 1"
-    # Login as student and a score should be visible.
-    And I log out
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test workshop"
-    And I follow "Submission1"
-    Then I should see "%" in the "div.origreport_score" "css_element"
-    # Instructor opens viewer
-    And I log out
-    And I log in as "instructor1"
-    And I am on "Course 1" course homepage
-    And I follow "Test workshop"
-    And I follow "Submission1"
     And I wait until "div.pp_origreport_open" "css_element" exists
     And I click on "div.pp_origreport_open" "css_element"
     And I switch to "turnitin_viewer" window

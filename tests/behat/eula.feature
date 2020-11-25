@@ -59,7 +59,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I wait "10" seconds
     And I click save changes button "css_element" "#id_submitbutton"
-    #And I click on "#id_submitbutton" "css_element" in the ".mform" "css_element"
     Then I should see "Submitted for grading"
     And I should see "Queued"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
@@ -117,8 +116,3 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I wait until "[alt='GradeMark']" "css_element" exists
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
-    And I wait until the page is ready
-    And I accept the Turnitin EULA from the EV if necessary
-    And I wait until the page is ready
-    #Then I should see "testfile.txt"
-    #Then I unenroll the user account "student1" with the role "Learner" from the class in Turnitin

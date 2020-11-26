@@ -1,3 +1,22 @@
+### Date:       2020-November-26
+### Release:	2020112601
+
+#### :wrench: Fixes and enhancements
+
+#### Attached rubrics sync with the Moodle assignment
+
+When attaching a rubric via the Turnitin viewer we’ll now sync this with the Moodle assignment so the next time you launch the view it is still viewable.
+
+#### Institutional default settings will now apply in Turnitin and Plagiarism plugin
+
+The option to search the institutional repository will now sync correctly between Turnitin and the Plagiarism plugin allowing you to set this as a default for all your plagiarism plugin assignments.
+
+####Improved logic for get_pseudo_lastname()
+
+Thanks to pauldamiani for bringing this to our attention!
+
+---
+
 ### Date:       2020-July-22
 ### Release:	2020072201
 

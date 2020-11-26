@@ -318,7 +318,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_courses.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
         $table->add_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'courseid');
         $table->add_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
         $table->add_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
@@ -375,7 +375,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'userid');
         $table->add_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'turnitin_uid');
         $table->add_field('instructor_rubrics', XMLDB_TYPE_TEXT, null, null, false, null, null, 'turnitin_utp');
@@ -442,6 +442,62 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     // TODO: Delete completely when we remove 3.8 support.
     if ($CFG->branch >= 39) {
         set_config('turnitin_use', null, 'plagiarism');
+    }
+
+    // This block is to solve a number of inconsistencies between the install and upgrade scripts
+    if ($oldversion < 2020091401) {
+
+        // Set itemid to default to null
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, false, null, 'externalid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Set student_read to default to null
+        $field = new xmldb_field('student_read', XMLDB_TYPE_INTEGER, '10', false, false, false, null, 'errormsg');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Set config_hash to correct length
+        $table = new xmldb_table('plagiarism_turnitin_config');
+        $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, false, null, 'value');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+        }
+
+        // Set turnitin_uid to allow null
+        $field = new xmldb_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_utp to allow null
+        $field = new xmldb_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, false, 0, 'turnitin_uid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set ownerid to allow null
+        $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'courseid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_ctl to allow null
+        $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_cid to allow null
+        $field = new xmldb_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020091401, 'plagiarism', 'turnitin');
     }
 
     return $result;

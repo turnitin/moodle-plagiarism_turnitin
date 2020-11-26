@@ -281,8 +281,8 @@ class Soap extends \SoapClient
             $oauth->setAction("POST");
             $oauth->genBodyHash($request);
             $parse = parse_url($location);
-            $port = (isset($parse["port"]) && ($parse["port"] == '80' || $parse["port"] == '443'))
-                ? '' : !isset($parse["port"]) ? '' : ':'.$parse["port"];
+            $port = ((isset($parse["port"]) && ($parse["port"] == '80' || $parse["port"] == '443'))
+                    ? '' : !isset($parse["port"])) ? '' : ':' . $parse["port"];
             if (!is_null($this->language)) {
                 $oauth->setParameters(array('lang' => $this->language));
             }

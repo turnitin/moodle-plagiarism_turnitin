@@ -90,6 +90,7 @@ switch ($action) {
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
         if ($userrole == 'Instructor') {
+            $pluginturnitin->update_rubric_from_tii($cm);
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();
@@ -249,7 +250,10 @@ switch ($action) {
 
         $tiisubmission = new turnitin_submission($submissionid,
                                                 array('forumdata' => $forumdata, 'forumpost' => $forumpost));
-        $tiisubmission->recreate_submission_event();
+
+        if ($tiisubmission->recreate_submission_event()) {
+            $return = array('success' => true);
+        }
         break;
 
     case "resubmit_events":

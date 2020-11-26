@@ -276,7 +276,8 @@ class turnitin_view {
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_compare_journals', 'journalcheck', 'plagiarism_turnitin');
 
-            if ($config->plagiarism_turnitin_repositoryoption == 1) {
+            if ($config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED ||
+                $config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL) {
                 $mform->addElement('select', 'plagiarism_compare_institution',
                                                 get_string('compareinstitution', 'plagiarism_turnitin'), $options);
                 $this->lock($mform, $location, $locks);
@@ -324,6 +325,8 @@ class turnitin_view {
                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
                     array(
                         'class' => 'rubric_manager_launch',
+                        'data-courseid' => $course->id,
+                        'data-cmid' => $cmid,
                         'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'),
                         'id' => 'rubric_manager_form',
                         'role' => 'link',

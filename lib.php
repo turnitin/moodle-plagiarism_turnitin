@@ -566,6 +566,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),
                 array('class' => 'rubric_view rubric_view_pp_launch_upload tii_tooltip',
+                    'data-courseid' => $cm->course,
+                    'data-cmid' => $cm->id,
                     'title' => get_string('launchrubricview',
                         'plagiarism_turnitin'), 'id' => 'rubric_manager_form'
                 )
@@ -1044,6 +1046,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $rubricviewlink = html_writer::tag('span', '',
                                 array('class' => 'rubric_view rubric_view_pp_launch tii_tooltip',
+                                    'data-courseid' => $cm->course,
+                                    'data-cmid' => $cm->id,
                                     'title' => get_string('launchrubricview',
                                         'plagiarism_turnitin'), 'id' => 'rubric_view_launch'
                                 )
@@ -1930,6 +1934,52 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             return $return;
         }
+    }
+
+    /**
+     * Check for rubric and save to assignment.
+     */
+    public function update_rubric_from_tii($cm) {
+        global $DB;
+
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+        $assignment = new TiiAssignment();
+
+        if ($tiimoduledata = $DB->get_record('plagiarism_turnitin_config',
+            array('cm' => $cm->id, 'name' => 'turnitin_assignid'), 'value')) {
+
+            $assignment->setAssignmentId($tiimoduledata->value);
+
+            try {
+                // Retrieve assignment from Turnitin.
+                $response = $turnitincall->readAssignment($assignment);
+                $tiiassignment = $response->getAssignment();
+
+                // Create rubric config field with rubric value from Turnitin.
+                $rubricfield = new stdClass();
+                $rubricfield->cm = $cm->id;
+                $rubricfield->name = 'plagiarism_rubric';
+                $rubricfield->value = $tiiassignment->getRubricId();
+
+                // Check if rubric already exists for this module.
+                if ($configfield = $DB->get_field('plagiarism_turnitin_config', 'id',
+                    (array('cm' => $cm->id, 'name' => 'plagiarism_rubric')))) {
+
+                    // Use current configfield to update rubric value.
+                    $rubricfield->id = $configfield;
+
+                    $DB->update_record('plagiarism_turnitin_config', $rubricfield);
+                } else {
+                    // Otherwise create rubric entry for this module.
+                    $rubricfield->config_hash = $rubricfield->cm."_".$rubricfield->name;
+                    $DB->create_record('plagiarism_turnitin_config', $rubricfield);
+                }
+            }
+            catch (Exception $e) {
+                $turnitincomms->handle_exceptions($e, 'tiiassignmentgeterror', false);
+            }
+         }
     }
 
     /**

@@ -26,7 +26,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for group submissions
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -53,7 +53,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for group submissions
     And I follow "Test assignment name"
     Then I should see "Grading summary"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Confirm that all students in a group can see the similarity report even if they didn't submit.
     Given I log out
     # Student accepts eula.

@@ -1,3 +1,12 @@
+### Date:       2020-November-30
+### Release:	2020113001
+
+#### :wrench: Fixes and enhancements
+
+Hotfix - removed update to config_hash field 
+
+---
+
 ### Date:       2020-November-26
 ### Release:	2020112601
 

@@ -460,13 +460,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_default($table, $field);
         }
 
-        // Set config_hash to correct length
-        $table = new xmldb_table('plagiarism_turnitin_config');
-        $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, false, null, 'value');
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field);
-        }
-
         // Set turnitin_uid to allow null
         $field = new xmldb_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
         if ($dbman->field_exists($table, $field)) {

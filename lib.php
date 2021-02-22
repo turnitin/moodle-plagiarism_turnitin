@@ -1514,11 +1514,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                         // Query grades based on attempt number.
                         $gradesquery = array('userid' => $userid, 'assignment' => $cm->instance);
-                        $attemptnumber = 0;
 
                         $usersubmissions = $DB->get_records('assign_submission', $gradesquery, 'attemptnumber DESC', 'attemptnumber', 0, 1);
                         $usersubmission = current($usersubmissions);
-                        $attemptnumber = $usersubmission->attemptnumber;
+                        $attemptnumber = ($usersubmission) ? $usersubmission->attemptnumber : 0;
                         $gradesquery['attemptnumber'] = $attemptnumber;
 
                         $currentgrades = $DB->get_records('assign_grades', $gradesquery, 'id DESC');
@@ -2658,7 +2657,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->identifier = $identifier;
         $plagiarismfile->statuscode = "queued";
         $plagiarismfile->similarityscore = null;
-        $plagiarismfile->attempt = 1;
+        $plagiarismfile->attempt = 0; // This will be incremented when saved.
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->submissiontype = $submissiontype;
 

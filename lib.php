@@ -463,7 +463,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string
      */
     public function print_disclosure($cmid) {
-        global $OUTPUT, $USER, $CFG, $DB;
+        global $OUTPUT, $USER, $DB;
 
         static $tiiconnection;
 
@@ -584,7 +584,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS needed by the page.
      */
     public function load_page_components() {
-        global $CFG, $PAGE;
+        global $PAGE;
         // The function from js files by using js_call_amd will be loaded only once.
         if (static::$amdcomponentsloaded) {
             return;
@@ -3053,7 +3053,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                         plagiarism_turnitin_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
                         mtrace('File not found for submission. Identifier: '.$queueditem->id);
                         $errorcode = 9;
-                        continue 2;
+                        break;
                     }
 
                     $title = $file->get_filename();
@@ -3066,7 +3066,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                         mtrace($e);
                         mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                         $errorcode = 9;
-                        continue 2;
+                        break;
                     }
                 } else {
                     // Get the actual text content for a submission.

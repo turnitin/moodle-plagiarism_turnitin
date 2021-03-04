@@ -54,7 +54,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // Create a PP course.
         $course = new stdClass();
         $course->courseid = 1;
-        $course->ownerid = 1;
         $course->turnitin_ctl = "Test Course";
         $course->turnitin_cid = 10;
 
@@ -63,7 +62,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
 
         $response = turnitin_assignment::get_course_data(1, "site");
 
-        $this->assertEquals($course->ownerid, $response->ownerid);
         $this->assertEquals($course->turnitin_ctl, $response->turnitin_ctl);
         $this->assertEquals($course->turnitin_cid, $response->turnitin_cid);
     }
@@ -76,7 +74,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // Create a PP course.
         $course = new stdClass();
         $course->courseid = 1;
-        $course->ownerid = 1;
         $course->turnitin_ctl = "Test Course";
         $course->turnitin_cid = 10;
         $course->fullname = "This is a test course";
@@ -108,7 +105,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
 
         $expected = new stdClass();
         $expected->id = $course->tii_rel_id;
-        $expected->ownerid = 1;
         $expected->turnitin_cid = 1;
         $expected->turnitin_ctl = "This is a test course (Moodle PP)";
         $expected->courseid = $course->id;
@@ -130,7 +126,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // Create a PP course.
         $course = new stdClass();
         $course->courseid = 1;
-        $course->ownerid = 1;
         $course->turnitin_ctl = "Test Course";
         $course->turnitin_cid = 1;
         $course->fullname = "This is a test course";
@@ -169,7 +164,6 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         $expected = new stdClass();
         $expected->id = $course->id;
         $expected->courseid = $course->courseid;
-        $expected->ownerid = 1;
         $expected->turnitin_ctl = "This is an edited test course (Moodle PP)";
         $expected->turnitin_cid = 10;
 

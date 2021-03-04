@@ -461,6 +461,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
 
         // Set turnitin_uid to allow null
+        $table = new xmldb_table('plagiarism_turnitin_users');
         $field = new xmldb_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
@@ -472,13 +473,8 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->change_field_notnull($table, $field);
         }
 
-        // Set ownerid to allow null
-        $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'courseid');
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-
         // Set turnitin_ctl to allow null
+        $table = new xmldb_table('plagiarism_turnitin_courses');
         $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
         if ($dbman->field_exists($table, $field)) {
             $dbman->change_field_notnull($table, $field);
@@ -491,6 +487,17 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2020091401, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2021030401) {
+
+        $table = new xmldb_table('plagiarism_turnitin_courses');
+        $field = new xmldb_field('ownerid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2021030401, 'plagiarism', 'turnitin');
     }
 
     return $result;

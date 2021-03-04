@@ -1642,7 +1642,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Create a course within Turnitin
      */
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
-        global $CFG, $USER;
+        global $CFG;
 
         // Create module object.
         $moduleclass = "turnitin_".$modname;
@@ -1655,10 +1655,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $tutors = get_enrolled_users(context_course::instance($coursedata->id), $capability, 0, 'u.id', 'u.id');
         }
 
-        $ownerid = $USER->id;
-
         $turnitinassignment = new turnitin_assignment(0);
-        $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $ownerid, $workflowcontext);
+        $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $workflowcontext);
 
         // Join all admins to the course in Turnitin.
         $admins = explode(",", $CFG->siteadmins);
@@ -2259,7 +2257,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $turnitincourse = new stdClass();
         $turnitincourse->courseid = $coursedata->id;
-        $turnitincourse->ownerid = $USER->id;
         $turnitincourse->turnitin_cid = $turnitincid;
         $turnitincourse->turnitin_ctl = $coursedata->fullname . " (Moodle PP)";
 

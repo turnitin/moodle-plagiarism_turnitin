@@ -65,7 +65,6 @@ class turnitin_assignment {
         if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid))) {
             $course->turnitin_cid = $turnitincourse->turnitin_cid;
             $course->turnitin_ctl = $turnitincourse->turnitin_ctl;
-            $course->ownerid = $turnitincourse->ownerid;
             $course->tii_rel_id = $turnitincourse->id;
         }
 
@@ -77,11 +76,10 @@ class turnitin_assignment {
      *
      * @global type $DB
      * @param object $course The course object
-     * @param int $ownerid The owner of the course
      * @param string $workflowcontext The workflow being used to call this - site or cron.
      * @return object the turnitin course if created
      */
-    public function create_tii_course($course, $ownerid, $workflowcontext = "site") {
+    public function create_tii_course($course, $workflowcontext = "site") {
         global $DB;
 
         $turnitincall = $this->turnitincomms->initialise_api();
@@ -96,7 +94,6 @@ class turnitin_assignment {
 
             $turnitincourse = new stdClass();
             $turnitincourse->courseid = $course->id;
-            $turnitincourse->ownerid = $ownerid;
             $turnitincourse->turnitin_cid = $this->api_get_class_id($newclass);
             $turnitincourse->turnitin_ctl = $course->fullname . " (Moodle PP)";
 
@@ -155,7 +152,6 @@ class turnitin_assignment {
             $update = new stdClass();
             $update->id = $turnitincourse->id;
             $update->courseid = $course->id;
-            $update->ownerid = $turnitincourse->ownerid;
             $update->turnitin_cid = $course->turnitin_cid;
             $update->turnitin_ctl = $course->fullname . " (Moodle PP)";
 

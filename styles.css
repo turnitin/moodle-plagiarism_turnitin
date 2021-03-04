@@ -16,7 +16,7 @@
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, .tii_links_container .hidden,
-.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
+.tii_links_container .cmid, .tii_links_container .userid, #turnitin_score_refresh_alert, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
 #tii_view_context, .tii_links_container .grademark_forum_launch, .tii_links_container .origreport_forum_launch {
     display:none;
 }
@@ -119,17 +119,17 @@
 }
 
 .tii_links_container .score_colour_ { background: #999999; color:#000000; }
-.tii_links_container .score_colour_0 { background: #3552B7; color:#FFFFFF; }
-.tii_links_container .score_colour_10 { background: #617B8D; color:#FFFFFF; }
-.tii_links_container .score_colour_20 { background: #A1B556; color:#FFFFFF; }
+.tii_links_container .score_colour_0 { background: #3A51B2; color:#FFFFFF; }
+.tii_links_container .score_colour_10 { background: #4A5B6B; color:#FFFFFF; }
+.tii_links_container .score_colour_20 { background: #A1B556; }
 .tii_links_container .score_colour_30 { background: #DAE235; }
 .tii_links_container .score_colour_40 { background: #EDAC28; }
 .tii_links_container .score_colour_50 { background: #EDD42F; }
 .tii_links_container .score_colour_60 { background: #ECAD28; }
-.tii_links_container .score_colour_70 { background: #E15A21; }
-.tii_links_container .score_colour_80 { background: #E05A21; color:#FFFFFF; }
-.tii_links_container .score_colour_90 { background: #DC4321; color:#FFFFFF; }
-.tii_links_container .score_colour_100 { background: #DB4221; color:#FFFFFF; }
+.tii_links_container .score_colour_70 { background: #FB763E; }
+.tii_links_container .score_colour_80 { background: #FA763D; }
+.tii_links_container .score_colour_90 { background: #DC4321; }
+.tii_links_container .score_colour_100 { background: #A92409; color:#FFFFFF; }
 
 .tii_links_container .origreport_score {
     white-space:nowrap;
@@ -326,6 +326,14 @@ button.pp-resubmit-files {
     margin-bottom: 16px;
 }
 
+#turnitin_score_refresh_alert {
+    margin-top: 16px;
+    border: 1px solid #6FCAFF;
+    background: #BBE6FF;
+    padding: 10px;
+    margin-bottom: 16px;
+}
+
 iframe html{background:none;}
 
 .selectlong {
@@ -376,4 +384,10 @@ iframe html{background:none;}
 .tii_pp_modal_rubric_content {
     width: 1032px !important;
     left: -116px;
+}
+
+.turnitin_setup_download_links label {
+    width: 300px;
+    line-height: 50px;
+    justify-content: left;
 }

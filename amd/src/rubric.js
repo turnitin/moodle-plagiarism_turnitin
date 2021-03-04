@@ -19,11 +19,15 @@ define(['jquery',
             rubric: function() {
                 var that = this;
                 $('.rubric_manager_launch').on('click', function() {
-                    that.rubricCreateModal(ModalRubricManagerLaunch.TYPE);
+                    var courseid = $(this).data('courseid');
+                    var cmid = $(this).data('cmid');
+                    that.rubricCreateModal(ModalRubricManagerLaunch.TYPE, courseid, cmid);
                 });
 
                 $(document).on('click', '.rubric_view', function() {
-                    that.rubricCreateModal(ModalRubricViewLaunch.TYPE);
+                    var courseid = $(this).data('courseid');
+                    var cmid = $(this).data('cmid');
+                    that.rubricCreateModal(ModalRubricViewLaunch.TYPE, courseid, cmid);
                 });
 
                 // Show warning when changing the rubric linked to an assignment.
@@ -35,17 +39,11 @@ define(['jquery',
                     }
                 });
             },
-            rubricCreateModal: function(modalType) {
-                if ($('input[name="coursemodule"]').val()) {
-                    var cmid = $('input[name="coursemodule"]').val();
-                } else {
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var cmid = urlParams.get('id');
-                }
-
+            rubricCreateModal: function(modalType, courseid, cmid) {
                 ModalFactory.create({
                     type: modalType,
                     templateContext: {
+                        courseid: courseid,
                         cmid: cmid,
                         wwwroot: M.cfg.wwwroot
                     },

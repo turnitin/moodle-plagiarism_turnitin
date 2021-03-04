@@ -42,7 +42,7 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
     /**
      * Set Overwrite mtrace to avoid output during the tests.
      */
-    public function setup() {
+    public function setup(): void {
         // Stub a fake tii comms.
         $this->faketiicomms = $this->getMockBuilder(turnitin_comms::class)
             ->disableOriginalConstructor()
@@ -84,8 +84,8 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
         $student = $this->getDataGenerator()->create_user();
         $DB->insert_record('user_info_data', array('userid' => $student->id, 'fieldid' => 1, 'data' => 'Student', 'dataformat' => 0));
 
-        set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism');
-        set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism');
+        set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism_turnitin');
 
         $turnitinuser = new turnitin_user($student->id, null, null, null, null);
         $response = $turnitinuser->get_pseudo_lastname();

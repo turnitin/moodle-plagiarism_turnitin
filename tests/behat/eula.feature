@@ -20,7 +20,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -40,7 +40,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
       | plagiarism_compare_student_papers | 1                    |
     Then I should see "Test assignment name"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Student can still submit to Moodle even if declining the EULA. The student can then accept the EULA and the admin can resubmit the file.
     Given I log out
     # Student declines the EULA and submits.
@@ -54,9 +54,11 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I switch to iframe with locator ".iframe-ltilaunch-eula"
     And I wait until the page is ready
     And I click on ".disagree-button" "css_element"
+    And I wait "10" seconds
     And I wait until the page is ready
     And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
-    And I click on "#id_submitbutton" "css_element" in the "#mform2" "css_element"
+    And I wait "10" seconds
+    And I click save changes button "css_element" "#id_submitbutton"
     Then I should see "Submitted for grading"
     And I should see "Queued"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
@@ -83,7 +85,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     # Admin can trigger a resubmission from the errors tab of the settings page.
     And I log out
     And I log in as "admin"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I click on "Errors" "link"
     And I click on ".select_all_checkbox" "css_element"
     And I wait "2" seconds
@@ -110,11 +112,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     Then I should see "View all submissions"
     When I navigate to "View all submissions" in current page administration
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
+    And I wait "30" seconds
     And I wait until "[alt='GradeMark']" "css_element" exists
     And I click on "[alt='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
-    And I wait until the page is ready
-    And I accept the Turnitin EULA from the EV if necessary
-    And I wait until the page is ready
-    Then I should see "testfile.txt"
-    Then I unenroll the user account "student1" with the role "Learner" from the class in Turnitin

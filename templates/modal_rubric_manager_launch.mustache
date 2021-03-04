@@ -4,6 +4,6 @@
     {{/title}}
     {{$body}}
         <!-- Modal content -->
-        <iframe frameborder="0" src="{{wwwroot}}/plagiarism/turnitin/extras.php?cmd=rubricmanager&view_context=box" id="rubric_manager_launch" class="rubric_manager iframe-ltilaunch"></iframe>
+        <iframe frameborder="0" src="{{wwwroot}}/plagiarism/turnitin/extras.php?cmd=rubricmanager&courseid={{courseid}}&view_context=box" id="rubric_manager_launch" class="rubric_manager iframe-ltilaunch"></iframe>
     {{/body}}
 {{/ core/modal }}

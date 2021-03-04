@@ -43,16 +43,14 @@ class turnitin_setupform extends moodleform {
         $mform->disable_form_change_checker();
 
         $mform->addElement('header', 'config', get_string('turnitinconfig', 'plagiarism_turnitin'));
-        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin'));
-
-        $mform->addElement('advcheckbox', 'turnitin_use', get_string('useturnitin', 'plagiarism_turnitin'), '', null, array(0, 1));
+        $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin').'</br></br>');
 
         // Loop through all modules that support Plagiarism.
         $mods = array_keys(core_component::get_plugin_list('mod'));
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $mform->addElement('advcheckbox',
-                    'turnitin_use_mod_'.$mod,
+                    'plagiarism_turnitin_mod_'.$mod,
                     get_string('useturnitin_mod', 'plagiarism_turnitin', ucfirst($mod)),
                     '',
                     null,
@@ -162,7 +160,7 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_enablepseudo_desc', null, get_string('enablepseudo_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_enablepseudo', 0);
 
-        if (isset($config->plagiarism_turnitin_enablepseudo) AND $config->plagiarism_turnitin_enablepseudo) {
+        if (!empty($config->plagiarism_turnitin_enablepseudo)) {
             $mform->addElement('text', 'plagiarism_turnitin_pseudofirstname', get_string('pseudofirstname', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
             $mform->addElement('static', 'plagiarism_turnitin_pseudofirstname_desc', null,
                 get_string('pseudofirstname_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
@@ -221,21 +219,31 @@ class turnitin_setupform extends moodleform {
      * Save the plugin config data
      */
     public function save($data) {
+        global $CFG;
+
         // Save whether the plugin is enabled for individual modules.
         $mods = array_keys(core_component::get_plugin_list('mod'));
+        $pluginenabled = 0;
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                $property = "turnitin_use_mod_" . $mod;
-                ${ "turnitin_use_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
-                set_config('turnitin_use_mod_'.$mod, ${ "turnitin_use_mod_" . "$mod" }, 'plagiarism');
-                if (${ "turnitin_use_mod_" . "$mod" }) {
-                    set_config('turnitin_use', 1, 'plagiarism');
+                $property = "plagiarism_turnitin_mod_" . $mod;
+                ${ "plagiarism_turnitin_mod_" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
+                set_config('plagiarism_turnitin_mod_'.$mod, ${ "plagiarism_turnitin_mod_" . "$mod" }, 'plagiarism_turnitin');
+                if (${ "plagiarism_turnitin_mod_" . "$mod" }) {
+                    $pluginenabled = 1;
                 }
             }
         }
 
-        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark", "useerater", "useanon",
-            "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname", "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+        set_config('enabled', $pluginenabled, 'plagiarism_turnitin');
+        // TODO: Remove turnitin_use completely when support for 3.8 is dropped.
+        if ($CFG->branch < 39) {
+            set_config('turnitin_use', $pluginenabled, 'plagiarism');
+        }
+
+        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
+            "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

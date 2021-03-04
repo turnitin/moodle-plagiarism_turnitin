@@ -130,4 +130,18 @@ class plagiarism_turnitin_observer {
         $plugin = new plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
+
+    /**
+     * Observer function to handle the quiz_submitted event in mod_quiz.
+     * @param \mod_quiz\event\attempt_submitted $event
+     */
+    public static function quiz_submitted(
+        \mod_quiz\event\attempt_submitted $event) {
+        $eventdata = $event->get_data();
+        $eventdata['eventtype'] = 'quiz_submitted';
+        $eventdata['other']['modulename'] = 'quiz';
+
+        $plugin = new plagiarism_plugin_turnitin();
+        $plugin->event_handler($eventdata);
+    }
 }

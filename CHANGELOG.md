@@ -1,3 +1,79 @@
+### Date:       2020-November-30
+### Release:	2020113001
+
+#### :wrench: Fixes and enhancements
+
+Hotfix - removed update to config_hash field 
+
+---
+
+### Date:       2020-November-26
+### Release:	2020112601
+
+#### :wrench: Fixes and enhancements
+
+#### Attached rubrics sync with the Moodle assignment
+
+When attaching a rubric via the Turnitin viewer we’ll now sync this with the Moodle assignment so the next time you launch the view it is still viewable.
+
+#### Institutional default settings will now apply in Turnitin and Plagiarism plugin
+
+The option to search the institutional repository will now sync correctly between Turnitin and the Plagiarism plugin allowing you to set this as a default for all your plagiarism plugin assignments.
+
+####Improved logic for get_pseudo_lastname()
+
+Thanks to pauldamiani for bringing this to our attention!
+
+---
+
+### Date:       2020-July-22
+### Release:	2020072201
+
+#### :wrench: Fixes and enhancements
+
+#### Plagiarism Plugin settings will only appear once
+
+A bug had caused the Plagiarism Plugin settings to display twice when creating an assignment in Moodle versions prior to 3.9. This has been fixed for all supported Moodle versions. 
+
+---
+### Date:       2020-July-07
+### Release:	2020070801
+
+#### :zap: What's new
+
+---
+#### We now support Moodle 3.9
+
+You can find out more about Moodle 3.9 via Moodle's [release notes](https://docs.moodle.org/dev/Moodle_3.9_release_notes).
+
+
+#### Use Turnitin in a Moodle Quiz
+
+Turnitin will be usable as a part of a Moodle quiz when Moodle releases the feature. When enabled for your account, simply add an essay question as one of the quiz questions. A similarity report will be generated when the student submits the quiz. Track this release on the Moodle Tracker https://tracker.moodle.org/browse/MDL-32226).
+
+---
+
+#### :wrench: Fixes and enhancements
+
+#### Improved support for large class sizes
+
+When closing the Turnitin viewer, we’d refresh the page so any updates you applied to the assignment would be reflected in Moodle. However, this refresh caused unnecessary load when a class was particularly large. When we identify increased latency like this, we’ll deactivate automatic refreshes of the inbox and prompt you to refresh the inbox manually after grading.
+
+#### View shared rubrics when creating a Moodle assignment
+
+When creating a Moodle assignment it is possible to view all of your Turnitin Rubrics and attach one to a class from its creation. However, a bug had prevented any rubrics that had been shared with you from appearing in this list. You’ll now find them there and ready to be added to any future assignments you create. This fixes a known issue.
+
+#### General accessibility improvements
+
+We’ve made a few accessibility improvements to help ensure that all Turnitin users can use the plugin with the same high-quality experience. These include:
+
+- Made more elements accessible via tab navigation
+- You can launch the Turnitin viewer now by using the enter key on the appropriate element. 
+- Tools tips are available for various settings and readable by a screen reader or via keyboard navigation.
+- General improvements to the plugin configuration screen ensuring unique ARIA labels and logical tab order.
+
+---
+
 ### Date:       2019-December-17
 ### Release:	v2019121701
 

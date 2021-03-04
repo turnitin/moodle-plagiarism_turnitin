@@ -42,12 +42,6 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$supportedmods = array('assign', 'forum', 'workshop');
-
-if ($DB->record_exists('modules', array('name' => 'coursework', 'visible' => 1))) {
-    $supportedmods[] = 'coursework';
-}
-
 $plugindefaults = $plagiarismpluginturnitin->get_settings();
 
 // Save Settings.
@@ -145,7 +139,7 @@ switch ($do) {
             $output = $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitin'), 'notifysuccess');
         }
 
-        $pluginconfig = get_config('plagiarism');
+        $pluginconfig = get_config('plagiarism_turnitin');
         $tiisetupform->set_data($pluginconfig);
 
         echo $tiisetupform->display();
@@ -160,86 +154,6 @@ switch ($do) {
         $mform = new turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
         $mform->display();
-        break;
-
-    case "viewreport":
-    case "savereport":
-        $output = '';
-        if ($do == 'viewreport') {
-
-            $activetab = ($do == "savereport") ? "turnitinsaveusage" : "turnitinshowusage";
-            $turnitinview->draw_settings_tab_menu($activetab, $notice);
-
-            $output .= "<pre>";
-            $output .= "====== Turnitin Plagiarism Plugin Data Dump Output ======\r\n\r\n";
-
-        } else if ($do == 'savereport') {
-
-            $filename = 'tii_pp_datadump_'.gmdate('dmYhm', time()).'.txt';
-            header('Content-type: text/plain');
-            header('Content-Disposition: attachment; filename="'.$filename.'"');
-
-            $output .= "====== Turnitin Plagiarism Plugin Data Dump File ======\r\n\r\n";
-        }
-
-        $tables = array('plagiarism_turnitin_config', 'plagiarism_turnitin_files');
-
-        foreach ($tables as $table) {
-
-            $output .= "== ".$table." ==\r\n\r\n";
-
-            if ($data = $DB->get_records($table)) {
-
-                $headers = array_keys(get_object_vars(current($data)));
-                $columnwidth = 25;
-                if ($table == 'plagiarism_turnitin_config') {
-                    $columnwidth = 32;
-                }
-
-                $output .= str_pad('', (($columnwidth + 2) * count($headers)) + 1, "=");
-                if ($table == 'plagiarism_turnitin_files') {
-                    $output .= str_pad('', $columnwidth + 2, "=");
-                }
-                $output .= "\r\n";
-
-                $output .= "|";
-                foreach ($headers as $header) {
-                    $output .= ' '.str_pad($header, $columnwidth, " ", 1).'|';
-                }
-                $output .= "\r\n";
-
-                $output .= str_pad('', (($columnwidth + 2) * count($headers)) + 1, "=");
-                if ($table == 'plagiarism_turnitin_files') {
-                    $output .= str_pad('', $columnwidth + 2, "=");
-                }
-                $output .= "\r\n";
-
-                foreach ($data as $datarow) {
-                    $datarow = get_object_vars($datarow);
-                    $output .= "|";
-                    foreach ($datarow as $datacell) {
-                        $output .= ' '.htmlspecialchars(str_pad(substr($datacell, 0, $columnwidth), $columnwidth, " ", 1)).'|';
-                    }
-                    $output .= "\r\n";
-                }
-                $output .= str_pad('', (($columnwidth + 2) * count($headers)) + 1, "-");
-                if ($table == 'plagiarism_turnitin_files') {
-                    $output .= str_pad('', $columnwidth + 2, "-");
-                }
-                $output .= "\r\n\r\n";
-            } else {
-                $output .= get_string('notavailableyet', 'plagiarism_turnitin')."\r\n";
-            }
-
-        }
-
-        if ($do == 'viewreport') {
-            $output .= "</pre>";
-            echo $output;
-        } else if ($do == 'savereport') {
-            echo $output;
-            exit;
-        }
         break;
 
     case "apilog":

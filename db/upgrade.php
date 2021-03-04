@@ -84,7 +84,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 foreach ($supportedmods as $mod) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
-                    $configfield->plugin = 'plagiarism';
+                    $configfield->plugin = 'plagiarism_turnitin';
                     $configfield->name = 'turnitin_use_mod_'.$mod;
                     if (!$DB->get_record('config_plugins', array('name' => 'turnitin_use_mod_'.$mod))) {
                         $DB->insert_record('config_plugins', $configfield);
@@ -318,7 +318,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_courses.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
         $table->add_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'courseid');
         $table->add_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
         $table->add_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
@@ -375,7 +375,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // Adding fields to table plagiarism_turnitin_users.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'id');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'userid');
         $table->add_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'turnitin_uid');
         $table->add_field('instructor_rubrics', XMLDB_TYPE_TEXT, null, null, false, null, null, 'turnitin_utp');
@@ -400,6 +400,97 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2019121719) {
+        // Update plagiarism to plagiarism_turnitin for consistency.
+        $data = get_config('plagiarism');
+
+        foreach ($data as $key => $value) {
+            if ((strpos($key, 'turnitin_') !== false) && ($key != 'turnitin_use')) {
+                set_config($key, $value, 'plagiarism_turnitin');
+                unset_config($key, 'plagiarism');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2019121719, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2020070801) {
+        // Convert plugin _use settings as they are being deprecated.
+        $data = get_config('plagiarism');
+        $value = (empty($data->turnitin_use)) ? 0 : 1;
+        set_config('enabled', $value, 'plagiarism_turnitin');
+        // TODO: Delete the turnitin_use setting completely when support for 3.8 is dropped.
+
+        $data = get_config('plagiarism_turnitin');
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'turnitin_use_') !== false) {
+                // Modify key e.g. turnitin_use_mod_assign to plagiarism_turnitin_mod_assign.
+                $splitstr = explode("_", $key);
+                $newkey = 'plagiarism_turnitin_mod_' . $splitstr[3];
+                set_config($newkey, $value, 'plagiarism_turnitin');
+                // Remove old key.
+                set_config($key, null, 'plagiarism_turnitin');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2020070801, 'plagiarism', 'turnitin');
+    }
+
+    // Delete the _use value for pre 3.9 environments irrespective of plugin version.
+    // TODO: Delete completely when we remove 3.8 support.
+    if ($CFG->branch >= 39) {
+        set_config('turnitin_use', null, 'plagiarism');
+    }
+
+    // This block is to solve a number of inconsistencies between the install and upgrade scripts
+    if ($oldversion < 2020091401) {
+
+        // Set itemid to default to null
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, false, null, 'externalid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Set student_read to default to null
+        $field = new xmldb_field('student_read', XMLDB_TYPE_INTEGER, '10', false, false, false, null, 'errormsg');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Set turnitin_uid to allow null
+        $field = new xmldb_field('turnitin_uid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_utp to allow null
+        $field = new xmldb_field('turnitin_utp', XMLDB_TYPE_INTEGER, '10', null, false, false, 0, 'turnitin_uid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set ownerid to allow null
+        $field = new xmldb_field('ownerid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'courseid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_ctl to allow null
+        $field = new xmldb_field('turnitin_ctl', XMLDB_TYPE_TEXT, null, null, false, null, null, 'ownerid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Set turnitin_cid to allow null
+        $field = new xmldb_field('turnitin_cid', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'turnitin_ctl');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020091401, 'plagiarism', 'turnitin');
     }
 
     return $result;

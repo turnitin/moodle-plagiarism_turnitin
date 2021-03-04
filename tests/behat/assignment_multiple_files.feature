@@ -20,7 +20,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and multiple files.
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > Turnitin" in site administration
+    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
     And I set the following fields to these values:
       | Enable Turnitin            | 1 |
       | Enable Turnitin for Assign | 1 |
@@ -41,7 +41,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and multiple files.
       | assignsubmission_file_maxfiles    | 2                    |
     Then I should see "Test assignment name"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Student accepts eula, submits multiple files and these are sent to Turnitin.
     Given I log out
     # Student accepts eula.

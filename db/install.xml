@@ -68,9 +68,8 @@
         <TABLE NAME="plagiarism_turnitin_courses" COMMENT="Turnitin Plagiarism Plugin Courses" PREVIOUS="plagiarism_turnitin_config" NEXT="plagiarism_turnitin_peermark">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="courseid"/>
-                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
-                <FIELD NAME="ownerid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="turnitin_ctl"/>
-                <FIELD NAME="turnitin_ctl" TYPE="text" LENGTH="medium" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="ownerid" NEXT="turnitin_cid"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="turnitin_ctl"/>
+                <FIELD NAME="turnitin_ctl" TYPE="text" LENGTH="medium" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="turnitin_cid"/>
                 <FIELD NAME="turnitin_cid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="turnitin_ctl"/>
             </FIELDS>
             <KEYS>

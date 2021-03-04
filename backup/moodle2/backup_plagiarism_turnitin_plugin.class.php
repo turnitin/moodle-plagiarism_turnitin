@@ -55,7 +55,7 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
         // Add courses from plagiarism_turnitin table.
         $turnitincourses = new backup_nested_element('turnitin_courses');
         $turnitincourse = new backup_nested_element('turnitin_course', array('id'),
-            array('courseid', 'ownerid', 'turnitin_ctl', 'turnitin_cid'));
+            array('courseid', 'turnitin_ctl', 'turnitin_cid'));
         $pluginelement->add_child($turnitincourses);
         $turnitincourses->add_child($turnitincourse);
 

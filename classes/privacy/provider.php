@@ -75,6 +75,10 @@ class provider implements
             'plagiarism_turnitin_users',
             [
                 'userid' => 'privacy:metadata:plagiarism_turnitin_users:userid',
+                'turnitin_uid' => 'privacy:metadata:plagiarism_turnitin_users:turnitin_uid',
+                'instructor_defaults' => 'privacy:metadata:plagiarism_turnitin_users:instructor_defaults',
+                'instructor_rubrics' => 'privacy:metadata:plagiarism_turnitin_users:instructor_rubrics',
+                'user_agreement_accepted' => 'privacy:metadata:plagiarism_turnitin_users:user_agreement_accepted'
             ],
             'privacy:metadata:plagiarism_turnitin_users'
         );

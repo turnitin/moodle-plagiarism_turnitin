@@ -43,7 +43,7 @@ define(['jquery'], function($) {
           var dvWindow = window.open('', 'turnitin_viewer');
 
           var loading = '<div class="tii_dv_loading" style="text-align:center;">';
-          loading += '<img src="' + M.cfg.wwwroot + '/plagiarism/turnitin/pix/tiiIcon.svg" style="width:100px; height: 100px">';
+          loading += '<img src="' + M.cfg.wwwroot + '/plagiarism/turnitin/pix/turnitin-icon.png" style="width:100px; height: 100px">';
           loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + M.str.plagiarism_turnitin.loadingdv + '</p>';
           loading += '</div>';
           $(dvWindow.document.body).html(loading);

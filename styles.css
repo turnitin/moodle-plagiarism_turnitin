@@ -10,6 +10,10 @@
     text-align: left;
 }
 
+.tii_links_container {
+    padding-top: 4px;
+}
+
 .tii_links_container .clear {
 	clear:both;
 }
@@ -251,7 +255,7 @@
 	display: none;
     margin-bottom:16px;
     padding-top: 40px;
-    background:url([[pix:plagiarism_turnitin|tiiIcon]]) no-repeat 50% 6px;
+    background:url([[pix:plagiarism_turnitin|turnitin-icon]]) no-repeat 50% 6px;
     background-size:32px;
 }
 
@@ -299,13 +303,9 @@ button.pp-resubmit-files {
     margin-left:6px
 }
 
-.icon_size {
-    width: 16px;
-    height: 16px;
-}
-.icon_size_large {
-    width: 32px;
-    height: 32px;
+.tii_links_container .turnitin_status .icon_size {
+    width: 24px;
+    height: 24px;
 }
 
 .blue {

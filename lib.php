@@ -2253,7 +2253,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Migrate course from previous version of plugin to this
      */
     public function migrate_previous_course($coursedata, $turnitincid, $workflowcontext = "site") {
-        global $DB, $USER;
+        global $DB;
 
         $turnitincourse = new stdClass();
         $turnitincourse->courseid = $coursedata->id;
@@ -2985,6 +2985,9 @@ function plagiarism_turnitin_send_queued_submissions() {
             $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 10);
             continue;
         }
+        // Update course data in Turnitin.
+        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment->edit_tii_course($coursedata);
 
         // Previously failed submissions may not have a value for submitter.
         if (empty($queueditem->submitter)) {
@@ -3007,6 +3010,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $errorcode = 7;
         }
 
+        // Update assignment details in Turnitin.
         $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid, "cron", true);
 
         // Any errorcode from assignment sync needs to be saved.

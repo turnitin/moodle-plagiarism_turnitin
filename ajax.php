@@ -61,6 +61,10 @@ switch ($action) {
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
 
+        // Update course data in Turnitin.
+        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment->edit_tii_course($coursedata);
+
         // Edit assignment in Turnitin in case any changes have been made that would affect DV.
         $pluginturnitin = new plagiarism_plugin_turnitin();
         $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);

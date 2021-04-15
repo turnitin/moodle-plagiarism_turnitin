@@ -2300,6 +2300,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $errorcode = 0;
         $attempt = 0;
         $tiisubmissionid = null;
+
+        // Check if file has been submitted before.
+        $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
+        if (count($plagiarismfiles) > 0) {
+            return true;
+        }
+
         $settings = $this->get_settings($cm->id);
 
         // Get module data.
@@ -2484,7 +2491,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return bool result
      */
     public function event_handler($eventdata) {
-        global $DB, $CFG;
+        global $DB;
 
         $result = true;
 
@@ -2499,6 +2506,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!$cm) {
             return true;
         }
+        $context = context_module::instance($cm->id);
 
         // Initialise module settings.
         $plagiarismsettings = $this->get_settings($cm->id);
@@ -2533,7 +2541,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
            To get around this, we get the group ID, get the group members and set the author as the first student in the group.
         */
         if ((empty($eventdata['relateduserid'])) && ($cm->modname == 'assign')
-                && has_capability('mod/assign:editothersubmission', context_module::instance($cm->id), $submitter)) {
+                && has_capability('mod/assign:editothersubmission', $context, $submitter)) {
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $eventdata['objectid']), 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
                 $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
@@ -2568,15 +2576,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $qa = $attempt->get_question_attempt($slot);
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
+                // Queue text content.
                 $identifier = sha1($eventdata['other']['content']);
+                $result = $this->queue_submission_to_turnitin(
+                        $cm, $author, $submitter, $identifier, 'quiz_answer',
+                        $eventdata['objectid'], $eventdata['eventtype']);
 
-                // Check if answer has been submitted before and return if so.
-                $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
-                if (count($plagiarismfiles) > 0) {
-                    return true;
-                } else {
+                $files = $qa->get_last_qt_files('attachments', $context->id);
+                foreach ($files as $file) {
+                    // Queue file for sending to Turnitin.
+                    $identifier = $file->get_pathnamehash();
                     $result = $this->queue_submission_to_turnitin(
-                        $cm, $author, $submitter, $identifier, 'quiz_answer', $eventdata['objectid'], $eventdata['eventtype']);
+                            $cm, $author, $submitter, $identifier, 'file',
+                            $eventdata['objectid'], $eventdata['eventtype']);
                 }
             }
         }
@@ -2596,13 +2608,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $identifier = sha1($eventdata['other']['content']);
 
             // Check if content has been submitted before and return if so.
-            $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
-            if (count($plagiarismfiles) > 0) {
-                return true;
-            } else {
-                $result = $this->queue_submission_to_turnitin(
-                                            $cm, $author, $submitter, $identifier, $submissiontype, $eventdata['objectid'], $eventdata['eventtype']);
-            }
+            $result = $this->queue_submission_to_turnitin(
+                            $cm, $author, $submitter, $identifier, $submissiontype,
+                            $eventdata['objectid'], $eventdata['eventtype']);
         }
 
         // Queue files to submit to Turnitin.
@@ -2633,8 +2641,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $result = $result && $this->queue_submission_to_turnitin(
-                                                $cm, $author, $submitter, $pathnamehash, 'file',
-                                                $eventdata['objectid'], $eventdata['eventtype']);
+                            $cm, $author, $submitter, $pathnamehash, 'file', $eventdata['objectid'], $eventdata['eventtype']);
             }
         }
 

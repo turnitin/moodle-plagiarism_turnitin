@@ -2006,12 +2006,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $assignmentids = array();
 
         $submissions = $DB->get_records_select(
-          'plagiarism_turnitin_files',
-          'statuscode = ?
-          AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
-          AND ( orcapable = ? OR orcapable IS NULL ) ',
-          array('success', 1),
-          'externalid DESC'
+            'plagiarism_turnitin_files',
+            'statuscode = ? 
+            AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
+            AND ( orcapable = ? OR orcapable IS NULL ) ',
+            array('success', 1),
+            'externalid DESC'
         );
 
         // Add submission ids to the request.
@@ -2183,10 +2183,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
         $currentsubmission = $DB->get_record('plagiarism_turnitin_files',
             array('externalid' => $missingsubmission),
-            'id,
-            cm,
-            externalid,
-            userid'
+            'id, cm, externalid, userid'
         );
         $plagiarismfile = new stdClass();
         $plagiarismfile->id = $currentsubmission->id;
@@ -3048,6 +3045,7 @@ function plagiarism_turnitin_send_queued_submissions() {
         }
 
         // Get more Submission Details as required.
+        $apimethod = "createSubmission";
         switch ($queueditem->submissiontype) {
             case 'file':
             case 'text_content':
@@ -3100,9 +3098,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 // Use Replace submission method if resubmissions are allowed or create if we have no Turnitin Id.
-                if (is_null($queueditem->externalid)) {
-                    $apimethod = "createSubmission";
-                } else {
+                if (!is_null($queueditem->externalid)) {
                     $apimethod = ($moduledata->resubmission_allowed) ? "replaceSubmission" : "createSubmission";
 
                     // Delete old text content submissions from Turnitin if not replacing.
@@ -3120,9 +3116,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 break;
 
             case 'forum_post':
-                if (is_null($queueditem->externalid)) {
-                    $apimethod = "createSubmission";
-                } else {
+                if (!is_null($queueditem->externalid)) {
                     $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
                 }
 
@@ -3139,9 +3133,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 break;
 
             case 'quiz_answer':
-                if (is_null($queueditem->externalid)) {
-                    $apimethod = "createSubmission";
-                } else {
+                if (!is_null($queueditem->externalid)) {
                     $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
                 }
 

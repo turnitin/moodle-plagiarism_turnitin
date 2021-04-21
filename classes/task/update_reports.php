@@ -39,8 +39,8 @@ class update_reports extends \core\task\scheduled_task {
         global $CFG;
 
         require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-        $plagiarismturnitin = new plagiarism_plugin_turnitin();
-        if ($plagiarismturnitin->is_plugin_configured()) {
+        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
+        if (!$plagiarismturnitin->is_plugin_configured()) {
             return;
         }
         plagiarism_turnitin_update_reports();

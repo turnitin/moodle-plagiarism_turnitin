@@ -627,8 +627,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $cm = get_coursemodule_from_id('', $cmid);
                     $tiicoursedata = $this->create_tii_course($cmid, $cm->modname, $coursedata, $workflowcontext);
                 }
-                $coursedata->turnitin_cid = $tiicoursedata->turnitin_cid;
-                $coursedata->turnitin_ctl = $tiicoursedata->turnitin_ctl;
+                $coursedata->turnitin_cid = (!empty($tiicoursedata->turnitin_cid)) ? $tiicoursedata->turnitin_cid : null;
+                $coursedata->turnitin_ctl = (!empty($tiicoursedata->turnitin_ctl)) ? $tiicoursedata->turnitin_ctl : "";
             }
         }
 
@@ -1648,29 +1648,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduleclass = "turnitin_".$modname;
         $moduleobject = new $moduleclass;
 
-        $capability = $moduleobject->get_tutor_capability();
-        if (!empty($cmid)) {
-            $tutors = get_enrolled_users(context_module::instance($cmid), $capability, 0, 'u.id', 'u.id');
-        } else {
-            $tutors = get_enrolled_users(context_course::instance($coursedata->id), $capability, 0, 'u.id', 'u.id');
-        }
-
         $turnitinassignment = new turnitin_assignment(0);
         $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $workflowcontext);
 
-        // Join all admins to the course in Turnitin.
-        $admins = explode(",", $CFG->siteadmins);
-        foreach ($admins as $admin) {
-            // Create the admin as a user within Turnitin.
-            $user = new turnitin_user($admin, 'Instructor');
-            $user->join_user_to_class($turnitincourse->turnitin_cid);
-        }
+        // Join all admins and instructors to the course in Turnitin if it was created.
+        if (!empty($turnitincourse->turnitin_cid)) {
+            $admins = explode(",", $CFG->siteadmins);
 
-        // Join all tutors to the course in Turnitin.
-        if (!empty($tutors)) {
-            foreach ($tutors as $tutor) {
+            // Grab all instructors and extract the ids.
+            $capability = $moduleobject->get_tutor_capability();
+            if (!empty($cmid)) {
+                $tutors = get_enrolled_users(context_module::instance($cmid), $capability, 0, 'u.id', 'u.id');
+            } else {
+                $tutors = get_enrolled_users(context_course::instance($coursedata->id), $capability, 0, 'u.id', 'u.id');
+            }
+            $tutorids = array_column((array)$tutors, 'id');
+
+            $allinstructors = array_merge($admins, $tutorids);
+            foreach ($allinstructors as $instructor) {
                 // Create the admin as a user within Turnitin.
-                $user = new turnitin_user($tutor->id, 'Instructor');
+                $user = new turnitin_user($instructor, 'Instructor');
                 $user->join_user_to_class($turnitincourse->turnitin_cid);
             }
         }

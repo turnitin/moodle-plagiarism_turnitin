@@ -118,12 +118,10 @@ class turnitin_assignment {
 
             return $turnitincourse;
         } catch (Exception $e) {
-            $toscreen = true;
             if ($workflowcontext == "cron") {
                 mtrace(get_string('pp_classcreationerror', 'plagiarism_turnitin'));
-                $toscreen = false;
             }
-            $this->turnitincomms->handle_exceptions($e, 'pp_classcreationerror', $toscreen);
+            $this->turnitincomms->handle_exceptions($e, 'pp_classcreationerror', false);
         }
     }
 

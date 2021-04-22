@@ -98,17 +98,16 @@ switch ($action) {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();
+            $moduleconfigvalue->value = time();
 
             // If we have a turnitin timestamp stored then update it, otherwise create it.
             if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
                                         array('cm' => $cm->id, 'name' => 'grades_last_synced'), 'id')) {
                 $moduleconfigvalue->id = $timestampid->id;
-                $moduleconfigvalue->value = time();
                 $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
             } else {
                 $moduleconfigvalue->cm = $cm->id;
                 $moduleconfigvalue->name = 'grades_last_synced';
-                $moduleconfigvalue->value = time();
                 $moduleconfigvalue->config_hash = $moduleconfigvalue->cm."_".$moduleconfigvalue->name;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
             }

@@ -2926,7 +2926,7 @@ function plagiarism_turnitin_send_queued_submissions() {
     }
 
     $queueditems = $DB->get_records_select("plagiarism_turnitin_files", "statuscode = 'queued' OR statuscode = 'pending'",
-                                            null, '', '*', 0, PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);
+                                            null, 'lastmodified', '*', 0, PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);
 
     // Submit each file individually to Turnitin.
     foreach ($queueditems as $queueditem) {

@@ -38,7 +38,7 @@ if ( !empty( $cmid ) ) {
             $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
             break;
         default:
-            $userrole = (has_capability('mod/assign:grade', $context)) ? 'Instructor' : 'Learner';
+            $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
             break;
     }
 }

@@ -84,7 +84,6 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_quiz.c
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_workshop.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_coursework.class.php');
 
-
 class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**

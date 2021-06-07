@@ -1,3 +1,31 @@
+### Date:       2021-June-08
+### Release:	2021060801
+
+#### :wrench: Fixes and enhancements
+
+####Support for Moodle 3.11
+You can now confidently use this integration with Moodle 3.11.
+
+####Use Turnitin with Moodle Quizzes
+We can now check for similarity on any files that are uploaded as a part of a Moodle quiz.
+
+####Cron tasks will no longer run when Moodle is not configured
+Thanks to alexmorrisnz for the pull request!
+
+####Removed grades change the grade in Moodle
+When a grade is removed from Turnitin, this removal will also be reflected within Moodle as the submission being ungraded.
+
+####Turnitin classes will now be expired along with a Moodle course
+We will now sync dates in Moodle with the Turnitin database. When the Moodle course expires, we will close out those classes in Turnitin. This will free up the active student count for those classes.
+
+####Create or access Moodle assignments, forums, and workshops when Turnitin is disabled
+If Turnitin is disabled for an assignment, forum, or workshop and Turnitin is unavailable by having the wrong configuration options or being under maintenance, then an error message would be shown. This bug has been fixed, and Turnitin being unreachable will no longer impact your ability to create or access your content.
+
+####Changes to the Moodle course name will be reflected everywhere
+When a Moodle course title is changed, this will now be updated in Turnitin too. This will include the digital receipts students receive when they submit their paper.
+
+---
+
 ### Date:       2020-November-30
 ### Release:	2020113001
 

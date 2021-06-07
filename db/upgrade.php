@@ -489,7 +489,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020091401, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2021030401) {
+    if ($oldversion < 2021060801) {
 
         $table = new xmldb_table('plagiarism_turnitin_courses');
         $field = new xmldb_field('ownerid');
@@ -497,7 +497,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
-        upgrade_plugin_savepoint(true, 2021030401, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2021060801, 'plagiarism', 'turnitin');
     }
 
     return $result;

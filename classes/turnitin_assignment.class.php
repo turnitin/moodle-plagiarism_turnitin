@@ -65,7 +65,6 @@ class turnitin_assignment {
         if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid))) {
             $course->turnitin_cid = $turnitincourse->turnitin_cid;
             $course->turnitin_ctl = $turnitincourse->turnitin_ctl;
-            $course->ownerid = $turnitincourse->ownerid;
             $course->tii_rel_id = $turnitincourse->id;
         }
 
@@ -77,11 +76,10 @@ class turnitin_assignment {
      *
      * @global type $DB
      * @param object $course The course object
-     * @param int $ownerid The owner of the course
      * @param string $workflowcontext The workflow being used to call this - site or cron.
      * @return object the turnitin course if created
      */
-    public function create_tii_course($course, $ownerid, $workflowcontext = "site") {
+    public function create_tii_course($course, $workflowcontext = "site") {
         global $DB;
 
         $turnitincall = $this->turnitincomms->initialise_api();
@@ -96,7 +94,6 @@ class turnitin_assignment {
 
             $turnitincourse = new stdClass();
             $turnitincourse->courseid = $course->id;
-            $turnitincourse->ownerid = $ownerid;
             $turnitincourse->turnitin_cid = $this->api_get_class_id($newclass);
             $turnitincourse->turnitin_ctl = $course->fullname . " (Moodle PP)";
 
@@ -121,12 +118,10 @@ class turnitin_assignment {
 
             return $turnitincourse;
         } catch (Exception $e) {
-            $toscreen = true;
             if ($workflowcontext == "cron") {
                 mtrace(get_string('pp_classcreationerror', 'plagiarism_turnitin'));
-                $toscreen = false;
             }
-            $this->turnitincomms->handle_exceptions($e, 'pp_classcreationerror', $toscreen);
+            $this->turnitincomms->handle_exceptions($e, 'pp_classcreationerror', false);
         }
     }
 
@@ -147,6 +142,13 @@ class turnitin_assignment {
         $title = $this->truncate_title( $course->fullname, PLAGIARISM_TURNITIN_COURSE_TITLE_LIMIT );
         $class->setTitle( $title );
 
+        // If a course end date is specified in Moodle then we set this in Turnitin with an additional month to
+        // account for the Turnitin viewer becoming read-only once the class end date passes.
+        if (!empty($course->enddate)) {
+            $enddate = strtotime('+1 month', $course->enddate);
+            $class->setEndDate(gmdate("Y-m-d\TH:i:s\Z", $enddate));
+        }
+
         try {
             $this->api_update_class($turnitincall, $class);
 
@@ -155,7 +157,6 @@ class turnitin_assignment {
             $update = new stdClass();
             $update->id = $turnitincourse->id;
             $update->courseid = $course->id;
-            $update->ownerid = $turnitincourse->ownerid;
             $update->turnitin_cid = $course->turnitin_cid;
             $update->turnitin_ctl = $course->fullname . " (Moodle PP)";
 

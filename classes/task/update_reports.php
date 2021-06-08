@@ -36,11 +36,13 @@ class update_reports extends \core\task\scheduled_task {
     }
 
     public function execute() {
-        global $CFG, $pptaskcall;
+        global $CFG;
 
-        // Call plagiarism turnitin cron function to update report scores.
         require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-        $pptaskcall = true;
+        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
+        if (!$plagiarismturnitin->is_plugin_configured()) {
+            return;
+        }
         plagiarism_turnitin_update_reports();
     }
 }

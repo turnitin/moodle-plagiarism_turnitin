@@ -61,6 +61,10 @@ switch ($action) {
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
 
+        // Update course data in Turnitin.
+        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment->edit_tii_course($coursedata);
+
         // Edit assignment in Turnitin in case any changes have been made that would affect DV.
         $pluginturnitin = new plagiarism_plugin_turnitin();
         $syncassignment = $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
@@ -94,17 +98,16 @@ switch ($action) {
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
 
             $moduleconfigvalue = new stdClass();
+            $moduleconfigvalue->value = time();
 
             // If we have a turnitin timestamp stored then update it, otherwise create it.
             if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
                                         array('cm' => $cm->id, 'name' => 'grades_last_synced'), 'id')) {
                 $moduleconfigvalue->id = $timestampid->id;
-                $moduleconfigvalue->value = time();
                 $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
             } else {
                 $moduleconfigvalue->cm = $cm->id;
                 $moduleconfigvalue->name = 'grades_last_synced';
-                $moduleconfigvalue->value = time();
                 $moduleconfigvalue->config_hash = $moduleconfigvalue->cm."_".$moduleconfigvalue->name;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
             }

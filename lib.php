@@ -686,8 +686,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Retrieve the plugin settings for this module.
-        static $plagiarismsettings;
-        if (empty($plagiarismsettings)) {
+        static $plagiarismsettings = null;
+        if (is_null($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
         }
 

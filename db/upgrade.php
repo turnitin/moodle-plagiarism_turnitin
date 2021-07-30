@@ -493,11 +493,22 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         $table = new xmldb_table('plagiarism_turnitin_courses');
         $field = new xmldb_field('ownerid');
-        if (!$dbman->field_exists($table, $field)) {
+        if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
 
         upgrade_plugin_savepoint(true, 2021060801, 'plagiarism', 'turnitin');
+    }
+
+    if ($oldversion < 2021073001) {
+
+        $table = new xmldb_table('plagiarism_turnitin_courses');
+        $field = new xmldb_field('ownerid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2021073001, 'plagiarism', 'turnitin');
     }
 
     return $result;

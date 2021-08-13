@@ -1,3 +1,11 @@
+### Date:       2021-August-13
+### Release:	2021081301
+
+#### :wrench: Fixes and enhancements
+
+####Classes will create successfully 
+A bug potentially resulted in classes created in Moodle to not sync correctly when we tried to create them in Turnitin. We’ve fixed this problem and you will now be able to create classes again.
+
 ### Date:       2021-June-08
 ### Release:	2021060801
 

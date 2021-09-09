@@ -300,8 +300,12 @@ switch ($action) {
             if (empty($config)) {
                 $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
             }
-            if ($config->plagiarism_turnitin_enablediagnostic != 2) {
+            if (!isset($config->plagiarism_turnitin_enablediagnostic)) {
                 $turnitincomms->set_diagnostic(0);
+            } else {
+                if ($config->plagiarism_turnitin_enablediagnostic != 2) {
+                    $turnitincomms->set_diagnostic(0);
+                }
             }
 
             $tiiapi = $turnitincomms->initialise_api(true);

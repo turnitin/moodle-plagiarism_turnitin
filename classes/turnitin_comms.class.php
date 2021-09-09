@@ -38,18 +38,23 @@ class turnitin_comms {
     public function __construct($accountid = null, $accountshared = null, $url = null) {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        $tiiapiurl = (substr($config->plagiarism_turnitin_apiurl, -1) == '/') ? substr($config->plagiarism_turnitin_apiurl, 0, -1) : $config->plagiarism_turnitin_apiurl;
+        if (!is_null($url)) {
+            $this->tiiapiurl = $url;
+        } else {
+            $this->tiiapiurl = (substr($config->plagiarism_turnitin_apiurl, -1) == '/')
+                ? substr($config->plagiarism_turnitin_apiurl, 0, -1) : $config->plagiarism_turnitin_apiurl;
+        }
 
         $this->tiiintegrationid = 12;
         $this->tiiaccountid = is_null($accountid) ? $config->plagiarism_turnitin_accountid : $accountid;
-        $this->tiiapiurl = is_null($url) ? $tiiapiurl : $url;
         $this->tiisecretkey = is_null($accountshared) ? $config->plagiarism_turnitin_secretkey : $accountshared;
 
         if (empty($this->tiiaccountid) || empty($this->tiiapiurl) || empty($this->tiisecretkey)) {
             plagiarism_turnitin_print_error( 'configureerror', 'plagiarism_turnitin' );
         }
 
-        $this->diagnostic = $config->plagiarism_turnitin_enablediagnostic;
+        $this->diagnostic = (isset($config->plagiarism_turnitin_enablediagnostic))
+            ? $config->plagiarism_turnitin_enablediagnostic : 1;
         $this->langcode = $this->get_lang();
     }
 

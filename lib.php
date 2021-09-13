@@ -2563,6 +2563,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $attempt = quiz_attempt::create($eventdata['objectid']);
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
+                if ($qa->get_question()->get_type_name() != 'essay') {
+                    continue;
+                }
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.

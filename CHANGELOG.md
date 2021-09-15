@@ -13,7 +13,7 @@ Note: If a grade is removed from Turnitin, it will no longer remove it from Mood
 
 We’ve refined this feature to only request a Similarity Report for Essay type questions. Turnitin would only ever create a report for these types of questions anyway, but a request was sent for all question types. This could cause bigger classes to become sluggish. You should notice that bigger classes that use a lot of quizzes are much easier to navigate now.
 
-Thanks to Dan Marsden for highlighting this.
+Thanks to Dan Marsden And Alex Morris for highlighting and providing a fix for this.
 
 #### Test connection now will check the connection to Turnitin at all times
 

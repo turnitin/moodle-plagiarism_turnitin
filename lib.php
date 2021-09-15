@@ -1357,10 +1357,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Identify if an update is required for the similarity score and grade.
             if ($submissiondata->similarityscore != $plagiarismfile->similarityscore ||
-                        $submissiondata->grade != $plagiarismfile->grade ||
-                        $submissiondata->orcapable != $plagiarismfile->orcapable ||
-                        $submissiondata->student_read != $plagiarismfile->student_read ||
-                        $submissiondata->gm_feedback != $plagiarismfile->gm_feedback) {
+                $submissiondata->grade != $plagiarismfile->grade ||
+                $submissiondata->orcapable != $plagiarismfile->orcapable ||
+                $submissiondata->student_read != $plagiarismfile->student_read ||
+                $submissiondata->gm_feedback != $plagiarismfile->gm_feedback) {
                 $updaterequired = true;
             }
 
@@ -1427,7 +1427,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
                             'courseid' => $cm->course, 'itemnumber' => 0));
 
-                    if (!empty($gradeitem) && $gbupdaterequired) {
+                    if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
                         $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
                     }
                 }
@@ -1444,11 +1444,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB, $USER, $CFG;
         $return = true;
 
-        if ($cm->modname != 'forum') {
+        if (!is_null($submission->getGrade()) && $cm->modname != 'forum') {
             // Module grade object.
             $grade = new stdClass();
             // If submission has multiple content/files in it then get average grade.
-            // Ignore files no longer part of submission.
+            // Ignore NULL grades and files no longer part of submission.
 
             // Create module object.
             $moduleclass = "turnitin_".$cm->modname;
@@ -1482,7 +1482,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)($averagegrade / $gradescounted) : null;
             } else {
-                $grade->grade = ($submission->getGrade() == '') ? null : $submission->getGrade();
+                $grade->grade = $submission->getGrade();
             }
 
             // Check whether submission is a group submission - only applicable to assignment module.
@@ -2563,6 +2563,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $attempt = quiz_attempt::create($eventdata['objectid']);
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
+                if ($qa->get_question()->get_type_name() != 'essay') {
+                    continue;
+                }
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.

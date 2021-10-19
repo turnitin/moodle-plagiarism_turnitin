@@ -1532,6 +1532,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if ($currentgrade) {
                     $grade->id = $currentgrade->id;
+
+                    if ($cm->modname == 'assign') {
+                        $grade->grader = $USER->id;
+                    }
+
                     $return = $DB->update_record($table, $grade);
                 } else {
                     $grade->userid = $userid;

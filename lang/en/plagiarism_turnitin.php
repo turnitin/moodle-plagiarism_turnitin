@@ -102,6 +102,8 @@ $string['turnitinppulapre'] = 'To submit a file to Turnitin you must first accep
 $string['noscriptula'] = '(As you do not have javascript enabled you will have to manually refresh this page before you can make a submission after accepting the Turnitin User Agreement)';
 $string['filedoesnotexist'] = 'File has been deleted';
 $string['reportgenspeed_resubmission'] = 'You have already submitted a paper to this assignment and a Similarity Report was generated for your submission. If you choose to resubmit your paper, your earlier submission will be replaced and a new report will be generated. After {$a->num_resubmissions} resubmissions, you will need to wait {$a->num_hours} hours after a resubmission to see a new Similarity Report.';
+$string['importgrades'] = 'Import grades';
+$string['importgrades_help'] = 'Import grades from Turnitin GradeMark. You may wish to turn this off if your Moodle grade scale is not 1-100';
 
 // Plugin settings.
 $string['config'] = 'Configuration';

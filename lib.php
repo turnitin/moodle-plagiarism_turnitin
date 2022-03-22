@@ -3141,8 +3141,8 @@ function plagiarism_turnitin_send_queued_submissions() {
                 try {
                     $attempt = quiz_attempt::create($queueditem->itemid);
                 } catch (Exception $e) {
-                    plagiarism_turnitin_activitylog(get_string('errorcode13', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
-                    $errorcode = 13;
+                    plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
+                    $errorcode = 14;
                     break;
                 }
                 foreach ($attempt->get_slots() as $slot) {

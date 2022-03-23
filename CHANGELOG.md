@@ -1,3 +1,20 @@
+### Date:       2022-March-23
+### Release:	2022032301
+
+#### :wrench: Fixes and enhancements
+
+#### Grader field previously not updating correctly - now resolved
+
+We’ve fixed an issue that was occasionally causing the grader field in Moodle assignments to not update correctly.
+
+#### Submission failure relating to Moodle Quiz items resolved
+
+A bug was discovered that was causing submissions to fail. This was found to be linked to Moodle Quiz items. This issue has been resolved.
+
+This fix was submitted as a pull request by [@nwp90](https://github.com/nwp90) on Github. Thanks, Nick!
+
+---
+
 ### Date:       2021-September-15
 ### Release:	2021091501
 
@@ -19,6 +36,8 @@ Thanks to Dan Marsden And Alex Morris for highlighting and providing a fix for t
 
 Previously, Test Connection wouldn’t work until the plugin was configured. This could potentially cause confusion with users assuming that as no error had been shown the connection must already be established. We’ve changed it so that the Test Connection feature will always look to see if a successful connection has been made when checking.
 
+---
+
 ### Date:       2021-August-13
 ### Release:	2021081301
 
@@ -26,6 +45,8 @@ Previously, Test Connection wouldn’t work until the plugin was configured. Thi
 
 #### Classes will create successfully 
 A bug potentially resulted in classes created in Moodle to not sync correctly when we tried to create them in Turnitin. We’ve fixed this problem and you will now be able to create classes again.
+
+---
 
 ### Date:       2021-June-08
 ### Release:	2021060801

@@ -260,6 +260,7 @@ $string['because'] = 'This was because an administrator deleted the pending assi
 $string['errorcode10'] = 'This file has not been submitted to Turnitin because there is a problem creating the class in Turnitin which is preventing submissions, please consult your API logs for further information';
 $string['errorcode11'] = 'This file has not been submitted to Turnitin because it is missing data';
 $string['errorcode12'] = 'This file has not been submitted to Turnitin because it belongs to an assignment in which the course was deleted. Row ID: ({$a->id}) | Course Module ID: ({$a->cm}) | User ID: ({$a->userid})';
+$string['errorcode14'] = 'This file has not been submitted to Turnitin because the attempt it belongs to could not be found';
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';

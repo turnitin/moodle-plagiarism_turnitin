@@ -1532,6 +1532,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if ($currentgrade) {
                     $grade->id = $currentgrade->id;
+
+                    if ($cm->modname == 'assign') {
+                        $grade->grader = $USER->id;
+                    }
+
                     $return = $DB->update_record($table, $grade);
                 } else {
                     $grade->userid = $userid;
@@ -3133,7 +3138,13 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-                $attempt = quiz_attempt::create($queueditem->itemid);
+                try {
+                    $attempt = quiz_attempt::create($queueditem->itemid);
+                } catch (Exception $e) {
+                    plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
+                    $errorcode = 14;
+                    break;
+                }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
                     if ($queueditem->identifier == sha1($qa->get_response_summary())) {

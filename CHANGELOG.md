@@ -11,7 +11,7 @@ We’ve fixed an issue that was occasionally causing the grader field in Moodle 
 
 A bug was discovered that was causing submissions to fail. This was found to be linked to Moodle Quiz items. This issue has been resolved.
 
-This fix was submitted as a pull request by [@nwp90](https://github.com/nwp90)on Github. Thanks, Nick!
+This fix was submitted as a pull request by [@nwp90](https://github.com/nwp90) on Github. Thanks, Nick!
 
 ---
 

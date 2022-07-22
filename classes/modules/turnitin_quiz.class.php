@@ -76,7 +76,7 @@ class turnitin_quiz {
         $transaction = $DB->start_delegated_transaction();
 
         $attempt = quiz_attempt::create($attemptid);
-        $quba = question_engine::load_questions_usage_by_activity($attemptid);
+        $quba = question_engine::load_questions_usage_by_activity($attempt->get_uniqueid());
 
         // Loop through each question slot.
         foreach ($attempt->get_slots() as $slot) {

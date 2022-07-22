@@ -37,7 +37,7 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
     /**
      * Create a course and forum module instance
      */
-    public function setup() {
+    public function setUp(): void {
         // Create a course, user and a forum.
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();

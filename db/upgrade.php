@@ -519,6 +519,42 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022032302, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2022071800) {
+        // Set userid to be NOT NULL.
+        $table = new xmldb_table('plagiarism_turnitin_users');
+        $index = new xmldb_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+        if ($dbman->field_exists($table, $field)) {
+            // Double-check that there is no records with a NULL value.
+            if ($DB->count_records_select('plagiarism_turnitin_users', 'userid IS NULL') == 0) {
+                // Drop and then recreate unique index, otherwise Moodle will throw dependency exception.
+                if ($dbman->index_exists($table, $index)) {
+                    $dbman->drop_index($table, $index);
+                }
+                $dbman->change_field_notnull($table, $field);
+                $dbman->add_index($table, $index);
+            }
+        }
+
+        // Set courseid to be NOT NULL.
+        $table = new xmldb_table('plagiarism_turnitin_courses');
+        $index = new xmldb_index('courseid', XMLDB_INDEX_UNIQUE, array('courseid'));
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+        if ($dbman->field_exists($table, $field)) {
+            // Double-check that there is no records with a NULL value.
+            if ($DB->count_records_select('plagiarism_turnitin_courses', 'courseid IS NULL') == 0) {
+                // Drop and then recreate unique index, otherwise Moodle will throw dependency exception.
+                if ($dbman->index_exists($table, $index)) {
+                    $dbman->drop_index($table, $index);
+                }
+                $dbman->change_field_notnull($table, $field);
+                $dbman->add_index($table, $index);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2022071800, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }
 

@@ -42,7 +42,7 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
     /**
      * Set Overwrite mtrace to avoid output during the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         // Stub a fake tii comms.
         $this->faketiicomms = $this->getMockBuilder(turnitin_comms::class)
             ->disableOriginalConstructor()

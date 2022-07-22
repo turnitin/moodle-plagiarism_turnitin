@@ -500,7 +500,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021081301, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2022032302) {
+    if ($oldversion < 2022072201) {
         $table = new xmldb_table('plagiarism_turnitin_config');
         $index = new xmldb_index('config_hash', XMLDB_INDEX_UNIQUE, array('config_hash'));
         $field = new xmldb_field('config_hash', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'value');
@@ -516,10 +516,10 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2022032302, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2022072201, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2022071800) {
+    if ($oldversion < 2022072202) {
         // Set userid to be NOT NULL.
         $table = new xmldb_table('plagiarism_turnitin_users');
         $index = new xmldb_index('userid', XMLDB_INDEX_UNIQUE, array('userid'));
@@ -552,7 +552,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2022071800, 'plagiarism', 'turnitin');
+        upgrade_plugin_savepoint(true, 2022072202, 'plagiarism', 'turnitin');
     }
 
     return $result;

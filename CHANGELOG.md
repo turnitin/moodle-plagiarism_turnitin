@@ -1,3 +1,52 @@
+### Date:       2022-July-25
+### Release:    v2022072501
+
+#### :zap: What's new
+
+---
+
+We’ve had several community members actively contribute towards making the Moodle plagiarism plugin the best it can be, with some insightful and much appreciated pull requests. Check out all the latest improvements, with special thanks to our community members who have contributed towards them.
+
+#### Moodle Quizzes will perform better when many users take a quiz that involves essay-based questions
+
+When viewing a Moodle Quiz results, Turnitin would request the CMID (Course Module ID) multiple times, even after it had already been provided. This could cause classes to see performance issues when a larger class used essay-based questions as a part of their Moodle Quiz. This enhancement fixes the issue and users should expect to see increased performance when using Moodle Quizzes with larger classes now.
+
+With special thanks to [@aolley](https://github.com/aolley) for this contribution.
+
+#### Performance improvements when Turnitin isn’t enabled for a Moodle activity
+
+When Turnitin wasn’t enabled for a Moodle activity, multiple database calls would still be run for each user within the activity, resulting is a lot of unnecessary extra database load. This change removes these checks when Turnitin is not enabled. Users should expect to see some performance enhancements, particularly in larger classes.
+
+With special thanks to [@danmarsden](https://github.com/danmarsden) for this contribution.
+
+#### Database schema is now consistent when upgrading to a new version of the plugin
+
+This change fixes an issue where there was an alignment issue between the install and upgrade scripts, resulting in multiple is mismatches.
+
+With special thanks to [@golenkovm](https://github.com/golenkovm) and [@TomoTsuyuki](https://github.com/TomoTsuyuki) for the fix, and kristian-94 for their thorough initial investigation.
+
+#### Messages sent by Turnitin to instructors and students now apply the Moodle filters
+
+Filters can be used in Moodle to convert or change a message into a richer form of media. This includes creating links, converting mathematical formula into images, and even showing multiple languages at once on screen.
+
+Any messages sent by Turnitin will now work with these filters.
+
+With special thanks to [@izendegi](https://github.com/izendegi) for this contribution.
+
+#### Turnitin EULA prompt will now show at all times when using Moodle Forums
+
+When using a Moodle Forum, making an reply on the same page would not show the prompt to accept the Turnitin EULA for processing. The prompt would still be shown the first time the page is loaded. Users can now expect to see the EULA prompt on each interaction they would do in a forum that would potentially generate a Similarity Report if the EULA was accepted.
+
+With special thanks to [@jonof](https://github.com/jonof) for this contribution.
+
+#### Quiz attempt grades will set correct after opening the Similarity Report
+
+Opening the Similarity Report in a quiz attempt could in some situations alter the calculated grade for a student. User can expect for the Similarity Report to no longer affect the calculated grade.
+
+With special thanks again to [@jonof](https://github.com/jonof) for their contribution.
+
+---
+
 ### Date:       2022-March-23
 ### Release:	2022032301
 

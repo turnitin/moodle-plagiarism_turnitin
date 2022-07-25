@@ -657,7 +657,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If this is a quiz, retrieve the cmid
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
-        if ($component == "qtype_essay" && !empty($linkarray['area'])) {
+        if ($component == "qtype_essay" && !empty($linkarray['area']) && empty($linkarray['cmid'])) {
             $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
 
             // Try to get cm using the questions owning context.
@@ -686,8 +686,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Retrieve the plugin settings for this module.
-        static $plagiarismsettings;
-        if (empty($plagiarismsettings)) {
+        static $plagiarismsettings = null;
+        if (is_null($plagiarismsettings)) {
             $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
         }
 

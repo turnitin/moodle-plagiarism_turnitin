@@ -39,7 +39,7 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
     /**
      * Set Overwrite mtrace to avoid output during the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG;
 
         // Overwrite mtrace.

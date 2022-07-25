@@ -38,7 +38,7 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
     /**
      * Create a course and assignment module instance
      */
-    public function setup() {
+    public function setUp(): void {
         $this->course = $this->getDataGenerator()->create_course();
         $params = array(
             'course' => $this->course->id,

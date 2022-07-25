@@ -73,7 +73,7 @@ class pp_receipt_message {
         $message->submission_date = $input['submission_date'];
         $message->submission_id = $input['submission_id'];
 
-        return get_string('pp_digital_receipt_message', 'plagiarism_turnitin', $message);
+        return format_text(get_string('pp_digital_receipt_message', 'plagiarism_turnitin', $message));
     }
 
     /**
@@ -96,7 +96,7 @@ class pp_receipt_message {
         $message->submission_date = $input['submission_date'];
         $message->submission_id = $input['submission_id'];
 
-        return get_string('receipt_instructor_copy', 'plagiarism_turnitin', $message);
+        return format_text(get_string('receipt_instructor_copy', 'plagiarism_turnitin', $message));
     }
 
     /**

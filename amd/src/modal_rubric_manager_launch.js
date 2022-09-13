@@ -1,7 +1,6 @@
 /**
  * Javascript controller for the Rubric Manager launcher
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/modal_rubric_manager_launch
@@ -68,7 +67,9 @@ define(
             }.bind(this));
         };
 
-        // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
+        /**
+         * Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
+         */
         function refreshRubricSelect() {
             var currentRubric = $('#id_plagiarism_rubric').val();
             $.ajax({

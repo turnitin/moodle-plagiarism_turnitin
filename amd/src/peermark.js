@@ -1,7 +1,6 @@
 /**
  * Javascript controller for launching a Peermark modal.
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/peermarkLaunch

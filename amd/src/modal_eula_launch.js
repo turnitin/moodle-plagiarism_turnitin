@@ -1,7 +1,6 @@
 /**
  * Javascript controller for Eula launcher
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/modal_eula_launch
@@ -62,6 +61,9 @@ define(
         };
 
         // Get the rubrics belonging to a user from Turnitin and refresh menu accordingly.
+        /**
+         * Method for processing the EULA.
+         */
         function processEula() {
             $(window).on("message", function(ev) {
                 var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;

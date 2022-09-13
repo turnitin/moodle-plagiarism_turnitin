@@ -367,6 +367,11 @@ iframe html{background:none;}
     height: 680px;
 }
 
+.iframe-ltilaunch-rubric {
+    width: 840px;
+    height: 680px;
+}
+
 .tii_pp_modal_eula {
     width: 800px !important;
     height: 700px;

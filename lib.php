@@ -1415,13 +1415,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($cm->modname == "quiz") {
                     $quiz = $DB->get_record('quiz', array('id' => $cm->instance));
                     $tq = new turnitin_quiz();
-                    $tq->update_mark(
-                        $submissiondata->itemid,
-                        $submissiondata->identifier,
-                        $submissiondata->userid,
-                        $plagiarismfile->grade,
-                        $quiz->grade
-                    );
+                    if (!is_null($plagiarismfile->grade)) {
+                        $tq->update_mark(
+                            $submissiondata->itemid,
+                            $submissiondata->identifier,
+                            $submissiondata->userid,
+                            $plagiarismfile->grade,
+                            $quiz->grade
+                        );
+                    }
                 } else {
                     $gradeitem = $DB->get_record('grade_items',
                         array('iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,

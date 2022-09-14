@@ -368,7 +368,8 @@ iframe html{background:none;}
 }
 
 .iframe-ltilaunch-rubric {
-    width: 840px;
+    width: 100%;
+    min-width: 840px;
     height: 680px;
 }
 

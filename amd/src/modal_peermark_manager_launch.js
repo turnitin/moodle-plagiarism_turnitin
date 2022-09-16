@@ -1,7 +1,6 @@
 /**
  * Javascript controller for the Peermark Manager launcher
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/modal_peermark_manager_launch
@@ -68,6 +67,9 @@ define(
             }.bind(this));
         };
 
+        /**
+         * Method to refresh peermark assignments.
+         */
         function refreshPeermarkAssignments() {
             $.ajax({
                 type: "POST",

@@ -1,7 +1,6 @@
 /**
  * Javascript controller for opening the originality report viewreport
 
- * @package plagiarism_turnitin
  * @copyright 2019 Turnitin
  * @author Charlotte Spinks <cspinks@turnitin.com>
  * @module plagiarism_turnitin/open_viewer

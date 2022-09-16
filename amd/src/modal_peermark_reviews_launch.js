@@ -1,7 +1,6 @@
 /**
  * Javascript controller for Peermark Reviews launcher
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/modal_peermark_reviews_launch

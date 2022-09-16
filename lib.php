@@ -655,8 +655,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // If this is a quiz, retrieve the cmid
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
+
+        // Exit if this is a quiz and quizzes are disabled.
+        if ($component == "qtype_essay" && empty($this->get_config_settings('mod_quiz'))) {
+            return $output;
+        }
+
+        // If this is a quiz, retrieve the cmid
         if ($component == "qtype_essay" && !empty($linkarray['area']) && empty($linkarray['cmid'])) {
             $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
 

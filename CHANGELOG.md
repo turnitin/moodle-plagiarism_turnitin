@@ -1,3 +1,26 @@
+### Date:       2022-September-21
+### Release:    v2022092101
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### We’ve fixed an issue that resulted in overwritten grades
+
+Previously, selecting the blue pencil icon to launch a Turnitin assignment from the Moodle assignment would override any grades provided in Moodle. This has now been resolved and grades provided in Moodle will be retained unless a grade is provided in the Turnitin report.
+
+#### We have made improvements to the Rubric manager sizing
+
+Previously, the Rubric manager was sized incorrectly when launched in Moodle 3.11. This issue has now been resolved.
+
+#### We have made improvements to Moodle Quiz handling
+
+An additional check has been added to determine whether Turnitin is enabled on a Moodle Quiz resulting in performance improvements.
+
+With special thanks to [@thepurpleblob](https://github.com/thepurpleblob) for this contribution.
+
+---
+
 ### Date:       2022-July-25
 ### Release:    v2022072501
 

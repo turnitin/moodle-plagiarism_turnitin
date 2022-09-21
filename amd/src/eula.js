@@ -1,7 +1,6 @@
 /**
  * Javascript controller for launching the EULA modal.
  *
- * @package   turnitin
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
  * @module plagiarism_turnitin/eulaLaunch

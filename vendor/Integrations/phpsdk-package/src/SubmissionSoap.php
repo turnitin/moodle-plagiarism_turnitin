@@ -46,6 +46,7 @@ class SubmissionSoap extends Soap
                 $tiiSubmission->setAuthorUserId($soap->resultRecord->result->personSourcedId);
                 $tiiSubmission->setDate($soap->resultRecord->result->date);
                 $tiiSubmission->setOverallSimilarity($soap->resultRecord->result->resultScore->textString);
+                $tiiSubmission->setTranslatedOverallSimilarity($soap->resultRecord->result->extension->extensionField[6]->fieldValue);
                 foreach ($soap->resultRecord->result->extension->extensionField as $field) {
                     $name = $field->fieldName;
                     $method = 'set'.$name;
@@ -101,6 +102,7 @@ class SubmissionSoap extends Soap
                         $tiiSubmission->setAuthorUserId($submission->result->personSourcedId);
                         $tiiSubmission->setDate($submission->result->date);
                         $tiiSubmission->setOverallSimilarity($submission->result->resultScore->textString);
+                        $tiiSubmission->setTranslatedOverallSimilarity($submission->result->extension->extensionField[6]->fieldValue);
                         foreach ($submission->result->extension->extensionField as $field) {
                             $name = $field->fieldName;
                             $method = 'set'.$name;

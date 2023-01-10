@@ -40,13 +40,17 @@ class SubmissionSoap extends Soap
                 );
             } else {
                 $tiiSubmission = new TiiSubmission();
+                $translatedScore = null;
                 $tiiSubmission->setSubmissionId($soap->resultRecord->sourcedGUID->sourcedId);
                 $tiiSubmission->setTitle($soap->resultRecord->result->resultValue->label);
                 $tiiSubmission->setAssignmentId($soap->resultRecord->result->lineItemSourcedId);
                 $tiiSubmission->setAuthorUserId($soap->resultRecord->result->personSourcedId);
                 $tiiSubmission->setDate($soap->resultRecord->result->date);
                 $tiiSubmission->setOverallSimilarity($soap->resultRecord->result->resultScore->textString);
-                $tiiSubmission->setTranslatedOverallSimilarity($soap->resultRecord->result->extension->extensionField[6]->fieldValue);
+                $translatedScore = $this->checkForTranslatedSimScore($soap->resultRecord->result->extension->extensionField);
+                if (!is_null($translatedScore)) {
+                    $tiiSubmission->setTranslatedOverallSimilarity($translatedScore);
+                }
                 foreach ($soap->resultRecord->result->extension->extensionField as $field) {
                     $name = $field->fieldName;
                     $method = 'set'.$name;
@@ -90,6 +94,7 @@ class SubmissionSoap extends Soap
                 );
             } else {
                 $submissions = array();
+                $translatedScore = null;
                 if (isset($soap->resultRecordSet->resultRecord)) {
                     if (!is_array($soap->resultRecordSet->resultRecord)) {
                         $soap->resultRecordSet->resultRecord = array($soap->resultRecordSet->resultRecord);
@@ -102,7 +107,10 @@ class SubmissionSoap extends Soap
                         $tiiSubmission->setAuthorUserId($submission->result->personSourcedId);
                         $tiiSubmission->setDate($submission->result->date);
                         $tiiSubmission->setOverallSimilarity($submission->result->resultScore->textString);
-                        $tiiSubmission->setTranslatedOverallSimilarity($submission->result->extension->extensionField[6]->fieldValue);
+                        $translatedScore = $this->checkForTranslatedSimScore($submission->result->extension->extensionField);
+                        if (!is_null($translatedScore)) {
+                            $tiiSubmission->setTranslatedOverallSimilarity($translatedScore);
+                        }
                         foreach ($submission->result->extension->extensionField as $field) {
                             $name = $field->fieldName;
                             $method = 'set'.$name;
@@ -360,5 +368,18 @@ class SubmissionSoap extends Soap
         }
 
         return $request;
+    }
+
+    /**
+     * @param $array
+     * @return string
+     */
+    private function checkForTranslatedSimScore($array) {
+        foreach ($array as $object) {
+            if ( ($object->fieldName == "TranslatedOverallSimilarity") && (!is_null($object->fieldValue)) ) {
+                return $object->fieldValue;
+            }
+        }
+        return null;
     }
 }

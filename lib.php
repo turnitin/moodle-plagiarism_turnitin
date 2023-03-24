@@ -2307,8 +2307,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $coursedata = $this->get_course_data($cm->id, $cm->course);
         $user = new turnitin_user($author, "Learner");
         $user->join_user_to_class($coursedata->turnitin_cid);
-        $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
-        if ($eulaaccepted != 1) {
+        $eula_accepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+        if ($eula_accepted != 1) {
             return true;
         }
         // Check if file has been submitted before.

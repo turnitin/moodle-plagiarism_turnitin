@@ -767,7 +767,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissiontype = 'quiz_answer';
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = sha1($content);
+                $identifier = ($submissiontype === 'quiz_answer') ? sha1($content.$linkarray["itemid"]) : sha1($content);
             }
 
             // Group submissions where all students have to submit sets userid to 0.
@@ -2303,6 +2303,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $attempt = 0;
         $tiisubmissionid = null;
 
+        // If the EULA hasn't been accepted, don't save submission and don't submit to Tii
+        $coursedata = $this->get_course_data($cm->id, $cm->course);
+        $user = new turnitin_user($author, "Learner");
+        $user->join_user_to_class($coursedata->turnitin_cid);
+        $eula_accepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+        if ($eula_accepted != 1) {
+            return true;
+        }
         // Check if file has been submitted before.
         $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
         if (count($plagiarismfiles) > 0) {
@@ -2582,7 +2590,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                $identifier = sha1($eventdata['other']['content']);
+                // adding slot to sha hash to create unique assignments for duplicate text based on it's id
+                $identifier = sha1($eventdata['other']['content'].$slot);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3155,7 +3164,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($qa->get_response_summary())) {
+                    if ($queueditem->identifier == sha1($qa->get_response_summary().$slot)) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

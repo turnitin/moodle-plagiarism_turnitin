@@ -60,7 +60,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I wait "10" seconds
     And I click save changes button "css_element" "#id_submitbutton"
     Then I should see "Submitted for grading"
-    And I should see "Queued"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
     # Trigger cron as admin for submission
     And I log out

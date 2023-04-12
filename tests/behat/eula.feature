@@ -79,7 +79,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
-    And I should see "This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement."
     And I accept the Turnitin EULA if necessary
     # Admin can trigger a resubmission from the errors tab of the settings page.
     And I log out

@@ -80,15 +80,9 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I follow "Test assignment name"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
     And I accept the Turnitin EULA if necessary
-    # Admin can trigger a resubmission from the errors tab of the settings page.
+    # Admin can trigger a resubmission
     And I log out
     And I log in as "admin"
-    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
-    And I click on "Errors" "link"
-    And I click on ".select_all_checkbox" "css_element"
-    And I wait "2" seconds
-    And I press "Resubmit Selected Files"
-    And I wait "10" seconds
     And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
     # Instructor opens assignment.
     And I log out

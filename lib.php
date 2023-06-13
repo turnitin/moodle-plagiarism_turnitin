@@ -1262,35 +1262,35 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         $submissionids = $this->fetch_updated_paper_ids_from_turnitin($cm);
-        $return = ($submissionids === false) ? false : true;
-
+        if ($submissionids === false || count($submissionids) < 1) {
+            return false;
+        }
         // Refresh updated submissions.
-        if (count($submissionids) > 0) {
-            // Initialise Comms Object.
-            $turnitincomms = new turnitin_comms();
-            $turnitincall = $turnitincomms->initialise_api();
+        $return = true;
+        // Initialise Comms Object.
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
 
-            // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
-            $submissionbatches = array_chunk($submissionids, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
+        // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
+        $submissionbatches = array_chunk($submissionids, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
 
-            foreach ($submissionbatches as $submissionsbatch) {
-                try {
-                    $submission = new TiiSubmission();
-                    $submission->setSubmissionIds($submissionsbatch);
+        foreach ($submissionbatches as $submissionsbatch) {
+            try {
+                $submission = new TiiSubmission();
+                $submission->setSubmissionIds($submissionsbatch);
 
-                    $response = $turnitincall->readSubmissions($submission);
-                    $readsubmissions = $response->getSubmissions();
+                $response = $turnitincall->readSubmissions($submission);
+                $readsubmissions = $response->getSubmissions();
 
-                    foreach ($readsubmissions as $readsubmission) {
-                        $submissiondata = $DB->get_record('plagiarism_turnitin_files',
-                                                            array('externalid' => $readsubmission->getSubmissionId()), 'id');
-                        $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
-                    }
-
-                } catch (Exception $e) {
-                    $turnitincomms->handle_exceptions($e, 'tiisubmissiongeterror', false);
-                    $return = false;
+                foreach ($readsubmissions as $readsubmission) {
+                    $submissiondata = $DB->get_record('plagiarism_turnitin_files',
+                                                        array('externalid' => $readsubmission->getSubmissionId()), 'id');
+                    $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
                 }
+
+            } catch (Exception $e) {
+                $turnitincomms->handle_exceptions($e, 'tiisubmissiongeterror', false);
+                $return = false;
             }
         }
 
@@ -1479,7 +1479,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $tiisubmissions = current($tiisubmissions);
             }
 
-            if (count($tiisubmissions) > 1) {
+            if (is_array($tiisubmissions) && count($tiisubmissions) > 1) {
                 $averagegrade = null;
                 $gradescounted = 0;
                 foreach ($tiisubmissions as $tiisubmission) {
@@ -2012,7 +2012,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $submissions = $DB->get_records_select(
             'plagiarism_turnitin_files',
-            'statuscode = ? 
+            'statuscode = ?
             AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
             AND ( orcapable = ? OR orcapable IS NULL ) ',
             array('success', 1),

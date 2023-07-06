@@ -132,6 +132,20 @@ class plagiarism_turnitin_observer {
     }
 
     /**
+     * Handle the assignment submission_removed event.
+     * @param \mod_assign\event\submission_removed $event
+     */
+    public static function assignsubmission_removed(
+        \mod_assign\event\submission_removed $event) {
+        $eventdata = $event->get_data();
+        $eventdata['eventtype'] = 'submission_removed';
+        $eventdata['other']['modulename'] = 'assign';
+
+        $plugin = new plagiarism_plugin_turnitin();
+        $plugin->event_handler($eventdata);
+    }
+
+    /**
      * Observer function to handle the quiz_submitted event in mod_quiz.
      * @param \mod_quiz\event\attempt_submitted $event
      */

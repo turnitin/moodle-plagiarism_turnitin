@@ -2317,6 +2317,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($eula_accepted != 1) {
             return true;
         }
+
+        // Remove error submission queue if any.
+        $DB->delete_records('plagiarism_turnitin_files', [
+                'cm' => $cm->id,
+                'userid' => $author,
+                'itemid' => $itemid,
+                'statuscode' => 'error',
+            ]
+        );
+
         // Check if file has been submitted before.
         $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
         if (count($plagiarismfiles) > 0) {

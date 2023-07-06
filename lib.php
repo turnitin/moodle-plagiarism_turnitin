@@ -2579,6 +2579,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
+        // Remove submission from Turnitin queue if it is removed from Moodle.
+        if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "submission_removed") {
+            $params = [
+                'cm' => $eventdata['contextinstanceid'],
+                'userid' => $eventdata['relateduserid'],
+                'itemid' => $eventdata['objectid'],
+                'statuscode' => 'queued',
+            ];
+            $DB->delete_records('plagiarism_turnitin_files', $params);
+        }
+
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
             $attempt = quiz_attempt::create($eventdata['objectid']);

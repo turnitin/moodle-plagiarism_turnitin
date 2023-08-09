@@ -17,6 +17,31 @@ use Httpful\Exception\ConnectionErrorException;
  * and "chainabilty" of the library.
  *
  * @author Nate Good <me@nategood.com>
+ * 
+ * @method self sendsJson()
+ * @method self sendsXml()
+ * @method self sendsForm()
+ * @method self sendsPlain()
+ * @method self sendsText()
+ * @method self sendsUpload()
+ * @method self sendsHtml()
+ * @method self sendsXhtml()
+ * @method self sendsJs()
+ * @method self sendsJavascript()
+ * @method self sendsYaml()
+ * @method self sendsCsv()
+ * @method self expectsJson()
+ * @method self expectsXml()
+ * @method self expectsForm()
+ * @method self expectsPlain()
+ * @method self expectsText()
+ * @method self expectsUpload()
+ * @method self expectsHtml()
+ * @method self expectsXhtml()
+ * @method self expectsJs()
+ * @method self expectsJavascript()
+ * @method self expectsYaml()
+ * @method self expectsCsv()
  */
 class Request
 {
@@ -63,13 +88,13 @@ class Request
     private static $_template;
 
     /**
-     * We made the constructor private to force the factory style.  This was
+     * We made the constructor protected to force the factory style.  This was
      * done to keep the syntax cleaner and better the support the idea of
      * "default templates".  Very basic and flexible as it is only intended
      * for internal use.
      * @param array $attrs hash of initial attribute values
      */
-    private function __construct($attrs = null)
+    protected function __construct($attrs = null)
     {
         if (!is_array($attrs)) return;
         foreach ($attrs as $attr => $value) {
@@ -204,6 +229,7 @@ class Request
         $response = $this->buildResponse($result);
 
         curl_close($this->_ch);
+        unset($this->_ch);
 
         return $response;
     }
@@ -487,7 +513,12 @@ class Request
      */
     public function hasProxy()
     {
-        return isset($this->additional_curl_opts[CURLOPT_PROXY]) && is_string($this->additional_curl_opts[CURLOPT_PROXY]);
+        /* We must be aware that proxy variables could come from environment also.
+           In curl extension, http proxy can be specified not only via CURLOPT_PROXY option, 
+           but also by environment variable called http_proxy.
+        */
+        return isset($this->additional_curl_opts[CURLOPT_PROXY]) && is_string($this->additional_curl_opts[CURLOPT_PROXY]) ||
+            getenv("http_proxy");
     }
 
     /**
@@ -1025,7 +1056,14 @@ class Request
             if ($curlErrorNumber = curl_errno($this->_ch)) {
                 $curlErrorString = curl_error($this->_ch);
                 $this->_error($curlErrorString);
-                throw new ConnectionErrorException('Unable to connect to "'.$this->uri.'": ' . $curlErrorNumber . ' ' . $curlErrorString);
+
+                $exception = new ConnectionErrorException('Unable to connect to "'.$this->uri.'": '
+                        . $curlErrorNumber . ' ' . $curlErrorString);
+
+                $exception->setCurlErrorNumber($curlErrorNumber)
+                    ->setCurlErrorString($curlErrorString);
+
+                throw $exception;
             }
 
             $this->_error('Unable to connect to "'.$this->uri.'".');

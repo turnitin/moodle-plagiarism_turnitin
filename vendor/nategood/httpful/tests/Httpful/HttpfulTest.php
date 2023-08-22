@@ -21,7 +21,7 @@ use Httpful\Handlers\JsonHandler;
 
 define('TEST_SERVER', WEB_SERVER_HOST . ':' . WEB_SERVER_PORT);
 
-class HttpfulTest extends \PHPUnit_Framework_TestCase
+class HttpfulTest extends \PHPUnit\Framework\TestCase
 {
     const TEST_SERVER = TEST_SERVER;
     const TEST_URL = 'http://127.0.0.1:8008';
@@ -32,6 +32,15 @@ class HttpfulTest extends \PHPUnit_Framework_TestCase
 Content-Type: application/json
 Connection: keep-alive
 Transfer-Encoding: chunked\r\n";
+    const SAMPLE_JSON_HEADER_LOWERCASE =
+        "HTTP/2 200 
+date: Tue, 07 Jan 2020 09:11:21 GMT
+content-type: application/json
+content-length: 513
+access-control-allow-origin: *
+access-control-allow-methods: GET, POST, PUT, PATCH, DELETE
+access-control-allow-headers: Authorization, Content-Type, Accept-Encoding, Cache-Control, DNT
+cache-control: private, must-revalidate\r\n";
     const SAMPLE_JSON_RESPONSE = '{"key":"value","object":{"key":"value"},"array":[1,2,3,4]}';
     const SAMPLE_CSV_HEADER =
 "HTTP/1.1 200 OK
@@ -198,7 +207,7 @@ X-My-Header:Value2\r\n";
 
         $this->assertEquals(Mime::JSON, $r->expected_type);
         $r->_curlPrep();
-        $this->assertContains('application/json', $r->raw_headers);
+        $this->assertStringContainsString('application/json', $r->raw_headers);
     }
 
     function testCustomAccept()
@@ -208,7 +217,7 @@ X-My-Header:Value2\r\n";
             ->addHeader('Accept', $accept);
 
         $r->_curlPrep();
-        $this->assertContains($accept, $r->raw_headers);
+        $this->assertStringContainsString($accept, $r->raw_headers);
         $this->assertEquals($accept, $r->headers['Accept']);
     }
 
@@ -219,16 +228,16 @@ X-My-Header:Value2\r\n";
 
         $this->assertArrayHasKey('User-Agent', $r->headers);
         $r->_curlPrep();
-        $this->assertContains('User-Agent: ACME/1.2.3', $r->raw_headers);
-        $this->assertNotContains('User-Agent: HttpFul/1.0', $r->raw_headers);
+        $this->assertStringContainsString('User-Agent: ACME/1.2.3', $r->raw_headers);
+        $this->assertStringNotContainsString('User-Agent: HttpFul/1.0', $r->raw_headers);
 
         $r = Request::get('http://example.com/')
             ->withUserAgent('');
 
         $this->assertArrayHasKey('User-Agent', $r->headers);
         $r->_curlPrep();
-        $this->assertContains('User-Agent:', $r->raw_headers);
-        $this->assertNotContains('User-Agent: HttpFul/1.0', $r->raw_headers);
+        $this->assertStringContainsString('User-Agent:', $r->raw_headers);
+        $this->assertStringNotContainsString('User-Agent: HttpFul/1.0', $r->raw_headers);
     }
 
     function testAuthSetup()
@@ -264,7 +273,18 @@ X-My-Header:Value2\r\n";
 
         $this->assertEquals("value", $response->body->key);
         $this->assertEquals("value", $response->body->object->key);
-        $this->assertInternalType('array', $response->body->array);
+        $this->assertIsArray( $response->body->array);
+        $this->assertEquals(1, $response->body->array[0]);
+    }
+
+    function testJsonResponseParseLowercaseHeaders()
+    {
+        $req = Request::init();
+        $response = new Response(self::SAMPLE_JSON_RESPONSE, self::SAMPLE_JSON_HEADER_LOWERCASE, $req);
+
+        $this->assertEquals("value", $response->body->key);
+        $this->assertEquals("value", $response->body->object->key);
+        $this->assertIsArray( $response->body->array);
         $this->assertEquals(1, $response->body->array[0]);
     }
 
@@ -276,13 +296,16 @@ X-My-Header:Value2\r\n";
         $this->assertEquals("object", gettype($sxe));
         $this->assertEquals("SimpleXMLElement", get_class($sxe));
         $bools = $sxe->xpath('/stdClass/boolProp');
-        list( , $bool ) = each($bools);
+        // list( , $bool ) = each($bools);
+        $bool = array_shift($bools);
         $this->assertEquals("TRUE", (string) $bool);
         $ints = $sxe->xpath('/stdClass/arrayProp/array/k1/myClass/intProp');
-        list( , $int ) = each($ints);
+        // list( , $int ) = each($ints);
+        $int = array_shift($ints);
         $this->assertEquals("2", (string) $int);
         $strings = $sxe->xpath('/stdClass/stringProp');
-        list( , $string ) = each($strings);
+        // list( , $string ) = each($strings);
+        $string = array_shift($strings);
         $this->assertEquals("a string", (string) $string);
     }
 
@@ -293,7 +316,7 @@ X-My-Header:Value2\r\n";
 
         $this->assertEquals("Key1", $response->body[0][0]);
         $this->assertEquals("Value1", $response->body[1][0]);
-        $this->assertInternalType('string', $response->body[2][0]);
+        $this->assertIsString( $response->body[2][0]);
         $this->assertEquals("40.0", $response->body[2][0]);
     }
 
@@ -361,10 +384,10 @@ Content-Type: text/plain; charset=utf-8\r\n", $req);
     {
         $req = Request::init()->sendsAndExpects(Mime::JSON)->withoutAutoParsing();
         $response = new Response(self::SAMPLE_JSON_RESPONSE, self::SAMPLE_JSON_HEADER, $req);
-        $this->assertInternalType('string', $response->body);
+        $this->assertIsString( $response->body);
         $req = Request::init()->sendsAndExpects(Mime::JSON)->withAutoParsing();
         $response = new Response(self::SAMPLE_JSON_RESPONSE, self::SAMPLE_JSON_HEADER, $req);
-        $this->assertInternalType('object', $response->body);
+        $this->assertIsObject($response->body);
     }
 
     function testParseHeaders()
@@ -378,7 +401,7 @@ Content-Type: text/plain; charset=utf-8\r\n", $req);
     {
         $req = Request::init()->sendsAndExpects(Mime::JSON);
         $response = new Response(self::SAMPLE_JSON_RESPONSE, self::SAMPLE_JSON_HEADER, $req);
-        $this->assertContains('Content-Type: application/json', $response->raw_headers);
+        $this->assertStringContainsString('Content-Type: application/json', $response->raw_headers);
     }
 
     function testHasErrors()
@@ -554,6 +577,14 @@ Transfer-Encoding: chunked\r\n", $request);
         $this->assertTrue($r->hasProxy());
     }
 
+    public function testHasProxyWithEnvironmentProxy()
+    {
+        putenv('http_proxy=http://127.0.0.1:300/');
+        $r = Request::get('some_other_url');
+        $this->assertTrue($r->hasProxy());
+    }
+
+
     public function testParseJSON()
     {
         $handler = new JsonHandler();
@@ -570,8 +601,8 @@ Transfer-Encoding: chunked\r\n", $request);
 
         try {
             $result = $handler->parse('invalid{json');
-        } catch(\Exception $e) {
-            $this->assertEquals('Unable to parse response as JSON', $e->getMessage());
+        } catch (\Httpful\Exception\JsonParseException $e) {
+            $this->assertEquals('Unable to parse response as JSON: ' . json_last_error_msg(), $e->getMessage());
             return;
         }
         $this->fail('Expected an exception to be thrown due to invalid json');

@@ -81,7 +81,8 @@ class plagiarism_turnitin_quiz_testcase extends advanced_testcase {
         // Now update the grade of the essay question through the Turnitin quiz class.
         $tiiquiz = new turnitin_quiz;
         $answer = $attemptobj->get_question_attempt(1)->get_response_summary();
-        $identifier = sha1($answer);
+        $slot = 1;
+        $identifier = sha1($answer.$slot);
         $tiiquiz->update_mark($attempt->id, $identifier, $user->id, 75, $quiz->grade);
 
         // Reload the attempt and check the total marks and grade are as we expect it.

@@ -1,3 +1,15 @@
+### Date:       2023-August-22
+### Release:    v2023082201
+
+#### Report scores should now update as expected
+
+An issue was raised requiring instructors to use the ‘refresh all submissions' button in the Plagiarism Plugin assignment settings, in order to see the Turnitin Similarity score. This has now been resolved and users no longer need to select the 'refresh all submissions’ button to see the Turnitin Similarity score appear in the Moodle assignment inbox when using the task Send Queued Files from the Turnitin Plagiarism Plugin.
+
+#### Core Moodle PhpUnit Test now functioning as expected
+
+A core PhpUnit test was failing due to extra minified JS files. These files have now been removed and the test should no longer fail.
+This improvement was submitted as a pull request by @petersistrom on Github. Thanks, Peter!
+
 ### Date:	    2023-March-30
 ### Release:	v2023033001
 
@@ -7,11 +19,11 @@ We have fixed an issue that was preventing students from being able to resubmit 
 
 #### Inbox now displays the highest score when Translated Matching is enabled
 
-We have fixed an issue with the similarity score value in the Moodle Plagiarism Plugin inbox. Previously it wasn't updating with the highest score when translated matching was enabled, and instead the inbox continued to display the first score, even if it was the lower of the two.
+We have fixed an issue with the similarity score value in the Moodle Plagiarism Plugin inbox. Previously it wasn't updating with the highest score when Translated Matching was enabled, and instead the inbox continued to display the first score, even if it was the lower of the two.
 
 #### Duplicate quiz responses are now handled separately
 
-We have fixed an issue where if a student submitted the same response multiple times on a quiz, all duplicate responses would be linked to same report, which would not allow them to be reviewed by an instructor as separate responses. Each response now generates a separate report.
+We have fixed an issue where if a student submitted the same response multiple times on a quiz, all duplicate responses would be linked to the same report, which would not allow them to be reviewed by an instructor as separate responses. Each response now generates a separate report.
 
 ---
 

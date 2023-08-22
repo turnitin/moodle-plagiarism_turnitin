@@ -1,3 +1,15 @@
+### Date:       2023-August-22
+### Release:    v2023082201
+
+#### Report scores should now update as expected
+
+An issue was raised requiring instructors to use the ‘refresh all submissions' button in the Plagiarism Plugin assignment settings, in order to see the Turnitin Similarity score. This has now been resolved and users no longer need to select the 'refresh all submissions’ button to see the Turnitin Similarity score appear in the Moodle assignment inbox when using the task Send Queued Files from the Turnitin Plagiarism Plugin.
+
+#### Core Moodle PhpUnit Test now functioning as expected
+
+A core PhpUnit test was failing due to extra minified JS files. These files have now been removed and the test should no longer fail.
+This improvement was submitted as a pull request by @petersistrom on Github. Thanks, Peter!
+
 ### Date:	    2023-March-30
 ### Release:	v2023033001
 

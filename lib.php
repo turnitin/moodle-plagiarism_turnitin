@@ -97,7 +97,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return array of settings fields.
      */
     public function get_settings_fields() {
-        return array('use_turnitin', 'plagiarism_show_student_report', 'plagiarism_draft_submit',
+        return array('use_turnitin', 'plagiarism_import_grades', 'plagiarism_show_student_report', 'plagiarism_draft_submit',
             'plagiarism_allow_non_or_submissions', 'plagiarism_submitpapersto', 'plagiarism_compare_student_papers',
             'plagiarism_compare_internet', 'plagiarism_compare_journals', 'plagiarism_report_gen',
             'plagiarism_compare_institution', 'plagiarism_exclude_biblio', 'plagiarism_exclude_quoted',
@@ -1414,6 +1414,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Coursework grading would be broken by syncing grades as Turnitin doesn't support Double marking.
                 if ($cm->modname == "coursework") {
+                    return true;
+                }
+
+                $plagiarismsettings = $this->get_settings($cm->id);
+                if (!$plagiarismsettings['plagiarism_import_grades']) {
                     return true;
                 }
 

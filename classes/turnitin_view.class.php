@@ -215,6 +215,11 @@ class turnitin_view {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
 
+            $mform->addElement('select', 'plagiarism_import_grades', get_string("importgrades", "plagiarism_turnitin"), $options);
+            $this->lock($mform, $location, $locks);
+            $mform->addHelpButton('plagiarism_import_grades', 'importgrades', 'plagiarism_turnitin');
+            $mform->setDefault('plagiarism_import_grades', 1);
+
             $mform->addElement('select', 'plagiarism_show_student_report', get_string("studentreports", "plagiarism_turnitin"), $options);
             $this->lock($mform, $location, $locks);
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'plagiarism_turnitin');

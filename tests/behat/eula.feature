@@ -60,7 +60,6 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I wait "10" seconds
     And I click save changes button "css_element" "#id_submitbutton"
     Then I should see "Submitted for grading"
-    And I should see "Queued"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
     # Trigger cron as admin for submission
     And I log out
@@ -80,17 +79,17 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
-    And I should see "This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement."
     And I accept the Turnitin EULA if necessary
-    # Admin can trigger a resubmission from the errors tab of the settings page.
+    And I press "Edit submission"
+    # Resubmitting same paper
+    And I delete "testfile.txt" from "File submissions" filemanager
+    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+    And I press "Save changes"
+    Then I should see "Submitted for grading"
+    And I should see "Queued"
+    # Admin can trigger a resubmission
     And I log out
     And I log in as "admin"
-    And I navigate to "Plugins > Plagiarism > Turnitin plagiarism plugin" in site administration
-    And I click on "Errors" "link"
-    And I click on ".select_all_checkbox" "css_element"
-    And I wait "2" seconds
-    And I press "Resubmit Selected Files"
-    And I wait "10" seconds
     And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
     # Instructor opens assignment.
     And I log out

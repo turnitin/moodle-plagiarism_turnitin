@@ -767,7 +767,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissiontype = 'quiz_answer';
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = sha1($content);
+                $identifier = ($submissiontype === 'quiz_answer') ? sha1($content.$linkarray["itemid"]) : sha1($content);
             }
 
             // Group submissions where all students have to submit sets userid to 0.
@@ -1262,35 +1262,35 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         $submissionids = $this->fetch_updated_paper_ids_from_turnitin($cm);
-        $return = ($submissionids === false) ? false : true;
-
+        if ($submissionids === false || count($submissionids) < 1) {
+            return false;
+        }
         // Refresh updated submissions.
-        if (count($submissionids) > 0) {
-            // Initialise Comms Object.
-            $turnitincomms = new turnitin_comms();
-            $turnitincall = $turnitincomms->initialise_api();
+        $return = true;
+        // Initialise Comms Object.
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
 
-            // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
-            $submissionbatches = array_chunk($submissionids, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
+        // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
+        $submissionbatches = array_chunk($submissionids, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
 
-            foreach ($submissionbatches as $submissionsbatch) {
-                try {
-                    $submission = new TiiSubmission();
-                    $submission->setSubmissionIds($submissionsbatch);
+        foreach ($submissionbatches as $submissionsbatch) {
+            try {
+                $submission = new TiiSubmission();
+                $submission->setSubmissionIds($submissionsbatch);
 
-                    $response = $turnitincall->readSubmissions($submission);
-                    $readsubmissions = $response->getSubmissions();
+                $response = $turnitincall->readSubmissions($submission);
+                $readsubmissions = $response->getSubmissions();
 
-                    foreach ($readsubmissions as $readsubmission) {
-                        $submissiondata = $DB->get_record('plagiarism_turnitin_files',
-                                                            array('externalid' => $readsubmission->getSubmissionId()), 'id');
-                        $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
-                    }
-
-                } catch (Exception $e) {
-                    $turnitincomms->handle_exceptions($e, 'tiisubmissiongeterror', false);
-                    $return = false;
+                foreach ($readsubmissions as $readsubmission) {
+                    $submissiondata = $DB->get_record('plagiarism_turnitin_files',
+                                                        array('externalid' => $readsubmission->getSubmissionId()), 'id');
+                    $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
                 }
+
+            } catch (Exception $e) {
+                $turnitincomms->handle_exceptions($e, 'tiisubmissiongeterror', false);
+                $return = false;
             }
         }
 
@@ -1479,7 +1479,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $tiisubmissions = current($tiisubmissions);
             }
 
-            if (count($tiisubmissions) > 1) {
+            if (is_array($tiisubmissions) && count($tiisubmissions) > 1) {
                 $averagegrade = null;
                 $gradescounted = 0;
                 foreach ($tiisubmissions as $tiisubmission) {
@@ -2012,7 +2012,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $submissions = $DB->get_records_select(
             'plagiarism_turnitin_files',
-            'statuscode = ? 
+            'statuscode = ?
             AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
             AND ( orcapable = ? OR orcapable IS NULL ) ',
             array('success', 1),
@@ -2303,6 +2303,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $attempt = 0;
         $tiisubmissionid = null;
 
+        // If the EULA hasn't been accepted, don't save submission and don't submit to Tii
+        $coursedata = $this->get_course_data($cm->id, $cm->course);
+        $user = new turnitin_user($author, "Learner");
+        $user->join_user_to_class($coursedata->turnitin_cid);
+        $eula_accepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+        if ($eula_accepted != 1) {
+            return true;
+        }
         // Check if file has been submitted before.
         $plagiarismfiles = plagiarism_turnitin_retrieve_successful_submissions($author, $cm->id, $identifier);
         if (count($plagiarismfiles) > 0) {
@@ -2582,7 +2590,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                $identifier = sha1($eventdata['other']['content']);
+                // adding slot to sha hash to create unique assignments for duplicate text based on it's id
+                $identifier = sha1($eventdata['other']['content'].$slot);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3155,7 +3164,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($qa->get_response_summary())) {
+                    if ($queueditem->identifier == sha1($qa->get_response_summary().$slot)) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

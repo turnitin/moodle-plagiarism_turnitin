@@ -8,11 +8,11 @@
 
 define(['jquery',
         'core/templates',
-        'core/modal',
+        'core/modal_factory',
         'core/modal_events',
         'plagiarism_turnitin/modal_eula_launch'
     ],
-    function($, Templates, Modal, ModalEvents, ModalEulaLaunch) {
+    function($, Templates, ModalFactory, ModalEvents, ModalEulaLaunch) {
         return {
             eulaLaunch: function() {
                 var turnitinEulaClass = $(".pp_turnitin_eula");
@@ -25,7 +25,7 @@ define(['jquery',
                 });
 
                 $(document).on('click', '.pp_turnitin_eula_link', function() {
-                    Modal.create({
+                    ModalFactory.create({
                         type: ModalEulaLaunch.TYPE,
                         templateContext: {
                             cmid: $('input[name="coursemodule"]').val(),

@@ -599,7 +599,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($CFG->version >= 2023100900) {
             $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
         } else {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
         }
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');

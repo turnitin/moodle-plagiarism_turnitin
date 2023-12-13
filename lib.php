@@ -583,7 +583,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS needed by the page.
      */
     public function load_page_components() {
-        global $PAGE;
+        global $PAGE, $CFG;
         // The function from js files by using js_call_amd will be loaded only once.
         if (static::$amdcomponentsloaded) {
             return;
@@ -593,7 +593,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
+
+        // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
+        // version of Moodle, we will use the supported versin of Modal dialog
+        if ($CFG->version >= 2023100900) {
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
+        } else {
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
+        }
+
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');

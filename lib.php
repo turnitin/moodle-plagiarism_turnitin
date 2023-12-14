@@ -1516,15 +1516,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
         global $CFG;
 
-        // Create module object.
-        $moduleclass = "turnitin_".$modname;
-        $moduleobject = new $moduleclass;
-
         $turnitinassignment = new turnitin_assignment(0);
         $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $workflowcontext);
 
+        // If $modname is empty just return the basic turnitincourse.
+        // This is needed as from Moodle 4.3 defaultcompletion() will call definition() in modules
+        // which will have knock-on effects for modules enabled for turnitin.
+
         // Join all admins and instructors to the course in Turnitin if it was created.
-        if (!empty($turnitincourse->turnitin_cid)) {
+        if (!empty($turnitincourse->turnitin_cid) && $modname != '') {
+            // Create module object.
+            $moduleclass = "turnitin_".$modname;
+            $moduleobject = new $moduleclass;
+
             $admins = explode(",", $CFG->siteadmins);
 
             // Grab all instructors and extract the ids.

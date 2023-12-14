@@ -136,11 +136,16 @@ class turnitin_view {
             $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
-            $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
+            // Only do that if the page output has not already begun (state > 0).
+            // This is needed as from Moodle 4.3 defaultcompletion() will call definition() in modules
+            // which will have knock-on effects for modules enabled for turnitin.
+            if ($PAGE->state == 0) {
+                $PAGE->requires->jquery_plugin('ui');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
+            }
 
             // Refresh Grades.
             $refreshgrades = '';

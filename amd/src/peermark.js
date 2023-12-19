@@ -8,12 +8,12 @@
 
 define(['jquery',
         'core/templates',
-        'core/modal_factory',
+        'core/modal',
         'core/modal_events',
         'plagiarism_turnitin/modal_peermark_manager_launch',
         'plagiarism_turnitin/modal_peermark_reviews_launch'
     ],
-    function($, Templates, ModalFactory, ModalEvents, ModalPeermarkManagerLaunch, ModalPeermarkReviewsLaunch) {
+    function($, Templates, Modal, ModalEvents, ModalPeermarkManagerLaunch, ModalPeermarkReviewsLaunch) {
         return {
             peermarkLaunch: function() {
                 var that = this;
@@ -34,7 +34,7 @@ define(['jquery',
                     var urlParams = new URLSearchParams(window.location.search);
                     var cmid = urlParams.get('id');
                 }
-                ModalFactory.create({
+                Modal.create({
                     type: modalType,
                     templateContext: {
                         cmid: cmid,

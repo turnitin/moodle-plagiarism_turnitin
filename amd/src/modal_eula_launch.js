@@ -34,6 +34,7 @@ define(
         };
 
         ModalEulaLaunch.TYPE = 'plagiarism_turnitin-modal_eula_launch';
+        ModalEulaLaunch.TEMPLATE = 'plagiarism_turnitin/modal_eula_launch';
         ModalEulaLaunch.prototype = Object.create(Modal.prototype);
         ModalEulaLaunch.prototype.constructor = ModalEulaLaunch;
 

@@ -220,13 +220,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Save the form data associated with the plugin
      *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
      * @global type $DB
      * @param object $data the form data to save
      */
-    public function save_form_elements($data) {
+    public function save_form_data($data) {
         global $DB;
 
         $moduletiienabled = $this->get_config_settings('mod_'.$data->modulename);
@@ -264,23 +261,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Add the Turnitin settings form to an add/edit activity page
      *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
      * @param object $mform
      * @param object $context
      * @return type
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
+    public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
         global $DB, $PAGE, $COURSE;
-
-        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed
-        // twice. This won't be needed once this method goes away.
-        // TODO: Remove once this method goes away.
-        static $settingsdisplayed;
-        if ($settingsdisplayed) {
-            return;
-        }
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
@@ -583,7 +569,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Load JS needed by the page.
      */
     public function load_page_components() {
-        global $PAGE;
+        global $PAGE, $CFG;
         // The function from js files by using js_call_amd will be loaded only once.
         if (static::$amdcomponentsloaded) {
             return;
@@ -593,7 +579,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
+
+        // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
+        // version of Moodle, we will use the supported versin of Modal dialog
+        if ($CFG->version >= 2023100900) {
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
+        } else {
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
+        }
+
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
@@ -1488,7 +1482,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $gradescounted += 1;
                     }
                 }
-                $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)($averagegrade / $gradescounted) : null;
+                $grade->grade = (!is_null($averagegrade) && $gradescounted > 0) ? (int)round(($averagegrade / $gradescounted)) : null;
             } else {
                 $grade->grade = $submission->getGrade();
             }
@@ -2906,7 +2900,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
 
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    $pluginturnitin->get_form_elements_module(
+    $pluginturnitin->add_settings_form_to_activity_page(
         $mform,
         $context,
         isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '');
@@ -2921,7 +2915,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
 function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
     $pluginturnitin = new plagiarism_plugin_turnitin();
 
-    $pluginturnitin->save_form_elements($data);
+    $pluginturnitin->save_form_data($data);
 
     return $data;
 }

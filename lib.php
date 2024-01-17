@@ -308,7 +308,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ? $plagiarismvalues["plagiarism_rubric"] : 0;
 
             // We don't require the settings form on Moodle 3.3's bulk completion feature.
-            if ($PAGE->pagetype != 'course-editbulkcompletion' && $PAGE->pagetype != 'course-editdefaultcompletion') {
+            // We also don't require the settings form on Moodle 4.3's bulk completion feature (MDL-78528).
+            if ($PAGE->pagetype != 'course-editbulkcompletion' &&
+                $PAGE->pagetype != 'course-editdefaultcompletion' &&
+                $PAGE->pagetype != 'course-defaultcompletion') {
                 // Create/Edit course in Turnitin and join user to class.
                 $course = $this->get_course_data($cmid, $COURSE->id);
                 $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);

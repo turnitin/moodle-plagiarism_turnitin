@@ -8,12 +8,12 @@
 
 define(['jquery',
         'core/templates',
-        'core/modal',
+        'core/modal_factory',
         'core/modal_events',
         'plagiarism_turnitin/modal_rubric_manager_launch',
         'plagiarism_turnitin/modal_rubric_view_launch'
     ],
-    function($, Templates, Modal, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch) {
+    function($, Templates, ModalFactory, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch) {
         return {
             rubric: function() {
                 var that = this;
@@ -39,7 +39,7 @@ define(['jquery',
                 });
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
-                Modal.create({
+                ModalFactory.create({
                     type: modalType,
                     templateContext: {
                         courseid: courseid,

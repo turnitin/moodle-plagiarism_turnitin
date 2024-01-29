@@ -574,18 +574,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (static::$amdcomponentsloaded) {
             return;
         }
+
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
-
-        $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-        $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-
         // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
         // version of Moodle, we will use the supported versin of Modal dialog
         if ($CFG->version >= 2023100900) {
             $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
+
         } else {
             $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
         }
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');

@@ -34,6 +34,7 @@ define(
         };
 
         ModalQuickmarkLaunch.TYPE = 'plagiarism_turnitin-modal_quickmark_launch';
+        ModalQuickmarkLaunch.TEMPLATE = 'plagiarism_turnitin/modal_quickmark_launch';
         ModalQuickmarkLaunch.prototype = Object.create(Modal.prototype);
         ModalQuickmarkLaunch.prototype.constructor = ModalQuickmarkLaunch;
 

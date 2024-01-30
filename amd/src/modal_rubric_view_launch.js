@@ -34,6 +34,7 @@ define(
         };
 
         ModalRubricViewLaunch.TYPE = 'plagiarism_turnitin-modal_rubric_view_launch';
+        ModalRubricViewLaunch.TEMPLATE = 'plagiarism_turnitin/modal_rubric_view_launch';
         ModalRubricViewLaunch.prototype = Object.create(Modal.prototype);
         ModalRubricViewLaunch.prototype.constructor = ModalRubricViewLaunch;
 

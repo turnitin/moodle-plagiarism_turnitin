@@ -34,6 +34,7 @@ define(
         };
 
         ModalPeermarkManagerLaunch.TYPE = 'plagiarism_turnitin-modal_peermark_manager_launch';
+        ModalPeermarkManagerLaunch.TEMPLATE = 'plagiarism_turnitin/modal_peermark_manager_launch';
         ModalPeermarkManagerLaunch.prototype = Object.create(Modal.prototype);
         ModalPeermarkManagerLaunch.prototype.constructor = ModalPeermarkManagerLaunch;
 

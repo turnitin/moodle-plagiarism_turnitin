@@ -2,31 +2,31 @@
  * Javascript controller for launching a Peermark modal.
  *
  * @copyright Turnitin
- * @author 2019 David Winn <dwinn@turnitin.com>
- * @module plagiarism_turnitin/peermarkLaunch
+ * @author 2024 Isaac Xiong <ixiong@turnitin.com>
+ * @module plagiarism_turnitin/newPeermarkLaunch
  */
 
 define(['jquery',
         'core/templates',
-        'core/modal_factory',
+        'core/modal',
         'core/modal_events',
         'plagiarism_turnitin/modal_peermark_manager_launch',
         'plagiarism_turnitin/modal_peermark_reviews_launch'
     ],
-    function($, Templates, ModalFactory, ModalEvents, ModalPeermarkManagerLaunch, ModalPeermarkReviewsLaunch) {
+    function($, Templates, Modal, ModalEvents, ModalPeermarkManagerLaunch, ModalPeermarkReviewsLaunch) {
         return {
-            peermarkLaunch: function() {
+            newPeermarkLaunch: function() {
                 var that = this;
                 $('.peermark_manager_launch').on('click', function(event) {
                     event.preventDefault();
-                    that.peermarkCreateModal(ModalPeermarkManagerLaunch);
+                    that.peermarkModalCreate(ModalPeermarkManagerLaunch);
                 });
 
                 $(document).on('click', '.peermark_reviews_pp_launch', function() {
-                    that.peermarkCreateModal(ModalPeermarkReviewsLaunch);
+                    that.peermarkModalCreate(ModalPeermarkReviewsLaunch);
                 });
             },
-            peermarkCreateModal: function(modalType) {
+            peermarkModalCreate: function(modalType) {
 
                 if ($('input[name="coursemodule"]').val()) {
                     var cmid = $('input[name="coursemodule"]').val();
@@ -34,8 +34,9 @@ define(['jquery',
                     var urlParams = new URLSearchParams(window.location.search);
                     var cmid = urlParams.get('id');
                 }
-                ModalFactory.create({
+                Modal.create({
                     type: modalType.TYPE,
+                    template: modalType.TEMPLATE,
                     templateContext: {
                         cmid: cmid,
                         wwwroot: M.cfg.wwwroot

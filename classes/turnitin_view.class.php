@@ -142,8 +142,8 @@ class turnitin_view {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/newQuickmarkLaunch', 'newQuickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
             } else {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmarkLaunch', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
             }

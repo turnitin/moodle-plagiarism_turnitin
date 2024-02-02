@@ -137,6 +137,7 @@ class turnitin_view {
 
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery_plugin('ui');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
             if ($CFG->version >= 2023100900) {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/newQuickmarkLaunch', 'newQuickmarkLaunch');
@@ -145,7 +146,6 @@ class turnitin_view {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmarkLaunch', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
             }
             // Refresh Grades.
             $refreshgrades = '';

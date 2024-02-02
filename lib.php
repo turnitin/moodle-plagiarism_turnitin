@@ -586,7 +586,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         } else {
             $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
         }
 

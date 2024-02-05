@@ -2,31 +2,31 @@
  * Javascript controller for handling rubrics.
  *
  * @copyright Turnitin
- * @author 2019 David Winn <dwinn@turnitin.com>
- * @module plagiarism_turnitin/rubric
+ * @author 2024 Isaac Xiong <ixiong@turnitin.com>
+ * @module plagiarism_turnitin/newRubric
  */
 
 define(['jquery',
         'core/templates',
-        'core/modal_factory',
+        'core/modal',
         'core/modal_events',
         'plagiarism_turnitin/modal_rubric_manager_launch',
         'plagiarism_turnitin/modal_rubric_view_launch'
     ],
-    function($, Templates, ModalFactory, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch) {
+    function($, Templates, Modal, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch) {
         return {
-            rubric: function() {
+            newRubric: function() {
                 var that = this;
                 $('.rubric_manager_launch').on('click', function() {
                     var courseid = $(this).data('courseid');
                     var cmid = $(this).data('cmid');
-                    that.rubricCreateModal(ModalRubricManagerLaunch.TYPE, courseid, cmid);
+                    that.rubricCreateModal(ModalRubricManagerLaunch, courseid, cmid);
                 });
 
                 $(document).on('click', '.rubric_view', function() {
                     var courseid = $(this).data('courseid');
                     var cmid = $(this).data('cmid');
-                    that.rubricCreateModal(ModalRubricViewLaunch.TYPE, courseid, cmid);
+                    that.rubricCreateModal(ModalRubricViewLaunch, courseid, cmid);
                 });
 
                 // Show warning when changing the rubric linked to an assignment.
@@ -39,8 +39,9 @@ define(['jquery',
                 });
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
-                ModalFactory.create({
-                    type: modalType,
+                Modal.create({
+                    type: modalType.TYPE,
+                    template: modalType.TEMPLATE,
                     templateContext: {
                         courseid: courseid,
                         cmid: cmid,

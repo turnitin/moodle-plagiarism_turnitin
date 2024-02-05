@@ -83,7 +83,7 @@ class turnitin_view {
      * @return type
      */
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $modulename = "", $cmid = 0, $currentrubric = 0) {
-        global $PAGE, $USER, $DB;
+        global $PAGE, $USER, $DB, $CFG;
 
         // Include JS strings
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
@@ -137,11 +137,16 @@ class turnitin_view {
 
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery_plugin('ui');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
-
+            if ($CFG->version >= 2023100900) {
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/newQuickmarkLaunch', 'newQuickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
+            } else {
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmarkLaunch', 'quickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+            }
             // Refresh Grades.
             $refreshgrades = '';
             if ($cmid != 0) {

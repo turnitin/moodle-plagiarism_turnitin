@@ -366,7 +366,7 @@ class Soap extends \SoapClient
      * @return mixed|string
      * @throws TurnitinSDKException
      */
-    public function __doRequest($request, $location, $action, $version, $one_way = null)
+    public function __doRequest(string $request, string $location, string $action, int $version, bool $oneWay = false): ?string {
     {
 
         $http_headers = array(

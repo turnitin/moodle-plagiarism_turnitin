@@ -10,7 +10,7 @@ define(['jquery'], function($) {
     return {
         origreport_open: function() {
             var that = this;
-            $(document).on('click', '.pp_origreport_open', function() {
+            $(document).off('click', '.pp_origreport_open').on('click', '.pp_origreport_open', function() {
                 var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
 
                 for (var i = 0; i < classList.length; i++) {
@@ -24,7 +24,7 @@ define(['jquery'], function($) {
 
         grademark_open: function() {
             var that = this;
-            $(document).on('click', '.pp_grademark_open', function() {
+            $(document).off('click', '.pp_grademark_open').on('click', '.pp_grademark_open', function() {
                 var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
 
                 for (var i = 0; i < classList.length; i++) {

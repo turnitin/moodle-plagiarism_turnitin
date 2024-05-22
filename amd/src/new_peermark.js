@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2024 Isaac Xiong <ixiong@turnitin.com>
- * @module plagiarism_turnitin/newPeermarkLaunch
+ * @module plagiarism_turnitin/new_peermark
  */
 
 define(['jquery',

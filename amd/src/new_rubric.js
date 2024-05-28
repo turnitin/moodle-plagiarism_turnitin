@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2024 Isaac Xiong <ixiong@turnitin.com>
- * @module plagiarism_turnitin/newRubric
+ * @module plagiarism_turnitin/new_rubric
  */
 
 define(['jquery',
@@ -37,6 +37,8 @@ define(['jquery',
                         }
                     }
                 });
+
+                ModalRubricManagerLaunch.refreshRubricSelect();
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
                 Modal.create({
@@ -49,11 +51,18 @@ define(['jquery',
                     },
                     large: true
                 })
-                    .then(function (modal) {
-                        modal.show();
-                        modal.getRoot().find('.modal').addClass('tii_pp_modal_rubric');
-                        modal.getRoot().find('.modal-content').addClass('tii_pp_modal_rubric_content');
+                .then(function (modal) {
+                    modal.show();
+                    modal.getRoot().find('.modal').addClass('tii_pp_modal_rubric');
+                    modal.getRoot().find('.modal-content').addClass('tii_pp_modal_rubric_content');
+
+                    // Attach the hidden event listener to the modal
+                    modal.getRoot().on(ModalEvents.hidden, function() {
+                        setTimeout(function() {
+                             ModalRubricManagerLaunch.refreshRubricSelect();
+                        }, 1500);
                     });
+                });
             }
         };
     });

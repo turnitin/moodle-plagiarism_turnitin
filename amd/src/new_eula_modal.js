@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2023 Isaac Xiong <ixiong@turnitin.com>
- * @module plagiarism_turnitin/newEulaLaunch
+ * @module plagiarism_turnitin/new_eula_modal
  */
 
 define(['jquery',

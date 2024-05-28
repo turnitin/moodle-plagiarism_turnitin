@@ -580,9 +580,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
         // version of Moodle, we will use the supported versin of Modal dialog
         if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
         } else {
             $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');

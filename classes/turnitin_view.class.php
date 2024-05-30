@@ -143,8 +143,8 @@ class turnitin_view {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
             } else {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmarkLaunch', 'quickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
             }
             // Refresh Grades.

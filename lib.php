@@ -817,13 +817,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
                         $userid = $linkarray["userid"];
 
-                        if ($eulaaccepted != 1) {
-                            $eulalink = html_writer::tag('span',
-                                get_string('turnitinppulapost', 'plagiarism_turnitin'),
-                                array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
-                            );
-                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
-                        }
+                        // Uncomment if ability to submit to Turnitin previously uploaded files will be implemented.
+                        // if ($eulaaccepted != 1) {
+                        //     $eulalink = html_writer::tag('span',
+                        //         get_string('turnitinppulapost', 'plagiarism_turnitin'),
+                        //         array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
+                        //     );
+                        //     $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
+                        // }
 
                         // Show EULA launcher and form placeholder.
                         if (!empty($eula)) {

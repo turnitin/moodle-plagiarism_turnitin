@@ -11,9 +11,10 @@ define(['jquery',
         'core/modal',
         'core/modal_events',
         'plagiarism_turnitin/modal_rubric_manager_launch',
-        'plagiarism_turnitin/modal_rubric_view_launch'
+        'plagiarism_turnitin/modal_rubric_view_launch',
+        'plagiarism_turnitin/eula_event_listener'
     ],
-    function($, Templates, Modal, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch) {
+    function($, Templates, Modal, ModalEvents, ModalRubricManagerLaunch, ModalRubricViewLaunch, EulaEventListener) {
         return {
             newRubric: function() {
                 var that = this;
@@ -62,6 +63,8 @@ define(['jquery',
                              ModalRubricManagerLaunch.refreshRubricSelect();
                         }, 1500);
                     });
+
+                    EulaEventListener.attach();
                 });
             }
         };

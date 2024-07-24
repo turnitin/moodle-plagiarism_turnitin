@@ -14,9 +14,10 @@ define(
         'core/custom_interaction_events',
         'core/modal',
         'core/modal_registry',
-        'core/modal_events'
+        'core/modal_events',
+        'plagiarism_turnitin/eula_event_listener'
     ],
-    function($, Ajax, Notification, CustomEvents, Modal, ModalRegistry, ModalEvents) {
+    function($, Ajax, Notification, CustomEvents, Modal, ModalRegistry, ModalEvents, EulaEventListener) {
 
         var registered = false;
         var SELECTORS = {
@@ -66,29 +67,7 @@ define(
          * Method for processing the EULA.
          */
         function processEula() {
-            $(window).on("message", function(ev) {
-                var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;
-
-                // Only make ajax request if message is one of the expected responses.
-                if (message === 'turnitin_eula_declined' || message === 'turnitin_eula_accepted') {
-                    $.ajax({
-                        type: "POST",
-                        url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
-                        dataType: "json",
-                        data: {
-                            action: "actionuseragreement",
-                            message: message,
-                            sesskey: M.cfg.sesskey
-                        },
-                        success: function() {
-                            window.location.reload();
-                        },
-                        error: function() {
-                            window.location.reload();
-                        }
-                    });
-                }
-            });
+            EulaEventListener.attach();
         }
 
         // Automatically register with the modal registry the first time this module is imported so that

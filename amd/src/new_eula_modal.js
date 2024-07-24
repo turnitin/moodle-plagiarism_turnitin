@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2023 Isaac Xiong <ixiong@turnitin.com>
- * @module plagiarism_turnitin/newEulaLaunch
+ * @module plagiarism_turnitin/new_eula_modal
  */
 
 define(['jquery',
@@ -11,8 +11,9 @@ define(['jquery',
         'core/modal',
         'core/modal_events',
         'plagiarism_turnitin/modal_eula_launch',
+        'plagiarism_turnitin/eula_event_listener'
     ],
-    function($, Templates, Modal, ModalEvents, ModalEulaLaunch) {
+    function($, Templates, Modal, ModalEvents, ModalEulaLaunch, EulaEventListener) {
         return {
             newEulaLaunch: function() {
                 var turnitinEulaClass = $(".pp_turnitin_eula");
@@ -38,6 +39,8 @@ define(['jquery',
                             modal.show();
                             modal.getRoot().find('.modal').addClass('tii_pp_modal_eula');
                             modal.getRoot().find('.modal-content').addClass('tii_pp_modal_eula_content');
+
+                            EulaEventListener.attach();
                         });
                 });
 

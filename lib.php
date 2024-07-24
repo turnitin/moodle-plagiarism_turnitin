@@ -580,13 +580,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
         // version of Moodle, we will use the supported versin of Modal dialog
         if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newEulaLaunch', 'newEulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
         } else {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/eulaLaunch', 'eulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
         }
 
@@ -817,13 +817,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
                         $userid = $linkarray["userid"];
 
-                        if ($eulaaccepted != 1) {
-                            $eulalink = html_writer::tag('span',
-                                get_string('turnitinppulapost', 'plagiarism_turnitin'),
-                                array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
-                            );
-                            $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
-                        }
+                        // Uncomment if ability to submit to Turnitin previously uploaded files will be implemented.
+                        // if ($eulaaccepted != 1) {
+                        //     $eulalink = html_writer::tag('span',
+                        //         get_string('turnitinppulapost', 'plagiarism_turnitin'),
+                        //         array('class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form')
+                        //     );
+                        //     $eula = html_writer::tag('div', $eulalink, array('class' => 'pp_turnitin_eula', 'data-userid' => $user->id));
+                        // }
 
                         // Show EULA launcher and form placeholder.
                         if (!empty($eula)) {

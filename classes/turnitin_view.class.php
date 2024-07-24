@@ -139,12 +139,12 @@ class turnitin_view {
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
             if ($CFG->version >= 2023100900) {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/newPeermarkLaunch', 'newPeermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/newQuickmarkLaunch', 'newQuickmarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/newRubric', 'newRubric');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
             } else {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermarkLaunch', 'peermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmarkLaunch', 'quickmarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
             }
             // Refresh Grades.

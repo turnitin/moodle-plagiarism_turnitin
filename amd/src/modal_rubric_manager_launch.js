@@ -113,6 +113,8 @@ define(
             });
         }
 
+        ModalRubricManagerLaunch.refreshRubricSelect = refreshRubricSelect;
+
         // Automatically register with the modal registry the first time this module is imported so that
         // you can create modals of this type using the modal factory.
         if (!registered) {

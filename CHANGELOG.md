@@ -1,8 +1,34 @@
+### Date:       2024-July-24
+### Release:    v2024072401
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Issue with rubrics fixed
+In Moodle 4.3 and 4.4, Turnitin rubrics were not able to be attached for new Turnitin enabled Moodle assignments.  This has now been resolved.
+
+#### Issue with accepting EULA when initially declined fixed
+In Turnitin enabled Moodle assignments, when the student declined the Turnitin EULA, they were not presented the screen to upload their assignment to Moodle.  Also in this fix, the second presentation of the EULA for student acceptance which occurred after the student initially the declined the EULA and then successfully uploaded their submission was removed due to the confusion that this caused for the user.  Both of these have now been resolved.
+
+#### Reports now open correctly
+There was an issue where in Turnitin enabled Moodle assignments, when the user opened the report, it opened in multiple tabs.  This has now been resolved.
+
+#### Issue with viewing rubric fixed
+In Turnitin enabled Moodle assignments, the rubric was not able to be viewed by the students.  This has now been resolved.
+
+#### Userlist provider error message fixed
+In Moodle, there was an error message in the plugin privacy compliance registry indicating that the plugin was missing the userlist provider.  This has now been resolved.
+
+---
+
 ### Date:       2024-February-05
 ### Release:    v2024020501
 
 #### Issue with PeerMark, Rubric, and QuickMark in Moodle 4.3 fixed
 In the previous plugin release we resolved an issue with the EULA modal not launching for students. It has since been discovered that all modals in the plugin were affected by the same issue. This update resolves the issues that users have found with launching the PeerMark, Rubric, and QuickMark managers.
+
+---
 
 ### Date:       2023-December-19
 ### Release:    v2023121901
@@ -13,8 +39,12 @@ Previously there was an issue with students accepting the EULA in Moodle 4.3. Th
 #### Correct rounding of grade average
 Previously when multiple submissions were made to an assignment the final grade was averaged by rounding down rather than up. This release now fixes this issue and the grade average should now round up.
 
+---
+
 ### Date:       2023-August-22
 ### Release:    v2023082201
+
+---
 
 #### Report scores should now update as expected
 

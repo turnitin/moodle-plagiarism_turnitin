@@ -41,8 +41,7 @@ class turnitin_comms {
         if (!is_null($url)) {
             $this->tiiapiurl = $url;
         } else {
-            $this->tiiapiurl = (substr($config->plagiarism_turnitin_apiurl, -1) == '/')
-                ? substr($config->plagiarism_turnitin_apiurl, 0, -1) : $config->plagiarism_turnitin_apiurl;
+            $this->tiiapiurl = (substr($config->plagiarism_turnitin_apiurl, -1) == '/') ? substr($config->plagiarism_turnitin_apiurl, 0, -1) : $config->plagiarism_turnitin_apiurl;
         }
 
         $this->tiiintegrationid = 12;
@@ -53,8 +52,7 @@ class turnitin_comms {
             plagiarism_turnitin_print_error( 'configureerror', 'plagiarism_turnitin' );
         }
 
-        $this->diagnostic = (isset($config->plagiarism_turnitin_enablediagnostic))
-            ? $config->plagiarism_turnitin_enablediagnostic : 1;
+        $this->diagnostic = (isset($config->plagiarism_turnitin_enablediagnostic)) ? $config->plagiarism_turnitin_enablediagnostic : 1;
         $this->langcode = $this->get_lang();
     }
 

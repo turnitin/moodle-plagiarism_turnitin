@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin\privacy;
+
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\deletion_criteria;
 use plagiarism_turnitin\privacy\provider;
@@ -39,12 +41,17 @@ if (!class_exists('\core_privacy\tests\provider_testcase')) {
     return;
 }
 
-class provider_test extends \core_privacy\tests\provider_testcase {
+/**
+ * Unit tests for plagiarsm/turnitin/privacy
+ */
+final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test for _get_metadata shim.
+     *
+     * @covers \core_plagiarism\privacy\legacy_polyfill::get_metadata
      */
-    public function test_get_metadata() {
+    public function test_get_metadata(): void {
         $this->resetAfterTest();
 
         $collection = new collection('plagiarism_turnitin');
@@ -97,8 +104,10 @@ class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test that user's contexts are exported.
+     *
+     * @covers \core_plagiarism\privacy\legacy_polyfill::get_contexts_for_userid
      */
-    public function test_get_contexts_for_userid() {
+    public function test_get_contexts_for_userid(): void {
         $this->resetAfterTest();
         global $DB;
 
@@ -113,7 +122,14 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertCount(1, $contextlist);
     }
 
-    public function test_export_plagiarism_user_data() {
+    /**
+     * Test that all user data is exported.
+     *
+     * @covers \core_plagiarism\privacy\legacy_polyfill::export_plagiarism_user_data
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_export_plagiarism_user_data(): void {
         $this->resetAfterTest();
         global $DB;
 
@@ -128,7 +144,14 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertTrue($writer->has_any_data());
     }
 
-    public function test_delete_plagiarism_for_user() {
+    /**
+     * Test that all user data is deleted.
+     *
+     * @covers \core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_user
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_delete_plagiarism_for_user(): void {
         $this->resetAfterTest();
         global $DB;
 
@@ -149,7 +172,14 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertEquals(0, count($submissions));
     }
 
-    public function test_delete_plagiarism_for_context() {
+    /**
+     * Test that all context data is deleted.
+     *
+     * @covers \core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_context
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_delete_plagiarism_for_context(): void {
         $this->resetAfterTest();
         global $DB;
 
@@ -165,6 +195,14 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertEquals(0, count($submissions));
     }
 
+    /**
+     * Create a submission for testing.
+     *
+     * @param $numsubmissions
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function create_submission($numsubmissions = 1) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');

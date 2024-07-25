@@ -21,7 +21,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers =  [
+$observers = [
     [
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_file_uploaded',

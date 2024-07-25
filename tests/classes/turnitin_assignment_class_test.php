@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -34,7 +36,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class turnitin_assignment_class_test extends advanced_testcase {
+final class turnitin_assignment_class_test extends advanced_testcase {
 
     /**
      * Set Overwrite mtrace to avoid output during the tests.
@@ -46,7 +48,14 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $CFG->mtrace_wrapper = 'plagiarism_turnitin_mtrace';
     }
 
-    public function test_get_course_data() {
+    /**
+     * Test that we can get a course data.
+     *
+     * @covers \turnitin_assignment::get_course_data
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_get_course_data(): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -66,7 +75,14 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertEquals($course->turnitin_cid, $response->turnitin_cid);
     }
 
-    public function test_create_tii_course() {
+    /**
+     * Test that we can create a tii course.
+     *
+     * @covers \turnitin_assignment::create_tii_course
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_create_tii_course(): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -118,7 +134,14 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertNotEquals($expected->id, $response->id);
     }
 
-    public function test_edit_tii_course() {
+    /**
+     * Test that we can edit a tii course.
+     *
+     * @covers \turnitin_assignment::edit_tii_course
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_edit_tii_course(): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -171,7 +194,13 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertEquals($expected, $responsecourse);
     }
 
-    public function test_truncate_title() {
+    /**
+     * Test that we can truncate a title.
+     *
+     * @covers \turnitin_assignment::truncate_title
+     * @return void
+     */
+    public function test_truncate_title(): void {
         $this->resetAfterTest();
 
         $title = "This is a very long title that we are going to use to test the truncate title method.";
@@ -186,7 +215,13 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertEquals('This title should not be truncated. (Moodle PP)', $response);
     }
 
-    public function test_create_tii_assignment() {
+    /**
+     * Test that we can get create a tii assignment.
+     *
+     * @covers \turnitin_assignment::create_tii_assignment
+     * @return void
+     */
+    public function test_create_tii_assignment(): void {
         $this->resetAfterTest();
 
         // Create a PP assignment.
@@ -218,7 +253,14 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertEquals(1, $response);
     }
 
-    public function test_edit_tii_assignment() {
+    /**
+     * Test that we can get edit a tii assignment.
+     *
+     * @covers \turnitin_assignment::edit_tii_assignment
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test_edit_tii_assignment(): void {
         $this->resetAfterTest();
 
         // Create a PP assignment.
@@ -280,7 +322,14 @@ class turnitin_assignment_class_test extends advanced_testcase {
         $this->assertEquals(1, $response["tiiassignmentid"]);
     }
 
-    public function test_get_peermark_assignments() {
+    /**
+     * Test that we can get a peermark assignment.
+     *
+     * @covers \turnitin_assignment::get_peermark_assignments
+     * @return void
+     * @throws \dml_exception
+     */
+    public function test_get_peermark_assignments(): void {
         global $DB;
 
         $this->resetAfterTest();

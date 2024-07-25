@@ -63,13 +63,13 @@ function plagiarism_turnitin_retrieve_successful_submissions($author, $cmid, $id
     global $CFG, $DB;
 
     // Check if the same answer has been submitted previously. Remove if so.
-    list($insql, $inparams) = $DB->get_in_or_equal(array('success', 'queued'), SQL_PARAMS_QM, 'param', false);
+    list($insql, $inparams) = $DB->get_in_or_equal(['success', 'queued'], SQL_PARAMS_QM, 'param', false);
     $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
 
     $plagiarismfiles = $DB->get_records_select(
         "plagiarism_turnitin_files",
         " userid = ? AND cm = ? AND identifier = ? AND ".$typefield. " " .$insql,
-        array_merge(array($author, $cmid, $identifier), $inparams)
+        array_merge([$author, $cmid, $identifier], $inparams)
     );
 
     return $plagiarismfiles;
@@ -89,7 +89,7 @@ function plagiarism_turnitin_lock_anonymous_marking($cmid) {
     $configfield->config_hash = $configfield->cm . "_" . $configfield->name;
 
     if (!$DB->get_field('plagiarism_turnitin_config', 'id',
-        (array('cm' => $cmid, 'name' => 'submitted')))) {
+        (['cm' => $cmid, 'name' => 'submitted']))) {
         if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
             plagiarism_turnitin_print_error(
                 'defaultupdateerror',

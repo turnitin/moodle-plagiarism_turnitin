@@ -58,7 +58,7 @@ class turnitin_workshop {
         global $DB;
 
         $submission = $DB->get_record('workshop_submissions',
-                                        array('authorid' => $userid, 'workshopid' => $cm->instance));
+                                        ['authorid' => $userid, 'workshopid' => $cm->instance]);
 
         $onlinetextdata = new stdClass();
         $onlinetextdata->itemid = $submission->id;
@@ -79,7 +79,7 @@ class turnitin_workshop {
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
-        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        $currentgradequery = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
         return $currentgradequery;
     }
 

@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_locallib_testcase extends advanced_testcase {
+class locallib_test extends advanced_testcase {
 
     /**
      * Test that we have the correct repository depending on the config settings.

@@ -247,12 +247,12 @@ class behat_plagiarism_turnitin extends behat_base {
      */
     public function the_following_users_will_be_created_if_they_do_not_already_exist(TableNode $data) {
         $newdata = [];
-        $rowNum = 0;
+        $rownum = 0;
         foreach ($data->getRows() as $row) {
-            if (!$rowNum == 0) { // not header row
+            if (!$rownum == 0) { // not header row
                 $row[3] = str_replace('$account', getenv('TII_ACCOUNT'), $row[3]);
             }
-            $rowNum++;
+            $rownum++;
             $newdata[] = $row;
         }
         $tablenode = new TableNode($newdata);

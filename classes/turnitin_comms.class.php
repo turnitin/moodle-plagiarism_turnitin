@@ -188,7 +188,7 @@ class turnitin_comms {
             'sv' => 'sv',
             'nl' => 'nl',
             'fi' => 'fi',
-            'ar' => 'ar'
+            'ar' => 'ar',
         ];
         $langcode = (isset($langarray[$langcode])) ? $langarray[$langcode] : 'en_us';
         return $langcode;

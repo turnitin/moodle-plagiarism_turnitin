@@ -150,7 +150,7 @@ switch ($action) {
                 turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
                 [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
+                    'style' => 'display:none;',
                 ]
             );
 
@@ -183,7 +183,7 @@ switch ($action) {
                 turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
                 [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
+                    'style' => 'display:none;',
                 ]
             );
 
@@ -210,7 +210,7 @@ switch ($action) {
                 turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
                 [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
+                    'style' => 'display:none;',
                 ]
             );
 

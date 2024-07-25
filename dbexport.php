@@ -51,7 +51,7 @@ $tables = [
     'plagiarism_turnitin_config',
     'plagiarism_turnitin_users',
     'plagiarism_turnitin_courses',
-    'plagiarism_turnitin_peermark'
+    'plagiarism_turnitin_peermark',
 ];
 
 // If a table has been passed in then export that table data.

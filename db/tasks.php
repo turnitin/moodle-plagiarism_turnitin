@@ -33,7 +33,7 @@ $tasks = [
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
+        'month' => '*',
     ],
     [
         'classname' => 'plagiarism_turnitin\task\send_submissions',
@@ -42,6 +42,6 @@ $tasks = [
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
+        'month' => '*',
     ],
 ];

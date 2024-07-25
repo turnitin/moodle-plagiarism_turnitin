@@ -19,13 +19,9 @@
  *
  * @package   plagiarism_turnitin
  * @copyright 2018 Turnitin
- * @authior   John McGettrick <jmcgettrick@turnitin.com>
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
-}
 
 /**
  * Override the repository option if necessary depending on the configuration setting.

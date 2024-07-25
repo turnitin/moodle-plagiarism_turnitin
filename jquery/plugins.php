@@ -21,9 +21,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugins = array(
-    'plagiarism-turnitin_dataTables' => array('files' => array('jquery.dataTables.js', 'jquery.dataTables.css')),
-    'plagiarism-turnitin_dataTables_plugins' => array('files' => array('jquery.dataTables.plugins.js')),
-    'plagiarism-turnitin_settings'      => array('files' => array('turnitin_settings.js')),
-    'plagiarism-turnitin_datatables_columnfilter' => array('files' => array('jquery.dataTables.columnFilter.js'))
-);
+$plugins = [
+    'plagiarism-turnitin_dataTables' => ['files' => ['jquery.dataTables.js', 'jquery.dataTables.css']],
+    'plagiarism-turnitin_dataTables_plugins' => ['files' => ['jquery.dataTables.plugins.js']],
+    'plagiarism-turnitin_settings'      => ['files' => ['turnitin_settings.js']],
+    'plagiarism-turnitin_datatables_columnfilter' => ['files' => ['jquery.dataTables.columnFilter.js']]
+];

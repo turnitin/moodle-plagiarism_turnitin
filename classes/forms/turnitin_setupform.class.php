@@ -70,7 +70,7 @@ class turnitin_setupform extends moodleform {
         $options = [
             'https://api.turnitin.com' => 'https://api.turnitin.com',
             'https://api.turnitinuk.com' => 'https://api.turnitinuk.com',
-            'https://sandbox.turnitin.com' => 'https://sandbox.turnitin.com'
+            'https://sandbox.turnitin.com' => 'https://sandbox.turnitin.com',
         ];
 
         // Set $CFG->turnitinqa and add URLs to $CFG->turnitinqaurls array in config.php file for testing other environments.
@@ -91,7 +91,7 @@ class turnitin_setupform extends moodleform {
         $diagnosticoptions = [
             0 => get_string('diagnosticoptions_0', 'plagiarism_turnitin'),
             1 => get_string('diagnosticoptions_1', 'plagiarism_turnitin'),
-            2 => get_string('diagnosticoptions_2', 'plagiarism_turnitin')
+            2 => get_string('diagnosticoptions_2', 'plagiarism_turnitin'),
         ];
 
         // Debugging and logging settings.
@@ -125,7 +125,7 @@ class turnitin_setupform extends moodleform {
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED => get_string('repositoryoptions_1', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD => get_string('repositoryoptions_2', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO => get_string('repositoryoptions_3', 'plagiarism_turnitin'),
-            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin')
+            PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin'),
         ];
 
         $mform->addElement('select', 'plagiarism_turnitin_repositoryoption', get_string('turnitinrepositoryoptions', 'plagiarism_turnitin'), $repositoryoptions);
@@ -239,7 +239,7 @@ class turnitin_setupform extends moodleform {
 
         $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain"];
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain",];
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

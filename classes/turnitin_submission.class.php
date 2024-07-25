@@ -62,8 +62,8 @@ class turnitin_submission {
                     'userid' => $this->submissiondata->userid,
                     'other' => [
                         'content' => '',
-                        'pathnamehashes' => [$this->submissiondata->identifier]
-                    ]
+                        'pathnamehashes' => [$this->submissiondata->identifier],
+                    ],
                 ];
                 // Forum attachments need the discussion id to be set.
                 if ($this->cm->modname == "forum") {
@@ -93,8 +93,8 @@ class turnitin_submission {
                     'other' => [
                         'pathnamehashes' => [],
                         'content' => trim($onlinetextdata->onlinetext),
-                        'format' => $onlinetextdata->onlineformat
-                    ]
+                        'format' => $onlinetextdata->onlineformat,
+                    ],
                 ];
 
                 $event = $moduleobject->create_text_event($params, $this->cm);
@@ -115,7 +115,7 @@ class turnitin_submission {
                                                                 WHERE FD.forum = ? AND FD.course = ?
                                                                 AND FP.userid = ? AND FP.message LIKE ? ',
                                                                 [$forum->id, $forum->course,
-                                                                    $this->submissiondata->userid, $this->data['forumpost']]
+                                                                    $this->submissiondata->userid, $this->data['forumpost'],]
                                                                 );
                     $discussionid = $discussion->id;
                 }
@@ -134,8 +134,8 @@ class turnitin_submission {
                         'pathnamehashes' => '',
                         'content' => trim($this->data['forumpost']),
                         'discussionid' => $discussionid,
-                        'triggeredfrom' => 'turnitin_recreate_submission_event'
-                    ]
+                        'triggeredfrom' => 'turnitin_recreate_submission_event',
+                    ],
                 ];
                 $event = \mod_forum\event\assessable_uploaded::create($params);
                 $event->trigger();

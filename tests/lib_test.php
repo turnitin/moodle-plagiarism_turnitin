@@ -68,7 +68,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
 
         $result = $this->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
-            'teamsubmission' => 1
+            'teamsubmission' => 1,
         ]);
         $assignmodule = $result['assign'];
         $student = $result['student'];
@@ -87,7 +87,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $data = new stdClass();
         $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE];
+                                         'format' => FORMAT_MOODLE,];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
@@ -100,7 +100,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         // Test a non-group submission.
         $result = $this->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
-            'teamsubmission' => 0
+            'teamsubmission' => 0,
         ]);
         $assignmodule = $result['assign'];
         $student = $result['student'];
@@ -116,7 +116,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $data = new stdClass();
         $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE];
+                                         'format' => FORMAT_MOODLE,];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
@@ -166,7 +166,7 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
             'course' => $course,
             'assign' => $assign,
             'student' => $student,
-            'teacher' => $teacher
+            'teacher' => $teacher,
         ];
     }
 

@@ -25,5 +25,5 @@ defined('MOODLE_INTERNAL') || die();
 $messageproviders =  [
     // Notify student with their digital receipt.
     'submission' =>  [
-    ]
+    ],
 ];

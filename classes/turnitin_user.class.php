@@ -471,7 +471,7 @@ class turnitin_user {
                 "id" => $readuser->getUserId(),
                 "firstname" => $readuser->getFirstName(),
                 "lastname" => $readuser->getLastName(),
-                "email" => $readuser->getEmail()
+                "email" => $readuser->getEmail(),
             ];
 
             return $tiiuser;

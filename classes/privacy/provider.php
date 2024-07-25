@@ -81,7 +81,7 @@ class provider implements
                 'turnitin_uid' => 'privacy:metadata:plagiarism_turnitin_users:turnitin_uid',
                 'instructor_defaults' => 'privacy:metadata:plagiarism_turnitin_users:instructor_defaults',
                 'instructor_rubrics' => 'privacy:metadata:plagiarism_turnitin_users:instructor_rubrics',
-                'user_agreement_accepted' => 'privacy:metadata:plagiarism_turnitin_users:user_agreement_accepted'
+                'user_agreement_accepted' => 'privacy:metadata:plagiarism_turnitin_users:user_agreement_accepted',
             ],
             'privacy:metadata:plagiarism_turnitin_users'
         );
@@ -108,7 +108,7 @@ class provider implements
 
         $params = ['modulename' => 'assign',
             'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid];
+            'userid' => $userid,];
 
         $sql = "SELECT ctx.id
                   FROM {course_modules} cm
@@ -241,7 +241,7 @@ class provider implements
 
       $params = [
           'modname' => 'plagiarism_turnitin',
-          'cmid' => $context->instanceid
+          'cmid' => $context->instanceid,
       ];
 
       $userlist->add_from_sql('userid', $sql, $params);
@@ -276,7 +276,7 @@ class provider implements
 
       $params = [
           'modname' => 'plagiarism_turnitin',
-          'cmid' => $context->instanceid
+          'cmid' => $context->instanceid,
       ];
 
       $params = array_merge($params, $inparams);

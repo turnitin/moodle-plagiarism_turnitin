@@ -281,7 +281,7 @@ switch ($do) {
 
         $multisubmitbuttons = [
             ['unlink', get_string('unlinkusers', 'plagiarism_turnitin')],
-            ['relink', get_string('relinkusers', 'plagiarism_turnitin')]];
+            ['relink', get_string('relinkusers', 'plagiarism_turnitin')],];
         $customdata["multi_submit_buttons"] = $multisubmitbuttons;
 
         require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');

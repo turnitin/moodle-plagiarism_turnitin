@@ -54,7 +54,7 @@ class turnitin_setupform extends moodleform {
                     get_string('useturnitin_mod', 'plagiarism_turnitin', ucfirst($mod)),
                     '',
                     null,
-                    array(0, 1)
+                    [0, 1]
                 );
             }
         }
@@ -67,11 +67,11 @@ class turnitin_setupform extends moodleform {
 
         $mform->addElement('passwordunmask', 'plagiarism_turnitin_secretkey', get_string('turnitinsecretkey', 'plagiarism_turnitin'));
 
-        $options = array(
+        $options = [
             'https://api.turnitin.com' => 'https://api.turnitin.com',
             'https://api.turnitinuk.com' => 'https://api.turnitinuk.com',
             'https://sandbox.turnitin.com' => 'https://sandbox.turnitin.com'
-        );
+        ];
 
         // Set $CFG->turnitinqa and add URLs to $CFG->turnitinqaurls array in config.php file for testing other environments.
         if (!empty($CFG->turnitinqa)) {
@@ -87,12 +87,12 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('header', 'plagiarism_debugginglogs', get_string('tiidebugginglogs', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_debugginglogs');
 
-        $ynoptions = array(0 => get_string('no'), 1 => get_string('yes'));
-        $diagnosticoptions = array(
+        $ynoptions = [0 => get_string('no'), 1 => get_string('yes')];
+        $diagnosticoptions = [
             0 => get_string('diagnosticoptions_0', 'plagiarism_turnitin'),
             1 => get_string('diagnosticoptions_1', 'plagiarism_turnitin'),
             2 => get_string('diagnosticoptions_2', 'plagiarism_turnitin')
-        );
+        ];
 
         // Debugging and logging settings.
         $mform->addElement('select', 'plagiarism_turnitin_enablediagnostic', get_string('turnitindiagnostic', 'plagiarism_turnitin'), $diagnosticoptions);
@@ -120,13 +120,13 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_transmatch_desc', null, get_string('transmatch_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_transmatch', 0);
 
-        $repositoryoptions = array(
+        $repositoryoptions = [
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD => get_string('repositoryoptions_0', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED => get_string('repositoryoptions_1', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD => get_string('repositoryoptions_2', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO => get_string('repositoryoptions_3', 'plagiarism_turnitin'),
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL => get_string('repositoryoptions_4', 'plagiarism_turnitin')
-        );
+        ];
 
         $mform->addElement('select', 'plagiarism_turnitin_repositoryoption', get_string('turnitinrepositoryoptions', 'plagiarism_turnitin'), $repositoryoptions);
         $mform->addElement('static', 'plagiarism_turnitin_repositoryoption_desc', null, get_string('turnitinrepositoryoptions_desc', 'plagiarism_turnitin'));
@@ -145,9 +145,9 @@ class turnitin_setupform extends moodleform {
         $mform->setExpanded('plagiarism_privacy');
 
         if ($DB->count_records('plagiarism_turnitin_users') > 0 AND isset($config->plagiarism_turnitin_enablepseudo)) {
-            $enablepseudooptions = ($config->plagiarism_turnitin_enablepseudo == 1) ? array(1 => get_string('yes')) : array(0 => get_string('no'));
+            $enablepseudooptions = ($config->plagiarism_turnitin_enablepseudo == 1) ? [1 => get_string('yes')] : [0 => get_string('no')];
         } else if ($DB->count_records('plagiarism_turnitin_users') > 0) {
-            $enablepseudooptions = array( 0 => get_string('no', 'plagiarism_turnitin'));
+            $enablepseudooptions = [ 0 => get_string('no', 'plagiarism_turnitin')];
         } else {
             $enablepseudooptions = $ynoptions;
         }
@@ -157,39 +157,39 @@ class turnitin_setupform extends moodleform {
         $mform->setDefault('plagiarism_turnitin_enablepseudo', 0);
 
         if (!empty($config->plagiarism_turnitin_enablepseudo)) {
-            $mform->addElement('text', 'plagiarism_turnitin_pseudofirstname', get_string('pseudofirstname', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+            $mform->addElement('text', 'plagiarism_turnitin_pseudofirstname', get_string('pseudofirstname', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->addElement('static', 'plagiarism_turnitin_pseudofirstname_desc', null,
-                get_string('pseudofirstname_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+                get_string('pseudofirstname_desc', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->setType('plagiarism_turnitin_pseudofirstname', PARAM_TEXT);
             $mform->setDefault('plagiarism_turnitin_pseudofirstname', PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME);
 
-            $lnoptions = array( 0 => get_string('user') );
+            $lnoptions = [ 0 => get_string('user') ];
 
             $userprofiles = $DB->get_records('user_info_field');
             foreach ($userprofiles as $profile) {
                 $lnoptions[$profile->id] = get_string('profilefield', 'admin').': '.$profile->name;
             }
 
-            $mform->addElement('select', 'plagiarism_turnitin_pseudolastname', get_string('pseudolastname', 'plagiarism_turnitin'), $lnoptions, array('class' => 'studentprivacy'));
+            $mform->addElement('select', 'plagiarism_turnitin_pseudolastname', get_string('pseudolastname', 'plagiarism_turnitin'), $lnoptions, ['class' => 'studentprivacy']);
             $mform->addElement('static', 'plagiarism_turnitin_pseudolastname_desc', null,
-                get_string('pseudolastname_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+                get_string('pseudolastname_desc', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->setType('plagiarism_turnitin_pseudolastname', PARAM_TEXT);
             $mform->setDefault('plagiarism_turnitin_pseudolastname', 0);
 
-            $mform->addElement('select', 'plagiarism_turnitin_lastnamegen', get_string('pseudolastnamegen', 'plagiarism_turnitin'), $ynoptions, array('class' => 'studentprivacy'));
+            $mform->addElement('select', 'plagiarism_turnitin_lastnamegen', get_string('pseudolastnamegen', 'plagiarism_turnitin'), $ynoptions, ['class' => 'studentprivacy']);
             $mform->addElement('static', 'plagiarism_turnitin_lastnamegen_desc', null,
-                get_string('pseudolastnamegen_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+                get_string('pseudolastnamegen_desc', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->setType('plagiarism_turnitin_lastnamegen', PARAM_TEXT);
             $mform->setDefault('plagiarism_turnitin_lastnamegen', 0);
 
-            $mform->addElement('text', 'plagiarism_turnitin_pseudosalt', get_string('pseudoemailsalt', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+            $mform->addElement('text', 'plagiarism_turnitin_pseudosalt', get_string('pseudoemailsalt', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->addElement('static', 'plagiarism_turnitin_pseudosalt_desc', null,
-                get_string('pseudoemailsalt_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+                get_string('pseudoemailsalt_desc', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->setType('plagiarism_turnitin_pseudosalt', PARAM_TEXT);
 
-            $mform->addElement('text', 'plagiarism_turnitin_pseudoemaildomain', get_string('pseudoemaildomain', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+            $mform->addElement('text', 'plagiarism_turnitin_pseudoemaildomain', get_string('pseudoemaildomain', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->addElement('static', 'plagiarism_turnitin_pseudoemaildomain_desc', null,
-                get_string('pseudoemaildomain_desc', 'plagiarism_turnitin'), array('class' => 'studentprivacy'));
+                get_string('pseudoemaildomain_desc', 'plagiarism_turnitin'), ['class' => 'studentprivacy']);
             $mform->setType('plagiarism_turnitin_pseudoemaildomain', PARAM_TEXT);
         }
 
@@ -237,9 +237,9 @@ class turnitin_setupform extends moodleform {
             set_config('turnitin_use', $pluginenabled, 'plagiarism');
         }
 
-        $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
+        $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain"];
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

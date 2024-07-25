@@ -52,7 +52,7 @@ class turnitin_assignment {
     public static function get_course_data($courseid, $workflowcontext = "site") {
         global $DB;
 
-        if (!$course = $DB->get_record("course", array("id" => $courseid))) {
+        if (!$course = $DB->get_record("course", ["id" => $courseid])) {
             if ($workflowcontext != "cron") {
                 plagiarism_turnitin_print_error('coursegeterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit;
@@ -62,7 +62,7 @@ class turnitin_assignment {
         $course->turnitin_cid = 0;
         $course->turnitin_ctl = "";
         $course->tii_rel_id = '';
-        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid))) {
+        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $courseid])) {
             $course->turnitin_cid = $turnitincourse->turnitin_cid;
             $course->turnitin_ctl = $turnitincourse->turnitin_ctl;
             $course->tii_rel_id = $turnitincourse->id;
@@ -152,7 +152,7 @@ class turnitin_assignment {
         try {
             $this->api_update_class($turnitincall, $class);
 
-            $turnitincourse = $DB->get_record("plagiarism_turnitin_courses", array("courseid" => $course->id));
+            $turnitincourse = $DB->get_record("plagiarism_turnitin_courses", ["courseid" => $course->id]);
 
             $update = new stdClass();
             $update->id = $turnitincourse->id;
@@ -238,7 +238,7 @@ class turnitin_assignment {
 
             plagiarism_turnitin_activitylog("Turnitin Assignment updated - id: ".$assignmentid, "REQUEST");
 
-            return array('success' => true, 'tiiassignmentid' => $assignmentid);
+            return ['success' => true, 'tiiassignmentid' => $assignmentid];
 
         } catch (Exception $e) {
             $toscreen = true;
@@ -259,9 +259,9 @@ class turnitin_assignment {
 
             // Return error string as we use this in the plagiarism plugin.
             if ($workflowcontext == "cron") {
-                return array('success' => false, 'error' => $errorstr, 'tiiassignmentid' => $assignmentid);
+                return ['success' => false, 'error' => $errorstr, 'tiiassignmentid' => $assignmentid];
             } else {
-                return array('success' => false, 'error' => get_string('editassignmenterror', 'plagiarism_turnitin'));
+                return ['success' => false, 'error' => get_string('editassignmenterror', 'plagiarism_turnitin')];
             }
         }
     }
@@ -275,10 +275,10 @@ class turnitin_assignment {
      */
     public function get_peermark_assignments($tiiassignid) {
         global $DB;
-        if ($peermarks = $DB->get_records("plagiarism_turnitin_peermark", array("parent_tii_assign_id" => $tiiassignid))) {
+        if ($peermarks = $DB->get_records("plagiarism_turnitin_peermark", ["parent_tii_assign_id" => $tiiassignid])) {
             return $peermarks;
         } else {
-            return array();
+            return [];
         }
     }
 

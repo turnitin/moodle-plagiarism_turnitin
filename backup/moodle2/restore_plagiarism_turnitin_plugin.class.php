@@ -23,7 +23,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
      * Return the paths of the course data along with the function used for restoring that data.
      */
     protected function define_course_plugin_structure() {
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('turnitin_course', $this->get_pathfor('turnitin_courses/turnitin_course'));
 
         return $paths;
@@ -39,7 +39,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $recordexists = $DB->record_exists('plagiarism_turnitin_courses', array('turnitin_cid' => $data->turnitin_cid));
+            $recordexists = $DB->record_exists('plagiarism_turnitin_courses', ['turnitin_cid' => $data->turnitin_cid]);
 
             if (!$recordexists) {
                 $data = (object)$data;
@@ -57,7 +57,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
      * Return the paths of the module data along with the function used for restoring that data.
      */
     protected function define_module_plugin_structure() {
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('turnitin_config', $this->get_pathfor('turnitin_configs/turnitin_config'));
         $paths[] = new restore_path_element('turnitin_files', $this->get_pathfor('/turnitin_files/turnitin_file'));
 
@@ -75,9 +75,9 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
         if ($this->task->is_samesite()) {
             $data = (object)$data;
             $recordexists = ($data->name == 'turnitin_assign') ? $DB->record_exists('plagiarism_turnitin_config',
-                array('name' => 'turnitin_assign', 'value' => $data->value)) : false;
+                ['name' => 'turnitin_assign', 'value' => $data->value]) : false;
             $recordexists = ($data->name == 'turnitin_assignid') ? $DB->record_exists('plagiarism_turnitin_config',
-                array('name' => 'turnitin_assignid', 'value' => $data->value)) : $recordexists;
+                ['name' => 'turnitin_assignid', 'value' => $data->value]) : $recordexists;
 
             if (!$recordexists) {
                 $data = (object)$data;
@@ -101,7 +101,7 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
         if ($this->task->is_samesite()) {
             $data = (object)$data;
             $recordexists = (!empty($data->externalid)) ? $DB->record_exists('plagiarism_turnitin_files',
-                array('externalid' => $data->externalid)) : false;
+                ['externalid' => $data->externalid]) : false;
 
             if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();

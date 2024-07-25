@@ -80,9 +80,9 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
         // Create module object.
         $moduleobject = new turnitin_forum();
 
-        $params = array(
+        $params = [
             'content' => $this->post->message
-        );
+        ];
 
         $content = $moduleobject->set_content($params);
         $this->assertEquals($content, $this->post->message);
@@ -99,10 +99,10 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
         // Create module object.
         $moduleobject = new turnitin_forum();
 
-        $params = array(
+        $params = [
             'content' => 'content should not come back',
             'postid' => $this->post->id
-        );
+        ];
 
         $content = $moduleobject->set_content($params);
         $this->assertEquals($content, $this->post->message);

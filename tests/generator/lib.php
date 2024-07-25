@@ -44,8 +44,8 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
      * @return object $return - object of two arrays of equal length, one full of plagiarism_turnitin_user types and the other with ids for dbtable plagiarism_turnitin_users. The indices of these arrays DO align.
      */
     public function make_test_users($number_of_users, $roles) {
-        $return['plagiarism_turnitin_users'] = array();
-        $return['joins'] = array();
+        $return['plagiarism_turnitin_users'] = [];
+        $return['joins'] = [];
 
         for ($i=0; $i < $number_of_users; $i++) {
             $role = isset($roles[$i]) ? $roles[$i] : 'Instructor';

@@ -49,7 +49,7 @@ class turnitin_assign {
     public function get_author($itemid) {
         global $DB;
 
-        if ($submission = $DB->get_record('assign_submission', array('id' => $itemid), 'userid')) {
+        if ($submission = $DB->get_record('assign_submission', ['id' => $itemid], 'userid')) {
             return $submission->userid;
         } else {
             return 0;
@@ -73,10 +73,10 @@ class turnitin_assign {
         global $DB, $CFG;
 
         // Get the maximum number of file submissions allowed.
-        $params = array('assignment' => $assignid,
+        $params = ['assignment' => $assignid,
             'subtype' => 'assignsubmission',
             'plugin' => 'file',
-            'name' => 'maxfilesubmissions');
+            'name' => 'maxfilesubmissions'];
 
         $maxfilesubmissions = 0;
         if ($result = $DB->get_record('assign_plugin_config', $params, 'value')) {
@@ -104,10 +104,10 @@ class turnitin_assign {
 
         // Get latest text content submitted as we do not have submission id.
         $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
-                                        array($userid, $cm->instance), 'id DESC', 'id', 0, 1);
+                                        [$userid, $cm->instance], 'id DESC', 'id', 0, 1);
         $submission = end($submissions);
         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                            array('submission' => $submission->id), 'onlinetext, onlineformat');
+                                            ['submission' => $submission->id], 'onlinetext, onlineformat');
 
         $onlinetextdata = new stdClass();
         $onlinetextdata->itemid = $submission->id;
@@ -134,7 +134,7 @@ class turnitin_assign {
         global $DB;
 
         $currentgradesquery = $DB->get_records('assign_grades',
-                                                    array('userid' => $userid, 'assignment' => $moduleid),
+                                                    ['userid' => $userid, 'assignment' => $moduleid],
                                                     'id DESC'
                                                 );
         return current($currentgradesquery);

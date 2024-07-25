@@ -87,7 +87,7 @@ class lib_test extends advanced_testcase {
         $data = new stdClass();
         $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE,];
+                                         'format' => FORMAT_MOODLE, ];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
@@ -116,7 +116,7 @@ class lib_test extends advanced_testcase {
         $data = new stdClass();
         $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE,];
+                                         'format' => FORMAT_MOODLE, ];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 

@@ -115,7 +115,7 @@ class turnitin_submission {
                                                                 WHERE FD.forum = ? AND FD.course = ?
                                                                 AND FP.userid = ? AND FP.message LIKE ? ',
                                                                 [$forum->id, $forum->course,
-                                                                    $this->submissiondata->userid, $this->data['forumpost'],]
+                                                                    $this->submissiondata->userid, $this->data['forumpost'], ]
                                                                 );
                     $discussionid = $discussion->id;
                 }

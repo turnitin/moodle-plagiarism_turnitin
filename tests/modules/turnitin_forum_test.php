@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_forum_testcase extends advanced_testcase {
+class turnitin_forum_test extends advanced_testcase {
 
     /** @var stdClass created in setUp. */
     protected $forum;

@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -33,9 +35,15 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class lib_test extends advanced_testcase {
+final class lib_test extends advanced_testcase {
 
-    public function test_is_plugin_configured() {
+    /**
+     * Test that the plugin is configured correctly.
+     *
+     * @covers \plagiarism_plugin_turnitin::is_plugin_configured
+     * @return void
+     */
+    public function test_is_plugin_configured(): void {
         $this->resetAfterTest();
 
         $plagiarismturnitin = new plagiarism_plugin_turnitin();
@@ -60,7 +68,15 @@ class lib_test extends advanced_testcase {
         $this->assertEquals(true, $ispluginconfigured);
     }
 
-    public function test_check_group_submission() {
+    /**
+     * Test that group submissions are correctly checked.
+     *
+     * @covers \plagiarism_plugin_turnitin::check_group_submission
+     * @return void
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function test_check_group_submission(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
@@ -172,8 +188,10 @@ class lib_test extends advanced_testcase {
 
     /**
      * Test that the data returned from the report gen speed param function is what we expect.
+     *
+     * @covers \plagiarism_plugin_turnitin::plagiarism_get_report_gen_speed_params
      */
-    public function test_plagiarism_get_report_gen_speed_params() {
+    public function test_plagiarism_get_report_gen_speed_params(): void {
         $this->resetAfterTest();
 
         $expected = new stdClass();
@@ -188,8 +206,10 @@ class lib_test extends advanced_testcase {
 
     /**
      * Test that the set config function saves a config.
+     *
+     * @covers \plagiarism_plugin_turnitin::plagiarism_set_config
      */
-    public function test_plagiarism_set_config() {
+    public function test_plagiarism_set_config(): void {
         $this->resetAfterTest();
 
         $plagiarismturnitin = new plagiarism_plugin_turnitin();

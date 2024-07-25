@@ -21,26 +21,72 @@ use Integrations\PhpSdk\TiiMembership;
 use Integrations\PhpSdk\TurnitinApiException;
 
 /**
+ * Define the Turnitin User class
+ *
  * @package   plagiarism_turnitin
  * @copyright 2018 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
 class turnitin_user {
+
+    /**
+     * @var int
+     */
     public $id;
+    /**
+     * @var int
+     */
     public $tiiuserid;
+    /**
+     * @var string
+     */
     private $role;
+    /**
+     * @var string
+     */
     public $firstname;
+    /**
+     * @var string
+     */
     public $lastname;
+    /**
+     * @var string
+     */
     public $fullname;
+    /**
+     * @var string
+     */
     public $email;
+    /**
+     * @var string
+     */
     public $username;
+    /**
+     * @var bool
+     */
     public $useragreementaccepted;
+    /**
+     * @var mixed|true
+     */
     private $enrol;
+    /**
+     * @var mixed|string
+     */
     private $workflowcontext;
+    /**
+     * @var string
+     */
     private $instructorrubrics;
 
+    /**
+     * Constructor for the Turnitin User class
+     *
+     * @param $id
+     * @param $role
+     * @param $enrol
+     * @param $workflowcontext
+     * @param $finduser
+     */
     public function __construct($id, $role = "Learner", $enrol = true, $workflowcontext = "site", $finduser = true) {
         $this->id = $id;
         $this->set_user_role($role);
@@ -108,7 +154,8 @@ class turnitin_user {
      */
     public static function get_pseudo_domain() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ? PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
+        $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ?
+            PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
 
         return $domain;
     }
@@ -121,7 +168,8 @@ class turnitin_user {
     public function get_pseudo_firstname() {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
-        return !empty( $config->plagiarism_turnitin_pseudofirstname ) ? $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
+        return !empty( $config->plagiarism_turnitin_pseudofirstname ) ?
+            $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
     }
 
     /**
@@ -133,9 +181,11 @@ class turnitin_user {
     public function get_pseudo_lastname() {
         global $DB;
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id, 'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
+        $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id,
+            'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
 
-        if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 && $config->plagiarism_turnitin_lastnamegen == 1) {
+        if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 &&
+            $config->plagiarism_turnitin_lastnamegen == 1) {
             $uniqueid = strtoupper(strrev(uniqid()));
             $userinfoob = new stdClass();
             $userinfoob->userid = $this->id;
@@ -312,7 +362,6 @@ class turnitin_user {
     /**
      * Remove Link between moodle user and Turnitin from database
      *
-     * @global type $DB
      * @param int $tiidbid The Turnitin database id
      * @return void
      */
@@ -336,7 +385,6 @@ class turnitin_user {
     /**
      * Save the link between the moodle user and Turnitin
      *
-     * @global type $DB
      * @return void
      */
     private function save_tii_user() {
@@ -557,7 +605,6 @@ class turnitin_user {
     /**
      * Get users for unlinking/relinking. Called from ajax.php via turnitin_settings.js.
      *
-     * @global type $DB
      * @return array return array of users to display
      */
     public static function plagiarism_turnitin_getusers() {
@@ -634,7 +681,7 @@ class turnitin_user {
 
             $pseudoemail = "";
             if (!empty($config->plagiarism_turnitin_enablepseudo)) {
-                $pseudouser = new TiiPseudoUser(turnitin_user::get_pseudo_domain());
+                $pseudouser = new TiiPseudoUser(self::get_pseudo_domain());
                 $pseudouser->setEmail($user->email);
                 $pseudoemail = $pseudouser->getEmail();
             }

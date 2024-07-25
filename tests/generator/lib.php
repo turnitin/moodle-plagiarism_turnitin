@@ -19,8 +19,8 @@ global $CFG;
 global $DB;
 
 require_once($CFG->dirroot . '/plagiarism/turnitin/classes/turnitin_user.class.php');
-include_once $CFG->dirroot.'/course/lib.php';
-require_once $CFG->dirroot.'/webservice/tests/helpers.php';
+require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot.'/webservice/tests/helpers.php');
 
 /**
  * plagiarism_turnitin module data generator class
@@ -29,7 +29,7 @@ require_once $CFG->dirroot.'/webservice/tests/helpers.php';
  *   - Create a test function and call one of these functions from within it using (for example):
  *     <code>$this->make_test_users(5,"Learner");</code>
  *
- * @category  Test
+ * @category  test
  * @package  plagiarism_turnitin
  * @copyright  2017 Turnitin
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,11 +37,13 @@ require_once $CFG->dirroot.'/webservice/tests/helpers.php';
 abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
 
     /**
-     * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database association work.
+     * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database
+     * association work.
      *
      * @param int $number_of_users
      * @param array $roles - an array of strings, each of which should be 'Learner' or 'Instructor'.
-     * @return object $return - object of two arrays of equal length, one full of plagiarism_turnitin_user types and the other with ids for dbtable plagiarism_turnitin_users. The indices of these arrays DO align.
+     * @return object $return - object of two arrays of equal length, one full of plagiarism_turnitin_user types and the other with
+     * ids for dbtable plagiarism_turnitin_users. The indices of these arrays DO align.
      */
     public function make_test_users($numberofusers, $roles) {
         $return['plagiarism_turnitin_users'] = [];
@@ -63,7 +65,8 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
      * for the tii user specified
      * @param  object $plagiarism_turnitin_user - plagiarism_turnitin user object
      *
-     * @return  int $plagiarism_turnitin_user_id id of plagiarism_turnitin user join (for use in get_record queries on plagiarism_turnitin_users table)
+     * @return  int $plagiarism_turnitin_user_id id of plagiarism_turnitin user join (for use in get_record queries on
+     * plagiarism_turnitin_users table)
      */
     public function join_test_user($plagiarismturnitinuser) {
         global $DB;

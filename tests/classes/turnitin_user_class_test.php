@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -35,8 +37,11 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
+final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|(turnitin_comms&\PHPUnit\Framework\MockObject\MockObject)
+     */
     public $faketiicomms;
 
     /**
@@ -49,7 +54,13 @@ class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             ->getMock();
     }
 
-    public function test_get_moodle_user() {
+    /**
+     * Test that we can get a Moodle use.
+     *
+     * @covers \turnitin_user::get_moodle_user
+     * @return void
+     */
+    public function test_get_moodle_user(): void {
         $this->resetAfterTest();
 
         $student = $this->getDataGenerator()->create_user();
@@ -62,14 +73,26 @@ class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         $this->assertEquals('username1', $response->username);
     }
 
-    public function test_get_pseudo_domain() {
+    /**
+     * Test that we can get a pseudo domain.
+     *
+     * @covers \turnitin_user::get_pseudo_domain
+     * @return void
+     */
+    public function test_get_pseudo_domain(): void {
         $this->resetAfterTest();
 
         $response = turnitin_user::get_pseudo_domain();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN, $response);
     }
 
-    public function test_get_pseudo_firstname() {
+    /**
+     * Test that we can get a pseudo first name.
+     *
+     * @covers \turnitin_user::get_pseudo_firstname
+     * @return void
+     */
+    public function test_get_pseudo_firstname(): void {
         $this->resetAfterTest();
 
         $turnitinuser = new turnitin_user(0, null, null, null, null);
@@ -77,7 +100,14 @@ class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
 
-    public function test_get_pseudo_lastname() {
+    /**
+     * Test that we can get a pseudo last name.
+     *
+     * @covers \turnitin_user::get_pseudo_lastname
+     * @return void
+     * @throws dml_exception
+     */
+    public function test_get_pseudo_lastname(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -92,7 +122,14 @@ class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
 
-    public function test_unlink_user() {
+    /**
+     * Test that we can get unlink a user from Turnitin.
+     *
+     * @covers \turnitin_user::unlink_user
+     * @return void
+     * @throws dml_exception
+     */
+    public function test_unlink_user(): void {
         global $DB;
 
         $this->resetAfterTest();

@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Task definitions for plagiarism_turnitin
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
- */
-
-/**
- * @package plagiarism_turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();

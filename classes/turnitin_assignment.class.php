@@ -16,11 +16,6 @@
 
 use Integrations\PhpSdk\TiiClass;
 
-/**
- * @package   plagiarism_turnitin
- * @copyright 2018 iParadigms LLC *
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
@@ -28,11 +23,30 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.ph
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.class.php');
 
+/**
+ * Defines the class for Turnitin assignments
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2018 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class turnitin_assignment {
 
+    /**
+     * @var int|mixed
+     */
     private $id;
+    /**
+     * @var mixed|turnitin_comms|null
+     */
     private $turnitincomms;
 
+    /**
+     * turnitin_assignment constructor.
+     *
+     * @param $id
+     * @param $turnitincomms
+     */
     public function __construct($id = 0, $turnitincomms = null) {
         $this->id = $id;
         $this->turnitincomms = $turnitincomms;
@@ -74,7 +88,6 @@ class turnitin_assignment {
     /**
      * Create the course in Turnitin
      *
-     * @global type $DB
      * @param object $course The course object
      * @param string $workflowcontext The workflow being used to call this - site or cron.
      * @return object the turnitin course if created
@@ -128,7 +141,6 @@ class turnitin_assignment {
     /**
      * Edit the course title in Turnitin
      *
-     * @global type $DB
      * @param var $course The course object
      */
     public function edit_tii_course($course) {
@@ -269,7 +281,6 @@ class turnitin_assignment {
     /**
      * Get the Peermark assignments for this activity.
      *
-     * @global type $DB
      * @param $tiiassignid
      * @return array
      */

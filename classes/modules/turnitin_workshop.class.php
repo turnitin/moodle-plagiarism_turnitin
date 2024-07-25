@@ -14,46 +14,101 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+// phpcs:disable moodle.Commenting.TodoComment
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
+
 /**
+ * Class turnitin_workshop
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_workshop {
 
+    /**
+     * @var string
+     */
     private $modname;
+    /**
+     * @var string
+     */
     public $gradestable;
+    /**
+     * @var string
+     */
     public $filecomponent;
 
+    /**
+     * The constructor
+     */
     public function __construct() {
         $this->modname = 'workshop';
         $this->gradestable = 'grade_grades';
         $this->filecomponent = 'mod_'.$this->modname;
     }
 
+    /**
+     * Check whether the user is a tutor
+     *
+     * @param $context
+     * @return bool
+     * @throws coding_exception
+     */
     public function is_tutor($context) {
         return has_capability($this->get_tutor_capability(), $context);
     }
 
+    /**
+     * Whether the user has the capability to view the full report
+     *
+     * @return string
+     */
     public function get_tutor_capability() {
         return 'plagiarism/turnitin:viewfullreport';
     }
 
+    /**
+     * Whether the user is enrolled on the course and has the capability to submit a workshop submission
+     *
+     * @param $context
+     * @param $userid
+     * @return bool
+     * @throws coding_exception
+     */
     public function user_enrolled_on_course($context, $userid) {
         return has_capability('mod/'.$this->modname.':submit', $context, $userid);
     }
 
+    /**
+     * Get the author of the workshop submission
+     *
+     * @param $itemid
+     * @return void
+     */
     public function get_author($itemid) {
         return;
     }
 
+    /**
+     * Set the content of the workshop submission
+     *
+     * @param $linkarray
+     * @param $moduleid
+     * @return mixed
+     */
     public function set_content($linkarray, $moduleid) {
         return $linkarray["content"];
     }
 
+    /**
+     * Get the onlinetext
+     *
+     * @param $userid
+     * @param $cm
+     * @return stdClass
+     * @throws dml_exception
+     */
     public function get_onlinetext($userid, $cm) {
         global $DB;
 
@@ -68,14 +123,37 @@ class turnitin_workshop {
         return $onlinetextdata;
     }
 
+    /**
+     * Create a file event
+     *
+     * @param $params
+     * @return \core\event\base
+     * @throws coding_exception
+     */
     public function create_file_event($params) {
         return \mod_workshop\event\assessable_uploaded::create($params);
     }
 
+    /**
+     * Create a text event
+     *
+     * @param $params
+     * @return \core\event\base
+     * @throws coding_exception
+     */
     public function create_text_event($params) {
         return \mod_workshop\event\assessable_uploaded::create($params);
     }
 
+    /**
+     * Get the current grade query
+     *
+     * @param $userid
+     * @param $moduleid
+     * @param $itemid
+     * @return false|mixed|stdClass
+     * @throws dml_exception
+     */
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
@@ -83,6 +161,12 @@ class turnitin_workshop {
         return $currentgradequery;
     }
 
+    /**
+     * Initialise the post date for the module
+     *
+     * @param $moduledata
+     * @return mixed
+     */
     public function initialise_post_date($moduledata) {
         return $moduledata->assessmentend;
     }

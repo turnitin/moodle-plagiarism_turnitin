@@ -27,15 +27,15 @@ $capabilities = [
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => [
          'editingteacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        ]
+         'manager' => CAP_ALLOW,
+        ],
     ],
     'plagiarism/turnitin:viewfullreport' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => [
          'editingteacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        ]
+         'manager' => CAP_ALLOW,
+        ],
     ],
 ];

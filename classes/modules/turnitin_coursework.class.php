@@ -36,7 +36,7 @@ class turnitin_coursework {
 
     public function is_tutor($context) {
         $capabilities = [$this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
-            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades'];
+            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades',];
         return has_any_capability($capabilities, $context);
     }
 

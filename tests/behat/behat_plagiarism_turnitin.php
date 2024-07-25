@@ -105,7 +105,7 @@ class behat_plagiarism_turnitin extends behat_base {
             'username' => $username,
             'password' => $username,
             'firstname' => $username,
-            'lastname' => $username
+            'lastname' => $username,
         ]);
     }
 

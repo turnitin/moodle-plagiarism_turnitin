@@ -37,7 +37,7 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
             $turnitinfiles = new backup_nested_element('turnitin_files');
             $turnitinfile = new backup_nested_element('turnitin_file', ['id'],
                                 ['userid', 'identifier', 'externalid', 'externalstatus',
-                                    'statuscode', 'similarityscore', 'transmatch', 'lastmodified', 'grade', 'submissiontype']);
+                                    'statuscode', 'similarityscore', 'transmatch', 'lastmodified', 'grade', 'submissiontype',]);
             $pluginelement->add_child($turnitinfiles);
             $turnitinfiles->add_child($turnitinfile);
 

@@ -123,9 +123,9 @@ class turnitin_view {
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = [0 => get_string('genimmediately1', 'plagiarism_turnitin'),
                             1 => get_string('genimmediately2', 'plagiarism_turnitin', $genparams),
-                            2 => get_string('genduedate', 'plagiarism_turnitin')];
+                            2 => get_string('genduedate', 'plagiarism_turnitin'),];
         $excludetypeoptions = [ 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
-                            2 => get_string('excludepercent', 'plagiarism_turnitin')];
+                            2 => get_string('excludepercent', 'plagiarism_turnitin'),];
 
         if ($location == "defaults") {
             $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
@@ -162,7 +162,7 @@ class turnitin_view {
                         [
                             'class' => 'plagiarism_turnitin_refresh_grades',
                             'tabindex' => 0,
-                            'role' => 'link'
+                            'role' => 'link',
                         ]
                     );
 
@@ -182,7 +182,7 @@ class turnitin_view {
                         'href' => '#',
                         'class' => 'plagiarism_turnitin_quickmark_manager_launch',
                         'id' => 'quickmark_manager_form',
-                        'tabindex' => 0
+                        'tabindex' => 0,
                     ]
                 );
 
@@ -202,7 +202,7 @@ class turnitin_view {
                             'href' => '#',
                             'class' => 'peermark_manager_launch',
                             'id' => 'peermark_manager_form',
-                            'tabindex' => 0
+                            'tabindex' => 0,
                         ]
                     );
                     $peermarkmanagerlink = html_writer::tag('div', $peermarkmanagerlink, ['class' => 'row_peermark_manager']);
@@ -226,7 +226,7 @@ class turnitin_view {
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
                 $tiidraftoptions = [0 => get_string("submitondraft", "plagiarism_turnitin"),
-                                         1 => get_string("submitonfinal", "plagiarism_turnitin")];
+                                         1 => get_string("submitonfinal", "plagiarism_turnitin"),];
 
                 $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "plagiarism_turnitin"), $tiidraftoptions);
                 $this->lock($mform, $location, $locks);
@@ -238,7 +238,7 @@ class turnitin_view {
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
             $suboptions = [0 => get_string('norepository', 'plagiarism_turnitin'),
-                                1 => get_string('standardrepository', 'plagiarism_turnitin')];
+                                1 => get_string('standardrepository', 'plagiarism_turnitin'),];
             switch ($config->plagiarism_turnitin_repositoryoption) {
                 case 0; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);
@@ -335,7 +335,7 @@ class turnitin_view {
                         'title' => get_string('launchrubricmanager', 'plagiarism_turnitin'),
                         'id' => 'rubric_manager_form',
                         'role' => 'link',
-                        'tabindex' => '0'
+                        'tabindex' => '0',
                     ]
                 );
 
@@ -359,13 +359,13 @@ class turnitin_view {
                                             2 => get_string('erater_handbook_highschool', 'plagiarism_turnitin'),
                                             3 => get_string('erater_handbook_middleschool', 'plagiarism_turnitin'),
                                             4 => get_string('erater_handbook_elementary', 'plagiarism_turnitin'),
-                                            5 => get_string('erater_handbook_learners', 'plagiarism_turnitin')
+                                            5 => get_string('erater_handbook_learners', 'plagiarism_turnitin'),
                                         ];
 
                 $dictionaryoptions = [
                                             'en_US' => get_string('erater_dictionary_enus', 'plagiarism_turnitin'),
                                             'en_GB' => get_string('erater_dictionary_engb', 'plagiarism_turnitin'),
-                                            'en'    => get_string('erater_dictionary_en', 'plagiarism_turnitin')
+                                            'en'    => get_string('erater_dictionary_en', 'plagiarism_turnitin'),
                                         ];
                 $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'plagiarism_turnitin'), $options);
                 $mform->setDefault('plagiarism_erater', 0);

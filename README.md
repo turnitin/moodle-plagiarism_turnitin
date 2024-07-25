@@ -20,10 +20,8 @@ The Plagiarism Plugin can be used within the following Moodle modules:
 
 - Assignments
 - Forums
-- Quiz *
+- Quiz
 - Workshops
-
-\* This is currently only essay type answers and is also reliant on Moodle merging [this code patch](https://github.com/moodle/moodle/commit/7a8e3ec4b13408d18734ab46bdb03b2da55f317d) into their core offering. For more information see: [MDL-32226](https://tracker.moodle.org/browse/MDL-32226).
 
 To install, you need to copy all the files into the plagiarism/turnitin directory in your Moodle installation. You should then go to `"Site Administration" > "Notifications"` where you should follow the on screen instructions.
 
@@ -31,4 +29,4 @@ Plagiarism plugins also need to be enabled before this plugin can be used. You c
 
 You can set default values and whether the plugin is enabled within Moodle modules by going to `"Site Administration" > "Plugins" > "Plagiarism prevention" > "Turnitin plagiarism plugin"`.
 
-To create/update assignments, process submissions and update grades your moodle environment will need to have cron job running regularly. For information on how to do this please consult https://docs.moodle.org/37/en/Cron.
+To create/update assignments, process submissions and update grades your moodle environment will need to have cron job running regularly. For information on how to do this please consult https://docs.moodle.org/en/Cron.

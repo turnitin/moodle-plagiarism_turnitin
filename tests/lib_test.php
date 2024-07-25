@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_lib_testcase extends advanced_testcase {
+class lib_test extends advanced_testcase {
 
     public function test_is_plugin_configured() {
         $this->resetAfterTest();

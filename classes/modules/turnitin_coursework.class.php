@@ -35,8 +35,8 @@ class turnitin_coursework {
     }
 
     public function is_tutor($context) {
-        $capabilities = array($this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
-            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades');
+        $capabilities = [$this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
+            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades'];
         return has_any_capability($capabilities, $context);
     }
 
@@ -53,7 +53,7 @@ class turnitin_coursework {
 
         $id = 0;
 
-        if ($submission = $DB->get_record('coursework_submissions', array('id' => $itemid))) {
+        if ($submission = $DB->get_record('coursework_submissions', ['id' => $itemid])) {
             $id = $submission->authorid;
         }
 
@@ -78,7 +78,7 @@ class turnitin_coursework {
                 AND           cs.courseworkid     =   :courseworkid
                 AND           cf.stage_identifier =   :stage";
 
-        $params = array('stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid);
+        $params = ['stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid];
 
         $currentgradesquery = $DB->get_record_sql($sql, $params);
 

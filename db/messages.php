@@ -22,8 +22,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 defined('MOODLE_INTERNAL') || die();
-$messageproviders = array (
+$messageproviders =  [
     // Notify student with their digital receipt.
-    'submission' => array (
-    )
-);
+    'submission' =>  [
+    ]
+];

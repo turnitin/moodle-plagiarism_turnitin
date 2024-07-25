@@ -239,7 +239,7 @@ class turnitin_setupform extends moodleform {
 
         $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain",];
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", ];
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

@@ -306,7 +306,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
             $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark",
                 "enablepeermark", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-                "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon",];
+                "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon", ];
 
             foreach ($properties as $property) {
                 plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);

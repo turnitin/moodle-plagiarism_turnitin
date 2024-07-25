@@ -108,7 +108,7 @@ class provider implements
 
         $params = ['modulename' => 'assign',
             'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid,];
+            'userid' => $userid, ];
 
         $sql = "SELECT ctx.id
                   FROM {course_modules} cm

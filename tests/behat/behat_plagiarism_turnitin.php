@@ -100,13 +100,13 @@ class behat_plagiarism_turnitin extends behat_base {
      */
     public function i_create_a_unique_user($username) {
         $generator = testing_util::get_data_generator();
-        $generator->create_user(array(
+        $generator->create_user([
             'email' => uniqid($username, true) . '@example.com',
             'username' => $username,
             'password' => $username,
             'firstname' => $username,
             'lastname' => $username
-        ));
+        ]);
     }
 
     /**
@@ -171,11 +171,11 @@ class behat_plagiarism_turnitin extends behat_base {
             try {
                 switch($modtype) {
                     case "assignment":
-                        $this->execute('behat_general::row_column_of_table_should_contain', array($student, "File submissions", "generaltable", "%"));
+                        $this->execute('behat_general::row_column_of_table_should_contain', [$student, "File submissions", "generaltable", "%"]);
                         break;
                     case "forum":
                     case "workshop":
-                        $this->execute('behat_general::assert_element_contains_text', array("%", "div.origreport_score", "css_element"));
+                        $this->execute('behat_general::assert_element_contains_text', ["%", "div.origreport_score", "css_element"]);
                         break;
                 }
                 break;
@@ -195,10 +195,10 @@ class behat_plagiarism_turnitin extends behat_base {
         try {
             $this->getSession()->getPage()->find("css", ".pp_turnitin_eula_link");
 
-            $this->execute('behat_general::i_click_on', array(".pp_turnitin_eula_link", "css_element"));
-            $this->execute('behat_general::wait_until_exists', array(".iframe-ltilaunch-eula", "css_element"));
+            $this->execute('behat_general::i_click_on', [".pp_turnitin_eula_link", "css_element"]);
+            $this->execute('behat_general::wait_until_exists', [".iframe-ltilaunch-eula", "css_element"]);
             $this->i_switch_to_iframe_with_locator(".iframe-ltilaunch-eula");
-            $this->execute('behat_general::i_click_on', array(".agree-button", "css_element"));
+            $this->execute('behat_general::i_click_on', [".agree-button", "css_element"]);
         } catch (Exception $e) {
             // EULA not found - so skip it.
         }
@@ -211,7 +211,7 @@ class behat_plagiarism_turnitin extends behat_base {
         try {
             $this->getSession()->getPage()->find("css", ".agree-button");
 
-            $this->execute('behat_general::i_click_on', array(".agree-button", "css_element"));
+            $this->execute('behat_general::i_click_on', [".agree-button", "css_element"]);
         } catch (Exception $e) {
             // EULA not found - so skip it.
         }
@@ -246,7 +246,7 @@ class behat_plagiarism_turnitin extends behat_base {
      * @throws Exception
      */
     public function the_following_users_will_be_created_if_they_do_not_already_exist(TableNode $data) {
-        $newdata = array();
+        $newdata = [];
         $rowNum = 0;
         foreach ($data->getRows() as $row) {
             if (!$rowNum == 0) { // not header row
@@ -256,7 +256,7 @@ class behat_plagiarism_turnitin extends behat_base {
             $newdata[] = $row;
         }
         $tablenode = new TableNode($newdata);
-        $this->execute('behat_data_generators::the_following_entities_exist', array('users', $tablenode));
+        $this->execute('behat_data_generators::the_following_entities_exist', ['users', $tablenode]);
     }
 
     /**
@@ -266,12 +266,12 @@ class behat_plagiarism_turnitin extends behat_base {
     public function i_unenroll_the_user_account_with_the_role_from_the_class_in_turnitin($student, $role) {
         global $DB;
 
-        $course = $DB->get_record("course", array("fullname" => "Turnitin Behat EULA Test Course"), 'id', MUST_EXIST);
-        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $course->id), 'turnitin_cid', MUST_EXIST);
+        $course = $DB->get_record("course", ["fullname" => "Turnitin Behat EULA Test Course"], 'id', MUST_EXIST);
+        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $course->id], 'turnitin_cid', MUST_EXIST);
 
         // Get the user.
-        $user = $DB->get_record("user", array("username" => $student), 'id', MUST_EXIST);
-        $tiiuser = $DB->get_record('plagiarism_turnitin_users', array("userid" => $user->id), 'turnitin_uid', MUST_EXIST);
+        $user = $DB->get_record("user", ["username" => $student], 'id', MUST_EXIST);
+        $tiiuser = $DB->get_record('plagiarism_turnitin_users', ["userid" => $user->id], 'turnitin_uid', MUST_EXIST);
 
         $turnitincall = $this->behat_initialise_api(getenv('TII_ACCOUNT'), getenv('TII_SECRET'), getenv('TII_APIBASEURL'));
 

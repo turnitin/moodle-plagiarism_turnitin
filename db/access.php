@@ -21,21 +21,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'plagiarism/turnitin:enable' => array(
+$capabilities = [
+    'plagiarism/turnitin:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
+         'legacy' => [
          'editingteacher' => CAP_ALLOW,
          'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/turnitin:viewfullreport' => array(
+        ]
+    ],
+    'plagiarism/turnitin:viewfullreport' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
+         'legacy' => [
          'editingteacher' => CAP_ALLOW,
          'manager' => CAP_ALLOW
-        )
-    ),
-);
+        ]
+    ],
+];

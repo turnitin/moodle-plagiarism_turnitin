@@ -36,7 +36,7 @@ class turnitin_defaultsettingsform extends moodleform {
         require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 
         $turnitinview = new turnitin_view();
-        $turnitinview->add_elements_to_settings_form($mform, array(), "defaults");
+        $turnitinview->add_elements_to_settings_form($mform, [], "defaults");
 
         $this->add_action_buttons(true);
     }

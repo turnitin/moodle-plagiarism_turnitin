@@ -46,13 +46,13 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
      */
     public function setUp(): void {
         $this->course = $this->getDataGenerator()->create_course();
-        $params = array(
+        $params = [
             'course' => $this->course->id,
             'name' => 'assignment',
             'assignsubmission_file_enabled' => 1,
             'assignsubmission_file_maxfiles' => 1,
             'assignsubmission_file_maxsizebytes' => 10
-        );
+        ];
 
         $this->assign = $this->getDataGenerator()->create_module('assign', $params);
     }
@@ -92,13 +92,13 @@ class plagiarism_turnitin_assign_testcase extends advanced_testcase {
     public function test_check_is_resubmission_allowed_maxfiles_above_threshold() {
         $this->resetAfterTest(true);
 
-        $params = array(
+        $params = [
             'course' => $this->course->id,
             'name' => 'assignment',
             'assignsubmission_file_enabled' => 1,
             'assignsubmission_file_maxfiles' => 2,
             'assignsubmission_file_maxsizebytes' => 10
-        );
+        ];
 
         $assign = $this->getDataGenerator()->create_module('assign', $params);
 

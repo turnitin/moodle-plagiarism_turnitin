@@ -131,23 +131,23 @@ class turnitin_comms {
             }
         }
 
-        if (is_callable(array($e, 'getFaultCode'))) {
+        if (is_callable([$e, 'getFaultCode'])) {
             $errorstr .= get_string('faultcode', 'plagiarism_turnitin').": ".$e->getFaultCode()." | ";
         }
 
-        if (is_callable(array($e, 'getFile'))) {
+        if (is_callable([$e, 'getFile'])) {
             $errorstr .= get_string('file').": ".$e->getFile()." | ";
         }
 
-        if (is_callable(array($e, 'getLine'))) {
+        if (is_callable([$e, 'getLine'])) {
             $errorstr .= get_string('line', 'plagiarism_turnitin').": ".$e->getLine()." | ";
         }
 
-        if (is_callable(array($e, 'getMessage'))) {
+        if (is_callable([$e, 'getMessage'])) {
             $errorstr .= get_string('message', 'plagiarism_turnitin').": ".$e->getMessage()." | ";
         }
 
-        if (is_callable(array($e, 'getCode'))) {
+        if (is_callable([$e, 'getCode'])) {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
@@ -167,7 +167,7 @@ class turnitin_comms {
      */
     private function get_lang() {
         $langcode = str_replace("_utf8", "", current_language());
-        $langarray = array(
+        $langarray = [
             'en' => 'en_us',
             'en_us' => 'en_us',
             'fr' => 'fr',
@@ -189,7 +189,7 @@ class turnitin_comms {
             'nl' => 'nl',
             'fi' => 'fi',
             'ar' => 'ar'
-        );
+        ];
         $langcode = (isset($langarray[$langcode])) ? $langarray[$langcode] : 'en_us';
         return $langcode;
     }

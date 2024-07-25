@@ -123,7 +123,7 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         $this->assertEquals(1, count($submissions));
 
         // Export all of the data for the user.
-        provider::export_plagiarism_user_data($csresponse["Student"]->id, $csresponse["Context"], array(), array());
+        provider::export_plagiarism_user_data($csresponse["Student"]->id, $csresponse["Context"], [], []);
         $writer = \core_privacy\local\request\writer::with_context($csresponse["Context"]);
         $this->assertTrue($writer->has_any_data());
     }
@@ -170,10 +170,10 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
         $libtest = new plagiarism_turnitin_lib_testcase();
-        $result = $libtest->create_assign_with_student_and_teacher(array(
+        $result = $libtest->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 0
-        ));
+        ]);
 
         $assignmodule = $result['assign'];
         $student = $result['student'];
@@ -200,6 +200,6 @@ class plagiarism_turnitin_privacy_provider_testcase extends \core_privacy\tests\
 
         $this->setUser($student);
 
-        return array("Student" => $student, "Context" => $context);
+        return ["Student" => $student, "Context" => $context];
     }
 }

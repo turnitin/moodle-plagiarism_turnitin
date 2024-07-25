@@ -66,14 +66,14 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
 
         $this->resetAfterTest(true);
 
-        $result = $this->create_assign_with_student_and_teacher(array(
+        $result = $this->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 1
-        ));
+        ]);
         $assignmodule = $result['assign'];
         $student = $result['student'];
         $course = $result['course'];
-        $group = $this->getDataGenerator()->create_group(array('courseid' => $course->id));
+        $group = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
         $cm = get_coursemodule_from_instance('assign', $assignmodule->id);
         $context = context_module::instance($cm->id);
         $assign = new testable_assign($context, $cm, $course);
@@ -85,9 +85,9 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $submission->status = ASSIGN_SUBMISSION_STATUS_SUBMITTED;
         $assign->testable_update_submission($submission, $student->id, true, false);
         $data = new stdClass();
-        $data->onlinetext_editor = array('itemid' => file_get_unused_draft_itemid(),
+        $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE);
+                                         'format' => FORMAT_MOODLE];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
@@ -98,10 +98,10 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $this->assertEquals($group->id, $response);
 
         // Test a non-group submission.
-        $result = $this->create_assign_with_student_and_teacher(array(
+        $result = $this->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 0
-        ));
+        ]);
         $assignmodule = $result['assign'];
         $student = $result['student'];
         $course = $result['course'];
@@ -114,9 +114,9 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $submission->status = ASSIGN_SUBMISSION_STATUS_SUBMITTED;
         $assign->testable_update_submission($submission, $student->id, true, false);
         $data = new stdClass();
-        $data->onlinetext_editor = array('itemid' => file_get_unused_draft_itemid(),
+        $data->onlinetext_editor = ['itemid' => file_get_unused_draft_itemid(),
                                          'text' => 'Submission text',
-                                         'format' => FORMAT_MOODLE);
+                                         'format' => FORMAT_MOODLE];
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
@@ -134,15 +134,15 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
      * @param array $params parameters to be provided to the assignment module creation
      * @return array containing the course, assignment module, student and teacher
      */
-    public function create_assign_with_student_and_teacher($params = array()) {
+    public function create_assign_with_student_and_teacher($params = []) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $params = array_merge(array(
+        $params = array_merge([
             'course' => $course->id,
             'name' => 'assignment',
             'intro' => 'assignment intro text',
-        ), $params);
+        ], $params);
 
         // Create a course and assignment and users.
         $assign = $this->getDataGenerator()->create_module('assign', $params);
@@ -151,10 +151,10 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         $context = context_module::instance($cm->id);
 
         $student = $this->getDataGenerator()->create_user();
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         $this->getDataGenerator()->enrol_user($student->id, $course->id, $studentrole->id);
         $teacher = $this->getDataGenerator()->create_user();
-        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
         $this->getDataGenerator()->enrol_user($teacher->id, $course->id, $teacherrole->id);
 
         assign_capability('mod/assign:view', CAP_ALLOW, $teacherrole->id, $context->id, true);
@@ -162,12 +162,12 @@ class plagiarism_turnitin_lib_testcase extends advanced_testcase {
         assign_capability('mod/assign:grade', CAP_ALLOW, $teacherrole->id, $context->id, true);
         accesslib_clear_all_caches_for_unit_testing();
 
-        return array(
+        return [
             'course' => $course,
             'assign' => $assign,
             'student' => $student,
             'teacher' => $teacher
-        );
+        ];
     }
 
     /**

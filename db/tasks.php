@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'plagiarism_turnitin\task\update_reports',
         'blocking' => 0,
         'minute' => '*/5',
@@ -34,8 +34,8 @@ $tasks = array(
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
-    ),
-    array(
+    ],
+    [
         'classname' => 'plagiarism_turnitin\task\send_submissions',
         'blocking' => 0,
         'minute' => '*/5',
@@ -43,5 +43,5 @@ $tasks = array(
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
-    ),
-);
+    ],
+];

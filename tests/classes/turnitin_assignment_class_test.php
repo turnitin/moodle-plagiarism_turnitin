@@ -93,8 +93,8 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_create_class', 'api_get_class', 'api_get_class_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
+            ->setMethods(['api_create_class', 'api_get_class', 'api_get_class_id'])
+            ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
         $mock->expects($this->any())
@@ -145,8 +145,8 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_update_class', 'api_set_class_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
+            ->setMethods(['api_update_class', 'api_set_class_id'])
+            ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
         // Edit a PP course.
@@ -159,7 +159,7 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
         // As the method does not return anything we will have to check the database before assertion.
         $mock->edit_tii_course($editcourse);
 
-        $responsecourse = $DB->get_record("plagiarism_turnitin_courses", array("id" => $course->id));
+        $responsecourse = $DB->get_record("plagiarism_turnitin_courses", ["id" => $course->id]);
 
         $expected = new stdClass();
         $expected->id = $course->id;
@@ -204,8 +204,8 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'))
-            ->setConstructorArgs(array(0, $faketiicomms))
+            ->setMethods(['api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'])
+            ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
         $mock->expects($this->any())
@@ -242,8 +242,8 @@ class plagiarism_turnitin_assignment_class_testcase extends advanced_testcase {
             ->withAnyParameters();
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(array('api_update_assignment', 'api_get_assignment_id', 'api_get_title'))
-            ->setConstructorArgs(array(0, $faketiicomms))
+            ->setMethods(['api_update_assignment', 'api_get_assignment_id', 'api_get_title'])
+            ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
         $mock->expects($this->any())

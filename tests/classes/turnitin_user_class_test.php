@@ -82,7 +82,7 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
         $this->resetAfterTest();
 
         $student = $this->getDataGenerator()->create_user();
-        $DB->insert_record('user_info_data', array('userid' => $student->id, 'fieldid' => 1, 'data' => 'Student', 'dataformat' => 0));
+        $DB->insert_record('user_info_data', ['userid' => $student->id, 'fieldid' => 1, 'data' => 'Student', 'dataformat' => 0]);
 
         set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism_turnitin');
@@ -97,7 +97,7 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
 
         $this->resetAfterTest();
 
-        $roles = array("Learner");
+        $roles = ["Learner"];
         $testuser = $this->make_test_users(1, $roles, 1);
 
         // Check that we have a user.
@@ -109,7 +109,7 @@ class plagiarism_turnitin_user_class_testcase extends plagiarism_turnitin_test_l
         $turnitinuser->unlink_user($testuser["joins"][0]);
 
         // We should have a Turnitin user ID of 0.
-        $user = $DB->get_record('plagiarism_turnitin_users', array('id' => $testuser["joins"][0]));
+        $user = $DB->get_record('plagiarism_turnitin_users', ['id' => $testuser["joins"][0]]);
         $this->assertEquals(0, $user->turnitin_uid);
     }
 }

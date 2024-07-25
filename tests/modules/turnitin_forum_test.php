@@ -81,7 +81,7 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
         $moduleobject = new turnitin_forum();
 
         $params = [
-            'content' => $this->post->message
+            'content' => $this->post->message,
         ];
 
         $content = $moduleobject->set_content($params);
@@ -101,7 +101,7 @@ class plagiarism_turnitin_forum_testcase extends advanced_testcase {
 
         $params = [
             'content' => 'content should not come back',
-            'postid' => $this->post->id
+            'postid' => $this->post->id,
         ];
 
         $content = $moduleobject->set_content($params);

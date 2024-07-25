@@ -172,7 +172,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $libtest = new plagiarism_turnitin_lib_testcase();
         $result = $libtest->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
-            'teamsubmission' => 0
+            'teamsubmission' => 0,
         ]);
 
         $assignmodule = $result['assign'];

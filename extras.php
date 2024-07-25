@@ -52,11 +52,11 @@ switch ($cmd) {
     case "rubricmanager":
         $PAGE->set_pagelayout('embedded');
         $courseid = optional_param('courseid', 0, PARAM_INT);
-        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $courseid));
+        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $courseid]);
         $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
-            array("class" => "launch_form"));
+            ["class" => "launch_form"]);
         echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
@@ -66,7 +66,7 @@ switch ($cmd) {
         $PAGE->set_pagelayout('embedded');
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
-            array("class" => "launch_form"));
+            ["class" => "launch_form"]);
         echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
@@ -97,7 +97,7 @@ switch ($cmd) {
 // Build page.
 echo $turnitinview->output_header($_SERVER["REQUEST_URI"]);
 
-echo html_writer::tag("div", $viewcontext, array("id" => "tii_view_context"));
+echo html_writer::tag("div", $viewcontext, ["id" => "tii_view_context"]);
 
 echo $output;
 

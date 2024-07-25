@@ -36,7 +36,7 @@ class turnitin_class {
 
         $this->id = $id;
 
-        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', array("courseid" => $id))) {
+        if ($turnitincourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $id])) {
             $this->turnitinid = $turnitincourse->turnitin_cid;
             $this->turnitintitle = $turnitincourse->turnitin_ctl;
         }
@@ -60,7 +60,7 @@ class turnitin_class {
             $readclass = $response->getClass();
 
             $rubrics = $readclass->getSharedRubrics();
-            $rubricarray = array();
+            $rubricarray = [];
             foreach ($rubrics as $rubric) {
                 $rubricarray[$rubric->getRubricGroupName()][$rubric->getRubricId()] = $rubric->getRubricName();
             }

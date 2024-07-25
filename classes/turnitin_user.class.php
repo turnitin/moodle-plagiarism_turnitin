@@ -70,7 +70,7 @@ class turnitin_user {
     public function get_moodle_user($userid) {
         global $DB;
 
-        $user = $DB->get_record('user', array('id' => $userid));
+        $user = $DB->get_record('user', ['id' => $userid]);
 
         if (empty($user->email) || strpos($user->email, '@') === false) {
             $split = explode('.', $user->username);
@@ -91,9 +91,9 @@ class turnitin_user {
         $this->email = trim(html_entity_decode($user->email));
         $this->username = $user->username;
 
-        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $this->id));
+        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $this->id]);
 
-        $this->instructorrubrics = array();
+        $this->instructorrubrics = [];
         if (!empty($turnitinuser->instructor_rubrics)) {
             $this->instructorrubrics = (array)json_decode($turnitinuser->instructor_rubrics);
         }
@@ -133,7 +133,7 @@ class turnitin_user {
     public function get_pseudo_lastname() {
         global $DB;
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $userinfo = $DB->get_record('user_info_data', array('userid' => $this->id, 'fieldid' => $config->plagiarism_turnitin_pseudolastname));
+        $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id, 'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
 
         if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 && $config->plagiarism_turnitin_lastnamegen == 1) {
             $uniqueid = strtoupper(strrev(uniqid()));
@@ -165,7 +165,7 @@ class turnitin_user {
      */
     private function get_tii_user_id() {
         global $DB;
-        $tiiuser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id), "turnitin_uid, user_agreement_accepted");
+        $tiiuser = $DB->get_record("plagiarism_turnitin_users", ["userid" => $this->id], "turnitin_uid, user_agreement_accepted");
         if (!$tiiuser) {
             $this->tiiuserid = 0;
             $this->useragreementaccepted = 0;
@@ -323,8 +323,8 @@ class turnitin_user {
         $tiiuser->turnitin_uid = 0;
 
         // Check if the deleted flag has been set. if yes delete the TII record rather than updating it.
-        if ($DB->get_record("user", array('id' => $this->id, 'deleted' => 1), "deleted")) {
-            $DB->delete_records('plagiarism_turnitin_users', array('userid' => $this->id));
+        if ($DB->get_record("user", ['id' => $this->id, 'deleted' => 1], "deleted")) {
+            $DB->delete_records('plagiarism_turnitin_users', ['userid' => $this->id]);
         } else {
             $DB->update_record('plagiarism_turnitin_users', $tiiuser);
         }
@@ -349,7 +349,7 @@ class turnitin_user {
             $user->turnitin_utp = 2;
         }
 
-        if ($turnitinuser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id))) {
+        if ($turnitinuser = $DB->get_record("plagiarism_turnitin_users", ["userid" => $this->id])) {
             $user->id = $turnitinuser->id;
             $user->turnitin_utp = $turnitinuser->turnitin_utp;
             if ((!$DB->update_record('plagiarism_turnitin_users', $user))) {
@@ -428,7 +428,7 @@ class turnitin_user {
             $readuser = $response->getUser();
 
             if ($readuser->getAcceptedUserAgreement()) {
-                $turnitinuser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $this->id));
+                $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $this->id]);
 
                 $tiiuserinfo = new stdClass();
                 $tiiuserinfo->id = $turnitinuser->id;
@@ -467,12 +467,12 @@ class turnitin_user {
             $this->usermessages = $readuser->getUserMessages();
             $this->save_instructor_rubrics($readuser->getInstructorRubrics());
 
-            $tiiuser = array(
+            $tiiuser = [
                 "id" => $readuser->getUserId(),
                 "firstname" => $readuser->getFirstName(),
                 "lastname" => $readuser->getLastName(),
                 "email" => $readuser->getEmail()
-            );
+            ];
 
             return $tiiuser;
 
@@ -514,12 +514,12 @@ class turnitin_user {
     private function save_instructor_rubrics($rubrics) {
         global $DB;
 
-        $rubricarray = array();
+        $rubricarray = [];
         foreach ($rubrics as $rubric) {
             $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName();
         }
 
-        if ($turnitinuser = $DB->get_record("plagiarism_turnitin_users", array("userid" => $this->id))) {
+        if ($turnitinuser = $DB->get_record("plagiarism_turnitin_users", ["userid" => $this->id])) {
             $turnitinuser->instructor_rubrics = json_encode($rubricarray);
             $DB->update_record('plagiarism_turnitin_users', $turnitinuser);
         }
@@ -564,13 +564,13 @@ class turnitin_user {
         global $DB;
 
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        $return = array();
+        $return = [];
         $idisplaystart = optional_param('iDisplayStart', 0, PARAM_INT);
         $idisplaylength = optional_param('iDisplayLength', 10, PARAM_INT);
         $secho = optional_param('sEcho', 1, PARAM_INT);
 
-        $displaycolumns = array('tu.userid', 'tu.turnitin_uid', 'mu.lastname', 'mu.firstname', 'mu.email');
-        $queryparams = array();
+        $displaycolumns = ['tu.userid', 'tu.turnitin_uid', 'mu.lastname', 'mu.firstname', 'mu.email'];
+        $queryparams = [];
 
         // Add sort to query.
         $isortcol[0] = optional_param('iSortCol_0', null, PARAM_INT);
@@ -628,9 +628,9 @@ class turnitin_user {
         $users = $DB->get_records_sql($query, $queryparams, $idisplaystart, $idisplaylength);
         $totalusers = count($DB->get_records_sql($query, $queryparams));
 
-        $return["aaData"] = array();
+        $return["aaData"] = [];
         foreach ($users as $user) {
-            $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', array("class" => "browser_checkbox"));
+            $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', ["class" => "browser_checkbox"]);
 
             $pseudoemail = "";
             if (!empty($config->plagiarism_turnitin_enablepseudo)) {
@@ -639,9 +639,9 @@ class turnitin_user {
                 $pseudoemail = $pseudouser->getEmail();
             }
 
-            $aadata = array($checkbox);
+            $aadata = [$checkbox];
             $user->turnitin_uid = ($user->turnitin_uid == 0) ? '' : $user->turnitin_uid;
-            $userdetails = array($user->turnitin_uid, format_string($user->lastname), format_string($user->firstname), $pseudoemail);
+            $userdetails = [$user->turnitin_uid, format_string($user->lastname), format_string($user->firstname), $pseudoemail];
             $return["aaData"][] = array_merge($aadata, $userdetails);
         }
         $return["sEcho"] = $secho;

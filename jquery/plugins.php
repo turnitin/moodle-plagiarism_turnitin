@@ -25,5 +25,5 @@ $plugins = [
     'plagiarism-turnitin_dataTables' => ['files' => ['jquery.dataTables.js', 'jquery.dataTables.css']],
     'plagiarism-turnitin_dataTables_plugins' => ['files' => ['jquery.dataTables.plugins.js']],
     'plagiarism-turnitin_settings'      => ['files' => ['turnitin_settings.js']],
-    'plagiarism-turnitin_datatables_columnfilter' => ['files' => ['jquery.dataTables.columnFilter.js']]
+    'plagiarism-turnitin_datatables_columnfilter' => ['files' => ['jquery.dataTables.columnFilter.js']],
 ];

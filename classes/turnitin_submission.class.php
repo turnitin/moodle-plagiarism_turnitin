@@ -15,21 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines turnitin_submission class
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
-}
-
 class turnitin_submission {
 
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var array|mixed
+     */
     private $data;
+    /**
+     * @var false|mixed|stdClass
+     */
     private $submissiondata;
+    /**
+     * @var false|stdClass
+     */
     private $cm;
 
+    /**
+     * Class turnitin_submission constructor.
+     *
+     * @param $id
+     * @param $data
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function __construct($id, $data = []) {
         global $DB;
 

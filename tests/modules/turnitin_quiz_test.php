@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -34,13 +36,14 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class turnitin_quiz_test extends advanced_testcase {
+final class turnitin_quiz_test extends advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.
      *
+     * @covers \turnitin_quiz
      * @copyright 2014 Tim Hunt
      */
-    public function test_update_mark() {
+    public function test_update_mark(): void {
         $this->resetAfterTest();
 
         // Create a user, course, and quiz activity with an essay question.

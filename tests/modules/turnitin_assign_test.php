@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_assign_testcase extends advanced_testcase {
+class turnitin_assign_test extends advanced_testcase {
 
     /** @var stdClass created in setUp. */
     protected $course;

@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class plagiarism_turnitin_quiz_testcase extends advanced_testcase {
+class turnitin_quiz_test extends advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.
      *

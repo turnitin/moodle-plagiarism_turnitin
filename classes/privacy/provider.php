@@ -140,7 +140,7 @@ class provider implements
             return;
         }
 
-        $user = $DB->get_record('user', array('id' => $userid));
+        $user = $DB->get_record('user', ['id' => $userid]);
 
         $params = ['userid' => $user->id];
 

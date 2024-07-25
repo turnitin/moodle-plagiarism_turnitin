@@ -103,7 +103,7 @@ class turnitin_form extends moodleform {
         }
 
         // Disable the form change checker - added in 2.3.2.
-        if (is_callable(array($mform, 'disable_form_change_checker'))) {
+        if (is_callable([$mform, 'disable_form_change_checker'])) {
             if (isset($this->_customdata["disable_form_change_checker"])) {
                 $mform->disable_form_change_checker();
             }
@@ -111,12 +111,12 @@ class turnitin_form extends moodleform {
 
         // Show multiple submit buttons if needed.
         if (isset($this->_customdata["multi_submit_buttons"])) {
-            $buttonarray = array();
+            $buttonarray = [];
             foreach ($this->_customdata["multi_submit_buttons"] as $btn) {
                 $buttonarray[] = &$mform->createElement('submit', $btn[0], $btn[1]);
             }
 
-            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+            $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         }
 
     }

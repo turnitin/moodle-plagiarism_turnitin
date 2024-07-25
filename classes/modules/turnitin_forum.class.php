@@ -56,7 +56,7 @@ class turnitin_forum {
         if (empty($linkarray['postid'])) {
             return $linkarray["content"];
         } else {
-            $post = $DB->get_record('forum_posts', array('id' => $linkarray['postid']));
+            $post = $DB->get_record('forum_posts', ['id' => $linkarray['postid']]);
             return $post->message;
         }
     }
@@ -68,7 +68,7 @@ class turnitin_forum {
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
-        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        $currentgradequery = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
         return $currentgradequery;
     }
 

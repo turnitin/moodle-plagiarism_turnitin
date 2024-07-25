@@ -14,11 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-
+/**
+ * Defines backup_plagiarism_turnitin_plugin class
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2013 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
 
+    /**
+     * Turnitin plugin structure for module level.
+     *
+     * @return backup_plugin_element
+     * @throws backup_step_exception
+     * @throws base_element_struct_exception
+     */
     protected function define_module_plugin_structure() {
         $plugin = $this->get_plugin_element();
 
@@ -37,7 +48,7 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
             $turnitinfiles = new backup_nested_element('turnitin_files');
             $turnitinfile = new backup_nested_element('turnitin_file', ['id'],
                                 ['userid', 'identifier', 'externalid', 'externalstatus',
-                                    'statuscode', 'similarityscore', 'transmatch', 'lastmodified', 'grade', 'submissiontype',]);
+                                    'statuscode', 'similarityscore', 'transmatch', 'lastmodified', 'grade', 'submissiontype', ]);
             $pluginelement->add_child($turnitinfiles);
             $turnitinfiles->add_child($turnitinfile);
 
@@ -46,6 +57,12 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
         return $plugin;
     }
 
+    /**
+     * Turnitin plugin structure for course level.
+     *
+     * @return backup_plugin_element
+     * @throws base_element_struct_exception
+     */
     protected function define_course_plugin_structure() {
         $plugin = $this->get_plugin_element();
 

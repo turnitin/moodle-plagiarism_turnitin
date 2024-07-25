@@ -123,9 +123,9 @@ class turnitin_view {
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = [0 => get_string('genimmediately1', 'plagiarism_turnitin'),
                             1 => get_string('genimmediately2', 'plagiarism_turnitin', $genparams),
-                            2 => get_string('genduedate', 'plagiarism_turnitin'),];
+                            2 => get_string('genduedate', 'plagiarism_turnitin'), ];
         $excludetypeoptions = [ 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
-                            2 => get_string('excludepercent', 'plagiarism_turnitin'),];
+                            2 => get_string('excludepercent', 'plagiarism_turnitin'), ];
 
         if ($location == "defaults") {
             $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
@@ -227,7 +227,7 @@ class turnitin_view {
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
                 $tiidraftoptions = [0 => get_string("submitondraft", "plagiarism_turnitin"),
-                                         1 => get_string("submitonfinal", "plagiarism_turnitin"),];
+                                         1 => get_string("submitonfinal", "plagiarism_turnitin"), ];
 
                 $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit", "plagiarism_turnitin"), $tiidraftoptions);
                 $this->lock($mform, $location, $locks);
@@ -239,7 +239,7 @@ class turnitin_view {
             $mform->addHelpButton('plagiarism_allow_non_or_submissions', 'allownonor', 'plagiarism_turnitin');
 
             $suboptions = [0 => get_string('norepository', 'plagiarism_turnitin'),
-                                1 => get_string('standardrepository', 'plagiarism_turnitin'),];
+                                1 => get_string('standardrepository', 'plagiarism_turnitin'), ];
             switch ($config->plagiarism_turnitin_repositoryoption) {
                 case 0; // Standard options.
                     $mform->addElement('select', 'plagiarism_submitpapersto', get_string('submitpapersto', 'plagiarism_turnitin'), $suboptions);

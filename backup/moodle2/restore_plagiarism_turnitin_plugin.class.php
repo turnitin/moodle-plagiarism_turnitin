@@ -14,9 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-
+/**
+ * Defines restore_plagiarism_turnitin_plugin class
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2013 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
     /**

@@ -14,12 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
-}
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
+/**
+ * Class plagiarism_turnitin_observer
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2018 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class plagiarism_turnitin_observer {
     /**
      * Handle the course_module_deleted event.

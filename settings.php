@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Turnitin settings page
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2012 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
@@ -74,12 +82,14 @@ if (!empty($action)) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
                                                 (['cm' => null, 'name' => $field]));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
-                        plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null,
+                            null, __FILE__, __LINE__);
                     }
                 } else {
                     $defaultfield->config_hash = $defaultfield->cm."_".$defaultfield->name;
                     if (!$DB->insert_record('plagiarism_turnitin_config', $defaultfield)) {
-                        plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                        plagiarism_turnitin_print_error('defaultinserterror', 'plagiarism_turnitin', null,
+                            null, __FILE__, __LINE__);
                     }
                 }
             }

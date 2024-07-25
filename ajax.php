@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Turnitin ajax file
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2013 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 use Integrations\PhpSdk\TiiClass;
 
 require_once(__DIR__.'/../../config.php');

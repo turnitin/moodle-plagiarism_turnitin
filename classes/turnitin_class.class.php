@@ -16,21 +16,46 @@
 
 use Integrations\PhpSdk\TiiClass;
 
-// @package   plagiarism_turnitin
-// @copyright 2012 iParadigms LLC
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 
+/**
+ * Class turnitin_class
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2012 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class turnitin_class {
 
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var int
+     */
     private $turnitinid;
+    /**
+     * @var string
+     */
     private $title;
+    /**
+     * @var string
+     */
     private $turnitintitle;
+    /**
+     * @var string
+     */
     public $sharedrubrics;
 
+    /**
+     * turnitin_class constructor.
+     *
+     * @param $id
+     * @throws dml_exception
+     */
     public function __construct($id) {
         global $DB;
 

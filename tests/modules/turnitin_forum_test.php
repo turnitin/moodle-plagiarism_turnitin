@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -32,7 +34,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  *
  * @package turnitin
  */
-class turnitin_forum_test extends advanced_testcase {
+final class turnitin_forum_test extends advanced_testcase {
 
     /** @var stdClass created in setUp. */
     protected $forum;
@@ -72,8 +74,10 @@ class turnitin_forum_test extends advanced_testcase {
 
     /**
      * Test to check that content returned by set content is the same as passed in array.
+     *
+     * @covers \turnitin_forum::set_content
      */
-    public function test_to_check_content_in_array_is_returned_by_set_content() {
+    public function test_to_check_content_in_array_is_returned_by_set_content(): void {
 
         $this->resetAfterTest(true);
 
@@ -91,8 +95,10 @@ class turnitin_forum_test extends advanced_testcase {
     /**
      * Test to check that content returned by set content is taken from database
      * if post id is passed in.
+     *
+     * @covers \turnitin_forum::set_content
      */
-    public function test_to_check_content_from_database_is_returned_by_set_content_if_postid_present() {
+    public function test_to_check_content_from_database_is_returned_by_set_content_if_postid_present(): void {
 
         $this->resetAfterTest(true);
 

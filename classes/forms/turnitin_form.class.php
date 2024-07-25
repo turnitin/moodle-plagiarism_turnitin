@@ -30,9 +30,15 @@ global $CFG;
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 require_once($CFG->libdir."/formslib.php");
 
+/**
+ * Define the form for the Turnitin plugin.
+ */
 class turnitin_form extends moodleform {
 
-    // Define the form.
+    /**
+     * Define the form.
+     * @return void
+     */
     public function definition() {
         $mform =& $this->_form;
 

@@ -14,40 +14,80 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+// phpcs:disable moodle.Commenting.TodoComment
+// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
+
 /**
+ * Class turnitin_coursework
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-// TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 class turnitin_coursework {
 
+    /**
+     * @var string
+     */
     private $modname;
+    /**
+     * @var string
+     */
     public $gradestable;
+    /**
+     * @var string
+     */
     public $filecomponent;
 
+    /**
+     * The constructor
+     */
     public function __construct() {
         $this->modname = 'coursework';
         $this->gradestable = $this->modname.'_feedbacks';
         $this->filecomponent = 'mod_'.$this->modname;
     }
 
+    /**
+     * Check whether the user is a tutor
+     *
+     * @param $context
+     * @return bool
+     */
     public function is_tutor($context) {
         $capabilities = [$this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
             'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades', ];
         return has_any_capability($capabilities, $context);
     }
 
+    /**
+     * Check if the user has the capability to add the initial grade
+     *
+     * @return string
+     */
     public function get_tutor_capability() {
         return 'mod/'.$this->modname.':addinitialgrade';
     }
 
+    /**
+     * Whether the user is enrolled on the course and has the capability to submit coursework
+     *
+     * @param $context
+     * @param $userid
+     * @return bool
+     * @throws coding_exception
+     */
     public function user_enrolled_on_course($context, $userid) {
         return has_capability('mod/'.$this->modname.':submit', $context, $userid);
     }
 
+    /**
+     * Get the author of the submission
+     *
+     * @param $itemid
+     * @return int
+     * @throws dml_exception
+     */
     public function get_author($itemid) {
         global $DB;
 
@@ -60,13 +100,25 @@ class turnitin_coursework {
         return $id;
     }
 
-
-
+    /**
+     * Create a file event
+     *
+     * @param $params
+     * @return mixed
+     */
     public function create_file_event($params) {
         return \mod_coursework\event\assessable_uploaded::create($params);
     }
 
-
+    /**
+     * Get the current grade query
+     *
+     * @param $userid
+     * @param $moduleid
+     * @param $itemid
+     * @return false|mixed
+     * @throws dml_exception
+     */
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
@@ -85,6 +137,12 @@ class turnitin_coursework {
         return $currentgradesquery;
     }
 
+    /**
+     * Initialise the post date for the module
+     *
+     * @param $moduledata
+     * @return int
+     */
     public function initialise_post_date($moduledata) {
         return 0;
     }

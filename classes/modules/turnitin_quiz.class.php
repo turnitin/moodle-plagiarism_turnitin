@@ -59,7 +59,7 @@ class turnitin_quiz {
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
-        $currentgradequery = $DB->get_record('grade_grades', array('userid' => $userid, 'itemid' => $itemid));
+        $currentgradequery = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
         return $currentgradequery;
     }
 

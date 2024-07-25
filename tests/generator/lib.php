@@ -47,9 +47,9 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
         $return['plagiarism_turnitin_users'] = [];
         $return['joins'] = [];
 
-        for ($i=0; $i < $number_of_users; $i++) {
+        for ($i = 0; $i < $number_of_users; $i++) {
             $role = isset($roles[$i]) ? $roles[$i] : 'Instructor';
-            $new_user = new turnitin_user( $i+1, $role, false, 'site', false );
+            $new_user = new turnitin_user( $i + 1, $role, false, 'site', false );
             array_push($return['plagiarism_turnitin_users'], $new_user);
             $joinid = $this->join_test_user($new_user);
             array_push($return['joins'], $joinid);

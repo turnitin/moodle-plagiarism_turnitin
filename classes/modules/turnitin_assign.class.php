@@ -76,7 +76,7 @@ class turnitin_assign {
         $params = ['assignment' => $assignid,
             'subtype' => 'assignsubmission',
             'plugin' => 'file',
-            'name' => 'maxfilesubmissions',];
+            'name' => 'maxfilesubmissions', ];
 
         $maxfilesubmissions = 0;
         if ($result = $DB->get_record('assign_plugin_config', $params, 'value')) {

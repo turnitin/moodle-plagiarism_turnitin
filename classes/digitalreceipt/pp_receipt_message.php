@@ -26,7 +26,9 @@ class pp_receipt_message {
     /**
      * Send digital receipt to submitter
      *
+     * @param int $userid
      * @param string $message
+     * @param int $courseid
      * @return void
      */
     public function send_message($userid, $message, $courseid) {

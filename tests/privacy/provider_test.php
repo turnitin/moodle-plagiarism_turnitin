@@ -198,7 +198,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
     /**
      * Create a submission for testing.
      *
-     * @param $numsubmissions
+     * @param int $numsubmissions
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception

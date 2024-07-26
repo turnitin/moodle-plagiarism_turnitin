@@ -51,7 +51,7 @@ class turnitin_coursework {
     /**
      * Check whether the user is a tutor
      *
-     * @param $context
+     * @param context $context The context
      * @return bool
      */
     public function is_tutor($context) {
@@ -72,8 +72,8 @@ class turnitin_coursework {
     /**
      * Whether the user is enrolled on the course and has the capability to submit coursework
      *
-     * @param $context
-     * @param $userid
+     * @param context $context The context
+     * @param int $userid The user id
      * @return bool
      * @throws coding_exception
      */
@@ -84,7 +84,7 @@ class turnitin_coursework {
     /**
      * Get the author of the submission
      *
-     * @param $itemid
+     * @param int $itemid The item id
      * @return int
      * @throws dml_exception
      */
@@ -103,7 +103,7 @@ class turnitin_coursework {
     /**
      * Create a file event
      *
-     * @param $params
+     * @param array $params The params
      * @return mixed
      */
     public function create_file_event($params) {
@@ -113,9 +113,9 @@ class turnitin_coursework {
     /**
      * Get the current grade query
      *
-     * @param $userid
-     * @param $moduleid
-     * @param $itemid
+     * @param int $userid The user id
+     * @param int $moduleid The module id
+     * @param int $itemid The item id
      * @return false|mixed
      * @throws dml_exception
      */
@@ -140,7 +140,7 @@ class turnitin_coursework {
     /**
      * Initialise the post date for the module
      *
-     * @param $moduledata
+     * @param stdClass $moduledata The module data
      * @return int
      */
     public function initialise_post_date($moduledata) {

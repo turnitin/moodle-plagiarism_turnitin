@@ -49,13 +49,13 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
     /**
      * Test for _get_metadata shim.
      *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::get_metadata
+     * @covers \core_plagiarism\privacy\legacy_polyfill::_get_metadata
      */
     public function test_get_metadata(): void {
         $this->resetAfterTest();
 
         $collection = new collection('plagiarism_turnitin');
-        $newcollection = provider::get_metadata($collection);
+        $newcollection = \plagiarism_turnitin\privacy\provider::_get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
         $this->assertCount(4, $itemcollection);
@@ -207,7 +207,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
-        $libtest = new plagiarism_turnitin_lib_testcase();
+        $libtest = new \plagiarism_turnitin\lib_test();
         $result = $libtest->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 0,
@@ -216,9 +216,9 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $assignmodule = $result['assign'];
         $student = $result['student'];
         $cm = get_coursemodule_from_instance('assign', $assignmodule->id);
-        $context = context_module::instance($cm->id);
+        $context = \context_module::instance($cm->id);
 
-        $plagiarismfile = new stdClass();
+        $plagiarismfile = new \stdClass();
         $plagiarismfile->cm = $cm->id;
         $plagiarismfile->userid = $student->id;
         $plagiarismfile->identifier = "abcd";

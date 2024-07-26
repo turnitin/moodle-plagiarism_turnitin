@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class turnitin_quiz_test extends advanced_testcase {
+final class turnitin_quiz_test extends \advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.
      *
@@ -58,8 +58,8 @@ final class turnitin_quiz_test extends advanced_testcase {
             'layout' => '1,0',
         ]);
 
-        $quizobj = quiz::create($quiz->id, $user->id);
-        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
+        $quizobj = \mod_quiz\quiz_settings::create($quiz->id, $user->id);
+        $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
         $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
 
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
@@ -72,24 +72,24 @@ final class turnitin_quiz_test extends advanced_testcase {
         $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, false, $user->id);
         quiz_start_new_attempt($quizobj, $quba, $attempt, 1, $timenow);
         quiz_attempt_save_started($quizobj, $quba, $attempt);
-        $attemptobj = quiz_attempt::create($attempt->id);
+        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
         $attemptobj->process_finish($timenow, false);
 
         // Expect no marks or grade for the attempt yet.
-        $attemptobj = quiz_attempt::create($attempt->id);
+        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
         $this->assertEquals(0.0, $attemptobj->get_sum_marks());
         $grade = quiz_get_best_grade($quiz, $user->id);
         $this->assertEquals(0.0, $grade);
 
         // Now update the grade of the essay question through the Turnitin quiz class.
-        $tiiquiz = new turnitin_quiz;
+        $tiiquiz = new \turnitin_quiz;
         $answer = $attemptobj->get_question_attempt(1)->get_response_summary();
         $slot = 1;
         $identifier = sha1($answer.$slot);
         $tiiquiz->update_mark($attempt->id, $identifier, $user->id, 75, $quiz->grade);
 
         // Reload the attempt and check the total marks and grade are as we expect it.
-        $attemptobj = quiz_attempt::create($attempt->id);
+        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
         $this->assertEquals(0.75, $attemptobj->get_sum_marks());
         $grade = quiz_get_best_grade($quiz, $user->id);
         $this->assertEquals(75.0, $grade);

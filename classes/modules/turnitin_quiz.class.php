@@ -54,7 +54,7 @@ class turnitin_quiz {
     /**
      * Check whether the user is a tutor
      *
-     * @param $context
+     * @param context $context The context
      * @return bool
      * @throws coding_exception
      */
@@ -65,8 +65,8 @@ class turnitin_quiz {
     /**
      * Whether the user is enrolled on the course and has the capability to submit quiz attempts
      *
-     * @param $context
-     * @param $userid
+     * @param context $context The context
+     * @param int $userid The user id
      * @return bool
      * @throws coding_exception
      */
@@ -77,7 +77,7 @@ class turnitin_quiz {
     /**
      * Get the author of the quiz attempt
      *
-     * @param $itemid
+     * @param int $itemid The item id
      * @return void
      */
     public function get_author($itemid = 0) {
@@ -96,7 +96,7 @@ class turnitin_quiz {
     /**
      * Set the content of the quiz attempt
      *
-     * @param $linkarray
+     * @param array $linkarray The link array
      * @return mixed
      */
     public function set_content($linkarray) {
@@ -106,9 +106,9 @@ class turnitin_quiz {
     /**
      * Get the current grade query
      *
-     * @param $userid
-     * @param $moduleid
-     * @param $itemid
+     * @param int $userid The user id
+     * @param int $moduleid The module id
+     * @param int $itemid The item id
      * @return false|mixed|stdClass
      * @throws dml_exception
      */
@@ -124,9 +124,9 @@ class turnitin_quiz {
     /**
      * Calculate the mark for a question attempt based on the grade given for the answer in TFS.
      *
-     * @param $grade
-     * @param $questionmaxmark
-     * @param $quizgrade
+     * @param float $grade The grade given for the answer in TFS
+     * @param float $questionmaxmark The maximum mark for the question
+     * @param float $quizgrade The total grade for the quiz
      * @return float|int
      */
     public function calculate_mark($grade, $questionmaxmark, $quizgrade) {
@@ -137,11 +137,11 @@ class turnitin_quiz {
     /**
      * Set a new mark for a question attempt based on the grade given for the answer in TFS.
      *
-     * @param $attemptid
-     * @param $identifier
-     * @param $userid
-     * @param $grade
-     * @param $quizgrade
+     * @param int $attemptid The attempt id
+     * @param string $identifier The question slot identifier
+     * @param int $userid The user id
+     * @param float $grade The grade given for the answer in TFS
+     * @param float $quizgrade The total grade for the quiz
      * @return void
      * @throws dml_exception
      * @throws dml_transaction_exception

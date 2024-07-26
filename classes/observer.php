@@ -40,8 +40,8 @@ class plagiarism_turnitin_observer {
     }
 
     /**
-     * Handle the course_module_deleted event.
-     * @param \core\event\course_module_deleted $event
+     * Handle the course_module_ended event.
+     * @param \core\event\course_reset_ended $event
      */
     public static function course_reset(
         \core\event\course_reset_ended $event) {
@@ -109,8 +109,9 @@ class plagiarism_turnitin_observer {
     }
 
     /**
-     * Handle the assignment assessable_submitted event.
-     * @param \mod_assign\event\assessable_submitted $event
+     * Handle the coursework assessable_uploaded event.
+     *
+     * @param \mod_coursework\event\assessable_uploaded $event
      */
     public static function coursework_submitted(
         \mod_coursework\event\assessable_uploaded $event) {

@@ -51,7 +51,7 @@ class turnitin_assign {
     /**
      * Check whether the user is a tutor
      *
-     * @param $context
+     * @param context $context The context
      * @return bool
      * @throws coding_exception
      */
@@ -69,21 +69,9 @@ class turnitin_assign {
     }
 
     /**
-     * Whether the user is enrolled on the course and has the capability to submit assignments
-     *
-     * @param $context
-     * @param $userid
-     * @return bool
-     * @throws coding_exception
-     */
-    public function user_enrolled_on_course($context, $userid) {
-        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
-    }
-
-    /**
      * Get the author of the submission
      *
-     * @param $itemid
+     * @param int $itemid The item id
      * @return int
      * @throws dml_exception
      */
@@ -98,10 +86,22 @@ class turnitin_assign {
     }
 
     /**
+     * Whether the user is enrolled on the course and has the capability to submit assignments
+     *
+     * @param context $context The context
+     * @param int $userid The user id
+     * @return bool
+     * @throws coding_exception
+     */
+    public function user_enrolled_on_course($context, $userid) {
+        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+    }
+
+    /**
      * Set the content of the submission
      *
-     * @param $linkarray
-     * @param $cm
+     * @param array $linkarray The link array
+     * @param object $cm The course module.
      * @return string
      */
     public function set_content($linkarray, $cm) {
@@ -114,7 +114,11 @@ class turnitin_assign {
     /**
      * Check if resubmissions in a Turnitin sense are allowed to an assignment.
      *
-     * @param $assignid
+     * @param int $assignid The assignment id
+     * @param int $reportgenspeed The report generation speed
+     * @param string $submissiontype The submission type
+     * @param int $attemptreopenmethod The attempt reopen method
+     * @param string $attemptreopened The attempt reopened status
      */
     public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod,
                                             $attemptreopened = null) {
@@ -150,8 +154,8 @@ class turnitin_assign {
     /**
      * Get the onlinetext submission
      *
-     * @param $userid
-     * @param $cm
+     * @param int $userid The user id
+     * @param object $cm The course module.
      * @return stdClass
      * @throws dml_exception
      */
@@ -181,7 +185,7 @@ class turnitin_assign {
     /**
      * Create a file event
      *
-     * @param $params
+     * @param array $params The params
      * @return \core\event\base
      * @throws coding_exception
      */
@@ -192,7 +196,7 @@ class turnitin_assign {
     /**
      * Create a text event
      *
-     * @param $params
+     * @param array $params The params
      * @return \core\event\base
      * @throws coding_exception
      */
@@ -203,9 +207,9 @@ class turnitin_assign {
     /**
      * Get the current grade query
      *
-     * @param $userid
-     * @param $moduleid
-     * @param $itemid
+     * @param int $userid The user id
+     * @param int $moduleid The module id
+     * @param int $itemid The item id
      * @return false|mixed
      * @throws dml_exception
      */
@@ -222,7 +226,7 @@ class turnitin_assign {
     /**
      * Initialise the post date for the module
      *
-     * @param $moduledata
+     * @param stdClass $moduledata The module data
      * @return int
      */
     public function initialise_post_date($moduledata) {

@@ -111,7 +111,7 @@ if (!empty($action)) {
 // Include Javascript & CSS.
 if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
     $PAGE->requires->js_call_amd('plagiarism_turnitin/plugin_settings', 'pluginSettings');
-    
+
     // Strings for JS.
     $PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitin');

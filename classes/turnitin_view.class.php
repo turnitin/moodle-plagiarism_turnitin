@@ -135,8 +135,8 @@ class turnitin_view {
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = [0 => get_string('reportgen_immediate_add_immediate', 'plagiarism_turnitin'),
                             1 => get_string('reportgen_immediate_add_duedate', 'plagiarism_turnitin'),
-                            2 => get_string('reportgen_duedate_add_duedate', 'plagiarism_turnitin'));
-        $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
+                            2 => get_string('reportgen_duedate_add_duedate', 'plagiarism_turnitin'), ];
+        $excludetypeoptions = [0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
                             2 => get_string('excludepercent', 'plagiarism_turnitin'), ];
 
         if ($location == "defaults") {
@@ -155,7 +155,8 @@ class turnitin_view {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
             } else {
-                // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below
+                // phpcs:disable moodle.Commenting.TodoComment
+                // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below.
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
@@ -378,59 +379,6 @@ class turnitin_view {
             } else {
                 $mform->addElement('hidden', 'plagiarism_rubric', '');
                 $mform->setType('plagiarism_rubric', PARAM_RAW);
-            }
-
-<<<<<<< HEAD
-=======
-            if (!empty($config->plagiarism_turnitin_useerater)) {
-                $handbookoptions = [
-                                            1 => get_string('erater_handbook_advanced', 'plagiarism_turnitin'),
-                                            2 => get_string('erater_handbook_highschool', 'plagiarism_turnitin'),
-                                            3 => get_string('erater_handbook_middleschool', 'plagiarism_turnitin'),
-                                            4 => get_string('erater_handbook_elementary', 'plagiarism_turnitin'),
-                                            5 => get_string('erater_handbook_learners', 'plagiarism_turnitin'),
-                                        ];
-
-                $dictionaryoptions = [
-                                            'en_US' => get_string('erater_dictionary_enus', 'plagiarism_turnitin'),
-                                            'en_GB' => get_string('erater_dictionary_engb', 'plagiarism_turnitin'),
-                                            'en'    => get_string('erater_dictionary_en', 'plagiarism_turnitin'),
-                                        ];
-                $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'plagiarism_turnitin'), $options);
-                $mform->setDefault('plagiarism_erater', 0);
-
-                $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook',
-                    'plagiarism_turnitin'),
-                                                $handbookoptions);
-                $mform->setDefault('plagiarism_erater_handbook', 2);
-                $mform->disabledIf('plagiarism_erater_handbook', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary',
-                    'plagiarism_turnitin'),
-                                                $dictionaryoptions);
-                $mform->setDefault('plagiarism_erater_dictionary', 'en_US');
-                $mform->disabledIf('plagiarism_erater_dictionary', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories',
-                    'plagiarism_turnitin'),
-                                                " ".get_string('erater_spelling', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_spelling', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar',
-                        'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_grammar', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage',
-                        'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_usage', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_mechanics', '', " ".
-                                                get_string('erater_mechanics', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_mechanics', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style',
-                        'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
             }
 
             $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),

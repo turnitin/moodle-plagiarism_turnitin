@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  *
  * @package turnitin
  */
-final class turnitin_assign_test extends advanced_testcase {
+final class turnitin_assign_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */
     protected $course;
@@ -47,6 +47,8 @@ final class turnitin_assign_test extends advanced_testcase {
      * Create a course and assignment module instance
      */
     public function setUp(): void {
+        parent::setUp();
+
         $this->course = $this->getDataGenerator()->create_course();
         $params = [
             'course' => $this->course->id,
@@ -68,7 +70,7 @@ final class turnitin_assign_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new turnitin_assign();
+        $moduleobject = new \turnitin_assign();
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file',
             ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
@@ -115,7 +117,7 @@ final class turnitin_assign_test extends advanced_testcase {
         $assign = $this->getDataGenerator()->create_module('assign', $params);
 
         // Create module object.
-        $moduleobject = new turnitin_assign();
+        $moduleobject = new \turnitin_assign();
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'file', ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
         $this->assertFalse($resubmissionallowed);

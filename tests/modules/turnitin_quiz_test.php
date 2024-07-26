@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class turnitin_quiz_test extends advanced_testcase {
+final class turnitin_quiz_test extends \advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.
      *
@@ -67,7 +67,7 @@ final class turnitin_quiz_test extends advanced_testcase {
         }
 
         $quizobj = $quizsettingsclass::create($quiz->id, $user->id);
-        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
+        $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
         $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
 
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
@@ -90,7 +90,7 @@ final class turnitin_quiz_test extends advanced_testcase {
         $this->assertEquals(0.0, $grade);
 
         // Now update the grade of the essay question through the Turnitin quiz class.
-        $tiiquiz = new turnitin_quiz;
+        $tiiquiz = new \turnitin_quiz;
         $answer = $attemptobj->get_question_attempt(1)->get_response_summary();
         $slot = 1;
         $identifier = sha1($answer.$slot);

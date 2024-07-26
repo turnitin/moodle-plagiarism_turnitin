@@ -53,7 +53,7 @@ class turnitin_class {
     /**
      * turnitin_class constructor.
      *
-     * @param $id
+     * @param int $id
      * @throws dml_exception
      */
     public function __construct($id) {
@@ -70,7 +70,7 @@ class turnitin_class {
     /**
      * Update class from Turnitin, mainly to get shared rubrics
      *
-     * @return
+     * @return void
      */
     public function read_class_from_tii() {
         // Initialise Comms Object.

@@ -56,6 +56,7 @@ class turnitin_view {
      * Prints the tab menu for the plugin settings
      *
      * @param string $currenttab The currect tab to be styled as selected
+     * @param array $notice An array containing the message and type of notice to display
      */
     public function draw_settings_tab_menu($currenttab, $notice = null) {
         global $OUTPUT;
@@ -84,8 +85,13 @@ class turnitin_view {
      * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
      * settings. This form shows in settings > defaults as well as the activity creation screen.
      *
-     * @param type $plugin_defaults
-     * @return type
+     * @param moodleform $mform The form object
+     * @param object $course The course object
+     * @param string $location The location of the form
+     * @param string $modulename The name of the module
+     * @param int $cmid The course module id
+     * @param int $currentrubric The current rubric id
+     * @return void
      */
     public function add_elements_to_settings_form($mform, $course, $location = "activity", $modulename = "", $cmid = 0,
         $currentrubric = 0) {
@@ -453,7 +459,7 @@ class turnitin_view {
     /**
      * Show the errors table for file uploads.
      *
-     * @param $page
+     * @param int $page The page number to show.
      * @return string
      * @throws coding_exception
      * @throws moodle_exception
@@ -589,6 +595,10 @@ class turnitin_view {
 
     /**
      * This adds a site lock check to the most recently added field
+     *
+     * @param moodleform $mform the form object
+     * @param string $location the location of the form
+     * @param array $locks the locks array
      */
     public function lock($mform, $location, $locks) {
 
@@ -621,6 +631,7 @@ class turnitin_view {
      * @param int $userid the Turnitin user id
      * @param string $userrole the role the user has on Turnitin in the course/class
      * @param string $buttonstring string for the submit button
+     * @param bool $ltireturn return the LTI form as a string
      * @return string form
      */
     public static function output_launch_form($type, $submissionid, $userid, $userrole,
@@ -679,8 +690,10 @@ class turnitin_view {
      * Return the output for a form to launch the relevant LTi function
      * It is then submitted on load via Javascript
      *
+     * @param string $type the type of document viewer that needs to be opened
      * @param string $userrole either Instructor or Learner
-     * @param int $userid
+     * @param int $partid the part id of the assignment
+     * @param int $classid the class id of the assignment
      * @return string form
      */
     public static function output_lti_form_launch($type, $userrole, $partid = 0, $classid = 0) {

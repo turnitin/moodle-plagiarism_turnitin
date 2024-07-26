@@ -262,6 +262,8 @@ class turnitin_setupform extends moodleform {
 
     /**
      * Save the plugin config data
+     *
+     * @param stdClass $data
      */
     public function save($data) {
         global $CFG;

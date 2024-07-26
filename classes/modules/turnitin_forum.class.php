@@ -51,7 +51,7 @@ class turnitin_forum {
     /**
      * Check whether the user is a tutor
      *
-     * @param $context
+     * @param context $context The context
      * @return bool
      * @throws coding_exception
      */
@@ -71,8 +71,8 @@ class turnitin_forum {
     /**
      * Whether the user is enrolled on the course and has the capability to reply to posts
      *
-     * @param $context
-     * @param $userid
+     * @param context $context The context
+     * @param int $userid The user id
      * @return bool
      * @throws coding_exception
      */
@@ -83,7 +83,7 @@ class turnitin_forum {
     /**
      * Get the author of the forum post
      *
-     * @param $itemid
+     * @param int $itemid The item id
      * @return void
      */
     public function get_author($itemid = 0) {
@@ -93,7 +93,7 @@ class turnitin_forum {
     /**
      * Set the content of the forum post
      *
-     * @param $linkarray
+     * @param array $linkarray The link array
      * @return mixed
      * @throws dml_exception
      */
@@ -111,7 +111,7 @@ class turnitin_forum {
     /**
      * Create a file event
      *
-     * @param $params
+     * @param array $params The params
      * @return \core\event\base
      * @throws coding_exception
      */
@@ -122,9 +122,9 @@ class turnitin_forum {
     /**
      * Get the current grade query
      *
-     * @param $userid
-     * @param $moduleid
-     * @param $itemid
+     * @param int $userid The user id
+     * @param int $moduleid The module id
+     * @param int $itemid The item id
      * @return false|mixed|stdClass
      * @throws dml_exception
      */
@@ -138,7 +138,7 @@ class turnitin_forum {
     /**
      * Initialise the post date for the module
      *
-     * @param $moduledata
+     * @param stdClass $moduledata The module data
      * @return int
      */
     public function initialise_post_date($moduledata) {
@@ -150,7 +150,7 @@ class turnitin_forum {
     /**
      * Get the forum discussion id
      *
-     * @param $forumdata
+     * @param string $forumdata The forum data
      * @return string
      */
     public function get_discussionid($forumdata) {

@@ -40,7 +40,7 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
      * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database
      * association work.
      *
-     * @param int $number_of_users
+     * @param int $numberofusers - the number of users to create.
      * @param array $roles - an array of strings, each of which should be 'Learner' or 'Instructor'.
      * @return object $return - object of two arrays of equal length, one full of plagiarism_turnitin_user types and the other with
      * ids for dbtable plagiarism_turnitin_users. The indices of these arrays DO align.
@@ -63,8 +63,8 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
     /**
      * Creates a moodle user and a corresponding entry in the plagiarism_turnitin_users table
      * for the tii user specified
-     * @param  object $plagiarism_turnitin_user - plagiarism_turnitin user object
      *
+     * @param  object $plagiarismturnitinuser - plagiarism_turnitin user object
      * @return  int $plagiarism_turnitin_user_id id of plagiarism_turnitin user join (for use in get_record queries on
      * plagiarism_turnitin_users table)
      */

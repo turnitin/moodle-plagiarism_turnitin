@@ -51,7 +51,7 @@ class turnitin_workshop {
     /**
      * Check whether the user is a tutor
      *
-     * @param $context
+     * @param context $context The context
      * @return bool
      * @throws coding_exception
      */
@@ -71,8 +71,8 @@ class turnitin_workshop {
     /**
      * Whether the user is enrolled on the course and has the capability to submit a workshop submission
      *
-     * @param $context
-     * @param $userid
+     * @param context $context The context
+     * @param int $userid The user id
      * @return bool
      * @throws coding_exception
      */
@@ -83,7 +83,7 @@ class turnitin_workshop {
     /**
      * Get the author of the workshop submission
      *
-     * @param $itemid
+     * @param int $itemid The item id
      * @return void
      */
     public function get_author($itemid) {
@@ -93,8 +93,8 @@ class turnitin_workshop {
     /**
      * Set the content of the workshop submission
      *
-     * @param $linkarray
-     * @param $moduleid
+     * @param array $linkarray The link array
+     * @param int $moduleid The module id
      * @return mixed
      */
     public function set_content($linkarray, $moduleid) {
@@ -104,8 +104,8 @@ class turnitin_workshop {
     /**
      * Get the onlinetext
      *
-     * @param $userid
-     * @param $cm
+     * @param int $userid The user id
+     * @param object $cm The course module.
      * @return stdClass
      * @throws dml_exception
      */
@@ -126,7 +126,7 @@ class turnitin_workshop {
     /**
      * Create a file event
      *
-     * @param $params
+     * @param array $params The params
      * @return \core\event\base
      * @throws coding_exception
      */
@@ -137,7 +137,7 @@ class turnitin_workshop {
     /**
      * Create a text event
      *
-     * @param $params
+     * @param array $params The params
      * @return \core\event\base
      * @throws coding_exception
      */
@@ -148,9 +148,9 @@ class turnitin_workshop {
     /**
      * Get the current grade query
      *
-     * @param $userid
-     * @param $moduleid
-     * @param $itemid
+     * @param int $userid The user id
+     * @param int $moduleid The module id
+     * @param int $itemid The item id
      * @return false|mixed|stdClass
      * @throws dml_exception
      */
@@ -164,7 +164,7 @@ class turnitin_workshop {
     /**
      * Initialise the post date for the module
      *
-     * @param $moduledata
+     * @param stdClass $moduledata The module data
      * @return mixed
      */
     public function initialise_post_date($moduledata) {

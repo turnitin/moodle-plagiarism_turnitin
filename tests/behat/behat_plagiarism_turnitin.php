@@ -108,7 +108,7 @@ class behat_plagiarism_turnitin extends behat_base {
      * I create a unique user with username
      *
      * @Given I create a unique user with username :username
-     * @param $username
+     * @param string $username
      */
     public function i_create_a_unique_user($username) {
         $generator = testing_util::get_data_generator();
@@ -246,6 +246,9 @@ class behat_plagiarism_turnitin extends behat_base {
      * @When /^I click save changes button "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/
      * @param string $selector type of element like css or xpath
      * @param string $locator to identify element
+     * @param bool $exception
+     * @param bool $node
+     * @param bool $timeout
      */
     public function click_save_changes_button($selector, $locator, $exception = false, $node = false, $timeout = false) {
         try {
@@ -290,6 +293,8 @@ class behat_plagiarism_turnitin extends behat_base {
      * phpcs:disable moodle.Files.LineLength.TooLong
      * @Given /^I unenroll the user account "(?P<student>(?:[^"]|\\")*)" with the role "(?P<role>(?:[^"]|\\")*)" from the class in Turnitin$/
      *
+     * @param string $student
+     * @param string $role
      * @throws Exception
      */
     public function i_unenroll_the_user_account_with_the_role_from_the_class_in_turnitin($student, $role) {

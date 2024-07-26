@@ -47,7 +47,7 @@ $observers = [
     ],
     [
         'eventname' => '\mod_assign\event\submission_removed',
-        'callback'  => 'plagiarism_turnitin_observer::assignsubmission_removed'
+        'callback'  => 'plagiarism_turnitin_observer::assignsubmission_removed',
     ],
     [
         'eventname' => '\mod_coursework\event\assessable_uploaded',

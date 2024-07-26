@@ -48,6 +48,8 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
      * Set Overwrite mtrace to avoid output during the tests.
      */
     public function setUp(): void {
+        parent::setUp();
+
         // Stub a fake tii comms.
         $this->faketiicomms = $this->getMockBuilder(turnitin_comms::class)
             ->disableOriginalConstructor()
@@ -65,7 +67,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
 
         $student = $this->getDataGenerator()->create_user();
 
-        $turnitinuser = new turnitin_user(0, null, null, null, null);
+        $turnitinuser = new \turnitin_user(0, null, null, null, null);
         $response = $turnitinuser->get_moodle_user($student->id);
 
         // Check that we have an object back with user details. No need to check all params.
@@ -82,7 +84,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     public function test_get_pseudo_domain(): void {
         $this->resetAfterTest();
 
-        $response = turnitin_user::get_pseudo_domain();
+        $response = \turnitin_user::get_pseudo_domain();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN, $response);
     }
 
@@ -95,7 +97,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     public function test_get_pseudo_firstname(): void {
         $this->resetAfterTest();
 
-        $turnitinuser = new turnitin_user(0, null, null, null, null);
+        $turnitinuser = new \turnitin_user(0, null, null, null, null);
         $response = $turnitinuser->get_pseudo_firstname();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
@@ -117,7 +119,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism_turnitin');
 
-        $turnitinuser = new turnitin_user($student->id, null, null, null, null);
+        $turnitinuser = new \turnitin_user($student->id, null, null, null, null);
         $response = $turnitinuser->get_pseudo_lastname();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
@@ -142,7 +144,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         $this->assertEquals(1, $count);
 
         // Unlink the user.
-        $turnitinuser = new turnitin_user(0, null, null, null, null);
+        $turnitinuser = new \turnitin_user(0, null, null, null, null);
         $turnitinuser->unlink_user($testuser["joins"][0]);
 
         // We should have a Turnitin user ID of 0.

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 global $DB;
@@ -34,7 +36,7 @@ require_once($CFG->dirroot.'/webservice/tests/helpers.php');
  * @copyright  2017 Turnitin
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
+abstract class plagiarism_turnitin_test_lib extends \advanced_testcase {
 
     /**
      * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database
@@ -51,7 +53,7 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
 
         for ($i = 0; $i < $numberofusers; $i++) {
             $role = isset($roles[$i]) ? $roles[$i] : 'Instructor';
-            $newuser = new turnitin_user( $i + 1, $role, false, 'site', false );
+            $newuser = new \turnitin_user( $i + 1, $role, false, 'site', false );
             array_push($return['plagiarism_turnitin_users'], $newuser);
             $joinid = $this->join_test_user($newuser);
             array_push($return['joins'], $joinid);
@@ -72,7 +74,7 @@ abstract class plagiarism_turnitin_test_lib extends advanced_testcase {
         global $DB;
 
         $mdluser = $this->getDataGenerator()->create_user();
-        $tiiuserrecord = new stdClass();
+        $tiiuserrecord = new \stdClass();
         $tiiuserrecord->userid = $mdluser->id;
         $tiiuserrecord->turnitin_uid = $plagiarismturnitinuser->id;
         $tiiuserrecord->user_agreement_accepted = 1;

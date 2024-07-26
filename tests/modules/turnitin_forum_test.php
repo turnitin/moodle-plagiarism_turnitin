@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  *
  * @package turnitin
  */
-final class turnitin_forum_test extends advanced_testcase {
+final class turnitin_forum_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */
     protected $forum;
@@ -49,22 +49,24 @@ final class turnitin_forum_test extends advanced_testcase {
      * Create a course and forum module instance
      */
     public function setUp(): void {
+        parent::setUp();
+
         // Create a course, user and a forum.
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $this->forum = $this->getDataGenerator()->create_module('forum', $record);
 
         // Add discussion to course.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->userid = $user->id;
         $record->forum = $this->forum->id;
         $this->discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
 
         // Add post to discussion.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->userid = $user->id;
         $record->forum = $this->forum->id;
@@ -82,7 +84,7 @@ final class turnitin_forum_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new turnitin_forum();
+        $moduleobject = new \turnitin_forum();
 
         $params = [
             'content' => $this->post->message,
@@ -103,7 +105,7 @@ final class turnitin_forum_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new turnitin_forum();
+        $moduleobject = new \turnitin_forum();
 
         $params = [
             'content' => 'content should not come back',

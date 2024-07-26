@@ -19,7 +19,7 @@
 // phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
 
 /**
- * Strings for component 'qtype_kprime', language 'ko'
+ * Strings for component 'plagiarism_turnitin', language 'ko'
  *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC

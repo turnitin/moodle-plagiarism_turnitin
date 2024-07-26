@@ -1534,8 +1534,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param object $cm The course module.
      * @param object $submission The submission object.
      * @param int $userid The user id.
+     * @param bool $cron Whether this is a cron job.
      */
-    private function update_grade($cm, $submission, $userid, $cron = FALSE) {
+    private function update_grade($cm, $submission, $userid, $cron = false) {
         global $DB, $USER, $CFG;
         $return = true;
 
@@ -1635,7 +1636,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $context = context_course::instance($cm->course);
                         if (has_capability('mod/assign:grade', $context, $USER->id)) {
                             // If the grade has changed and the change is not from a cron task then update the grader.
-                            if ($currentgrade->grade != $grade->grade && $cron == FALSE) {
+                            if ($currentgrade->grade != $grade->grade && $cron == false) {
                                 $grade->grader = $USER->id;
                             }
                         }
@@ -2316,7 +2317,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 // At the moment TII doesn't support double marking so we won't synchronise grades from Grade Mark
                                 // as it would destroy the workflow.
                                 if (!is_null($plagiarismfile->grade) && $cm->modname != "coursework") {
-                                    $this->update_grade($cm, $readsubmission, $currentsubmission->userid, TRUE);
+                                    $this->update_grade($cm, $readsubmission, $currentsubmission->userid, true);
                                 }
                             }
                         } catch (Exception $e) {

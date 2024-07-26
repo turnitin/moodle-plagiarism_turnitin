@@ -16,6 +16,11 @@ namespace Integrations\PhpSdk;
  */
 class OAuthSimple {
 
+    protected $sbs;
+    protected $oauth_body_hash;
+    protected $_parameters;
+    protected $_path;
+    protected $path;
     protected $_secrets;
     protected $_default_signature_method;
     protected $_action;

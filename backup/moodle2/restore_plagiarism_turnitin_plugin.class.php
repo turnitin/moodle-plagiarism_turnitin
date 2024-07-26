@@ -37,6 +37,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
      * Restore the Turnitin course
      * This will only be done this if the course is from the same site it was backed up from
      * and if the Turnitin course id does not currently exist in the database.
+     *
+     * @param array $data The data to be restored
+     * @return void
+     * @throws dml_exception
      */
     public function process_turnitin_course($data) {
         global $DB;
@@ -72,6 +76,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
      * Restore the Turnitin assignment id for this module
      * This will only be done this if the module is from the same site it was backed up from
      * and if the Turnitin assignment id does not currently exist in the database.
+     *
+     * @param array $data The data to be restored
+     * @return void
+     * @throws dml_exception
      */
     public function process_turnitin_config($data) {
         global $DB;
@@ -98,6 +106,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
      * Restore the links to Turnitin files.
      * This will only be done this if the module is from the same site it was backed up from
      * and if the Turnitin submission does not currently exist in the database.
+     *
+     * @param array $data The data to be restored
+     * @return void
+     * @throws dml_exception
      */
     public function process_turnitin_files($data) {
         global $DB;

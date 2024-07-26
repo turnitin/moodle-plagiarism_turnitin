@@ -51,7 +51,7 @@ class provider implements
     /**
      * Return the fields which contain personal data.
      *
-     * @param $collection collection a reference to the collection to use to store the metadata.
+     * @param collection $collection a reference to the collection to use to store the metadata.
      * @return $collection the updated collection of metadata items.
      */
     public static function _get_metadata(collection $collection) {

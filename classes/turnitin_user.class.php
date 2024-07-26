@@ -81,11 +81,11 @@ class turnitin_user {
     /**
      * Constructor for the Turnitin User class
      *
-     * @param $id
-     * @param $role
-     * @param $enrol
-     * @param $workflowcontext
-     * @param $finduser
+     * @param int $id The id
+     * @param string $role The role
+     * @param bool $enrol Whether to enrol the user
+     * @param string $workflowcontext The workflow context
+     * @param bool $finduser Whether to find the user
      */
     public function __construct($id, $role = "Learner", $enrol = true, $workflowcontext = "site", $finduser = true) {
         $this->id = $id;
@@ -175,7 +175,6 @@ class turnitin_user {
     /**
      * Convert a regular lastname into the pseudo equivelant for student data privacy purpose
      *
-     * @param string $email The users email address
      * @return string A pseudo lastname address
      */
     public function get_pseudo_lastname() {
@@ -210,7 +209,6 @@ class turnitin_user {
      * or if none found, it will try and find user in Turnitin. If not found it
      * will create them in Turnitin if necessary
      *
-     * @param object $user A data object for the user
      * @return var A Turnitin User ID or null
      */
     private function get_tii_user_id() {
@@ -281,8 +279,6 @@ class turnitin_user {
     /**
      * Create the user on Turnitin
      *
-     * @param object $user_details A data object for the user
-     * @param var $role user role to create
      * @return var Turnitin user id
      */
     private function create_tii_user() {
@@ -328,8 +324,6 @@ class turnitin_user {
     /**
      * Edit the user's details on Turnitin (only name can be updated)
      *
-     * @param object $user_details A data object for the user
-     * @param var $role user role to create
      * @return boolean
      */
     public function edit_tii_user() {
@@ -418,7 +412,7 @@ class turnitin_user {
     /**
      * Enrol the user on this course/class in Turnitin
      *
-     * @param type $tiicourseid id for the course/class in Turnitin
+     * @param int $tiicourseid id for the course/class in Turnitin
      * @return boolean
      */
     public function join_user_to_class($tiicourseid) {
@@ -587,6 +581,7 @@ class turnitin_user {
     /**
      * Set the rubrics the instructor has in Turnitin
      *
+     * @param string $role The role of the user
      * @return int
      */
     private function set_user_role($role) {

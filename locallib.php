@@ -25,7 +25,7 @@
 
 /**
  * Override the repository option if necessary depending on the configuration setting.
- * @param $submitpapersto int - The repository to submit to.
+ * @param int $submitpapersto - The repository to submit to.
  * @return $submitpapersto int - The repository to submit to.
  */
 function plagiarism_turnitin_override_repository($submitpapersto) {
@@ -50,9 +50,9 @@ function plagiarism_turnitin_override_repository($submitpapersto) {
  * Retrieve previously made successful submissions that match passed in parameters. This
  * avoids resubmitting them to Turnitin.
  *
- * @param $author
- * @param $cmid
- * @param $identifier
+ * @param string $author The author of the submission.
+ * @param int $cmid The course module id.
+ * @param int $identifier The identifier of the submission.
  * @return $plagiarismfiles - an array of succesfully submitted submissions
  */
 function plagiarism_turnitin_retrieve_successful_submissions($author, $cmid, $identifier) {
@@ -73,7 +73,7 @@ function plagiarism_turnitin_retrieve_successful_submissions($author, $cmid, $id
 
 /**
  * Add a config field to show submissions have been made which we use to lock the anonymous marking setting.
- * @param $cmid
+ * @param int $cmid The course module id.
  */
 function plagiarism_turnitin_lock_anonymous_marking($cmid) {
     global $DB;

@@ -113,6 +113,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Get the configuration settings for the plagiarism plugin
      *
+     * @param string $modulename the name of the module
      * @return mixed if plugin is enabled then an array of config settings is returned or false if not
      */
     public static function get_config_settings($modulename) {
@@ -197,8 +198,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * This function is called from the inbox in mod assign.
      * This will alert the user to refresh the assignment when there has been a change in scores.
      *
-     * @param $course - Course the module is part of
-     * @param $cm - Course module
+     * @param object $course The course object
+     * @param object $cm The course module.
      * @return string
      */
     public function update_status($course, $cm) {
@@ -267,9 +268,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Add the Turnitin settings form to an add/edit activity page
      *
-     * @param object $mform
-     * @param object $context
-     * @return type
+     * @param moodleform $mform The form object
+     * @param context $context The context of the form
+     * @param string $modulename The name of the module
+     * @return void
      */
     public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
         global $DB, $PAGE, $COURSE;
@@ -354,7 +356,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Remove Turnitin class and assignment links from database
      * so that new classes and assignments will be created.
      *
-     * @param type $eventdata
+     * @param object $eventdata
      * @return boolean
      */
     public static function course_reset($eventdata) {
@@ -429,6 +431,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Test whether we can connect to Turnitin.
      *
      * Initially only being used if a student is logged in before checking whether they have accepted the EULA.
+     *
+     * @param string $workflowcontext The context of the workflow
      */
     public function test_turnitin_connection($workflowcontext = 'site') {
         $turnitincomms = new turnitin_comms();
@@ -452,7 +456,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Print the Turnitin student disclosure inside the submission page for students to see
      *
-     * @param $cmid
+     * @param int $cmid The course module id
      * @return string
      */
     public function print_disclosure($cmid) {
@@ -612,6 +616,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Get Moodle and Turnitin Course data
+     *
+     * @param int $cmid The course module id
+     * @param int $courseid The course id
+     * @param string $workflowcontext The context of the workflow
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
         $coursedata = turnitin_assignment::get_course_data($courseid, $workflowcontext);
@@ -642,9 +650,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Get the links to display on the submission page.
      *
-     * @param type $linkarray
-     * @return type
+     * @param array $linkarray The link array
+     * @return string
      */
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $USER;
@@ -1273,7 +1282,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Query Turnitin for the papers that need updated locally.
      *
-     * @param $cm
+     * @param object $cm The course module.
      * @return false
      */
     public function fetch_updated_paper_ids_from_turnitin($cm) {
@@ -1306,7 +1315,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Update grades from Turnitin.
      *
-     * @param $cm
+     * @param object $cm The course module.
      * @return bool|int
      */
     public function update_grades_from_tii($cm) {
@@ -1351,8 +1360,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Update grade from Turnitin.
      *
-     * @param $cm
-     * @param $submissionid
+     * @param object $cm The course module.
+     * @param int $submissionid The submission id.
      * @return bool
      */
     public function update_grade_from_tii($cm, $submissionid) {
@@ -1387,9 +1396,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Update submission data.
      *
-     * @param $cm
-     * @param $submissionid
-     * @param $tiisubmission
+     * @param object $cm The course module.
+     * @param int $submissionid The submission id.
+     * @param TiiSubmission $tiisubmission The Turnitin submission.
      * @return bool|int
      * @throws dml_exception
      * @throws dml_transaction_exception
@@ -1518,6 +1527,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Update module grade and gradebook.
+     *
+     * @param object $cm The course module.
+     * @param object $submission The submission object.
+     * @param int $userid The user id.
      */
     private function update_grade($cm, $submission, $userid, $cron = FALSE) {
         global $DB, $USER, $CFG;
@@ -1686,6 +1699,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Check if this is a group submission.
+     *
+     * @param object $cm The course module.
+     * @param int $userid The user id.
      */
     public function check_group_submission($cm, $userid) {
         global $CFG, $DB;
@@ -1708,8 +1724,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
      * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
      *
-     * @param $cmid
-     * @param $groupid
+     * @param int $cmid The course module id.
+     * @param int $groupid The group id.
      * @return void
      * @throws coding_exception
      */
@@ -1729,6 +1745,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Create a course within Turnitin
+     *
+     * @param int $cmid The course module id.
+     * @param string $modname The module name.
+     * @param object $coursedata The course data.
+     * @param string $workflowcontext The context of the workflow.
      */
     public function create_tii_course($cmid, $modname, $coursedata, $workflowcontext = "site") {
         global $CFG;
@@ -1766,6 +1787,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Get Peermark Assignments for this module from Turnitin.
+     *
+     * @param object $cm The course module.
+     * @param string $tiiassignmentid The Turnitin assignment id.
      */
     public function refresh_peermark_assignments($cm, $tiiassignmentid) {
         global $DB;
@@ -1817,8 +1841,60 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
+     * Check for rubric and save to assignment.
+     *
+     * @param object $cm The course module.
+     */
+    public function update_rubric_from_tii($cm) {
+        global $DB;
+
+        $turnitincomms = new turnitin_comms();
+        $turnitincall = $turnitincomms->initialise_api();
+        $assignment = new TiiAssignment();
+
+        if ($tiimoduledata = $DB->get_record('plagiarism_turnitin_config',
+            ['cm' => $cm->id, 'name' => 'turnitin_assignid'], 'value')) {
+
+            $assignment->setAssignmentId($tiimoduledata->value);
+
+            try {
+                // Retrieve assignment from Turnitin.
+                $response = $turnitincall->readAssignment($assignment);
+                $tiiassignment = $response->getAssignment();
+
+                // Create rubric config field with rubric value from Turnitin.
+                $rubricfield = new stdClass();
+                $rubricfield->cm = $cm->id;
+                $rubricfield->name = 'plagiarism_rubric';
+                $rubricfield->value = $tiiassignment->getRubricId();
+
+                // Check if rubric already exists for this module.
+                if ($configfield = $DB->get_field('plagiarism_turnitin_config', 'id',
+                    (['cm' => $cm->id, 'name' => 'plagiarism_rubric']))) {
+
+                    // Use current configfield to update rubric value.
+                    $rubricfield->id = $configfield;
+
+                    $DB->update_record('plagiarism_turnitin_config', $rubricfield);
+                } else {
+                    // Otherwise create rubric entry for this module.
+                    $rubricfield->config_hash = $rubricfield->cm."_".$rubricfield->name;
+                    $DB->create_record('plagiarism_turnitin_config', $rubricfield);
+                }
+            } catch (Exception $e) {
+                $turnitincomms->handle_exceptions($e, 'tiiassignmentgeterror', false);
+            }
+        }
+    }
+
+    /**
      * Create the module as an assignment within Turnitin if it does not exist,
      * if we have a Turnitin id for the module then edit it
+     *
+     * @param object $cm The course module.
+     * @param string $coursetiiid The Turnitin course id.
+     * @param string $workflowcontext The context of the workflow.
+     * @param bool $submittoturnitin Whether to submit to Turnitin.
      */
     public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site", $submittoturnitin = false) {
         global $DB;
@@ -1870,7 +1946,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Don't set anonymous marking if there have been submissions.
         $previoussubmissions = $DB->record_exists('plagiarism_turnitin_files',
-                                                            ['cm' => $cm->id, 'statuscode' => 'success']);
+            ['cm' => $cm->id, 'statuscode' => 'success']);
 
         // Use Moodle's blind marking setting for anonymous marking.
         if (isset($config->plagiarism_turnitin_useanon) && $config->plagiarism_turnitin_useanon && !$previoussubmissions) {
@@ -1908,13 +1984,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $dtpost = 0;
         if ($cm->modname != "forum") {
             if ($gradeitem = $DB->get_record(
-                                            'grade_items',
-                                            [
-                                                'iteminstance' => $cm->instance,
-                                                'itemmodule' => $cm->modname,
-                                                'courseid' => $cm->course,
-                                                'itemnumber' => 0, ]
-                                            )) {
+                'grade_items',
+                [
+                    'iteminstance' => $cm->instance,
+                    'itemmodule' => $cm->modname,
+                    'courseid' => $cm->course,
+                    'itemnumber' => 0, ]
+            )) {
 
                 switch ($gradeitem->hidden) {
                     case 1:
@@ -1925,8 +2001,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         // If any grades have been released early via marking workflow, set post date to have passed.
                         if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
                             $gradesreleased = $DB->record_exists('assign_user_flags',
-                                                            ['assignment' => $cm->instance,
-                                                                    'workflowstate' => 'released', ]);
+                                ['assignment' => $cm->instance,
+                                    'workflowstate' => 'released', ]);
 
                             $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+1 month');
                         }
@@ -2002,7 +2078,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If we have a turnitin id then edit the assignment otherwise create it.
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config',
-                                    ['cm' => $cm->id, 'name' => 'turnitin_assignid'], 'value')) {
+            ['cm' => $cm->id, 'name' => 'turnitin_assignid'], 'value')) {
             $assignment->setAssignmentId($tiiassignment->value);
             $turnitinassignment = new turnitin_assignment(0);
 
@@ -2032,51 +2108,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Check for rubric and save to assignment.
-     */
-    public function update_rubric_from_tii($cm) {
-        global $DB;
-
-        $turnitincomms = new turnitin_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-        $assignment = new TiiAssignment();
-
-        if ($tiimoduledata = $DB->get_record('plagiarism_turnitin_config',
-            ['cm' => $cm->id, 'name' => 'turnitin_assignid'], 'value')) {
-
-            $assignment->setAssignmentId($tiimoduledata->value);
-
-            try {
-                // Retrieve assignment from Turnitin.
-                $response = $turnitincall->readAssignment($assignment);
-                $tiiassignment = $response->getAssignment();
-
-                // Create rubric config field with rubric value from Turnitin.
-                $rubricfield = new stdClass();
-                $rubricfield->cm = $cm->id;
-                $rubricfield->name = 'plagiarism_rubric';
-                $rubricfield->value = $tiiassignment->getRubricId();
-
-                // Check if rubric already exists for this module.
-                if ($configfield = $DB->get_field('plagiarism_turnitin_config', 'id',
-                    (['cm' => $cm->id, 'name' => 'plagiarism_rubric']))) {
-
-                    // Use current configfield to update rubric value.
-                    $rubricfield->id = $configfield;
-
-                    $DB->update_record('plagiarism_turnitin_config', $rubricfield);
-                } else {
-                    // Otherwise create rubric entry for this module.
-                    $rubricfield->config_hash = $rubricfield->cm."_".$rubricfield->name;
-                    $DB->create_record('plagiarism_turnitin_config', $rubricfield);
-                }
-            } catch (Exception $e) {
-                $turnitincomms->handle_exceptions($e, 'tiiassignmentgeterror', false);
-            }
-        }
-    }
-
-    /**
      * Updates the database field duedate_report_refresh for any given submission ID.
      * @param int $id - the ID of the submission to update.
      * @param int $newvalue - the value to which the field should be set.
@@ -2092,7 +2123,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Update simliarity scores.
-     * @param array $submissions - the submissions to be processed
+     *
      * @return boolean
      */
     public function cron_update_scores() {
@@ -2310,8 +2341,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Check the local submission state against Turnitin.
      *
-     * @param $assignmentids
-     * @param $submissionids
+     * @param array $assignmentids
+     * @param array $submissionids
      * @return array
      */
     private function check_local_submission_state($assignmentids, $submissionids) {
@@ -2342,7 +2373,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Invalidate a missing submission.
      *
-     * @param $missingsubmission
+     * @param int $missingsubmission The missing submission id.
      * @return void
      * @throws dml_exception
      */
@@ -2368,6 +2399,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Get a class Id from Turnitin if you only have an assignment id.
+     *
+     * @param int $assignmentid The assignment id.
      */
     private function get_course_id_from_assignment_id($assignmentid) {
         // Initialise Comms Object.
@@ -2390,6 +2423,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Previous incarnations of this plugin did not store the turnitin course id so we have to get this using the assignment id.
      * If that wasn't linked with turnitin then we have to check all the modules on this course.
+     *
+     * @param int $cmid The course module id.
+     * @param int $courseid The course id.
      */
     public function get_previous_course_id($cmid, $courseid) {
         global $DB;
@@ -2415,6 +2451,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Migrate course from previous version of plugin to this
+     *
+     * @param object $coursedata The course data.
+     * @param int $turnitincid The Turnitin course id.
+     * @param string $workflowcontext The context of the workflow.
      */
     public function migrate_previous_course($coursedata, $turnitincid, $workflowcontext = "site") {
         global $DB;
@@ -2451,12 +2491,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Queue submissions to send to Turnitin
      *
-     * @param $cm
-     * @param $author
-     * @param $submitter
-     * @param $identifier
-     * @param $submissiontype
-     * @param int $itemid
+     * @param object $cm The course module.
+     * @param string $author The author of the submission.
+     * @param int $submitter The submitter.
+     * @param string $identifier The identifier.
+     * @param string $submissiontype The submission type.
+     * @param int $itemid The item id.
+     * @param string $eventtype The event type.
      * @return bool
      */
     public function queue_submission_to_turnitin($cm, $author, $submitter, $identifier, $submissiontype, $itemid = 0,
@@ -2861,6 +2902,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Initialise submission values
      *
+     * @param object $cm The course module.
+     * @param int $userid The user id.
+     * @param string $identifier The identifier.
+     * @param string $submissiontype The submission type.
      **/
     private function create_new_tii_submission($cm, $userid, $identifier, $submissiontype) {
         global $DB;
@@ -2886,6 +2931,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Reset submission values
      *
+     * @param object $cm The course module.
+     * @param int $userid The user id.
+     * @param string $identifier The identifier.
+     * @param object $currentsubmission The current submission.
+     * @param string $submissiontype The submission type.
      **/
     private function reset_tii_submission($cm, $userid, $identifier, $currentsubmission, $submissiontype) {
         global $DB;
@@ -2912,6 +2962,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     /**
      * Clean up previous file submissions.
      * Moodle will remove any old files or drafts during cron execution and file submission.
+     *
+     * @param object $cm The course module.
+     * @param int $userid The user id.
+     * @param int $itemid The item id.
+     * @param string $submissiontype The submission type.
+     * @param string $identifier The identifier.
      */
     public function clean_old_turnitin_submissions($cm, $userid, $itemid, $submissiontype, $identifier) {
         global $DB, $CFG;
@@ -2979,6 +3035,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Update an errored submission in the files table.
+     *
+     * @param int $submissionid The submission id.
+     * @param int $attempt The attempt number.
+     * @param int $errorcode The error code.
      */
     public function save_errored_submission($submissionid, $attempt, $errorcode) {
         global $DB;
@@ -2998,6 +3058,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Save the submission data to the files table.
+     *
+     * @param object $cm The course module.
+     * @param int $userid The user id.
+     * @param int $submissionid The submission id.
+     * @param string $identifier The identifier.
+     * @param string $statuscode The status code.
+     * @param string $tiisubmissionid The Turnitin submission id.
+     * @param int $submitter The submitter.
+     * @param int $itemid The item id.
+     * @param string $submissiontype The submission type.
+     * @param int $attempt The attempt number.
+     * @param int $errorcode The error code.
+     * @param string $errormsg The error message.
      */
     public function save_submission($cm, $userid, $submissionid, $identifier, $statuscode, $tiisubmissionid, $submitter, $itemid,
                                     $submissiontype, $attempt, $errorcode = null, $errormsg = null) {
@@ -3039,6 +3112,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Delete a submission from Turnitin
+     *
+     * @param object $cm The course module.
+     * @param int $submissionid The submission id.
+     * @param int $userid The user id.
      */
     public function delete_tii_submission($cm, $submissionid, $userid) {
         global $DB;
@@ -3079,6 +3156,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Set a config value for the admin settings.
+     *
+     * @param object $data The data to set.
+     * @param string $property The property to set.
      */
     public static function plagiarism_set_config($data, $property) {
         // Scenario when performing the upgrade script to copy settings from V2 to PP.
@@ -3099,7 +3179,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
  *
  * @param moodleform $formwrapper
  * @param MoodleQuickForm $mform
- * @return type
+ * @return void
  */
 function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform) {
     $pluginturnitin = new plagiarism_plugin_turnitin();
@@ -3582,6 +3662,7 @@ function plagiarism_turnitin_tempfile(array $filename, $suffix) {
  *
  * @param string $input The error string if module = null otherwise the language string called by get_string()
  * @param string $module The module string
+ * @param string $link The link to redirect to
  * @param string $param The parameter to send to use as the $a optional object in get_string()
  * @param string $file The file where the error occured
  * @param string $line The line number where the error occured
@@ -3617,6 +3698,9 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
 
 /**
  * Override Moodle's mtrace function for methods shared with tasks.
+ *
+ * @param string $string The string to output
+ * @param string $eol The end of line character
  */
 function plagiarism_turnitin_mtrace($string, $eol) {
     return true;

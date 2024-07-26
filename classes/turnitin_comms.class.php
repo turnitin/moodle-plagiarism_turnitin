@@ -67,9 +67,9 @@ class turnitin_comms {
     /**
      * Constructor
      *
-     * @param $accountid
-     * @param $accountshared
-     * @param $url
+     * @param string $accountid
+     * @param string $accountshared
+     * @param string $url
      * @throws moodle_exception
      */
     public function __construct($accountid = null, $accountshared = null, $url = null) {
@@ -98,6 +98,7 @@ class turnitin_comms {
     /**
      * Initialise the API object
      *
+     * @param bool $istestingconnection
      * @return object \APITurnitin
      */
     public function initialise_api($istestingconnection = false) {
@@ -157,7 +158,8 @@ class turnitin_comms {
      *
      * @param object $e
      * @param string $tterrorstr
-     * @param boolean $toscreen
+     * @param bool $toscreen
+     * @param bool $embedded
      */
     public function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
         $errorstr = "";
@@ -199,7 +201,6 @@ class turnitin_comms {
     /**
      * Outputs a language code to use with the Turnitin API
      *
-     * @param string $langcode The Moodle language code
      * @return string The cleaned and mapped associated Turnitin lang code
      */
     private function get_lang() {

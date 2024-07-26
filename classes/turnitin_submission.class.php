@@ -43,8 +43,8 @@ class turnitin_submission {
     /**
      * Class turnitin_submission constructor.
      *
-     * @param $id
-     * @param $data
+     * @param int $id
+     * @param stdClass $data
      * @throws coding_exception
      * @throws dml_exception
      */

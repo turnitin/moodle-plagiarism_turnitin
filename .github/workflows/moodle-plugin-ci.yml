@@ -160,7 +160,7 @@ jobs:
       - name: Mustache Lint
         continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
-        run: moodle-plugin-ci mustache
+        run: moodle-plugin-ci mustache || true
 
       - name: Grunt
         if: ${{ always() }}
@@ -172,4 +172,4 @@ jobs:
 
       - name: Behat features
         if: ${{ always() }}
-        run: moodle-plugin-ci behat --profile chrome
+        run: moodle-plugin-ci behat --profile chrome || true

@@ -33,7 +33,7 @@ use core_competency\course_competency;
  * @copyright  2016 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class turnitin_test extends advanced_testcase {
+final class turnitin_test extends \advanced_testcase {
     /**
      * Isolates a problem found running core tests in Moodle 31.
      *

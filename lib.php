@@ -2646,7 +2646,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     continue;
                 } else {
                     try {
-                        $file->get_content();
+                        $fh = $file->get_content_file_handle();
+                        fclose($fh);
                     } catch (Exception $e) {
                         plagiarism_turnitin_activitylog('File content not found: '.$pathnamehash, 'PP_NO_FILE');
                         mtrace($e);

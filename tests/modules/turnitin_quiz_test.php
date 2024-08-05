@@ -58,8 +58,16 @@ final class turnitin_quiz_test extends \advanced_testcase {
             'layout' => '1,0',
         ]);
 
-        $quizobj = \mod_quiz\quiz_settings::create($quiz->id, $user->id);
-        $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
+        if (class_exists('\mod_quiz\quiz_settings')) {
+            $quizsettingsclass = '\mod_quiz\quiz_settings';
+            $quizattemptclass = '\mod_quiz\quiz_attempt';
+        } else {
+            $quizsettingsclass = 'quiz';
+            $quizattemptclass = 'quiz_attempt';
+        }
+
+        $quizobj = $quizsettingsclass::create($quiz->id, $user->id);
+        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
         $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
 
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
@@ -72,11 +80,11 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, false, $user->id);
         quiz_start_new_attempt($quizobj, $quba, $attempt, 1, $timenow);
         quiz_attempt_save_started($quizobj, $quba, $attempt);
-        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
+        $attemptobj = $quizattemptclass::create($attempt->id);
         $attemptobj->process_finish($timenow, false);
 
         // Expect no marks or grade for the attempt yet.
-        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
+        $attemptobj = $quizattemptclass::create($attempt->id);
         $this->assertEquals(0.0, $attemptobj->get_sum_marks());
         $grade = quiz_get_best_grade($quiz, $user->id);
         $this->assertEquals(0.0, $grade);
@@ -89,7 +97,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $tiiquiz->update_mark($attempt->id, $identifier, $user->id, 75, $quiz->grade);
 
         // Reload the attempt and check the total marks and grade are as we expect it.
-        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
+        $attemptobj = $quizattemptclass::create($attempt->id);
         $this->assertEquals(0.75, $attemptobj->get_sum_marks());
         $grade = quiz_get_best_grade($quiz, $user->id);
         $this->assertEquals(75.0, $grade);

@@ -74,8 +74,13 @@ class turnitin_quiz {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
+        if (class_exists('\mod_quiz\quiz_attempt')) {
+            $quizattemptclass = '\mod_quiz\quiz_attempt';
+        } else {
+            $quizattemptclass = 'quiz_attempt';
+        }
 
-        $attempt = quiz_attempt::create($attemptid);
+        $attempt = $quizattemptclass::create($attemptid);
         $quba = question_engine::load_questions_usage_by_activity($attempt->get_uniqueid());
 
         // Loop through each question slot.
@@ -101,7 +106,13 @@ class turnitin_quiz {
         $update->sumgrades = $quba->get_total_mark();
         $DB->update_record('quiz_attempts', $update);
 
-        quiz_save_best_grade($attempt->get_quiz(), $userid);
+        if (class_exists('\mod_quiz\grade_calculator')) {
+            // Support Moodle 4.3+.
+            $attempt->get_quizobj()->get_grade_calculator()->recompute_final_grade($userid);
+        } else {
+            // Support older Moodle versions.
+            quiz_save_best_grade($attempt->get_quiz(), $userid);
+        }
 
         $transaction->allow_commit();
     }

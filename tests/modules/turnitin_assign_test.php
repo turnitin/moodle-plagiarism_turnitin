@@ -37,15 +37,6 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  */
 final class turnitin_assign_test extends \advanced_testcase {
 
-    /**
-     * @var \stdClass
-     */
-    public $course;
-    /**
-     * @var \stdClass
-     */
-    public $assign;
-
     /** @var stdClass created in setUp. */
     protected $course;
 

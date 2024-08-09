@@ -2644,6 +2644,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     plagiarism_turnitin_activitylog('File not found: '.$pathnamehash, 'PP_NO_FILE');
                     $result = true;
                     continue;
+                } else if ($file->get_filename() === '.') {
+                    continue;
                 } else {
                     try {
                         $fh = $file->get_content_file_handle();
@@ -2655,10 +2657,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $result = true;
                         continue;
                     }
-                }
-
-                if ($file->get_filename() === '.') {
-                    continue;
                 }
 
                 $result = $result && $this->queue_submission_to_turnitin(

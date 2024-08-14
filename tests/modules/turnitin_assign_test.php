@@ -35,6 +35,12 @@ require_once($CFG->dirroot . '/mod/assign/externallib.php');
  */
 class plagiarism_turnitin_assign_testcase extends advanced_testcase {
 
+    /** @var stdClass created in setUp. */
+    protected $course;
+
+    /** @var stdClass created in setUp. */
+    protected $assign;
+
     /**
      * Create a course and assignment module instance
      */

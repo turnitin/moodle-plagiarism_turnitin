@@ -64,7 +64,7 @@ if (!is_null($table)) {
         $data = $DB->get_records($table, null, 'id ASC');
 
         // Use Moodle's dataformatting functions to output the data in the desired format.
-        download_as_dataformat($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
+        \core\dataformat::download_data($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
         exit;
 
     } else {

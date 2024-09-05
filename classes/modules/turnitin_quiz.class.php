@@ -87,7 +87,7 @@ class turnitin_quiz {
         foreach ($attempt->get_slots() as $slot) {
             $answer = $attempt->get_question_attempt($slot)->get_response_summary();
             // Check if this is the slot the mark is for by matching content.
-            $answerslot = $answer ? $answer.$slot : $answer;
+            $answerslot = $answer ? $answer.$slot : $slot;
             if (sha1($answerslot) == $identifier) {
                 // Translate the TFS grade to a mark for the question.
                 $questionmaxmark = $attempt->get_question_attempt($slot)->get_max_mark();

@@ -3084,6 +3084,16 @@ function plagiarism_turnitin_send_queued_submissions() {
                         break;
                     }
 
+                    // Prevent submissions queue breaking if file is too large and a larger size limit has been set in Moodle
+                    if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
+                        $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File size is '.$file->get_filesize().
+                            ' bytes, and the max filesize that Turnitin can accept is '.PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE.' bytes.';
+                        plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_TOO_LARGE');
+                        mtrace($errorstring);
+                        $errorcode = 2;
+                        break;
+                    }
+
                     $title = $file->get_filename();
                     $filename = $file->get_filename();
 

@@ -2624,7 +2624,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $moodlesubmission->content;
             }
 
-            $identifier = sha1($eventdata['other']['content']);
+            // If the content of the submission contains any images, these will show up as img tags
+            // At this moment (in the event handler) the src attribute of these img tags will be in the form of a full URL,
+            // but when we retrieve them later (i.e. when getting Document Viewer links) the stem will be replaced by @@PLUGINFILE@@
+            // Therefore to calculate the same hash in both places, we must perform the same replacement here
+            $content = preg_replace('~(?<=<img src=").*(?=\/[^"]+")~', '@@PLUGINFILE@@', $eventdata['other']['content']);
+            $identifier = sha1($content);
 
             // Check if content has been submitted before and return if so.
             $result = $this->queue_submission_to_turnitin(

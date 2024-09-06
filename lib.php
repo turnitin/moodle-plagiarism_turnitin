@@ -2080,16 +2080,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($reportsexpected[$tiisubmission->cm] == 1) {
                 $submissionids[] = $tiisubmission->externalid;
 
-                // If submission is added to the request, add the corresponding assign id in the assignids array.
-                $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
-                    array(
-                        'cm' => $tiisubmission->cm,
-                        'name' => 'turnitin_assignid'
-                    )
-                );
-
-                if (!isset(array_flip($assignmentids)[$moduleturnitinconfig->value])) {
-                    $assignmentids[] = $moduleturnitinconfig->value;
+                if (!isset(array_flip($assignmentids)[$modulesettings[$tiisubmission->cm]->turnitin_assignid])) {
+                    $assignmentids[] = $modulesettings[$tiisubmission->cm]->turnitin_assignid;
                 }
             }
         }

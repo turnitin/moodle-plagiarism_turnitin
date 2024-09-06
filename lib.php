@@ -2015,18 +2015,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
-
-        /*
-        $submissions = $DB->get_records_select(
-            'plagiarism_turnitin_files',
-            'statuscode = ?
-            AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
-            AND ( orcapable = ? OR orcapable IS NULL ) ',
-            array('success', 1),
-            'externalid DESC'
-        );
-        */
-
+        
         $submissions = $DB->get_records_sql(
           'SELECT PTF.*, 
           CM.instance AS instance,

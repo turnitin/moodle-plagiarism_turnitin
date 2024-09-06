@@ -2318,7 +2318,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        // Remove error submission queue if any.
+        // If the submission is already in the queue in an error state, remove it
         $DB->delete_records('plagiarism_turnitin_files', [
                 'cm' => $cm->id,
                 'userid' => $author,

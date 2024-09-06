@@ -969,7 +969,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                         return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
                                     };
 
-                                    $class = 'score_colour_'.$roundup(0);
+                                    $class = 'score_colour_'.$roundup($plagiarismfile->similarityscore);
                                 }
 
                                 $orscorehtml = html_writer::tag('div', $score.$transmatch,

@@ -2016,6 +2016,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $reportsexpected = array();
         $assignmentids = array();
 
+        /*
         $submissions = $DB->get_records_select(
             'plagiarism_turnitin_files',
             'statuscode = ?
@@ -2024,24 +2025,41 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             array('success', 1),
             'externalid DESC'
         );
+        */
+
+        $submissions = $DB->get_records_sql(
+          'SELECT PTF.*, 
+          CM.instance AS instance,
+          M.name AS modname
+          FROM {plagiarism_turnitin_files} PTF
+          JOIN {course_modules} CM ON CM.id = PTF.cm
+          JOIN {modules} M ON M.id = CM.module
+          WHERE statuscode = ?
+          AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
+          AND ( orcapable = ? OR orcapable IS NULL )
+          ORDER BY externalid DESC',
+          ['success', 1]
+        );
+
+        echo('$submissions: ' . json_encode($submissions, JSON_PRETTY_PRINT) . "\n");
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
 
             // Only add the submission to the request if the module still exists.
-            if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
+            // if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
 
                 // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                $moduledata = $DB->get_record($tiisubmission->modname, array('id' => $tiisubmission->instance));
                 $now = strtotime('now');
                 $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
                 if ($now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
                     $this->set_duedate_report_refresh($tiisubmission->id, 1);
                 }
 
-                if (!isset($reportsexpected[$cm->id])) {
-                    $plagiarismsettings = $this->get_settings($cm->id);
-                    $reportsexpected[$cm->id] = 1;
+                if (!isset($reportsexpected[$tiisubmission->cm])) {
+                    $plagiarismsettings = $this->get_settings($tiisubmission->cm);
+                    $reportsexpected[$tiisubmission->cm] = 1;
 
                     if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
                         $plagiarismsettings['plagiarism_compare_institution'] = 0;
@@ -2053,18 +2071,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
                         $plagiarismsettings['plagiarism_compare_institution'] == 0) {
-                        $reportsexpected[$cm->id] = 0;
+                        $reportsexpected[$tiisubmission->cm] = 0;
                     }
                 }
 
                 // Only add the submission to the request if we are expecting an originality report.
-                if ($reportsexpected[$cm->id] == 1) {
+                if ($reportsexpected[$tiisubmission->cm] == 1) {
                     $submissionids[] = $tiisubmission->externalid;
 
                     // If submission is added to the request, add the corresponding assign id in the assignids array.
                     $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
                         array(
-                            'cm' => $cm->id,
+                            'cm' => $tiisubmission->cm,
                             'name' => 'turnitin_assignid'
                         )
                     );
@@ -2073,7 +2091,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $assignmentids[] = $moduleturnitinconfig->value;
                     }
                 }
-            }
+            // }
         }
 
         $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);

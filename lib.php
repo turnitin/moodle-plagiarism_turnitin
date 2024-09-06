@@ -2041,7 +2041,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
           ['success', 1]
         );
 
-        echo('$submissions: ' . json_encode($submissions, JSON_PRETTY_PRINT) . "\n");
+        $modulesettings = [];
+        foreach ($submissions as $tiisubmission) {
+          if (!array_key_exists($tiisubmission->cm, $modulesettings)) {
+            $modulesettings[$tiisubmission->cm] = $this->get_settings($tiisubmission->cm);
+          }
+        }
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
@@ -2054,20 +2059,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             if (!isset($reportsexpected[$tiisubmission->cm])) {
-                $plagiarismsettings = $this->get_settings($tiisubmission->cm);
 
                 $reportsexpected[$tiisubmission->cm] = 1;
 
-                if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
-                    $plagiarismsettings['plagiarism_compare_institution'] = 0;
+                if (!isset($modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'])) {
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'] = 0;
                 }
 
                 // Don't add the submission to the request if module settings mean we will not get a report back.
-                if (array_key_exists('plagiarism_compare_student_papers', $plagiarismsettings) &&
-                    $plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
-                    $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
-                    $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
-                    $plagiarismsettings['plagiarism_compare_institution'] == 0) {
+                if (array_key_exists('plagiarism_compare_student_papers', $modulesettings[$tiisubmission->cm]) &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_student_papers'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_internet'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_journals'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'] == 0) {
                     $reportsexpected[$tiisubmission->cm] = 0;
                 }
             }

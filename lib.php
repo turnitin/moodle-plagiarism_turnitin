@@ -2059,7 +2059,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if (!isset($reportsexpected[$tiisubmission->cm])) {
                     $plagiarismsettings = $this->get_settings($tiisubmission->cm);
-                    $reportsexpected[$tiisubmission->cm] = 1;
+
+                    // TODO: DON'T COMMIT THIS! Change this back!
+                    // $reportsexpected[$tiisubmission->cm] = 1;
 
                     if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
                         $plagiarismsettings['plagiarism_compare_institution'] = 0;
@@ -2175,9 +2177,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Sets the duedate_report_refresh flag for each processed submission to 2 to prevent them being processed again in the next cron run.
         foreach ($submissions as $tiisubmission) {
-            if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
-                $this->set_duedate_report_refresh($tiisubmission->id, 2);
-            }
+            $this->set_duedate_report_refresh($tiisubmission->id, 2);
         }
 
         return true;

@@ -2053,15 +2053,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $moduledata = $DB->get_record($tiisubmission->modname, array('id' => $tiisubmission->instance));
                 $now = strtotime('now');
                 $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
-                if ($now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
+                if ($tiisubmission->duedate_report_refresh != 1 && $now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
                     $this->set_duedate_report_refresh($tiisubmission->id, 1);
                 }
 
                 if (!isset($reportsexpected[$tiisubmission->cm])) {
                     $plagiarismsettings = $this->get_settings($tiisubmission->cm);
 
-                    // TODO: DON'T COMMIT THIS! Change this back!
-                    // $reportsexpected[$tiisubmission->cm] = 1;
+                    $reportsexpected[$tiisubmission->cm] = 1;
 
                     if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
                         $plagiarismsettings['plagiarism_compare_institution'] = 0;

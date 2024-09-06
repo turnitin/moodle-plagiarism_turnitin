@@ -2618,18 +2618,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $submissiontype = ($cm->modname == 'forum') ? 'forum_post' : 'text_content';
 
-            // TODO: Check eventdata to see if content is included correctly. If so, this can be removed.
+            // The content inside the event data will not always correspond to the content we will look up later, e.g.
+            // because URLs have been converted to use @@PLUGINFILE@@ etc. Therefore to calculate the same hash, we need to
+            // do a lookup to get the file content
             if ($cm->modname == 'workshop') {
                 $moodlesubmission = $DB->get_record('workshop_submissions', array('id' => $eventdata['objectid']));
                 $eventdata['other']['content'] = $moodlesubmission->content;
             }
+            else if ($cm->modname == 'forum') {
+              $moodlesubmission = $DB->get_record('forum_posts', array('id' => $eventdata['objectid']));
+              $eventdata['other']['content'] = $moodlesubmission->message;
+            }
 
-            // If the content of the submission contains any images, these will show up as img tags
-            // At this moment (in the event handler) the src attribute of these img tags will be in the form of a full URL,
-            // but when we retrieve them later (i.e. when getting Document Viewer links) the stem will be replaced by @@PLUGINFILE@@
-            // Therefore to calculate the same hash in both places, we must perform the same replacement here
-            $content = preg_replace('~(?<=<img src=").*(?=\/[^"]+")~', '@@PLUGINFILE@@', $eventdata['other']['content']);
-            $identifier = sha1($content);
+            $identifier = sha1($eventdata['other']['content']);
 
             // Check if content has been submitted before and return if so.
             $result = $this->queue_submission_to_turnitin(

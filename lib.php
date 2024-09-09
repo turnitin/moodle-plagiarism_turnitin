@@ -2015,63 +2015,62 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
-
-        $submissions = $DB->get_records_select(
-            'plagiarism_turnitin_files',
-            'statuscode = ?
-            AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
-            AND ( orcapable = ? OR orcapable IS NULL ) ',
-            array('success', 1),
-            'externalid DESC'
+        
+        $submissions = $DB->get_records_sql(
+          'SELECT PTF.*, 
+          CM.instance AS instance,
+          M.name AS modname
+          FROM {plagiarism_turnitin_files} PTF
+          JOIN {course_modules} CM ON CM.id = PTF.cm
+          JOIN {modules} M ON M.id = CM.module
+          WHERE statuscode = ?
+          AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
+          AND ( orcapable = ? OR orcapable IS NULL )
+          ORDER BY externalid DESC',
+          ['success', 1]
         );
+
+        $modulesettings = [];
+        foreach ($submissions as $tiisubmission) {
+          if (!array_key_exists($tiisubmission->cm, $modulesettings)) {
+            $modulesettings[$tiisubmission->cm] = $this->get_settings($tiisubmission->cm);
+          }
+        }
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
+            // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
+            $moduledata = $DB->get_record($tiisubmission->modname, array('id' => $tiisubmission->instance));
+            $now = strtotime('now');
+            $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
+            if ($tiisubmission->duedate_report_refresh != 1 && $now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
+                $this->set_duedate_report_refresh($tiisubmission->id, 1);
+            }
 
-            // Only add the submission to the request if the module still exists.
-            if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
+            if (!isset($reportsexpected[$tiisubmission->cm])) {
 
-                // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-                $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
-                $now = strtotime('now');
-                $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
-                if ($now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
-                    $this->set_duedate_report_refresh($tiisubmission->id, 1);
+                $reportsexpected[$tiisubmission->cm] = 1;
+
+                if (!isset($modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'])) {
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'] = 0;
                 }
 
-                if (!isset($reportsexpected[$cm->id])) {
-                    $plagiarismsettings = $this->get_settings($cm->id);
-                    $reportsexpected[$cm->id] = 1;
-
-                    if (!isset($plagiarismsettings['plagiarism_compare_institution'])) {
-                        $plagiarismsettings['plagiarism_compare_institution'] = 0;
-                    }
-
-                    // Don't add the submission to the request if module settings mean we will not get a report back.
-                    if (array_key_exists('plagiarism_compare_student_papers', $plagiarismsettings) &&
-                        $plagiarismsettings['plagiarism_compare_student_papers'] == 0 &&
-                        $plagiarismsettings['plagiarism_compare_internet'] == 0 &&
-                        $plagiarismsettings['plagiarism_compare_journals'] == 0 &&
-                        $plagiarismsettings['plagiarism_compare_institution'] == 0) {
-                        $reportsexpected[$cm->id] = 0;
-                    }
+                // Don't add the submission to the request if module settings mean we will not get a report back.
+                if (array_key_exists('plagiarism_compare_student_papers', $modulesettings[$tiisubmission->cm]) &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_student_papers'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_internet'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_journals'] == 0 &&
+                    $modulesettings[$tiisubmission->cm]['plagiarism_compare_institution'] == 0) {
+                    $reportsexpected[$tiisubmission->cm] = 0;
                 }
+            }
 
-                // Only add the submission to the request if we are expecting an originality report.
-                if ($reportsexpected[$cm->id] == 1) {
-                    $submissionids[] = $tiisubmission->externalid;
+            // Only add the submission to the request if we are expecting an originality report.
+            if ($reportsexpected[$tiisubmission->cm] == 1) {
+                $submissionids[] = $tiisubmission->externalid;
 
-                    // If submission is added to the request, add the corresponding assign id in the assignids array.
-                    $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
-                        array(
-                            'cm' => $cm->id,
-                            'name' => 'turnitin_assignid'
-                        )
-                    );
-
-                    if (!isset(array_flip($assignmentids)[$moduleturnitinconfig->value])) {
-                        $assignmentids[] = $moduleturnitinconfig->value;
-                    }
+                if (!isset(array_flip($assignmentids)[$modulesettings[$tiisubmission->cm]->turnitin_assignid])) {
+                    $assignmentids[] = $modulesettings[$tiisubmission->cm]->turnitin_assignid;
                 }
             }
         }
@@ -2157,9 +2156,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Sets the duedate_report_refresh flag for each processed submission to 2 to prevent them being processed again in the next cron run.
         foreach ($submissions as $tiisubmission) {
-            if ($cm = get_coursemodule_from_id('', $tiisubmission->cm)) {
-                $this->set_duedate_report_refresh($tiisubmission->id, 2);
-            }
+            $this->set_duedate_report_refresh($tiisubmission->id, 2);
         }
 
         return true;

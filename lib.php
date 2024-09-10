@@ -2019,7 +2019,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Grab all plagiarism files where all the following conditions are met:
         // 1. The file has been successfully sent to TII
         // 2. The submission is ready to recieve a similarity score (either it doesn't already have a similarity score or it's set to regenerate)
-        // 3. The module associated with the submission still exists
+        // 3. The course or activity module associated with the submission hasn't been deleted
         $submissions = $DB->get_records_sql(
           'SELECT PTF.*, 
           CM.instance AS instance,

@@ -2016,13 +2016,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $reportsexpected = array();
         $assignmentids = array();
         
+        // Grab all plagiarism files where all the following conditions are met:
+        // 1. The file has been successfully sent to TII
+        // 2. The submission is ready to recieve a similarity score (either it doesn't already have a similarity score or it's set to regenerate)
+        // 3. The module associated with the submission still exists
         $submissions = $DB->get_records_sql(
           'SELECT PTF.*, 
           CM.instance AS instance,
           M.name AS modname
           FROM {plagiarism_turnitin_files} PTF
-          JOIN {course_modules} CM ON CM.id = PTF.cm
-          JOIN {modules} M ON M.id = CM.module
+          INNER JOIN {course_modules} CM ON CM.id = PTF.cm
+          INNER JOIN {modules} M ON M.id = CM.module
           WHERE statuscode = ?
           AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
           AND ( orcapable = ? OR orcapable IS NULL )
@@ -2030,6 +2034,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
           ['success', 1]
         );
 
+        // Cache module settings
         $modulesettings = [];
         foreach ($submissions as $tiisubmission) {
           if (!array_key_exists($tiisubmission->cm, $modulesettings)) {
@@ -2037,12 +2042,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
           }
         }
 
+        // Cache module data
+        $moduledata = [];
+        foreach ($submissions as $submission) {
+            if (!array_key_exists($tiisubmission->modname, $moduledata)) {
+                $moduledata[$tiisubmission->modname] = $DB->get_record($tiisubmission->modname, array('id' => $tiisubmission->instance));
+            }
+        }
+
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
             // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-            $moduledata = $DB->get_record($tiisubmission->modname, array('id' => $tiisubmission->instance));
             $now = strtotime('now');
-            $dtdue = (!empty($moduledata->duedate)) ? $moduledata->duedate : 0;
+            $dtdue = (!empty($moduledata[$tiisubmission->modname]->duedate)) ? $moduledata[$tiisubmission->modname]->duedate : 0;
             if ($tiisubmission->duedate_report_refresh != 1 && $now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
                 $this->set_duedate_report_refresh($tiisubmission->id, 1);
             }

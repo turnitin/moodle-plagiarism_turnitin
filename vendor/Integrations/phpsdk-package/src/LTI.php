@@ -33,6 +33,8 @@ class LTI extends OAuthSimple {
     protected $proxypassword;
     protected $proxybypass;
     protected $sslcertificate;
+    protected $integrationversion;
+    protected $pluginversion;
 
     public function __construct( $apibaseurl ) {
         $this->setApiBaseUrl( $apibaseurl );

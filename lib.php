@@ -726,10 +726,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 
-        // Work out if logged in user is a tutor on this module.
+        // Work out if logged in user is a tutor on this activity module.
         static $istutor;
         if (empty($istutor)) {
-            $istutor = $moduleobject->is_tutor($context);
+            $ctx_module = context_module::instance($cm->id);
+            $istutor = $moduleobject->is_tutor($ctx_module);
         }
 
         // Define the timestamp for updating Peermark Assignments.

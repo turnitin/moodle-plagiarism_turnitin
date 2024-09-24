@@ -1016,8 +1016,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || $gradeexists)));
 
                         // Show link to open grademark.
-                        if ($config->plagiarism_turnitin_usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))
-                                 && !empty($gradeitem)) {
+                        if ($config->plagiarism_turnitin_usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))) {
 
                             // Output grademark icon.
                             $gmicon = html_writer::tag('div', $OUTPUT->pix_icon('icon-edit',
@@ -2642,10 +2641,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $submissiontype = ($cm->modname == 'forum') ? 'forum_post' : 'text_content';
 
-            // TODO: Check eventdata to see if content is included correctly. If so, this can be removed.
+            // The content inside the event data will not always correspond to the content we will look up later, e.g.
+            // because URLs have been converted to use @@PLUGINFILE@@ etc. Therefore to calculate the same hash, we need to
+            // do a lookup to get the file content
             if ($cm->modname == 'workshop') {
                 $moodlesubmission = $DB->get_record('workshop_submissions', array('id' => $eventdata['objectid']));
                 $eventdata['other']['content'] = $moodlesubmission->content;
+            }
+            else if ($cm->modname == 'forum') {
+              $moodlesubmission = $DB->get_record('forum_posts', array('id' => $eventdata['objectid']));
+              $eventdata['other']['content'] = $moodlesubmission->message;
             }
 
             $identifier = sha1($eventdata['other']['content']);

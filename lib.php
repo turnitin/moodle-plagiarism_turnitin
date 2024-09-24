@@ -966,7 +966,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 } else {
                                     $score = $plagiarismfile->similarityscore.'%';
                                     $titlescore = $plagiarismfile->similarityscore.'% '.get_string('similarity', 'plagiarism_turnitin');
-                                    $class = 'score_colour_'.round($plagiarismfile->similarityscore, -1);
+                                    $roundup = function($n, $x=25) {
+                                        return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
+                                    };
+
+                                    $class = 'score_colour_'.$roundup($plagiarismfile->similarityscore);
                                 }
 
                                 $orscorehtml = html_writer::tag('div', $score.$transmatch,

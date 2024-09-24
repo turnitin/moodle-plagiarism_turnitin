@@ -190,17 +190,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * This function is called from the inbox in mod assign.
+     * Callback to add a chunk of HTML to the top of the body
      * This will alert the user to refresh the assignment when there has been a change in scores.
-     *
-     * @param $course - Course the module is part of
-     * @param $cm - Course module
+     * Deprecated in Moodle 4.4+, for these versions we use the hooks api instead. See
+     * classes/hook_callbacks.php and db/hooks.php
      * @return string
      */
-    public function update_status($course, $cm) {
+    public function plagiarism_turnitin_before_standard_top_of_body_html() {
         return html_writer::div(get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin'),
             'turnitin_score_refresh_alert', array('id' => 'turnitin_score_refresh_alert'));
     }
+
     /**
      * Check if plugin has been configured with Turnitin account details.
      * @return boolean whether the plugin is configured for Turnitin.
@@ -726,10 +726,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 
-        // Work out if logged in user is a tutor on this module.
+        // Work out if logged in user is a tutor on this activity module.
         static $istutor;
         if (empty($istutor)) {
-            $istutor = $moduleobject->is_tutor($context);
+            $ctx_module = context_module::instance($cm->id);
+            $istutor = $moduleobject->is_tutor($ctx_module);
         }
 
         // Define the timestamp for updating Peermark Assignments.
@@ -965,7 +966,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 } else {
                                     $score = $plagiarismfile->similarityscore.'%';
                                     $titlescore = $plagiarismfile->similarityscore.'% '.get_string('similarity', 'plagiarism_turnitin');
-                                    $class = 'score_colour_'.round($plagiarismfile->similarityscore, -1);
+                                    $roundup = function($n, $x=25) {
+                                        return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
+                                    };
+
+                                    $class = 'score_colour_'.$roundup($plagiarismfile->similarityscore);
                                 }
 
                                 $orscorehtml = html_writer::tag('div', $score.$transmatch,
@@ -1011,8 +1016,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || $gradeexists)));
 
                         // Show link to open grademark.
-                        if ($config->plagiarism_turnitin_usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))
-                                 && !empty($gradeitem)) {
+                        if ($config->plagiarism_turnitin_usegrademark && ($istutor || ($linkarray["userid"] == $USER->id && $released))) {
 
                             // Output grademark icon.
                             $gmicon = html_writer::tag('div', $OUTPUT->pix_icon('icon-edit',
@@ -2649,10 +2653,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $submissiontype = ($cm->modname == 'forum') ? 'forum_post' : 'text_content';
 
-            // TODO: Check eventdata to see if content is included correctly. If so, this can be removed.
+            // The content inside the event data will not always correspond to the content we will look up later, e.g.
+            // because URLs have been converted to use @@PLUGINFILE@@ etc. Therefore to calculate the same hash, we need to
+            // do a lookup to get the file content
             if ($cm->modname == 'workshop') {
                 $moodlesubmission = $DB->get_record('workshop_submissions', array('id' => $eventdata['objectid']));
                 $eventdata['other']['content'] = $moodlesubmission->content;
+            }
+            else if ($cm->modname == 'forum') {
+              $moodlesubmission = $DB->get_record('forum_posts', array('id' => $eventdata['objectid']));
+              $eventdata['other']['content'] = $moodlesubmission->message;
             }
 
             $identifier = sha1($eventdata['other']['content']);
@@ -3111,6 +3121,16 @@ function plagiarism_turnitin_send_queued_submissions() {
                         plagiarism_turnitin_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
                         mtrace('File not found for submission. Identifier: '.$queueditem->id);
                         $errorcode = 9;
+                        break;
+                    }
+
+                    // Prevent submissions queue breaking if file is too large and a larger size limit has been set in Moodle
+                    if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
+                        $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File size is '.$file->get_filesize().
+                            ' bytes, and the max filesize that Turnitin can accept is '.PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE.' bytes.';
+                        plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_TOO_LARGE');
+                        mtrace($errorstring);
+                        $errorcode = 2;
                         break;
                     }
 

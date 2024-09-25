@@ -54,8 +54,26 @@ switch ($action) {
     case "get_dv_html":
         $submissionid = required_param('submissionid', PARAM_INT);
         $dvtype = optional_param('dvtype', 'default', PARAM_ALPHAEXT);
+
         $user = new turnitin_user($USER->id, $userrole);
         $coursedata = turnitin_assignment::get_course_data($cm->course);
+
+        // Check whether trying to open DV for a group submission to an assignment
+        // If we are, open DV as if we were the user from that group who made the submission on behalf of the group
+        if ($cm->modname == "assign") {
+            $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
+            if ($moduledata->teamsubmission) {
+                $currentgroupid = groups_get_activity_group($cm);
+                $members = groups_get_members($currentgroupid);
+                foreach ($members as $member) {
+                    $submission = $DB->get_record("plagiarism_turnitin_files", ['cm' => $cm->id, 'userid' => $member->id]);
+                    if ($submission) {
+                        $user = new turnitin_user($member->id, $userrole);
+                        break;
+                    }
+                }
+            }
+        }
 
         if ($userrole == 'Instructor') {
             $user->join_user_to_class($coursedata->turnitin_cid);

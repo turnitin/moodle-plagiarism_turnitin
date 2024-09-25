@@ -938,7 +938,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if ($plagiarismfile) {
 
                     if ($plagiarismfile->statuscode == 'success' || ($plagiarismfile->statuscode == 'error' && $plagiarismfile->errorcode == 13)) {
-                        if ($istutor || $linkarray["userid"] == $USER->id) {
+                        if ($istutor || in_array($USER->id, $submissionusers)) {
                             $output .= html_writer::tag('div',
                                             $OUTPUT->pix_icon('turnitin-icon',
                                                 get_string('turnitinid', 'plagiarism_turnitin').': '.$plagiarismfile->externalid,
@@ -985,20 +985,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                                             array('class' => 'origreport_forum_launch origreport_forum_launch_'.$plagiarismfile->externalid));
                             }
 
-                            // This class is applied so that only the user who submitted or a tutor can open the DV.
-                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
-
                             // Output container for OR Score.
-                            $ordivclass = 'row_score pp_origreport '.$useropenclass.' origreport_'.$plagiarismfile->externalid.'_'.$linkarray["cmid"];
+                            $ordivclass = 'row_score pp_origreport pp_origreport_open origreport_'.$plagiarismfile->externalid.'_'.$linkarray["cmid"];
                             $output .= html_writer::tag('div', $orscorehtml, array('class' => $ordivclass, 'tabindex' => '0', 'role' => 'link'));
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
                             $notorlink = html_writer::tag('div', 'x', array('title' => get_string('notorcapable', 'plagiarism_turnitin'),
                                                                         'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable'));
-                            // This class is applied so that only the user who submitted or a tutor can open the DV.
-                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
-                            $output .= html_writer::tag('div', $notorlink, array('class' => 'row_score pp_origreport '.$useropenclass));
+                            $output .= html_writer::tag('div', $notorlink, array('class' => 'row_score pp_origreport pp_origreport_open'));
                         }
 
                         // Check if blind marking is on and revealidentities is not set yet.

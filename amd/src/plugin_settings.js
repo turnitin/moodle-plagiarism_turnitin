@@ -6,7 +6,9 @@
  * @module plagiarism_turnitin/plugin_settings
  */
 
-define(['jquery'], function($) {
+define(['jquery',
+        'plagiarism_turnitin/datatables'
+       ], function($, DataTables) {
       return {
           pluginSettings: function() {
             jQuery(document).ready(function($) {
@@ -134,39 +136,41 @@ define(['jquery'], function($) {
           
               // Configure datatables language settings.
               var dataTablesLang = {
-                  "nointegration": M.str.plagiarism_turnitin.nointegration,
-                  "sProcessing": M.str.plagiarism_turnitin.sprocessing,
-                  "sZeroRecords": M.str.plagiarism_turnitin.szerorecords,
-                  "sInfo": M.str.plagiarism_turnitin.sinfo,
-                  "sSearch": M.str.plagiarism_turnitin.ssearch,
-                  "sLengthMenu": M.str.plagiarism_turnitin.slengthmenu,
-                  "sInfoEmpty": M.str.plagiarism_turnitin.semptytable,
-                  "oPaginate": {
-                      "sNext": M.str.plagiarism_turnitin.snext,
-                      "sPrevious": M.str.plagiarism_turnitin.sprevious
+                  nointegration: M.str.plagiarism_turnitin.nointegration,
+                  processing: M.str.plagiarism_turnitin.sprocessing,
+                  zeroRecords: M.str.plagiarism_turnitin.szerorecords,
+                  info: M.str.plagiarism_turnitin.sinfo,
+                  search: M.str.plagiarism_turnitin.ssearch,
+                  lengthMenu: M.str.plagiarism_turnitin.slengthmenu,
+                  infoEmpty: M.str.plagiarism_turnitin.semptytable,
+                  paginate: {
+                      next: M.str.plagiarism_turnitin.snext,
+                      previous: M.str.plagiarism_turnitin.sprevious
                   }
               };
           
               // Configure the unlink and relink users datatable in the plugin settings area.
               $('#unlinkUserTable').dataTable({
-                  "bDestroy": true,
-                  "bProcessing": true,
-                  "bServerSide": true,
-                  "oLanguage": dataTablesLang,
-                  "aaSorting": [[ 2, "asc" ]],
-                  "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                  "sAjaxSource": "ajax.php?action=get_users",
-                  "aoColumns": [
-                      {"bSortable": false,
-                          "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                              $(nTd).addClass('centered_cell');
-                          }},
-                      null,
-                      {"aDataSort": [ 2, 3 ]},
-                      {"aDataSort": [ 3, 2 ]},
-                      null
+                  destroy: true,
+                  processing: true,
+                  serverSide: true,
+                  language: dataTablesLang,
+                  order: [[ 2, "asc" ]],
+                  lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                  ajax: "ajax.php?action=get_users",
+                  columns: [
+                      {
+                        sortable: false,
+                        createdCell: function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).addClass('centered_cell');
+                        }
+                      },
+                      {},
+                      { sort: [ 2, 3 ] },
+                      { sort: [ 3, 2 ] },
+                      {}
                   ],
-                  "fnDrawCallback": function () {
+                  drawCallback: function () {
                       $('input[name="selectallcb"]').attr('checked', false);
                   }
               });

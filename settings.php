@@ -97,11 +97,13 @@ if (!empty($action)) {
 
 // Include Javascript & CSS.
 if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
-    $PAGE->requires->jquery();
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables_plugins', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_datatables_columnfilter', 'plagiarism_turnitin');
+    $PAGE->requires->js_call_amd('plagiarism_turnitin/plugin_settings', 'pluginSettings');
+    
+    /*
+    $PAGE->requires->jquery_plugin('plagiarism_turnitin/jquery.dataTables', 'plagiarism_turnitin');
+    $PAGE->requires->jquery_plugin('plagiarism_turnitin/jquery.dataTables.plugins', 'plagiarism_turnitin');
+    $PAGE->requires->jquery_plugin('plagiarism_turnitin/jquery.datatables.columnFilter', 'plagiarism_turnitin');
+    */
 
     // Strings for JS.
     $PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitin');

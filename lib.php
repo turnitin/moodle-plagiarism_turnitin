@@ -1766,7 +1766,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ( mb_strlen( $moduledata->name, 'UTF-8' ) > 80 ) {
             $title = mb_substr( $moduledata->name, 0, 80, 'UTF-8' ) . "...";
         }
-        $assignment->setTitle( $title . " (Moodle PP)" );
+        $assignment->setTitle($title);
 
         // Configure repository setting.
         $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ? $modulepluginsettings["plagiarism_submitpapersto"] : 1;

@@ -198,6 +198,7 @@ $string['pending'] = '保留中';
 $string['because'] = 'これは、管理者が保留中の課題をプロセスキューから削除し、Turnitinへの提出を中止したためです。<br /><strong>ファイルはMoodleに残ります。インストラクタにお問い合わせください。</strong><br />エラーコードは次の通りです。';
 $string['submitpapersto_help'] = '<strong>リポジトリなし: </strong><br />Turnitin は、提出された文書を他のレポジトリに保管するように指定されていません。Turnitin によるレポートの処理は、初回の類似性チェックのときにのみ行われます。<br /><br /><strong>標準リポジトリ: </strong><br />Turnitin は提出された文書のコピーを標準のレポジトリにのみ保管します。このオプションを選択すると、Turnitin は将来提出されるすべての文書への類似性チェックを行うときにだけ、保管された文書を使用します。<br /><br /><strong>所属機関リポジトリ（適用する場合）: </strong><br />このオプションを選択すると、Turnitin は提出された文書を所属機関専用のレポジトリにのみ追加します。提出された文書への類似性チェックは、所属機関内の別の講師によってのみ行われます。';
 $string['errorcode12'] = '削除されたコースの課題であるため、このファイルは Turnitin に提出されませんでした。列 ID: ({$a->id}) | コース モジュール ID: ({$a->cm}) | ユーザー ID: ({$a->userid})';
+$string['errorcode15'] = '属しているアクティビティモジュールが見つからないため、このファイルはTurnitinに提出されていません。';
 $string['tiiaccountconfig'] = 'Turnitinアカウントの構成';
 $string['turnitinaccountid'] = 'TurnitinアカウントID';
 $string['turnitinsecretkey'] = 'Turnitin共有キー';

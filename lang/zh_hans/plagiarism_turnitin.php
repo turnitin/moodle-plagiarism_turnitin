@@ -198,6 +198,7 @@ $string['pending'] = '未决';
 $string['because'] = '这是因为，管理员从处理队列中删除了待处理的作业并中止向 Turnitin 提交内容。<br /><strong>相应文件仍存在于 Moodle 中，请联系您的导师。</strong><br />请看下面的错误代码：';
 $string['submitpapersto_help'] = '<strong>无存储库: </strong><br />Turnitin 被设定为不将上传文件储存至任何知识库。文件仅用于初始查重。<br /><br /><strong>标准存储库: </strong><br />Turnitin 将只在标准知识库中储存上传文件的副本。选择此选项，Turnitin 对日后上传文件的查重工作将只使用已储存文件。<br /><br /><strong>机构存储库（适用时）: </strong><br />选择此选项，将 Turnitin 设定为只添加文件至您机构的私有知识库。上传文件的查重工作将只由您机构的其他教员完成。';
 $string['errorcode12'] = '该文件未能上传至 Turnitin，因其所在任务课程已删除。行 ID: ({$a->id}) | 课程模块 ID: ({$a->cm}) | 用户 ID: ({$a->userid})';
+$string['errorcode15'] = '此文件尚未提交给 Turnitin，因为找不到它所属的活动模块';
 $string['tiiaccountconfig'] = 'Turnitin 帐户配置';
 $string['turnitinaccountid'] = 'Turnitin 帐户代号';
 $string['turnitinsecretkey'] = 'Turnitin 共享密钥';

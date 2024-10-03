@@ -198,6 +198,7 @@ $string['pending'] = 'Probíhá';
 $string['because'] = 'Je to způsobeno smazáním probíhajícího úkolu z fronty zpracování správcem a zrušeným odevzdáním do systému Turnitin.<br /><strong>Soubor se stále nachází v systému Moodle, obraťte se na svého instruktora.</strong><br />Níže naleznete všechny chybové kódy:';
 $string['submitpapersto_help'] = '<strong>Žádný archiv: </strong><br />Turnitin nebude odevzdané práce ukládat do žádného úložiště. Práci zpracujeme pouze pro účely kontroly podobnosti.<br /><br /><strong>Standardní archiv: </strong><br />Turnitin uloží kopii odevzdaného dokumentu pouze do standardního úložiště. Pokud je vybrána tato možnost, bude Turnitin používat uložené dokumenty pouze ke kontrole podobnosti s dokumenty, které budou odevzdány v budoucnu.<br /><br /><strong>Archiv instituce (v případě potřeby): </strong><br />Tato možnost znamená, že bude Turnitin odevzdané dokumenty přidávat pouze do soukromého úložiště vaší instituce. Kontroly podobnosti odevzdaných dokumentů budou provádět pouze jiní instruktoři ve vaší instituci.';
 $string['errorcode12'] = 'Tento soubor nebyl odevzdán do systému Turnitin, protože patří k úkolu v kursu, který byl  odstraněn. ID řádku: ({$a->id}) | ID modulu kurzu: ({$a->cm}) | ID uživatele: ({$a->userid})';
+$string['errorcode15'] = "Tento soubor nebyl odeslán do systému Turnitin, protože modul aktivity, ke kterému patří, nebyl nalezen.";
 $string['tiiaccountconfig'] = 'Konfigurace účtu Turnitin';
 $string['turnitinaccountid'] = 'ID účtu Turnitin';
 $string['turnitinsecretkey'] = 'Sdílený klíč Turnitin';

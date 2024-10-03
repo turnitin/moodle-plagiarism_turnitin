@@ -198,6 +198,7 @@ $string['pending'] = '보류 중';
 $string['because'] = '관리자가 처리 queue에 보류 중인 과제를 삭제하고 Turnitin에 대한 제출을 중단했기 때문입니다.<br /><strong>파일이 아직 Moodle에 있습니다. 담당 강사에게 문의하십시오.</strong><br />오류 코드는 아래에서 확인하십시오.';
 $string['submitpapersto_help'] = '<strong>보관소 없음: </strong><br />Turnitin은 제출된 문서를 데이터베이스에 저장하지 않습니다. 보고서는 초기 유사성 검사를 수행할 목적으로만 처리됩니다.<br /><br /><strong>표준 보관소: </strong><br />Turnitin은 제출된 문서의 사본을 표준 데이터베이스에만 저장합니다. 이 옵션을 선택하면 Turnitin은 저장된 문서만 사용하여 향후 제출되는 모든 문서에 대해 유사성 검사를 수행합니다.<br /><br /><strong>기관 보관소(적용 가능시): </strong><br />이 옵션을 선택하면 Turnitin이 제출된 문서를 기관의 개인 데이터베이스에만 추가합니다.  제출된 문서의 유사성 검사는 기관 내의 다른 강사가 수행합니다.';
 $string['errorcode12'] = '이 파일은 Turnitin에 제출되지 않았습니다. 삭제된 코스의 과제물에 속해 있기 때문입니다. 행 ID: ({$a->id}) | 코스 모듈 ID: ({$a->cm}) | 사용자 ID: ({$a->userid})';
+$string['errorcode15'] = '이 파일은 해당 파일이 속해 있는 활동 모듈을 찾을 수 없기 때문에 Turnitin에 제출되지 않았습니다.';
 $string['tiiaccountconfig'] = 'Turnitin 계정 구성';
 $string['turnitinaccountid'] = 'Turnitin 계정 아이디';
 $string['turnitinsecretkey'] = 'Turnitin 공유 키';

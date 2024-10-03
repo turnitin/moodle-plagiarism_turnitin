@@ -198,6 +198,7 @@ $string['pending'] = '等待中';
 $string['because'] = '這是因為管理員從處理佇列中刪除等待中的作業，並中止提交至Turnitin。<br /><strong>檔案仍存在 Moodle 中，請連絡您的指導教師。</strong><br />如需任何錯誤代碼，請參閱下面資訊：';
 $string['submitpapersto_help'] = '<strong>沒有存放庫: </strong><br />Turnitin 被設定為不將上傳文件儲存至任何知識庫。文件僅用於初始查重。<br /><br /><strong>標準存放庫: </strong><br />Turnitin 將只在標準知識庫中儲存上傳文件的副本。選擇此選項，Turnitin 對日後上傳文件的查重工作將只使用已儲存文件。<br /><br /><strong>機構存放庫 (適用時): </strong><br />選擇此選項，將 Turnitin 設定為只添加文件至您機構的私有知識庫。上傳文件的查重工作將只由您機構的其他教員完成。';
 $string['errorcode12'] = '此文件未能上傳至 Turnitin 因其所在任務課程已刪除。行 ID: ({$a->id}) | 課程模塊 ID: ({$a->cm}) | 用戶 ID: ({$a->userid})';
+$string['errorcode15'] = '此檔案已提交至 Turnitin，因為找不到其所屬的活動模組';
 $string['tiiaccountconfig'] = 'Turnitin 帳戶配置';
 $string['turnitinaccountid'] = 'Turnitin 帳戶 ID';
 $string['turnitinsecretkey'] = 'Turnitin 共用金鑰';

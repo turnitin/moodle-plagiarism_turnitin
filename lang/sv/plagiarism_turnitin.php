@@ -198,6 +198,7 @@ $string['pending'] = 'Väntar på bekräftelse';
 $string['because'] = 'Detta beror på att administratören raderade uppgiften som väntade på bekräftelse från uppgiftskön och avbröt inlämningen till Turnitin.<br /><strong>Filen finns fortfarande i Moodle. Kontakta din lärare.</strong><br />Se nedanstående felkoder:';
 $string['submitpapersto_help'] = '<strong>Inget arkiv: </strong><br />Enligt anvisning sparar Turnitin inte dokument i något arkiv. Uppsatser behandlas endast för den första likhetsgranskningen.<br /><br /><strong>Standardarkiv: </strong><br />Turnitin sparar en kopia av det inlämnade dokumentet endast i standardarkivet. Om alternativet väljs, använder Turnitin endast sparade dokument i framtida likhetsgranskningar av andra dokument.<br /><br /><strong>Institutionellt arkiv (Om tillämpligt): </strong><br />Om alternativet väljs, sparar Turnitin inlämnade dokument endast i institutionens privata arkiv. Likhetsgranskningar av inlämnade dokument görs endast av andra instruktörer vid institutionen.';
 $string['errorcode12'] = 'Den här filen har inte skickats till Turnitin eftersom den tillhör en uppgift där kursen har tagits bort. Rad-ID: ({$a->id}) | Kursmodul-ID: ({$a->cm}) | Användar-ID: ({$a->userid})';
+$string['errorcode12'] = 'Den här filen har inte skickats in till Turnitin då aktivitetsmodulen den tillhör inte kunde hittas';
 $string['tiiaccountconfig'] = 'Kontokonfigurering för Turnitin';
 $string['turnitinaccountid'] = 'Turnitin Konto-ID';
 $string['turnitinsecretkey'] = 'Turnitin Delad Nyckel';

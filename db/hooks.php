@@ -21,6 +21,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
 if ($CFG->version >= 2024042200) {
   $callbacks = [
     [

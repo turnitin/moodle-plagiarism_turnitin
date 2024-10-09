@@ -312,7 +312,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if ($PAGE->pagetype != 'course-editbulkcompletion' &&
                 $PAGE->pagetype != 'course-editdefaultcompletion' &&
                 $PAGE->pagetype != 'course-defaultcompletion') {
-                // Create/Edit course in Turnitin and join user to class.
+                // Check for existing settings and add the form
                 $course = turnitin_assignment::get_course_data($COURSE->id, "site");
                 $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid, $plagiarismvalues["plagiarism_rubric"]);
             }

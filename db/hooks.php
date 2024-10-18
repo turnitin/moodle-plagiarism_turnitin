@@ -21,10 +21,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$callbacks = [
+global $CFG;
+if ($CFG->version >= 2024042200) {
+  $callbacks = [
     [
         'hook' => \core\hook\output\before_standard_top_of_body_html_generation::class,
         'callback' => [plagiarism_turnitin\hook_callbacks::class, 'before_standard_top_of_body_html_generation'],
         'priority' => 0,
     ],
-];
+  ];
+}

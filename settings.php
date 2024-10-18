@@ -22,6 +22,9 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php
 
 $turnitinview = new turnitin_view();
 
+$cssurl = new moodle_url('/plagiarism/turnitin/amd/src/datatables.css');
+$PAGE->requires->css($cssurl);
+
 require_login();
 admin_externalpage_setup('plagiarismturnitin');
 $context = context_system::instance();

@@ -3024,6 +3024,18 @@ function plagiarism_turnitin_send_queued_submissions() {
         $settings = $pluginturnitin->get_settings($cm->id);
 
         // Create module object.
+        if (empty($cm->modname)) {
+          $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 15);
+
+          // Output a message in the cron for failed submission to Turnitin.
+          $outputvars = new stdClass();
+          $outputvars->id = $queueditem->id;
+          $outputvars->cm = $queueditem->cm;
+          $outputvars->userid = $queueditem->userid;
+
+          plagiarism_turnitin_activitylog(get_string('errorcode15', 'plagiarism_turnitin', $outputvars), "PP_NO_ACTIVITY_MODULE");
+          continue;
+        }
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
 

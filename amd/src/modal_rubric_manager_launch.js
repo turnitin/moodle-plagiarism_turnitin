@@ -74,10 +74,10 @@ define(
         function refreshRubricSelect() {
             var currentRubric = $('#id_plagiarism_rubric').val();
             $.ajax({
-                "dataType": 'json',
-                "type": "POST",
-                "url": "../plagiarism/turnitin/ajax.php",
-                "data": {
+                type: "POST",
+                url: M.cfg.wwwroot + "/plagiarism/turnitin/ajax.php",
+                dataType: 'json',
+                data: {
                     action: "refresh_rubric_select", assignment: $('input[name="instance"]').val(),
                     modulename: $('input[name="modulename"]').val(), course: $('input[name="course"]').val()
                 },

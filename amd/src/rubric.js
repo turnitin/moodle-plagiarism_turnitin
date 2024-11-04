@@ -23,10 +23,14 @@ define(['jquery',
                     that.rubricCreateModal(ModalRubricManagerLaunch.TYPE, courseid, cmid);
                 });
 
+                $(document).off('click', '.rubric_view');
+
                 $(document).on('click', '.rubric_view', function() {
                     var courseid = $(this).data('courseid');
                     var cmid = $(this).data('cmid');
-                    that.rubricCreateModal(ModalRubricViewLaunch.TYPE, courseid, cmid);
+                    that.rubricCreateModal(ModalRubricViewLaunch.TYPE, courseid, cmid).then(function(modal) {
+                        that.hideModalByEvent(modal);
+                    });
                 });
 
                 // Show warning when changing the rubric linked to an assignment.
@@ -39,7 +43,7 @@ define(['jquery',
                 });
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
-                ModalFactory.create({
+                return ModalFactory.create({
                     type: modalType,
                     templateContext: {
                         courseid: courseid,
@@ -52,7 +56,22 @@ define(['jquery',
                         modal.show();
                         modal.getRoot().find('.modal').addClass('tii_pp_modal_rubric');
                         modal.getRoot().find('.modal-content').addClass('tii_pp_modal_rubric_content');
+
+                        return modal;
                     });
+            },
+            handleCloseModalMessage: function (event) {
+                var that = this;
+                if (event.data.type === 'CloseRubricsView') {
+                    that.modal.hide();      
+                    window.removeEventListener('message', handleCloseModalMessage);
+                }
+            },
+            hideModalByEvent: function(modal) {
+                var that = this;
+                that.modal = modal;
+                window.addEventListener('message', that.handleCloseModalMessage.bind(that));
             }
+            
         };
     });

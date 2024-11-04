@@ -1811,7 +1811,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Otherwise, the Turnitin setting is incompatible with Moodle due to multiple files and resubmission rules.
         $assignment->setLateSubmissionsAllowed(1);
         $assignment->setMaxGrade(0);
-        $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ? $modulepluginsettings["plagiarism_rubric"] : '');
+        $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ? $modulepluginsettings["plagiarism_rubric"] : 0);
 
         if (!empty($moduledata->grade)) {
             $assignment->setMaxGrade(($moduledata->grade < 0) ? 100 : (int)$moduledata->grade);

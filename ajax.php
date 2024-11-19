@@ -346,7 +346,7 @@ switch ($action) {
             $instructor->set_user_values_from_tii();
             $instructorrubrics = $instructor->get_instructor_rubrics();
 
-            $options = array('' => get_string('norubric', 'plagiarism_turnitin')) + $instructorrubrics;
+            $options = array(0 => get_string('norubric', 'plagiarism_turnitin')) + $instructorrubrics;
 
             // Get rubrics that are shared on the Turnitin account.
             $turnitinclass = new turnitin_class($courseid);

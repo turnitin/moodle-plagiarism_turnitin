@@ -33,6 +33,10 @@ class hook_callbacks {
      * @param before_standard_top_of_body_html_generation $hook
      */
     public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
+        if (during_initial_install() || !get_config('plagiarism_turnitin', 'version')) {
+            return;
+        }
+
         $output = '<div class="turnitin_score_refresh_alert" id="turnitin_score_refresh_alert">' . get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin') . '</div>';
         $hook->add_html($output);
     }

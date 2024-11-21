@@ -266,6 +266,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
+        return;
+        
         global $DB, $PAGE, $COURSE;
 
         if (has_capability('plagiarism/turnitin:enable', $context)) {

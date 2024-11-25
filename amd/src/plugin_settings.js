@@ -6,6 +6,12 @@
  * @module plagiarism_turnitin/plugin_settings
  */
 
+require.config({
+    paths: {
+        'plagiarism_turnitin/datatables': '/plagiarism/turnitin/vendorjs/datatables.min',
+    }
+});
+
 define(['jquery',
         'plagiarism_turnitin/datatables'
        ], function($, DataTables) {

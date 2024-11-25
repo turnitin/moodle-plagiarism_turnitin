@@ -17,7 +17,7 @@ define(['jquery',
        ], function($, DataTables) {
       return {
           pluginSettings: function() {
-            jQuery(document).ready(function($) {
+            $(document).ready(function($) {
               $('input[name="errors_select_all"]').click(function() {
                   if ($(this).prop('checked')) {
                       $('.errors_checkbox').prop('checked', true);

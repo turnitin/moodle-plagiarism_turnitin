@@ -98,7 +98,7 @@ define(['jquery',
                 },
                 success: function() {
                     var requestDuration = new Date().getTime() - refreshStartTime;
-                    if (requestDuration < 3000 || !$('.turnitin_score_refresh_alert').length) {
+                    if (requestDuration < 3000) {
                         window.location = window.location + '';
                     } else {
                       Notification.addNotification({

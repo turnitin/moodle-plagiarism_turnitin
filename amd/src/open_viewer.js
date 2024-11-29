@@ -101,10 +101,10 @@ define(['jquery',
                     if (requestDuration < 3000) {
                         window.location = window.location + '';
                     } else {
-                      Notification.addNotification({
-                        message: M.str.plagiarism_turnitin.turnitin_score_refresh_alert,
-                        type: "warning"
-                      });
+                        Notification.addNotification({
+                          message: M.str.plagiarism_turnitin.turnitin_score_refresh_alert,
+                          type: "warning"
+                        });
                     }
                 }
             });

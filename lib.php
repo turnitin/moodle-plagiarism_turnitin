@@ -190,18 +190,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Callback to add a chunk of HTML to the top of the body
-     * This will alert the user to refresh the assignment when there has been a change in scores.
-     * Deprecated in Moodle 4.4+, for these versions we use the hooks api instead. See
-     * classes/hook_callbacks.php and db/hooks.php
-     * @return string
-     */
-    public function plagiarism_turnitin_before_standard_top_of_body_html() {
-        return html_writer::div(get_string('turnitin_score_refresh_alert', 'plagiarism_turnitin'),
-            'turnitin_score_refresh_alert', array('id' => 'turnitin_score_refresh_alert'));
-    }
-
-    /**
      * Check if plugin has been configured with Turnitin account details.
      * @return boolean whether the plugin is configured for Turnitin.
      **/

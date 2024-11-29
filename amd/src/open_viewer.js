@@ -6,7 +6,9 @@
  * @module plagiarism_turnitin/open_viewer
  */
 
-define(['jquery'], function($) {
+define(['jquery',
+        'core/notification'
+       ], function($) {
     return {
         origreport_open: function() {
             var that = this;
@@ -99,7 +101,10 @@ define(['jquery'], function($) {
                     if (requestDuration < 3000 || !$('.turnitin_score_refresh_alert').length) {
                         window.location = window.location + '';
                     } else {
-                        $('.turnitin_score_refresh_alert').show();
+                      Notification.addNotification({
+                        message: M.str.plagiarism_turnitin.turnitin_score_refresh_alert,
+                        type: "warning"
+                      });
                     }
                 }
             });

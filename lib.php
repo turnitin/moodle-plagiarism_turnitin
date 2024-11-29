@@ -566,6 +566,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return;
         }
 
+        $PAGE->requires->string_for_js('turnitin_score_refresh_alert', 'plagiarism_turnitin');
+        
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
         // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's

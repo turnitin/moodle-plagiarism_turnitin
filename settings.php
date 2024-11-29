@@ -106,7 +106,6 @@ if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
     $PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestfailed', 'plagiarism_turnitin');
-    $PAGE->requires->string_for_js('turnitin_score_refresh_alert', 'plagiarism_turnitin');
 
     // Strings for js specifically for For data tables.
     $PAGE->requires->string_for_js('nointegration', 'plagiarism_turnitin');

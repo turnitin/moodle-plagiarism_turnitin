@@ -2614,7 +2614,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
-            $attempt = quiz_attempt::create($eventdata['objectid']);
+            $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
                 if ($qa->get_question()->get_type_name() != 'essay') {
@@ -3216,7 +3216,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
                 try {
-                    $attempt = quiz_attempt::create($queueditem->itemid);
+                    $attempt = mod_quiz\quiz_attempt::create($queueditem->itemid);
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
                     $errorcode = 14;

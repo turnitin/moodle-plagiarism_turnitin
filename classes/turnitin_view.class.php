@@ -128,12 +128,12 @@ class turnitin_view {
                             2 => get_string('excludepercent', 'plagiarism_turnitin'));
 
         if ($location == "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
+            $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
             $mform->addElement('html', get_string("defaultsdesc", "plagiarism_turnitin"));
         }
 
         if ($location != "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
+            $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery_plugin('ui');

@@ -14,7 +14,7 @@ If you are having issues, please consult our [TROUBLE SHOOTING](https://github.c
 Installation
 ------------
 
-Before installing this plugin firstly make sure you are logged in as an Administrator and that you are using Moodle 3.5 or higher.
+Before installing this plugin firstly make sure you are logged in as an Administrator and that you are using Moodle 4.1 or higher.
 
 The Plagiarism Plugin can be used within the following Moodle modules:
 

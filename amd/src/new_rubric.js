@@ -24,10 +24,14 @@ define(['jquery',
                     that.rubricCreateModal(ModalRubricManagerLaunch, courseid, cmid);
                 });
 
-                $(document).on('click', '.rubric_view', function() {
+                $(document).off('click', '.rubric_view');
+
+                $(document).on('click', '.rubric_view', function () {
                     var courseid = $(this).data('courseid');
                     var cmid = $(this).data('cmid');
-                    that.rubricCreateModal(ModalRubricViewLaunch, courseid, cmid);
+                    that.rubricCreateModal(ModalRubricViewLaunch, courseid, cmid).then(function(modal) {
+                        that.hideModalByEvent(modal);
+                    });
                 });
 
                 // Show warning when changing the rubric linked to an assignment.
@@ -42,7 +46,7 @@ define(['jquery',
                 ModalRubricManagerLaunch.refreshRubricSelect();
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
-                Modal.create({
+                return Modal.create({
                     type: modalType.TYPE,
                     template: modalType.TEMPLATE,
                     templateContext: {
@@ -65,7 +69,21 @@ define(['jquery',
                     });
 
                     EulaEventListener.attach();
+
+                    return modal;
                 });
+            },
+            handleCloseModalMessage: function (event) {
+                var that = this;
+                if (event.data.type === 'CloseRubricsView') {
+                    that.modal.hide();      
+                    window.removeEventListener('message', that.handleCloseModalMessage.bind(that));
+                }
+            },
+            hideModalByEvent: function(modal) {
+                var that = this;
+                that.modal = modal;
+                window.addEventListener('message', that.handleCloseModalMessage.bind(that));
             }
         };
     });

@@ -34,6 +34,15 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  */
 class plagiarism_turnitin_forum_testcase extends advanced_testcase {
 
+    /** @var stdClass created in setUp. */
+    protected $forum;
+
+    /** @var stdClass created in setUp. */
+    protected $discussion;
+
+    /** @var stdClass created in setUp. */
+    protected $post;
+
     /**
      * Create a course and forum module instance
      */

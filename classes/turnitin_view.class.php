@@ -121,19 +121,19 @@ class turnitin_view {
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
         $plagiarismturnitin = new plagiarism_plugin_turnitin();
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
-        $genoptions = array(0 => get_string('genimmediately1', 'plagiarism_turnitin'),
-                            1 => get_string('genimmediately2', 'plagiarism_turnitin', $genparams),
-                            2 => get_string('genduedate', 'plagiarism_turnitin'));
+        $genoptions = array(1 => get_string('reportgen_immediate_add_immediate', 'plagiarism_turnitin'),
+                            0 => get_string('reportgen_immediate_add_duedate', 'plagiarism_turnitin'),
+                            2 => get_string('reportgen_duedate_add_duedate', 'plagiarism_turnitin'));
         $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
                             2 => get_string('excludepercent', 'plagiarism_turnitin'));
 
         if ($location == "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
+            $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
             $mform->addElement('html', get_string("defaultsdesc", "plagiarism_turnitin"));
         }
 
         if ($location != "defaults") {
-            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
+            $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitin'));
 
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery_plugin('ui');
@@ -143,6 +143,7 @@ class turnitin_view {
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
             } else {
+                // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
                 $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');

@@ -1,3 +1,52 @@
+### Date:       2024-December-05
+### Release:    v2024120501
+
+---
+
+#### Extra Classes No Longer Created in Turnitin
+Previously classes would be created in Turnitin for some Moodle assignments even if the plagiarism plugin was disabled for those assignments. This has now been fixed.
+
+#### Course Backups Fixed
+An issue with database collation was causing course backup and deletion to fail for some users. This has now been resolved.
+
+#### Cron Handling of Large Files Improved
+Previously there was an issue with our cron task which would occasionally cause the server to run out of memory when sending a high number of submissions to Turnitin. This has now been resolved.
+
+#### Error Files No Longer Stuck in Submission Queue
+Previously there was an issue which would cause some files flagged with errors to be stuck in the submission queue. This would eventually cause the queue to fill and prevent other submissions from being sent. This issue has now been fixed.
+
+#### Migration to AMD Modules
+We have migrated our javascript code to use AMD modules. This should help reduce loading times for Moodle sites.
+
+#### Unnecessary Database Reads Removed
+We have increased the efficiency of our database reads during cron task runs.
+
+#### Local Role Assignment Implemented
+We now fully support assignment of roles at the activity module level. Similarity scores should now appear as expected for participants locally assigned the role of Teacher or above.
+
+#### Error Checking For Large Files
+Previously there was an issue when a file over 100MB was attempted to be sent to Turnitin which would cause further submissions not to be sent. This issue has now been resolved and we now handle this error correctly.
+
+#### Similarity Scores Now Displayed For Forum Topics
+We fixed an error that was preventing similarity scores from being displayed in forum topics.
+
+#### Similarity Scores Now Displaying For Forum Posts Containing Images
+Previously adding an image to a forum submission could cause the similarity score for that submission to fail to be displayed. This issue has now been resolved.
+
+#### Fixed Database Export for Moodle 4.4+
+The Database Export tab is now working as expected in Moodle versions 4.4+.
+
+#### Error 404 Fixed
+Previously there was an error where a javascript module would be loaded incorrectly on the assignment settings page, causing an error 404 to display. This has now been fixed.
+
+#### Detaching Rubrics Fixed
+Previously an error prevented detaching of rubrics from assignments. This has now been fixed.
+
+#### Rubric Modal Close Button Fixed
+Previously the close button for the rubric modal window was not working. This now closes the window as expected.
+
+---
+
 ### Date:       2024-July-24
 ### Release:    v2024072401
 

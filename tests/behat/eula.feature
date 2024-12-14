@@ -33,8 +33,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
       | Plugin name         |
       | plagiarism_turnitin |
     # Create Assignment.
-    And I am on "Turnitin Behat EULA Test Course" course homepage with editing mode on
-    And I add a "Assignment" to section "1" and I fill the form with:
+    And I add an "assign" activity to course "Turnitin Behat EULA Test Course" section "1" and I fill the form with:
       | Assignment name                   | Test assignment name |
       | use_turnitin                      | 1                    |
       | plagiarism_compare_student_papers | 1                    |

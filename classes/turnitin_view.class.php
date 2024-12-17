@@ -121,8 +121,8 @@ class turnitin_view {
         $options = array(0 => get_string('no'), 1 => get_string('yes'));
         $plagiarismturnitin = new plagiarism_plugin_turnitin();
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
-        $genoptions = array(1 => get_string('reportgen_immediate_add_immediate', 'plagiarism_turnitin'),
-                            0 => get_string('reportgen_immediate_add_duedate', 'plagiarism_turnitin'),
+        $genoptions = array(0 => get_string('reportgen_immediate_add_immediate', 'plagiarism_turnitin'),
+                            1 => get_string('reportgen_immediate_add_duedate', 'plagiarism_turnitin'),
                             2 => get_string('reportgen_duedate_add_duedate', 'plagiarism_turnitin'));
         $excludetypeoptions = array( 0 => get_string('no'), 1 => get_string('excludewords', 'plagiarism_turnitin'),
                             2 => get_string('excludepercent', 'plagiarism_turnitin'));

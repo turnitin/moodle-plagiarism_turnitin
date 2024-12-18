@@ -43,7 +43,10 @@ define(['jquery',
                     }
                 });
 
-                ModalRubricManagerLaunch.refreshRubricSelect();
+                // If the rubric selector exists on the page, refresh the list of available rubrics
+                if($("#id_plagiarism_rubric").length > 0) {
+                    ModalRubricManagerLaunch.refreshRubricSelect();
+                }
             },
             rubricCreateModal: function(modalType, courseid, cmid) {
                 return Modal.create({

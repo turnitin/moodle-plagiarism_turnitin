@@ -354,51 +354,6 @@ class turnitin_view {
                 $mform->setType('plagiarism_rubric', PARAM_RAW);
             }
 
-            if (!empty($config->plagiarism_turnitin_useerater)) {
-                $handbookoptions = array(
-                                            1 => get_string('erater_handbook_advanced', 'plagiarism_turnitin'),
-                                            2 => get_string('erater_handbook_highschool', 'plagiarism_turnitin'),
-                                            3 => get_string('erater_handbook_middleschool', 'plagiarism_turnitin'),
-                                            4 => get_string('erater_handbook_elementary', 'plagiarism_turnitin'),
-                                            5 => get_string('erater_handbook_learners', 'plagiarism_turnitin')
-                                        );
-
-                $dictionaryoptions = array(
-                                            'en_US' => get_string('erater_dictionary_enus', 'plagiarism_turnitin'),
-                                            'en_GB' => get_string('erater_dictionary_engb', 'plagiarism_turnitin'),
-                                            'en'    => get_string('erater_dictionary_en', 'plagiarism_turnitin')
-                                        );
-                $mform->addElement('select', 'plagiarism_erater', get_string('erater', 'plagiarism_turnitin'), $options);
-                $mform->setDefault('plagiarism_erater', 0);
-
-                $mform->addElement('select', 'plagiarism_erater_handbook', get_string('erater_handbook', 'plagiarism_turnitin'),
-                                                $handbookoptions);
-                $mform->setDefault('plagiarism_erater_handbook', 2);
-                $mform->disabledIf('plagiarism_erater_handbook', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('select', 'plagiarism_erater_dictionary', get_string('erater_dictionary', 'plagiarism_turnitin'),
-                                                $dictionaryoptions);
-                $mform->setDefault('plagiarism_erater_dictionary', 'en_US');
-                $mform->disabledIf('plagiarism_erater_dictionary', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_spelling', get_string('erater_categories', 'plagiarism_turnitin'),
-                                                " ".get_string('erater_spelling', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_spelling', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_grammar', '', " ".get_string('erater_grammar', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_grammar', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_usage', '', " ".get_string('erater_usage', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_usage', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_mechanics', '', " ".
-                                                get_string('erater_mechanics', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_mechanics', 'plagiarism_erater', 'eq', 0);
-
-                $mform->addElement('checkbox', 'plagiarism_erater_style', '', " ".get_string('erater_style', 'plagiarism_turnitin'));
-                $mform->disabledIf('plagiarism_erater_style', 'plagiarism_erater', 'eq', 0);
-            }
-
             $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
                                                                                 array('class' => 'tii_anonblindmarkingnote')));
 

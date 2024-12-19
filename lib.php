@@ -101,10 +101,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             'plagiarism_allow_non_or_submissions', 'plagiarism_submitpapersto', 'plagiarism_compare_student_papers',
             'plagiarism_compare_internet', 'plagiarism_compare_journals', 'plagiarism_report_gen',
             'plagiarism_compare_institution', 'plagiarism_exclude_biblio', 'plagiarism_exclude_quoted',
-            'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value', 'plagiarism_rubric', 'plagiarism_erater',
-            'plagiarism_erater_handbook', 'plagiarism_erater_dictionary', 'plagiarism_erater_spelling',
-            'plagiarism_erater_grammar', 'plagiarism_erater_usage', 'plagiarism_erater_mechanics',
-            'plagiarism_erater_style', 'plagiarism_transmatch');
+            'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value', 'plagiarism_rubric', 'plagiarism_transmatch');
     }
 
     /**
@@ -1895,16 +1892,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
-
-        // Erater settings.
-        $assignment->setErater((isset($modulepluginsettings["plagiarism_erater"])) ? $modulepluginsettings["plagiarism_erater"] : 0);
-        $assignment->setEraterSpelling((isset($modulepluginsettings["plagiarism_erater_spelling"])) ? $modulepluginsettings["plagiarism_erater_spelling"] : 0);
-        $assignment->setEraterGrammar((isset($modulepluginsettings["plagiarism_erater_grammar"])) ? $modulepluginsettings["plagiarism_erater_grammar"] : 0);
-        $assignment->setEraterUsage((isset($modulepluginsettings["plagiarism_erater_usage"])) ? $modulepluginsettings["plagiarism_erater_usage"] : 0);
-        $assignment->setEraterMechanics((isset($modulepluginsettings["plagiarism_erater_mechanics"])) ? $modulepluginsettings["plagiarism_erater_mechanics"] : 0);
-        $assignment->setEraterStyle((isset($modulepluginsettings["plagiarism_erater_style"])) ? $modulepluginsettings["plagiarism_erater_style"] : 0);
-        $assignment->setEraterSpellingDictionary((isset($modulepluginsettings["plagiarism_erater_dictionary"])) ? $modulepluginsettings["plagiarism_erater_dictionary"] : 'en_US');
-        $assignment->setEraterHandbook((isset($modulepluginsettings["plagiarism_erater_handbook"])) ? $modulepluginsettings["plagiarism_erater_handbook"] : 0);
 
         // If we have a turnitin id then edit the assignment otherwise create it.
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config',

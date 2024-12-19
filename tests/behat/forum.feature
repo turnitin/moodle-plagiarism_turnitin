@@ -33,8 +33,7 @@ Feature: Plagiarism plugin works with a Moodle forum
       | Plugin name         |
       | plagiarism_turnitin |
     # Create Forum.
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Forum" to section "1" and I fill the form with:
+    And I add a "forum" activity to course "Course 1" section "1" and I fill the form with:
       | Forum name                        | Test forum name                |
       | Forum type                        | Standard forum for general use |
       | Description                       | Test forum description         |

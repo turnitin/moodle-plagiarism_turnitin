@@ -33,8 +33,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for a filetype which w
       | Plugin name         |
       | plagiarism_turnitin |
     # Create Assignment.
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Assignment" to section "1" and I fill the form with:
+    And I add an "assign" activity to course "Course 1" section "1" and I fill the form with:
       | Assignment name                     | Test assignment name |
       | use_turnitin                        | 1                    |
       | plagiarism_compare_student_papers   | 1                    |

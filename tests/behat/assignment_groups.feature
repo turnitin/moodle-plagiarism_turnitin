@@ -36,8 +36,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment for group submissions
       | Enable Diagnostic Mode | Standard |
     And I press "Save changes"
     # Create Assignment.
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Assignment" to section "1" and I fill the form with:
+    And I add an "assign" activity to course "Course 1" section "1" and I fill the form with:
       | Assignment name                   | Test assignment name |
       | use_turnitin                      | 1                    |
       | plagiarism_show_student_report    | 1                    |

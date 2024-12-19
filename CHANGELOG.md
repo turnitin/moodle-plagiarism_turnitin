@@ -1,3 +1,16 @@
+### Date:       2024-December-19
+### Release:    v2024121901
+
+---
+
+#### Removed ETS e-rater Service
+As we have now discontinued support for the ETS e-rater service, these settings have now been removed from the plugin.
+
+### Collusion Check Bug Fixed
+An issue was found which in some cases affected the order in which submissions would be indexed, leading to collusion checks potentially being carried out out of order. This has now been resolved.
+
+---
+
 ### Date:       2024-December-05
 ### Release:    v2024120501
 

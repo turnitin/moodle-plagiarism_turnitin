@@ -135,17 +135,6 @@ class turnitin_setupform extends moodleform {
             'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_enablepeermark', 1);
 
-        $mform->addElement('select', 'plagiarism_turnitin_useanon', get_string('turnitinuseanon', 'plagiarism_turnitin'),
-            $ynoptions);
-        $mform->addElement('static', 'plagiarism_turnitin_useanon_desc', null,
-            get_string('turnitinuseanon_desc', 'plagiarism_turnitin'));
-
-        $mform->addElement('select', 'plagiarism_turnitin_useerater', get_string('turnitinuseerater',
-            'plagiarism_turnitin'), $ynoptions);
-        $mform->addElement('static', 'plagiarism_turnitin_useerater_desc', null, get_string('turnitinuseerater_desc',
-            'plagiarism_turnitin'));
-        $mform->setDefault('plagiarism_turnitin_useerater', 0);
-
         $mform->addElement('select', 'plagiarism_turnitin_useanon', get_string('turnitinuseanon',
             'plagiarism_turnitin'), $ynoptions);
         $mform->addElement('static', 'plagiarism_turnitin_useanon_desc', null, get_string('turnitinuseanon_desc',

@@ -31,6 +31,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment utilising the draft su
     And I set the following fields to these values:
       | Enable Diagnostic Mode | Standard |
     And I press "Save changes"
+    And I navigate to "Plugins overview" in site administration
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |
       | plagiarism_turnitin |

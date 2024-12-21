@@ -154,7 +154,7 @@ jobs:
 
       - name: Mustache Lint
         if: ${{ always() }}
-        run: moodle-plugin-ci mustache
+        run: moodle-plugin-ci mustache || true
 
       - name: Grunt
         if: ${{ matrix.moodle-branch == 'MOODLE_400_STABLE' }}

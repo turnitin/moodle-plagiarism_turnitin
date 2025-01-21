@@ -327,6 +327,7 @@ switch ($action) {
     case "get_users":
         $PAGE->set_context(context_system::instance());
         if (is_siteadmin()) {
+            header('Content-type: application/json; charset=utf-8');
             echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
         } else {
             throw new moodle_exception('accessdenied', 'admin');

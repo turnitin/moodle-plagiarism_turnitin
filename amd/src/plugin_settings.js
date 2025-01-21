@@ -159,7 +159,7 @@ define(['jquery',
               $('#unlinkUserTable').dataTable({
                   destroy: true,
                   processing: true,
-                  serverSide: true,
+                  serverSide: false,
                   language: dataTablesLang,
                   order: [[ 2, "asc" ]],
                   lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],

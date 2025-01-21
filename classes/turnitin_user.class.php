@@ -568,10 +568,10 @@ class turnitin_user {
 
         $return = [];
 
-        $idisplaystart = $params["start"];
-        $idisplaylength = $params["length"];
-        $secho = $params["draw"];
-        $ssearch = $params["search"]["value"];
+        $idisplaystart = empty($params["start"]) ? "" : $params["start"];
+        $idisplaylength = empty($params["length"]) ? "" : $params["length"];
+        $secho = empty($params["draw"]) ? "" : $params["draw"];
+        $ssearch = empty($params["search"]["value"]) ? "" : $params["search"]["value"];
 
         $return["params"] = $params;
 

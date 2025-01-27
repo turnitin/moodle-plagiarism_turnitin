@@ -2510,7 +2510,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return bool result
      */
     public function event_handler($eventdata) {
-        global $DB;
+        global $CFG, $DB;
 
         $result = true;
 
@@ -2601,7 +2601,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
-            $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
+            // Namespace was changed in Moodle 4.2.
+            // TODO: We can delete the else block here when we no longer support Moodle 4.1
+            if ($CFG->version >= 2023042411) {
+                $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
+            }
+            else {
+              $attempt = quiz_attempt::create($queueditem->itemid);
+            }
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
                 if ($qa->get_question()->get_type_name() != 'essay') {
@@ -3203,7 +3210,14 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
                 try {
-                    $attempt = mod_quiz\quiz_attempt::create($queueditem->itemid);
+                    // Namespace was changed in Moodle 4.2.
+                    // TODO: We can delete the else block here when we no longer support Moodle 4.1
+                    if ($CFG->version >= 2023042411) {
+                        $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
+                    }
+                    else {
+                      $attempt = quiz_attempt::create($queueditem->itemid);
+                    }
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
                     $errorcode = 14;

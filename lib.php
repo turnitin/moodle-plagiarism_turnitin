@@ -2607,7 +2607,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
             }
             else {
-              $attempt = quiz_attempt::create($queueditem->itemid);
+                $attempt = quiz_attempt::create($eventdata['objectid']);
             }
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
@@ -3213,10 +3213,10 @@ function plagiarism_turnitin_send_queued_submissions() {
                     // Namespace was changed in Moodle 4.2.
                     // TODO: We can delete the else block here when we no longer support Moodle 4.1
                     if ($CFG->version >= 2023042411) {
-                        $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
+                        $attempt = mod_quiz\quiz_attempt::create($queueditem->itemid);
                     }
                     else {
-                      $attempt = quiz_attempt::create($queueditem->itemid);
+                        $attempt = quiz_attempt::create($queueditem->itemid);
                     }
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");

@@ -2510,7 +2510,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return bool result
      */
     public function event_handler($eventdata) {
-        global $CFG, $DB;
+        global $DB;
 
         $result = true;
 

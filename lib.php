@@ -2602,6 +2602,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
 
+            require_once($CFG->dirroot . '/mod/quiz/locallib.php');
             if (class_exists('\mod_quiz\quiz_attempt')) {
                 $quizattemptclass = '\mod_quiz\quiz_attempt';
             } else {

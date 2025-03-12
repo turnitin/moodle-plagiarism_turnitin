@@ -436,7 +436,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string
      */
     public function print_disclosure($cmid) {
-        global $OUTPUT, $USER, $DB;
+        global $OUTPUT, $PAGE, $USER, $DB, $CFG;
 
         static $tiiconnection;
 
@@ -535,6 +535,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Update assignment in case rubric is not stored in Turnitin yet.
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
+            if ($CFG->version >= 2023100900) {
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
+            } else {
+                // TODO: We can remove this when we no longer have to support Moodle versions 4.3 and below
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+            }
 
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),

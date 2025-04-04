@@ -436,7 +436,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string
      */
     public function print_disclosure($cmid) {
-        global $OUTPUT, $USER, $DB;
+        global $OUTPUT, $PAGE, $USER, $DB, $CFG;
 
         static $tiiconnection;
 
@@ -535,6 +535,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Update assignment in case rubric is not stored in Turnitin yet.
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
+
+            if ($CFG->version >= 2023100900) {
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
+            } else {
+                // TODO: We can remove this when we no longer have to support Moodle versions 4.3 and below
+                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+            }
 
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),
@@ -2601,7 +2608,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
-            $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
+
+            if (class_exists('\mod_quiz\quiz_attempt')) {
+                $quizattemptclass = '\mod_quiz\quiz_attempt';
+            } else {
+                $quizattemptclass = 'quiz_attempt';
+            }
+            $attempt = $quizattemptclass::create($eventdata['objectid']);
+            
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
                 if ($qa->get_question()->get_type_name() != 'essay') {
@@ -3203,7 +3217,13 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
                 try {
-                    $attempt = mod_quiz\quiz_attempt::create($queueditem->itemid);
+                    if (class_exists('\mod_quiz\quiz_attempt')) {
+                        $quizattemptclass = '\mod_quiz\quiz_attempt';
+                    } else {
+                        $quizattemptclass = 'quiz_attempt';
+                    }
+                    $attempt = $quizattemptclass::create($queueditem->itemid);
+
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
                     $errorcode = 14;

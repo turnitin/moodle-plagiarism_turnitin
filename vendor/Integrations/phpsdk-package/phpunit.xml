@@ -30,7 +30,6 @@
             <directory suffix=".php">src</directory>
             <exclude>
                 <file>src/bootstrap.php</file>
-                <file>src/KLogger.php</file>
                 <file>src/OAuthSimple.php</file>
                 <file>src/OAuthSimpleException.php</file>
             </exclude>

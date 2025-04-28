@@ -20,7 +20,7 @@
 
 .tii_links_container .launch_form, .tii_links_container .useragreement_form, .tii_links_container .turnitin_submit_error,
 .tii_links_container .turnitin_eula_link, .tii_links_container #useragreement_form form, .tii_links_container .hidden,
-.tii_links_container .cmid, .tii_links_container .userid, #turnitin_score_refresh_alert, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
+.tii_links_container .cmid, .tii_links_container .userid, .plagiarism_submission, .pp_turnitin_cmid, .tii_useragreement_form,
 #tii_view_context, .tii_links_container .grademark_forum_launch, .tii_links_container .origreport_forum_launch {
     display:none;
 }
@@ -314,14 +314,6 @@ button.pp-resubmit-files {
 }
 
 .tii_checkagainstnote, .tii_anonblindmarkingnote, .tii_genspeednote {
-    border: 1px solid #6FCAFF;
-    background: #BBE6FF;
-    padding: 10px;
-    margin-bottom: 16px;
-}
-
-#turnitin_score_refresh_alert {
-    margin-top: 16px;
     border: 1px solid #6FCAFF;
     background: #BBE6FF;
     padding: 10px;

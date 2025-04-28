@@ -6,12 +6,18 @@
  * @module plagiarism_turnitin/plugin_settings
  */
 
+require.config({
+    paths: {
+        'plagiarism_turnitin/datatables': '/plagiarism/turnitin/vendorjs/datatables.min',
+    }
+});
+
 define(['jquery',
         'plagiarism_turnitin/datatables'
        ], function($, DataTables) {
       return {
           pluginSettings: function() {
-            jQuery(document).ready(function($) {
+            $(document).ready(function($) {
               $('input[name="errors_select_all"]').click(function() {
                   if ($(this).prop('checked')) {
                       $('.errors_checkbox').prop('checked', true);

@@ -775,7 +775,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
+                $plagiarismfiles = $DB->get_records_list('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
                     'identifier' => [$identifier, $oldidentifier]],  // Check both identifiers for backwards compatibility.
                     'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = reset($plagiarismfiles);

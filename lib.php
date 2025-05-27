@@ -53,12 +53,6 @@ define('PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN', '@tiimoodle.com');
 define('PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME', get_string('defaultcoursestudent'));
 
-// Define accepted files if the module is not accepting any file type.
-global $turnitinacceptedfiles;
-$turnitinacceptedfiles = array('.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx',
-                                '.pdf', '.txt', '.htm', '.html', '.hwp', '.odt',
-                                '.wpd', '.ps', '.rtf', '.xls', '.xlsx');
-
 require_once($CFG->libdir.'/gradelib.php');
 
 // Get global class.
@@ -2319,7 +2313,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return bool
      */
     public function queue_submission_to_turnitin($cm, $author, $submitter, $identifier, $submissiontype, $itemid = 0, $eventtype = null) {
-        global $CFG, $DB, $turnitinacceptedfiles;
+        global $CFG, $DB;
         $errorcode = 0;
         $attempt = 0;
         $tiisubmissionid = null;
@@ -2514,6 +2508,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!$acceptanyfiletype && $submissiontype == 'file') {
             $filenameparts = explode('.', $filename);
             $fileext = strtolower(end($filenameparts));
+
+            // Define accepted files if the module is not accepting any file type.
+            $turnitinacceptedfiles = ['.doc', '.docx', '.ppt', '.pptx', '.pps', '.ppsx',
+                                      '.pdf', '.txt', '.htm', '.html', '.hwp', '.odt',
+                                      '.wpd', '.ps', '.rtf', '.xls', '.xlsx'];
+
             if (!in_array(".".$fileext, $turnitinacceptedfiles)) {
                 $errorcode = 4;
             }
@@ -2639,7 +2639,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                // adding slot to sha hash to create unique assignments for duplicate text based on it's id
                 $identifier = sha1($eventdata['objectid']);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',

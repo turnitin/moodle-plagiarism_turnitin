@@ -753,7 +753,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissiontype = 'quiz_answer';
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = ($submissiontype === 'quiz_answer') ? sha1($content.$linkarray["itemid"]) : sha1($content);
                 $identifier = ($submissiontype === 'quiz_answer') ? sha1($linkarray['area']) : sha1($content);
             }
 

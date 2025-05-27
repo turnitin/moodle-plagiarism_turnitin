@@ -750,6 +750,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $this->load_page_components();
 
             $identifier = '';
+            $oldidentifier = '';
             $itemid = 0;
 
             // Get File or Content information.
@@ -767,7 +768,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissiontype = 'quiz_answer';
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = ($submissiontype === 'quiz_answer') ? sha1($linkarray['area']) : sha1($content);
+                if ($submissiontype === 'quiz_answer') {
+                  $identifier = sha1($linkarray['area']);
+                  $oldidentifier = sha1($content.$linkarray["itemid"]);
+                }
+                else {
+                  $identifier = sha1($content);
+                }
             }
 
             // Group submissions where all students have to submit sets userid to 0.
@@ -782,7 +789,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id, 'identifier' => $identifier],
+                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
+                    'identifier' => [$identifier, $oldidentifier]],  // Check both identifiers for backwards compatibility.
                     'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = reset($plagiarismfiles);
                 $author = $plagiarismfile->userid;

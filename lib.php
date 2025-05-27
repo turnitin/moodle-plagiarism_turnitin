@@ -754,6 +754,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
                 $identifier = ($submissiontype === 'quiz_answer') ? sha1($content.$linkarray["itemid"]) : sha1($content);
+                $identifier = ($submissiontype === 'quiz_answer') ? sha1($linkarray['area']) : sha1($content);
             }
 
             // Group submissions where all students have to submit sets userid to 0.
@@ -2618,7 +2619,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Queue text content.
                 // adding slot to sha hash to create unique assignments for duplicate text based on it's id
-                $identifier = sha1($eventdata['other']['content'].$slot);
+                $identifier = sha1($eventdata['objectid']);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3224,7 +3225,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($qa->get_response_summary().$slot)) {
+                    if ($queueditem->identifier == sha1($queueditem->itemid)) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

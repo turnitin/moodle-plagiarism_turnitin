@@ -2977,7 +2977,7 @@ function plagiarism_turnitin_update_reports() {
  * Handle Scheduled Task to Send Queued Submissions to Turnitin.
  */
 function plagiarism_turnitin_send_queued_submissions() {
-    global $CFG, $DB;
+    global $CFG, $DB, $turnitinacceptedfiles;
 
     $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
     $pluginturnitin = new plagiarism_plugin_turnitin();

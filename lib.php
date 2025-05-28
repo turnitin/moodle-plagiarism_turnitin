@@ -3158,7 +3158,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $filename = $file->get_filename();
                     $pathinfo = pathinfo($filename);
                     $extension = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
-                    if (!in_array('.'$extension, $turnitinacceptedfiles)) {
+                    if (!in_array('.'.$extension, $turnitinacceptedfiles)) {
                         $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File format is not supported. The filename is '
                           .$file->get_filename(). ' and the extension is '.$extension;
                         plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_WRONG_FORMAT');

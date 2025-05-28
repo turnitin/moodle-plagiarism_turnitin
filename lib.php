@@ -769,7 +769,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
                 if ($submissiontype === 'quiz_answer') {
-                  $identifier = sha1($linkarray['area']);
+                  $identifier = sha1($linkarray['area'].$linkarray['itemid']);
                   $oldidentifier = sha1($content.$linkarray["itemid"]);
                 }
                 else {
@@ -2639,7 +2639,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                $identifier = sha1($eventdata['objectid']);
+                $identifier = sha1($eventdata['objectid'].$slot);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3258,7 +3258,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($queueditem->itemid)) {
+                    if ($queueditem->identifier == sha1($queueditem->itemid.$slot)) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

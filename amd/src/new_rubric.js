@@ -43,8 +43,8 @@ define(['jquery',
                     }
                 });
 
-                // If the rubric selector exists on the page, refresh the list of available rubrics
-                if($("#id_plagiarism_rubric").length > 0) {
+                // If the rubric selector is present on the page, grab the list of instructor rubrics from TFS.
+                if ($('#id_plagiarism_rubric').length > 0) {
                     ModalRubricManagerLaunch.refreshRubricSelect();
                 }
             },

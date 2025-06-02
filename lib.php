@@ -633,7 +633,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return type
      */
     public function get_links($linkarray) {
-        global $CFG, $DB, $OUTPUT, $USER;
+        global $CFG, $DB, $OUTPUT, $USER, $PAGE;
+
+        if ($CFG->version >= 2023100900) {
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
+        } else {
+            // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
+        }
 
         $output = "";
 

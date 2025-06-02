@@ -161,9 +161,15 @@ switch ($action) {
         break;
 
     case "rubricview":
-        $replypost = 'mod/'.$cm->modname.':replypost';
-        $submit = 'mod/'.$cm->modname.':submit';
-        $isstudent = ($cm->modname == "forum") ? has_capability($replypost, $context) : has_capability($submit, $context);
+        if ($cm->modname == "forum") {
+           $isstudent = has_capability('mod/forum:replypost', $context);
+        }
+        elseif ($cm->modname == "quiz") {
+          $isstudent = !has_capability('mod/quiz:viewoverrides', $context);
+        }
+        else {
+           $isstudent = has_capability('mod/'.$cm->modname.':submit', $context);
+        }
 
         if ($isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));

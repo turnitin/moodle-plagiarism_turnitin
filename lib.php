@@ -743,6 +743,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $this->load_page_components();
 
             $identifier = '';
+            $oldidentifier = '';
             $itemid = 0;
 
             // Get File or Content information.
@@ -760,7 +761,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $submissiontype = 'quiz_answer';
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
-                $identifier = ($submissiontype === 'quiz_answer') ? sha1($content.$linkarray["itemid"]) : sha1($content);
+                if ($submissiontype === 'quiz_answer') {
+                  $identifier = sha1($linkarray['area'].$linkarray['itemid']);
+                  $oldidentifier = sha1($content.$linkarray["itemid"]);
+                }
+                else {
+                  $identifier = sha1($content);
+                }
             }
 
             // Group submissions where all students have to submit sets userid to 0.
@@ -775,7 +782,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id, 'identifier' => $identifier],
+                $plagiarismfiles = $DB->get_records_list('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
+                    'identifier' => [$identifier, $oldidentifier]],  // Check both identifiers for backwards compatibility.
                     'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = reset($plagiarismfiles);
                 $author = $plagiarismfile->userid;
@@ -2624,8 +2632,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                // adding slot to sha hash to create unique assignments for duplicate text based on it's id
-                $identifier = sha1($eventdata['other']['content'].$slot);
+                $identifier = sha1($eventdata['objectid'].$slot);
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3244,7 +3251,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                 }
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($qa->get_response_summary().$slot)) {
+                    if ($queueditem->identifier == sha1($queueditem->itemid.$slot)) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }

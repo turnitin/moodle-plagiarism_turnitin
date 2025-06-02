@@ -1961,7 +1961,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else {
                     // Otherwise create rubric entry for this module.
                     $rubricfield->config_hash = $rubricfield->cm."_".$rubricfield->name;
-                    $DB->create_record('plagiarism_turnitin_config', $rubricfield);
+                    $DB->insert_record('plagiarism_turnitin_config', $rubricfield);
                 }
             }
             catch (Exception $e) {

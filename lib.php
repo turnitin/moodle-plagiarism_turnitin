@@ -680,7 +680,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             if ($cm->modname == 'forum') {
                 if (! $forum = $DB->get_record("forum", array("id" => $cm->instance))) {
-                    print_error('invalidforumid', 'forum');
+                    plagiarism_turnitin_print_error('invalidforumid', 'forum');
                 }
             }
         }
@@ -1983,7 +1983,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else {
                     // Otherwise create rubric entry for this module.
                     $rubricfield->config_hash = $rubricfield->cm."_".$rubricfield->name;
-                    $DB->create_record('plagiarism_turnitin_config', $rubricfield);
+                    $DB->insert_record('plagiarism_turnitin_config', $rubricfield);
                 }
             }
             catch (Exception $e) {
@@ -3482,7 +3482,7 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
         $message .= ' ('.basename($file).' | '.$line.')';
     }
 
-    print_error($input, 'plagiarism_turnitin', $link, $message);
+    throw new \moodle_exception($input, 'plagiarism_turnitin', $link, $message);
     exit();
 }
 

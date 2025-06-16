@@ -900,9 +900,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Get turnitin file details.
                 if (is_null($plagiarismfile)) {
-                    $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
-                            'cm' => $linkarray["cmid"], 'identifier' => $identifier),
-                            'lastmodified DESC', '*', 0, 1);
+                    $plagiarismfiles = $DB->get_records_sql(
+                        'SELECT * FROM {plagiarism_turnitin_files} 
+                        WHERE identifier IN ( :identifier, :oldidentifier)
+                        AND userid = :userid AND cm = :cmid 
+                        ORDER BY lastmodified DESC',
+                        ['identifier' => $identifier, 'oldidentifier' => $oldidentifier,
+                        'userid' => $linkarray["userid"], 'cmid' => $cm->id], 0, 1);
                     $plagiarismfile = current($plagiarismfiles);
                 }
 

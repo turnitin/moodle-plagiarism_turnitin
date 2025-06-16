@@ -571,7 +571,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         $PAGE->requires->string_for_js('turnitin_score_refresh_alert', 'plagiarism_turnitin');
-        
+
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
         // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
@@ -788,12 +788,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             */
             $plagiarismfile = null;
             $moodlesubmission = $DB->get_record('assign_submission', array('id' => $itemid), 'id, groupid');
+
             if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $plagiarismfiles = $DB->get_records_list('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
-                    'identifier' => [$identifier, $oldidentifier]],  // Check both identifiers for backwards compatibility.
+                $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', ['itemid' => $itemid, 'cm' => $cm->id,
+                    'identifier' => $identifier],
                     'lastmodified DESC', '*', 0, 1);
                 $plagiarismfile = reset($plagiarismfiles);
-                $author = $plagiarismfile->userid;
+                $author = $plagiarismfile->userid ?? null;
                 $linkarray['userid'] = $author;
             } else {
                 // Get correct user id that submission is for rather than who submitted, this only affects file submissions
@@ -899,9 +900,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 // Get turnitin file details.
                 if (is_null($plagiarismfile)) {
-                    $plagiarismfiles = $DB->get_records('plagiarism_turnitin_files', array('userid' => $linkarray["userid"],
-                            'cm' => $linkarray["cmid"], 'identifier' => $identifier),
-                            'lastmodified DESC', '*', 0, 1);
+                    $plagiarismfiles = $DB->get_records_sql(
+                        'SELECT * FROM {plagiarism_turnitin_files} 
+                        WHERE identifier IN ( :identifier, :oldidentifier)
+                        AND userid = :userid AND cm = :cmid 
+                        ORDER BY lastmodified DESC',
+                        ['identifier' => $identifier, 'oldidentifier' => $oldidentifier,
+                        'userid' => $linkarray["userid"], 'cmid' => $cm->id], 0, 1);
                     $plagiarismfile = current($plagiarismfiles);
                 }
 
@@ -2017,7 +2022,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
-        
+
         // Grab all plagiarism files where all the following conditions are met:
         // 1. The file has been successfully sent to TII
         // 2. The submission is ready to recieve a similarity score (either it doesn't already have a similarity score or it's set to regenerate)
@@ -2086,7 +2091,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // If submission is added to the request, add the corresponding assign id in the assignids array.
                 $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
                     [ 'cm' => $tiisubmission->cm, 'name' => 'turnitin_assignid' ]);
-           
+
                 if (!isset(array_flip($assignmentids)[$moduleturnitinconfig->value])) {
                     $assignmentids[] = $moduleturnitinconfig->value;
                 }
@@ -2630,7 +2635,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $quizattemptclass = 'quiz_attempt';
             }
             $attempt = $quizattemptclass::create($eventdata['objectid']);
-            
+
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
                 if ($qa->get_question()->get_type_name() != 'essay') {

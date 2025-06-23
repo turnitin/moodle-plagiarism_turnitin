@@ -564,7 +564,6 @@ class turnitin_user {
         global $DB;
 
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        parse_str($_SERVER["REQUEST_URI"], $params);
 
         $return = [];
 

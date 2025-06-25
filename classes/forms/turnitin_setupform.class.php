@@ -112,10 +112,6 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_enablepeermark_desc', null, get_string('turnitinenablepeermark_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_enablepeermark', 1);
 
-        $mform->addElement('select', 'plagiarism_turnitin_useerater', get_string('turnitinuseerater', 'plagiarism_turnitin'), $ynoptions);
-        $mform->addElement('static', 'plagiarism_turnitin_useerater_desc', null, get_string('turnitinuseerater_desc', 'plagiarism_turnitin'));
-        $mform->setDefault('plagiarism_turnitin_useerater', 0);
-
         $mform->addElement('select', 'plagiarism_turnitin_useanon', get_string('turnitinuseanon', 'plagiarism_turnitin'), $ynoptions);
         $mform->addElement('static', 'plagiarism_turnitin_useanon_desc', null, get_string('turnitinuseanon_desc', 'plagiarism_turnitin'));
         $mform->setDefault('plagiarism_turnitin_useanon', 0);
@@ -242,7 +238,7 @@ class turnitin_setupform extends moodleform {
         }
 
         $properties = array("accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
-            "useerater", "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
+            "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain");
 
         foreach ($properties as $property) {

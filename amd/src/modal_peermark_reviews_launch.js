@@ -34,6 +34,7 @@ define(
         };
 
         ModalPeermarkReviewsLaunch.TYPE = 'plagiarism_turnitin-modal_peermark_reviews_launch';
+        ModalPeermarkReviewsLaunch.TEMPLATE = 'plagiarism_turnitin/modal_peermark_reviews_launch';
         ModalPeermarkReviewsLaunch.prototype = Object.create(Modal.prototype);
         ModalPeermarkReviewsLaunch.prototype.constructor = ModalPeermarkReviewsLaunch;
 

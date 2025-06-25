@@ -22,6 +22,9 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php
 
 $turnitinview = new turnitin_view();
 
+$cssurl = new moodle_url('/plagiarism/turnitin/amd/src/datatables.css');
+$PAGE->requires->css($cssurl);
+
 require_login();
 admin_externalpage_setup('plagiarismturnitin');
 $context = context_system::instance();
@@ -97,12 +100,8 @@ if (!empty($action)) {
 
 // Include Javascript & CSS.
 if ($do == "errors" || $do == "config" || $do == "unlinkusers") {
-    $PAGE->requires->jquery();
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_settings', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_dataTables_plugins', 'plagiarism_turnitin');
-    $PAGE->requires->jquery_plugin('plagiarism-turnitin_datatables_columnfilter', 'plagiarism_turnitin');
-
+    $PAGE->requires->js_call_amd('plagiarism_turnitin/plugin_settings', 'pluginSettings');
+    
     // Strings for JS.
     $PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitin');
     $PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitin');

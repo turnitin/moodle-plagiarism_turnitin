@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
- * @module plagiarism_turnitin/peermarkLaunch
+ * @module plagiarism_turnitin/peermark
  */
 
 define(['jquery',
@@ -19,11 +19,11 @@ define(['jquery',
                 var that = this;
                 $('.peermark_manager_launch').on('click', function(event) {
                     event.preventDefault();
-                    that.peermarkCreateModal(ModalPeermarkManagerLaunch.TYPE);
+                    that.peermarkCreateModal(ModalPeermarkManagerLaunch);
                 });
 
                 $(document).on('click', '.peermark_reviews_pp_launch', function() {
-                    that.peermarkCreateModal(ModalPeermarkReviewsLaunch.TYPE);
+                    that.peermarkCreateModal(ModalPeermarkReviewsLaunch);
                 });
             },
             peermarkCreateModal: function(modalType) {
@@ -35,7 +35,7 @@ define(['jquery',
                     var cmid = urlParams.get('id');
                 }
                 ModalFactory.create({
-                    type: modalType,
+                    type: modalType.TYPE,
                     templateContext: {
                         cmid: cmid,
                         wwwroot: M.cfg.wwwroot

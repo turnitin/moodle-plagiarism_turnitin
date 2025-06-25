@@ -6,11 +6,13 @@
  * @module plagiarism_turnitin/open_viewer
  */
 
-define(['jquery'], function($) {
+define(['jquery',
+        'core/notification'
+       ], function($) {
     return {
         origreport_open: function() {
             var that = this;
-            $(document).on('click', '.pp_origreport_open', function() {
+            $(document).off('click', '.pp_origreport_open').on('click', '.pp_origreport_open', function() {
                 var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
 
                 for (var i = 0; i < classList.length; i++) {
@@ -24,7 +26,7 @@ define(['jquery'], function($) {
 
         grademark_open: function() {
             var that = this;
-            $(document).on('click', '.pp_grademark_open', function() {
+            $(document).off('click', '.pp_grademark_open').on('click', '.pp_grademark_open', function() {
                 var classList = $(this).attr('class').replace(/\s+/,' ').split(' ');
 
                 for (var i = 0; i < classList.length; i++) {
@@ -96,10 +98,13 @@ define(['jquery'], function($) {
                 },
                 success: function() {
                     var requestDuration = new Date().getTime() - refreshStartTime;
-                    if (requestDuration < 3000 || !$('.turnitin_score_refresh_alert').length) {
+                    if (requestDuration < 3000) {
                         window.location = window.location + '';
                     } else {
-                        $('.turnitin_score_refresh_alert').show();
+                        Notification.addNotification({
+                          message: M.str.plagiarism_turnitin.turnitin_score_refresh_alert,
+                          type: "warning"
+                        });
                     }
                 }
             });

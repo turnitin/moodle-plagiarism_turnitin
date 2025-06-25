@@ -214,6 +214,7 @@ class turnitin_assignment {
 
             if ($workflowcontext == "cron") {
                 mtrace(get_string('ppassignmentcreateerror', 'plagiarism_turnitin'));
+                mtrace($e->getMessage());
                 $toscreen = false;
             }
             $this->turnitincomms->handle_exceptions($e, 'createassignmenterror', $toscreen);

@@ -3,7 +3,7 @@
  *
  * @copyright Turnitin
  * @author 2019 David Winn <dwinn@turnitin.com>
- * @module plagiarism_turnitin/quickmarkLaunch
+ * @module plagiarism_turnitin/quickmark
  */
 
 define(['jquery',

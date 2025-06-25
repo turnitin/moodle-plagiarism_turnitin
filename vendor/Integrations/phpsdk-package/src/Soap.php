@@ -362,12 +362,11 @@ class Soap extends \SoapClient
      * @param string $location
      * @param string $action
      * @param int $version
-     * @param null $one_way
+     * @param bool $one_way
      * @return mixed|string
      * @throws TurnitinSDKException
      */
-    public function __doRequest($request, $location, $action, $version, $one_way = null)
-    {
+    public function __doRequest($request, $location, $action, $version, $one_way = false): ?string {
 
         $http_headers = array(
             'Content-type: text/xml;charset="utf-8"',

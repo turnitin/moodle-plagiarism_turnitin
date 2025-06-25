@@ -19,9 +19,9 @@
  * @copyright 2012 iParadigms LLC
  */
 
-$plugin->version = 2023082201;
+$plugin->version = 2025052901;
 
-$plugin->release = "3.5+";
+$plugin->release = "4.1+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;

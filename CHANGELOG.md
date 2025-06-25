@@ -1,5 +1,144 @@
+### Date:       2025-May-29
+### Release:    v2025052901
+
+---
+
+#### Assignment Settings Error Fixed
+An issue was identified where when navigating the assignment settings an error message would appear. This has been resolved.
+
+#### Student Quiz Rubric Issue Fixed
+An issue was identified where the rubric would fail to open in the student quiz view. This has now been resolved.
+
+#### Unlink/Relink Table Fixed
+An issue was identified where trying to change the page on the unlink/relink users table would cause an infinite loading spinner. This has now been resolved.
+
+#### Stuck Submissions Fixed
+An issue was identified where submissions were getting stuck in the submission queue, which would eventually cause submissions to fail to be sent to turnitin. This has now been fixed.
+
+#### Assignment End Date Syncronization Issue Fixed
+An issue was identified where assignment end dates were sometimes not syncing correctly to Turnitin on Moodle versions 4.5+. This has now been fixed.
+
+---
+
+### Date:       2025-March-05
+### Release:    v2025030501
+
+---
+
+#### Quiz Attempt Issue Fixed
+An issue was identified which affected the ability of users to view student submissions to quizzes in Moodle 4.1. This has now been fixed.
+
+---
+
+### Date:       2024-December-19
+### Release:    v2024121901
+
+---
+
+#### Removed ETS e-rater Service
+As we have now discontinued support for the ETS e-rater service, these settings have now been removed from the plugin.
+
+### Collusion Check Bug Fixed
+An issue was found which in some cases affected the order in which submissions would be indexed, leading to collusion checks potentially being carried out out of order. This has now been resolved.
+
+---
+
+### Date:       2024-December-05
+### Release:    v2024120501
+
+---
+
+#### Extra Classes No Longer Created in Turnitin
+Previously classes would be created in Turnitin for some Moodle assignments even if the plagiarism plugin was disabled for those assignments. This has now been fixed.
+
+#### Course Backups Fixed
+An issue with database collation was causing course backup and deletion to fail for some users. This has now been resolved.
+
+#### Cron Handling of Large Files Improved
+Previously there was an issue with our cron task which would occasionally cause the server to run out of memory when sending a high number of submissions to Turnitin. This has now been resolved.
+
+#### Error Files No Longer Stuck in Submission Queue
+Previously there was an issue which would cause some files flagged with errors to be stuck in the submission queue. This would eventually cause the queue to fill and prevent other submissions from being sent. This issue has now been fixed.
+
+#### Migration to AMD Modules
+We have migrated our javascript code to use AMD modules. This should help reduce loading times for Moodle sites.
+
+#### Unnecessary Database Reads Removed
+We have increased the efficiency of our database reads during cron task runs.
+
+#### Local Role Assignment Implemented
+We now fully support assignment of roles at the activity module level. Similarity scores should now appear as expected for participants locally assigned the role of Teacher or above.
+
+#### Error Checking For Large Files
+Previously there was an issue when a file over 100MB was attempted to be sent to Turnitin which would cause further submissions not to be sent. This issue has now been resolved and we now handle this error correctly.
+
+#### Similarity Scores Now Displayed For Forum Topics
+We fixed an error that was preventing similarity scores from being displayed in forum topics.
+
+#### Similarity Scores Now Displaying For Forum Posts Containing Images
+Previously adding an image to a forum submission could cause the similarity score for that submission to fail to be displayed. This issue has now been resolved.
+
+#### Fixed Database Export for Moodle 4.4+
+The Database Export tab is now working as expected in Moodle versions 4.4+.
+
+#### Error 404 Fixed
+Previously there was an error where a javascript module would be loaded incorrectly on the assignment settings page, causing an error 404 to display. This has now been fixed.
+
+#### Detaching Rubrics Fixed
+Previously an error prevented detaching of rubrics from assignments. This has now been fixed.
+
+#### Rubric Modal Close Button Fixed
+Previously the close button for the rubric modal window was not working. This now closes the window as expected.
+
+---
+
+### Date:       2024-July-24
+### Release:    v2024072401
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Issue with rubrics fixed
+In Moodle 4.3 and 4.4, Turnitin rubrics were not able to be attached for new Turnitin enabled Moodle assignments.  This has now been resolved.
+
+#### Issue with accepting EULA when initially declined fixed
+In Turnitin enabled Moodle assignments, when the student declined the Turnitin EULA, they were not presented the screen to upload their assignment to Moodle.  Also in this fix, the second presentation of the EULA for student acceptance which occurred after the student initially the declined the EULA and then successfully uploaded their submission was removed due to the confusion that this caused for the user.  Both of these have now been resolved.
+
+#### Reports now open correctly
+There was an issue where in Turnitin enabled Moodle assignments, when the user opened the report, it opened in multiple tabs.  This has now been resolved.
+
+#### Issue with viewing rubric fixed
+In Turnitin enabled Moodle assignments, the rubric was not able to be viewed by the students.  This has now been resolved.
+
+#### Userlist provider error message fixed
+In Moodle, there was an error message in the plugin privacy compliance registry indicating that the plugin was missing the userlist provider.  This has now been resolved.
+
+---
+
+### Date:       2024-February-05
+### Release:    v2024020501
+
+#### Issue with PeerMark, Rubric, and QuickMark in Moodle 4.3 fixed
+In the previous plugin release we resolved an issue with the EULA modal not launching for students. It has since been discovered that all modals in the plugin were affected by the same issue. This update resolves the issues that users have found with launching the PeerMark, Rubric, and QuickMark managers.
+
+---
+
+### Date:       2023-December-19
+### Release:    v2023121901
+
+#### New students can now access the EULA
+Previously there was an issue with students accepting the EULA in Moodle 4.3. This has now been resolved and students presented with the EULA should be able to successfully accept it.
+
+#### Correct rounding of grade average
+Previously when multiple submissions were made to an assignment the final grade was averaged by rounding down rather than up. This release now fixes this issue and the grade average should now round up.
+
+---
+
 ### Date:       2023-August-22
 ### Release:    v2023082201
+
+---
 
 #### Report scores should now update as expected
 

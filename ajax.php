@@ -161,17 +161,7 @@ switch ($action) {
         break;
 
     case "rubricview":
-        if ($cm->modname == "forum") {
-           $isstudent = has_capability('mod/forum:replypost', $context);
-        }
-        elseif ($cm->modname == "quiz") {
-          $isstudent = !has_capability('mod/quiz:viewoverrides', $context);
-        }
-        else {
-           $isstudent = has_capability('mod/'.$cm->modname.':submit', $context);
-        }
-
-        if ($isstudent) {
+        if (is_enrolled($context)) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
 
             $user = new turnitin_user($USER->id, "Learner");

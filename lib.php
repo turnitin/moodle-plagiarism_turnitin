@@ -2367,6 +2367,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $settings = $this->get_settings($cm->id);
 
+        if ((!isset($settings["plagiarism_compare_student_papers"]) || !$settings["plagiarism_compare_student_papers"]) &&
+            (!isset($settings["plagiarism_compare_internet"]) || !$settings["plagiarism_compare_internet"]) &&
+            (!isset($settings["plagiarism_compare_journals"]) || !$settings["plagiarism_compare_journals"]) &&
+            (!isset($settings["plagiarism_compare_institution"]) || !$settings["plagiarism_compare_institution"])) {
+            // If all comparison options are disabled then don't submit to Turnitin.
+            plagiarism_turnitin_activitylog('No comparison options selected for assignment with cmid: '.$cm->id.' not sending to Turnitin', 'NO_COMPARISON_OPTIONS_SELECTED');
+            return true;
+        }
         // Get module data.
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
         $moduledata->resubmission_allowed = false;

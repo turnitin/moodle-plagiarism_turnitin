@@ -94,7 +94,7 @@ switch ($action) {
 
     case "update_grade":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         include_once($CFG->libdir."/gradelib.php");
@@ -127,7 +127,7 @@ switch ($action) {
 
     case "refresh_peermark_assignments":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
@@ -230,7 +230,7 @@ switch ($action) {
 
     case "actionuseragreement":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $message = optional_param('message', '', PARAM_ALPHAEXT);
@@ -258,7 +258,7 @@ switch ($action) {
 
     case "resubmit_event":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $forumdata = optional_param('forumdata', '', PARAM_ALPHAEXT);
@@ -276,7 +276,7 @@ switch ($action) {
     case "resubmit_events":
 
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $submissionids = optional_param_array('submission_ids', [], PARAM_INT);
@@ -296,7 +296,7 @@ switch ($action) {
 
     case "test_connection":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
         $data = ["connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'plagiarism_turnitin')];
 
@@ -344,7 +344,7 @@ switch ($action) {
             header('Content-type: application/json; charset=utf-8');
             echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
         } else {
-            throw new moodle_exception('accessdenied', 'admin');
+            throw new \moodle_exception('accessdenied', 'admin');
         }
         break;
 

@@ -170,7 +170,7 @@ switch ($action) {
 
     case "rubricview":
         if (is_enrolled($context)) {
-            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
+            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', [ 'cm' => $cm->id, 'name' => 'turnitin_assignid' ]);
 
             $user = new turnitin_user($USER->id, "Learner");
             $coursedata = turnitin_assignment::get_course_data($cm->course);

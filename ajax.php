@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Turnitin ajax file
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2013 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 use Integrations\PhpSdk\TiiClass;
 
 require_once(__DIR__.'/../../config.php');
@@ -45,7 +53,7 @@ if ( !empty( $cmid ) ) {
 
 $pathnamehash = optional_param('pathnamehash', "", PARAM_ALPHANUM);
 $submissiontype = optional_param('submission_type', "", PARAM_ALPHAEXT);
-$return = array();
+$return = [];
 
 // Initialise plugin class.
 $pluginturnitin = new plagiarism_plugin_turnitin();
@@ -79,14 +87,14 @@ switch ($action) {
                     $userrole,
                     ''
                 ),
-                array('style' => 'display: none')
+                ['style' => 'display: none']
             );
         }
         break;
 
     case "update_grade":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         include_once($CFG->libdir."/gradelib.php");
@@ -102,7 +110,7 @@ switch ($action) {
 
             // If we have a turnitin timestamp stored then update it, otherwise create it.
             if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
-                                        array('cm' => $cm->id, 'name' => 'grades_last_synced'), 'id')) {
+                                        ['cm' => $cm->id, 'name' => 'grades_last_synced'], 'id')) {
                 $moduleconfigvalue->id = $timestampid->id;
                 $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
             } else {
@@ -119,10 +127,10 @@ switch ($action) {
 
     case "refresh_peermark_assignments":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
-        $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
+        $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
         $pluginturnitin->refresh_peermark_assignments($cm, $tiiassignment->value);
         break;
 
@@ -132,7 +140,7 @@ switch ($action) {
             $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
             $coursedata = $plagiarismpluginturnitin->get_course_data($cm->id, $cm->course);
 
-            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
+            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
 
             if ($tiiassignment) {
                 $tiiassignmentid = $tiiassignment->value;
@@ -148,10 +156,10 @@ switch ($action) {
             echo html_writer::tag(
                 'div',
                 turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
-                array(
+                [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
-                )
+                    'style' => 'display:none;',
+                ]
             );
 
             echo html_writer::script("<!--
@@ -171,10 +179,10 @@ switch ($action) {
             echo html_writer::tag(
                 'div',
                 turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
-                array(
+                [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
-                )
+                    'style' => 'display:none;',
+                ]
             );
 
             echo html_writer::script("<!--
@@ -189,7 +197,7 @@ switch ($action) {
         $isstudent = ($cm->modname == "forum") ? has_capability($replypost, $context) : has_capability($submit, $context);
 
         if ($userrole == 'Instructor' || $isstudent) {
-            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', array('cm' => $cm->id, 'name' => 'turnitin_assignid'));
+            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
 
             $user = new turnitin_user($USER->id, $userrole);
             $coursedata = turnitin_assignment::get_course_data($cm->course);
@@ -198,10 +206,10 @@ switch ($action) {
             echo html_writer::tag(
                 'div',
                 turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
-                array(
+                [
                     'class' => 'launch_form',
-                    'style' => 'display:none;'
-                )
+                    'style' => 'display:none;',
+                ]
             );
 
             echo html_writer::script("<!--
@@ -212,13 +220,13 @@ switch ($action) {
 
     case "actionuseragreement":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $message = optional_param('message', '', PARAM_ALPHAEXT);
 
         // Get the id from the plagiarism_turnitin_users table so we can update.
-        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', array('userid' => $USER->id));
+        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $USER->id]);
 
         // Build user object for update.
         $eulauser = new stdClass();
@@ -240,7 +248,7 @@ switch ($action) {
 
     case "resubmit_event":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
         $forumdata = optional_param('forumdata', '', PARAM_ALPHAEXT);
@@ -248,23 +256,23 @@ switch ($action) {
         $submissionid = required_param('submissionid', PARAM_INT);
 
         $tiisubmission = new turnitin_submission($submissionid,
-                                                array('forumdata' => $forumdata, 'forumpost' => $forumpost));
+                                                ['forumdata' => $forumdata, 'forumpost' => $forumpost]);
 
         if ($tiisubmission->recreate_submission_event()) {
-            $return = array('success' => true);
+            $return = ['success' => true];
         }
         break;
 
     case "resubmit_events":
 
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
 
-        $submissionids = optional_param_array('submission_ids', array(), PARAM_INT);
+        $submissionids = optional_param_array('submission_ids', [], PARAM_INT);
 
-        $submissionids = optional_param_array('submission_ids', array(), PARAM_INT);
-        $errors = array();
+        $submissionids = optional_param_array('submission_ids', [], PARAM_INT);
+        $errors = [];
         $return['success'] = true;
         foreach ($submissionids as $submissionid) {
             $tiisubmission = new turnitin_submission($submissionid);
@@ -278,9 +286,9 @@ switch ($action) {
 
     case "test_connection":
         if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey', 'error');
+            throw new \moodle_exception('invalidsesskey', 'error');
         }
-        $data = array("connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'plagiarism_turnitin'));
+        $data = ["connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'plagiarism_turnitin')];
 
         $PAGE->set_context(context_system::instance());
         if (is_siteadmin()) {
@@ -326,7 +334,7 @@ switch ($action) {
             header('Content-type: application/json; charset=utf-8');
             echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
         } else {
-            throw new moodle_exception('accessdenied', 'admin');
+            throw new \moodle_exception('accessdenied', 'admin');
         }
         break;
 
@@ -343,7 +351,7 @@ switch ($action) {
             $instructor->set_user_values_from_tii();
             $instructorrubrics = $instructor->get_instructor_rubrics();
 
-            $options = array(0 => get_string('norubric', 'plagiarism_turnitin')) + $instructorrubrics;
+            $options = [0 => get_string('norubric', 'plagiarism_turnitin')] + $instructorrubrics;
 
             // Get rubrics that are shared on the Turnitin account.
             $turnitinclass = new turnitin_class($courseid);
@@ -375,7 +383,7 @@ switch ($action) {
                 }
             }
         } else {
-            $options = array();
+            $options = [];
         }
 
         echo json_encode($options);

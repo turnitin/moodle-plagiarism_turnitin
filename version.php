@@ -15,8 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version information for plagiarism_turnitin.
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $plugin->version = 2025070201;

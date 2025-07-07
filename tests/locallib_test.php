@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -33,12 +35,14 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
  *
  * @package turnitin
  */
-class plagiarism_turnitin_locallib_testcase extends advanced_testcase {
+final class locallib_test extends \advanced_testcase {
 
     /**
      * Test that we have the correct repository depending on the config settings.
+     *
+     * @covers \plagiarism_turnitin_override_repository
      */
-    public function test_plagiarism_turnitin_override_repository() {
+    public function test_plagiarism_turnitin_override_repository(): void {
         $this->resetAfterTest();
 
         // Note that $submitpapersto would only ever be 0, 1 or 2 but this is to illustrate
@@ -46,27 +50,32 @@ class plagiarism_turnitin_locallib_testcase extends advanced_testcase {
         $submitpapersto = 6;
 
         // Test that repository is not overridden for value of 0.
-        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_STANDARD,
+            'plagiarism_turnitin');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($submitpapersto, $response);
 
         // Test that repository is not overridden for value of 1.
-        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED,
+            'plagiarism_turnitin');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals($submitpapersto, $response);
 
         // Standard Repository is being forced.
-        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD,
+            'plagiarism_turnitin');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals(PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY, $response);
 
         // No Repository is being forced.
-        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO,
+            'plagiarism_turnitin');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals(PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY, $response);
 
         // Institutional Repository is being forced.
-        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL,
+            'plagiarism_turnitin');
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals(PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY, $response);
     }

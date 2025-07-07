@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for plagiarism_turnitin.
- *
  * @package   plagiarism_turnitin
- * @copyright 2012 iParadigms LLC
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2025 Turnitin
+ * @author    Jack Milgate
  */
 
-$plugin->version = 2025070201;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->release = "4.1+";
-$plugin->requires = 2018051700;
-$plugin->component = 'plagiarism_turnitin';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->cron = 0;
+$callbacks = [
+    [
+        'hook' => \core\hook\output\before_footer_html_generation::class,
+        'callback' => [plagiarism_turnitin\hook_callbacks::class, 'before_footer_html_generation'],
+        'priority' => 0,
+    ],
+];

@@ -30,17 +30,18 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+
 /**
  * Tests for locallib class
  *
  * @package turnitin
  */
+#[CoversFunction('\plagiarism_turnitin_override_repository')]
 final class locallib_test extends \advanced_testcase {
 
     /**
      * Test that we have the correct repository depending on the config settings.
-     *
-     * @covers \plagiarism_turnitin_override_repository
      */
     public function test_plagiarism_turnitin_override_repository(): void {
         $this->resetAfterTest();

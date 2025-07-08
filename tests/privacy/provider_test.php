@@ -41,15 +41,20 @@ if (!class_exists('\core_privacy\tests\provider_testcase')) {
     return;
 }
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+
 /**
  * Unit tests for plagiarsm/turnitin/privacy
  */
+#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::_get_metadata')]
+#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::get_contexts_for_userid')]
+#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::export_plagiarism_user_data')]
+#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_user')]
+#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_context')]
 final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test for _get_metadata shim.
-     *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::_get_metadata
      */
     public function test_get_metadata(): void {
         $this->resetAfterTest();
@@ -104,8 +109,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test that user's contexts are exported.
-     *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::get_contexts_for_userid
      */
     public function test_get_contexts_for_userid(): void {
         $this->resetAfterTest();
@@ -124,8 +127,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test that all user data is exported.
-     *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::export_plagiarism_user_data
      * @return void
      * @throws \dml_exception
      */
@@ -146,8 +147,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test that all user data is deleted.
-     *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_user
      * @return void
      * @throws \dml_exception
      */
@@ -174,8 +173,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test that all context data is deleted.
-     *
-     * @covers \core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_context
      * @return void
      * @throws \dml_exception
      */
@@ -207,7 +204,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
-        $libtest = new \plagiarism_turnitin\lib_test();
+        $libtest = new \plagiarism_turnitin\lib_test("create_submission");
         $result = $libtest->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
             'teamsubmission' => 0,

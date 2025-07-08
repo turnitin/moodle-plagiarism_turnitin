@@ -30,17 +30,18 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
+use PHPUnit\Framework\Attributes\CoversClass;
+
 /**
  * Tests for Turnitin quiz class.
  *
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass('\turnitin_quiz')]
 final class turnitin_quiz_test extends \advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.
-     *
-     * @covers \turnitin_quiz
      * @copyright 2014 Tim Hunt
      */
     public function test_update_mark(): void {
@@ -81,7 +82,8 @@ final class turnitin_quiz_test extends \advanced_testcase {
         quiz_start_new_attempt($quizobj, $quba, $attempt, 1, $timenow);
         quiz_attempt_save_started($quizobj, $quba, $attempt);
         $attemptobj = $quizattemptclass::create($attempt->id);
-        $attemptobj->process_finish($timenow, false);
+        $attemptobj->process_submit($timenow, false);
+        $attemptobj->process_grade_submission($timenow);
 
         // Expect no marks or grade for the attempt yet.
         $attemptobj = $quizattemptclass::create($attempt->id);

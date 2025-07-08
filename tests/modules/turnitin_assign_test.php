@@ -30,11 +30,14 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+
 /**
  * Tests for assign
  *
  * @package turnitin
  */
+#[CoversFunction('\turnitin_assign::is_resubmission_allowed')]
 final class turnitin_assign_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */
@@ -63,8 +66,6 @@ final class turnitin_assign_test extends \advanced_testcase {
 
     /**
      * Test to check whether resubmissions are allowed.
-     *
-     * @covers \turnitin_assign::is_resubmission_allowed
      */
     public function test_check_is_resubmission_allowed(): void {
         $this->resetAfterTest(true);
@@ -100,8 +101,6 @@ final class turnitin_assign_test extends \advanced_testcase {
 
     /**
      * Test that resubmissions are not allowed for files if the maximum files in a submission is more than 1.
-     *
-     * @covers \turnitin_assign::is_resubmission_allowed
      */
     public function test_check_is_resubmission_allowed_maxfiles_above_threshold(): void {
         $this->resetAfterTest(true);

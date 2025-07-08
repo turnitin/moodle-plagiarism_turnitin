@@ -26,6 +26,8 @@ namespace plagiarism_turnitin;
 
 use core_competency\course_competency;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+
 /**
  * Plagiarism Turnitin tests.
  *
@@ -33,11 +35,10 @@ use core_competency\course_competency;
  * @copyright  2016 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversFunction('\reset_course_userdata')]
 final class turnitin_test extends \advanced_testcase {
     /**
      * Isolates a problem found running core tests in Moodle 31.
-     *
-     * @covers \reset_course_userdata
      */
     public function test_problem_moodle31_coretests(): void {
         $this->resetAfterTest();

@@ -595,6 +595,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
+        $config = $this->plagiarism_turnitin_admin_config();
         if ($config->plagiarism_turnitin_usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
 
             // Update assignment in case rubric is not stored in Turnitin yet.

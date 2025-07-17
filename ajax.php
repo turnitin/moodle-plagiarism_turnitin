@@ -252,7 +252,7 @@ switch ($action) {
         }
 
         $forumdata = optional_param('forumdata', '', PARAM_ALPHANUMEXT);
-        $forumpost = optional_param('forumpost', '', PARAM_RAW);
+        $forumpost = optional_param('forumpost', '', PARAM_BASE64);
         $submissionid = required_param('submissionid', PARAM_INT);
 
         $tiisubmission = new turnitin_submission($submissionid,

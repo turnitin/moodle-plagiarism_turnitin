@@ -149,7 +149,7 @@ class turnitin_submission {
                     'objectid' => $submission->id,
                     'userid' => $this->submissiondata->userid,
                     'other' => [
-                        'pathnamehashes' => '',
+                        'pathnamehashes' => [],
                         'content' => trim($this->data['forumpost']),
                         'discussionid' => $discussionid,
                         'triggeredfrom' => 'turnitin_recreate_submission_event',

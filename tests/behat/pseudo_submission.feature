@@ -36,6 +36,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment and utilise student da
       | Pseudo Encryption Salt    | Salt         |
       | Pseudo Email Domain       | behatmoodle.com |
     And I press "Save changes"
+    And I navigate to "Plugins overview" in site administration
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |
       | plagiarism_turnitin |

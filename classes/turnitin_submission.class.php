@@ -15,27 +15,45 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines turnitin_submission class
+ *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
-}
-
 class turnitin_submission {
 
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var array|mixed
+     */
     private $data;
+    /**
+     * @var false|mixed|stdClass
+     */
     private $submissiondata;
+    /**
+     * @var false|stdClass
+     */
     private $cm;
 
-    public function __construct($id, $data = array()) {
+    /**
+     * Class turnitin_submission constructor.
+     *
+     * @param int $id
+     * @param stdClass $data
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function __construct($id, $data = []) {
         global $DB;
 
         $this->id = $id;
         $this->data = $data;
-        $this->submissiondata = $DB->get_record('plagiarism_turnitin_files', array('id' => $id));
+        $this->submissiondata = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
         $this->cm = get_coursemodule_from_id('', $this->submissiondata->cm);
     }
 
@@ -55,16 +73,16 @@ class turnitin_submission {
                 $file = $this->get_file_info();
 
                 // Collate data and trigger new event for the cron to process.
-                $params = array(
+                $params = [
                     'context' => context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $file->get_itemid(),
                     'userid' => $this->submissiondata->userid,
-                    'other' => array(
+                    'other' => [
                         'content' => '',
-                        'pathnamehashes' => array($this->submissiondata->identifier)
-                    )
-                );
+                        'pathnamehashes' => [$this->submissiondata->identifier],
+                    ],
+                ];
                 // Forum attachments need the discussion id to be set.
                 if ($this->cm->modname == "forum") {
                     $discussionid = $moduleobject->get_discussionid($this->data['forumdata']);
@@ -74,7 +92,7 @@ class turnitin_submission {
 
                 $event = $moduleobject->create_file_event($params);
                 if ($this->cm->modname != "forum") {
-                    $event->set_legacy_files(array($this->submissiondata->identifier => $file));
+                    $event->set_legacy_files([$this->submissiondata->identifier => $file]);
                 }
                 $event->trigger();
 
@@ -85,17 +103,17 @@ class turnitin_submission {
                 $onlinetextdata = $moduleobject->get_onlinetext($this->submissiondata->userid, $this->cm);
 
                 // Collate data and trigger new event for the cron to process.
-                $params = array(
+                $params = [
                     'context' => context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $onlinetextdata->itemid,
                     'userid' => $this->submissiondata->userid,
-                    'other' => array(
-                        'pathnamehashes' => array(),
+                    'other' => [
+                        'pathnamehashes' => [],
                         'content' => trim($onlinetextdata->onlinetext),
-                        'format' => $onlinetextdata->onlineformat
-                    )
-                );
+                        'format' => $onlinetextdata->onlineformat,
+                    ],
+                ];
 
                 $event = $moduleobject->create_text_event($params, $this->cm);
                 $event->trigger();
@@ -105,7 +123,7 @@ class turnitin_submission {
             case 'forum_post':
                 $discussionid = $moduleobject->get_discussionid($this->data['forumdata']);
 
-                $forum = $DB->get_record("forum", array("id" => $this->cm->instance));
+                $forum = $DB->get_record("forum", ["id" => $this->cm->instance]);
 
                 // Some forum types don't pass in certain values on main forum page.
                 if ((empty($discussionid)) && ($forum->type == 'blog' || $forum->type == 'single')) {
@@ -114,29 +132,29 @@ class turnitin_submission {
                                                                 ON FP.discussion = FD.id
                                                                 WHERE FD.forum = ? AND FD.course = ?
                                                                 AND FP.userid = ? AND FP.message LIKE ? ',
-                                                                array($forum->id, $forum->course,
-                                                                    $this->submissiondata->userid, $this->data['forumpost'])
+                                                                [$forum->id, $forum->course,
+                                                                    $this->submissiondata->userid, $this->data['forumpost'], ]
                                                                 );
                     $discussionid = $discussion->id;
                 }
 
                 $submission = $DB->get_record_select('forum_posts',
                                                 " userid = ? AND message LIKE ? AND discussion = ? ",
-                                                array($this->submissiondata->userid, $this->data['forumpost'], $discussionid));
+                                                [$this->submissiondata->userid, $this->data['forumpost'], $discussionid]);
 
                 // Collate data and trigger new event for the cron to process.
-                $params = array(
+                $params = [
                     'context' => context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $submission->id,
                     'userid' => $this->submissiondata->userid,
-                    'other' => array(
+                    'other' => [
                         'pathnamehashes' => '',
                         'content' => trim($this->data['forumpost']),
                         'discussionid' => $discussionid,
-                        'triggeredfrom' => 'turnitin_recreate_submission_event'
-                    )
-                );
+                        'triggeredfrom' => 'turnitin_recreate_submission_event',
+                    ],
+                ];
                 $event = \mod_forum\event\assessable_uploaded::create($params);
                 $event->trigger();
 

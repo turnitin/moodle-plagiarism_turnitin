@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_eula
+@plugin @paulina @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_eula
 Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptance
   In order to allow students to submit to Moodle, they must accept the EULA.
   As a user
@@ -29,7 +29,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I set the following fields to these values:
       | Enable Diagnostic Mode | Standard |
     And I press "Save changes"
-    And I navigate to "Plugins overview" in site administration
+    And I navigate to "Plugins > Plugins overview" in site administration
     Then the following should exist in the "plugins-control-panel" table:
       | Plugin name         |
       | plagiarism_turnitin |
@@ -48,14 +48,23 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
     And I press "Add submission"
-    Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept."
+    #And I wait until the page is ready
+    #And I wait "10" seconds
+    Then I should see "To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Please click here to read and accept the Agreement."
     And I click on ".pp_turnitin_eula_link" "css_element"
     And I wait until ".iframe-ltilaunch-eula" "css_element" exists
     And I switch to iframe with locator ".iframe-ltilaunch-eula"
     And I wait until the page is ready
     And I click on ".disagree-button" "css_element"
     And I wait "10" seconds
+    #And I follow "Test assignment name"
     And I wait until the page is ready
+    And I switch to the main window
+    #And I am on the "Test assignment name" Activity page
+    And I change window size to "1366x968"
+    #Then I should see "File submissions"
+    #And I press "Add submission"
+    #And I expand all fieldsets
     And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I wait "10" seconds
     And I click save changes button "css_element" "#id_submitbutton"
@@ -70,8 +79,8 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I log in as "instructor1"
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
-    Then I should see "View all submissions"
-    When I navigate to "View all submissions" in current page administration
+    Then I should see "Submissions"
+    When I navigate to "Submissions" in current page administration
     Then "student1 student1" row "File submissions" column of "generaltable" table should not contain "Turnitin ID:"
     Given I log out
     # Student accepts the EULA.
@@ -96,8 +105,8 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I log in as "instructor1"
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
-    Then I should see "View all submissions"
-    When I navigate to "View all submissions" in current page administration
+    Then I should see "Submissions"
+    When I navigate to "Submissions" in current page administration
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
     # Trigger cron as admin for report
     And I log out
@@ -108,10 +117,10 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I log in as "instructor1"
     And I am on "Turnitin Behat EULA Test Course" course homepage
     And I follow "Test assignment name"
-    Then I should see "View all submissions"
-    When I navigate to "View all submissions" in current page administration
+    Then I should see "Submissions"
+    When I navigate to "Submissions" in current page administration
     Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
     And I wait "30" seconds
     And I wait until "[alt='GradeMark']" "css_element" exists
-    And I click on "[alt='GradeMark']" "css_element"
+    And I click on "[title='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window

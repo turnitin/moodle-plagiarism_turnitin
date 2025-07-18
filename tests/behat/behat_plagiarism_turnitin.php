@@ -173,7 +173,7 @@ class behat_plagiarism_turnitin extends behat_base {
 
             switch($modtype) {
                 case "assignment":
-                    $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', "View all submissions");
+                    $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', "Submissions");
                     break;
                 case "forum":
                     $this->execute('behat_general::click_link', "Forum post 1");

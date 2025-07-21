@@ -31,11 +31,36 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
 use Integrations\PhpSdk\TiiMembership;
 use Integrations\PhpSdk\TurnitinAPI;
+// Uncomment line below for screenshots upon behat test failure for debug aid
+// use Behat\Behat\Hook\Scope\AfterStepScope;
 
 /**
  * Turnitin behat steps.
  */
 class behat_plagiarism_turnitin extends behat_base {
+
+    // Uncomment chunk below for screenshots upon behat test failure for debug aid, may not work with iframes due to CORS
+//
+//    /**
+//     * @AfterStep
+//     */
+//    public function takeScreenshotAfterFailedStep(AfterStepScope $scope) {
+//        if ($scope->getTestResult()->getResultCode() == 99) {
+//            $this->takeScreenshot();
+//        }
+//    }
+//
+//    private function takeScreenshot() {
+//        $screenshot = $this->getSession()->getDriver()->getScreenshot();
+//        $path = __DIR__ . '/screenshots/' . date('d-m-y') . '-' . uniqid() . '.png';
+//
+//        if (!is_dir(dirname($path))) {
+//            mkdir(dirname($path), 0777, true);
+//        }
+//
+//        file_put_contents($path, $screenshot);
+//        print 'Screenshot at: ' . $path . PHP_EOL;
+//    }
 
     /**
      * I switch to iframe with locator

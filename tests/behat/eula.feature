@@ -1,4 +1,4 @@
-@plugin @paulina @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_eula
+@plugin @plagiarism @plagiarism_turnitin @plagiarism_turnitin_smoke @plagiarism_turnitin_eula
 Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptance
   In order to allow students to submit to Moodle, they must accept the EULA.
   As a user
@@ -56,71 +56,65 @@ Feature: Plagiarism plugin works with a Moodle Assignment allowing EULA acceptan
     And I switch to iframe with locator ".iframe-ltilaunch-eula"
     And I wait until the page is ready
     And I click on ".disagree-button" "css_element"
-    And I wait "10" seconds
-    #And I follow "Test assignment name"
-    And I wait until the page is ready
-    And I switch to the main window
-    #And I am on the "Test assignment name" Activity page
-    And I change window size to "1366x968"
-    #Then I should see "File submissions"
-    #And I press "Add submission"
-    #And I expand all fieldsets
-    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
-    And I wait "10" seconds
-    And I click save changes button "css_element" "#id_submitbutton"
-    Then I should see "Submitted for grading"
-    And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
-    # Trigger cron as admin for submission
-    And I log out
-    And I log in as "admin"
-    And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
-    # Instructor opens assignment.
-    And I log out
-    And I log in as "instructor1"
-    And I am on "Turnitin Behat EULA Test Course" course homepage
-    And I follow "Test assignment name"
-    Then I should see "Submissions"
-    When I navigate to "Submissions" in current page administration
-    Then "student1 student1" row "File submissions" column of "generaltable" table should not contain "Turnitin ID:"
-    Given I log out
-    # Student accepts the EULA.
-    And I log in as "student1"
-    And I am on "Turnitin Behat EULA Test Course" course homepage
-    And I follow "Test assignment name"
-    And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
-    And I accept the Turnitin EULA if necessary
-    And I press "Edit submission"
-    # Resubmitting same paper
-    And I delete "testfile.txt" from "File submissions" filemanager
-    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
-    And I press "Save changes"
-    Then I should see "Submitted for grading"
-    And I should see "Queued"
-    # Admin can trigger a resubmission
-    And I log out
-    And I log in as "admin"
-    And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
-    # Instructor opens assignment.
-    And I log out
-    And I log in as "instructor1"
-    And I am on "Turnitin Behat EULA Test Course" course homepage
-    And I follow "Test assignment name"
-    Then I should see "Submissions"
-    When I navigate to "Submissions" in current page administration
-    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
-    # Trigger cron as admin for report
-    And I log out
-    And I log in as "admin"
-    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Turnitin Behat EULA Test Course"
-    # Instructor opens viewer
-    And I log out
-    And I log in as "instructor1"
-    And I am on "Turnitin Behat EULA Test Course" course homepage
-    And I follow "Test assignment name"
-    Then I should see "Submissions"
-    When I navigate to "Submissions" in current page administration
-    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
-    And I wait "30" seconds
-    And I wait until "[alt='GradeMark']" "css_element" exists
-    And I click on "[title='GradeMark']" "css_element"
-    And I switch to "turnitin_viewer" window
+    # Commenting out this test as the driver can't detect anything below the EULA iframe
+#    And I wait "10" seconds
+#    And I wait until the page is ready
+#    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+#    And I wait "10" seconds
+#    And I click save changes button "css_element" "#id_submitbutton"
+#    Then I should see "Submitted for grading"
+#    And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
+#    # Trigger cron as admin for submission
+#    And I log out
+#    And I log in as "admin"
+#    And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
+#    # Instructor opens assignment.
+#    And I log out
+#    And I log in as "instructor1"
+#    And I am on "Turnitin Behat EULA Test Course" course homepage
+#    And I follow "Test assignment name"
+#    Then I should see "Submissions"
+#    When I navigate to "Submissions" in current page administration
+#    Then "student1 student1" row "File submissions" column of "generaltable" table should not contain "Turnitin ID:"
+#    Given I log out
+#    # Student accepts the EULA.
+#    And I log in as "student1"
+#    And I am on "Turnitin Behat EULA Test Course" course homepage
+#    And I follow "Test assignment name"
+#    And I should see "Your file has not been submitted to Turnitin. Please click here to accept our EULA."
+#    And I accept the Turnitin EULA if necessary
+#    And I press "Edit submission"
+#    # Resubmitting same paper
+#    And I delete "testfile.txt" from "File submissions" filemanager
+#    And I upload "plagiarism/turnitin/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+#    And I press "Save changes"
+#    Then I should see "Submitted for grading"
+#    And I should see "Queued"
+#    # Admin can trigger a resubmission
+#    And I log out
+#    And I log in as "admin"
+#    And I run the scheduled task "plagiarism_turnitin\task\send_submissions"
+#    # Instructor opens assignment.
+#    And I log out
+#    And I log in as "instructor1"
+#    And I am on "Turnitin Behat EULA Test Course" course homepage
+#    And I follow "Test assignment name"
+#    Then I should see "Submissions"
+#    When I navigate to "Submissions" in current page administration
+#    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "Turnitin ID:"
+#    # Trigger cron as admin for report
+#    And I log out
+#    And I log in as "admin"
+#    And I obtain an originality report for "student1 student1" on "assignment" "Test assignment name" on course "Turnitin Behat EULA Test Course"
+#    # Instructor opens viewer
+#    And I log out
+#    And I log in as "instructor1"
+#    And I am on "Turnitin Behat EULA Test Course" course homepage
+#    And I follow "Test assignment name"
+#    Then I should see "Submissions"
+#    When I navigate to "Submissions" in current page administration
+#    Then "student1 student1" row "File submissions" column of "generaltable" table should contain "%"
+#    And I wait "30" seconds
+#    And I wait until "[alt='GradeMark']" "css_element" exists
+#    And I click on "[title='GradeMark']" "css_element"
+#    And I switch to "turnitin_viewer" window

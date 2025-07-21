@@ -163,7 +163,9 @@ Feature: Plagiarism plugin works with a Moodle Assignment utilising the draft su
     When I navigate to "Submissions" in current page administration
     Then "student2 student2" row "File submissions" column of "generaltable" table should contain "%"
     And I wait until "[alt='GradeMark']" "css_element" exists
-    And I click on "[title='GradeMark']" "css_element" in the "generaltable" "region"
+    And I change window size to "1366x968"
+    And I wait "10" seconds
+    And I click on "[title='GradeMark']" "css_element"
     And I switch to "turnitin_viewer" window
     And I wait until the page is ready
     And I accept the Turnitin EULA from the EV if necessary

@@ -71,8 +71,8 @@ class behat_plagiarism_turnitin extends behat_base {
         $apiurl = getenv('TII_APIBASEURL');
         $javascript = "
             var option = document.createElement('option');
-            option.setAttribute('value', '${apiurl}');
-            var apiurl = document.createTextNode('${apiurl}');
+            option.setAttribute('value', '{$apiurl}');
+            var apiurl = document.createTextNode('{$apiurl}');
             var select = document.querySelector('#id_plagiarism_turnitin_apiurl');
             option.appendChild(apiurl);
             select.appendChild(option);

@@ -122,6 +122,7 @@ class turnitin_submission {
 
             case 'forum_post':
                 $discussionid = $moduleobject->get_discussionid($this->data['forumdata']);
+                $content = base64_decode($this->data['forumpost']);
 
                 $forum = $DB->get_record("forum", ["id" => $this->cm->instance]);
 
@@ -131,16 +132,16 @@ class turnitin_submission {
                                                                 FROM {forum_posts} FP JOIN {forum_discussions} FD
                                                                 ON FP.discussion = FD.id
                                                                 WHERE FD.forum = ? AND FD.course = ?
-                                                                AND FP.userid = ? AND FP.message LIKE ? ',
+                                                                AND FP.userid = ? AND FP.message = ? ',
                                                                 [$forum->id, $forum->course,
-                                                                    $this->submissiondata->userid, $this->data['forumpost'], ]
+                                                                    $this->submissiondata->userid, $content, ]
                                                                 );
                     $discussionid = $discussion->id;
                 }
 
                 $submission = $DB->get_record_select('forum_posts',
-                                                " userid = ? AND message LIKE ? AND discussion = ? ",
-                                                [$this->submissiondata->userid, $this->data['forumpost'], $discussionid]);
+                                                " userid = ? AND message = ? AND discussion = ? ",
+                                                [$this->submissiondata->userid, $content, $discussionid]);
 
                 // Collate data and trigger new event for the cron to process.
                 $params = [
@@ -149,8 +150,8 @@ class turnitin_submission {
                     'objectid' => $submission->id,
                     'userid' => $this->submissiondata->userid,
                     'other' => [
-                        'pathnamehashes' => '',
-                        'content' => trim($this->data['forumpost']),
+                        'pathnamehashes' => [],
+                        'content' => trim($content),
                         'discussionid' => $discussionid,
                         'triggeredfrom' => 'turnitin_recreate_submission_event',
                     ],

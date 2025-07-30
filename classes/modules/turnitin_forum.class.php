@@ -154,6 +154,8 @@ class turnitin_forum {
      * @return string
      */
     public function get_discussionid($forumdata) {
+        global $CFG;
+        require_once($CFG->dirroot.'/mod/forum/lib.php');
 
         list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $forumdata);
 

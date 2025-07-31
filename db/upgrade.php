@@ -560,6 +560,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022072501, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2025073101) {
+        $table = new xmldb_table('plagiarism_turnitin_files');
+
+        // Add index on statuscode
+        $table->add_index('statuscode', XMLDB_INDEX_NOTUNIQUE, ['statuscode']);
+
+        upgrade_plugin_savepoint(true, 2025073101, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }
 

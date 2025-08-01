@@ -832,7 +832,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $content = $moduleobject->set_content($linkarray, $cm);
                 if ($submissiontype === 'quiz_answer') {
-                  $identifier = sha1($linkarray['area'].$linkarray['itemid']);
+
+                  if (class_exists('\mod_quiz\quiz_attempt')) {
+                      $quizattemptclass = '\mod_quiz\quiz_attempt';
+                  } else {
+                      $quizattemptclass = 'quiz_attempt';
+                  }
+                  $attempt = $quizattemptclass::create($linkarray["area"]);
+
+                  $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
+                                     ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());
                   $oldidentifier = sha1($content.$linkarray["itemid"]);
                 }
                 else {
@@ -2832,8 +2841,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
                 // Queue text content.
-                // Adding slot to sha hash to create unique assignments for duplicate text based on it's id.
-                $identifier = sha1($eventdata['other']['content'].$slot);
+                // We don't have access to the text content in the event handler, so use userid, cmid, slot, and attempt number to create a unique hash
+                $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.' slot'.$slot.' attempt'.$attempt->get_attempt_number());
                 $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
@@ -3469,6 +3478,8 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
                     $filename = $title;
                 } else {
+                    plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
+                    mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                     $errorcode = 9;
                 }
 
@@ -3490,12 +3501,17 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
+                    mtrace('Attempt not found on submission. Identifier: '.$queueditem->identifier);
                     $errorcode = 14;
                     break;
                 }
+
+                // Attempt to find the matching slot for the queued item.
+                // For each slot, check whether the hash matches.
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($queueditem->identifier == sha1($queueditem->itemid.$slot)) {
+                    if ($queueditem->identifier == sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
+                                                        ' slot'.$slot.' attempt'.$attempt->get_attempt_number())) {
                         $textcontent = $qa->get_response_summary();
                         break;
                     }
@@ -3506,6 +3522,8 @@ function plagiarism_turnitin_send_queued_submissions() {
                     $title = 'quizanswer_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
                     $filename = $title;
                 } else {
+                    plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
+                    mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
                     $errorcode = 9;
                 }
 

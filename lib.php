@@ -1251,7 +1251,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             // Show hidden data for potential forum post resubmissions.
                             if ($submissiontype == 'forum_post' && !empty($linkarray["content"])) {
-                                $output .= html_writer::tag('div', $linkarray["content"],
+                                $output .= html_writer::tag('div', chunk_split(base64_encode($linkarray["content"]), 64),
                                                             ['class' => 'hidden', 'id' => 'content_'.$plagiarismfile->id]);
                             }
 

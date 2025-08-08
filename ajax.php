@@ -251,8 +251,8 @@ switch ($action) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
 
-        $forumdata = optional_param('forumdata', '', PARAM_ALPHAEXT);
-        $forumpost = optional_param('forumpost', '', PARAM_ALPHAEXT);
+        $forumdata = optional_param('forumdata', '', PARAM_ALPHANUMEXT);
+        $forumpost = optional_param('forumpost', '', PARAM_BASE64);
         $submissionid = required_param('submissionid', PARAM_INT);
 
         $tiisubmission = new turnitin_submission($submissionid,

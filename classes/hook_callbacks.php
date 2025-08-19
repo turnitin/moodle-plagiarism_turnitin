@@ -52,6 +52,12 @@ class hook_callbacks {
             return;
         }
 
+        // Check that turnitin is enabled for this quiz.
+        $plagiarismsettings = $pluginturnitin->get_settings($PAGE->cm->id);
+        if (empty($plagiarismsettings['use_turnitin']) || $plagiarismsettings['use_turnitin'] != '1') {
+            return;
+        }
+
         // This function checks whether the user has accepted the EULA.
         // If they haven't, it will return the EULA form. If they have, it will return an empty string.
         $eulaform = $pluginturnitin->render_eula_form($PAGE->cm);

@@ -3438,6 +3438,8 @@ function plagiarism_turnitin_send_queued_submissions() {
                     // Get the actual text content for a submission.
                     switch ($cm->modname) {
                         case 'assign':
+                            $userid = ($moduledata->teamsubmission) ? 0 : $queueditem->userid;
+
                             $moodlesubmission = $DB->get_record('assign_submission', ['assignment' => $cm->instance,
                                             'userid' => $queueditem->userid, 'id' => $queueditem->itemid, ], 'id');
                             $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',

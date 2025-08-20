@@ -2589,7 +2589,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $cm->instance,
                 $settings["plagiarism_report_gen"],
                 $submissiontype,
-                $moduledata->attemptreopenmethod,
+                $moduledata->maxattempts,
                 $_SESSION["moodlesubmissionstatus"]
             );
 
@@ -3317,7 +3317,7 @@ function plagiarism_turnitin_send_queued_submissions() {
             $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(
                 $cm->instance, $settings["plagiarism_report_gen"],
                 $queueditem->submissiontype,
-                $moduledata->attemptreopenmethod,
+                $moduledata->maxattempts,
                 $moodlesubmission->status
             );
         }

@@ -117,10 +117,10 @@ class turnitin_assign {
      * @param int $assignid The assignment id
      * @param int $reportgenspeed The report generation speed
      * @param string $submissiontype The submission type
-     * @param int $attemptreopenmethod The attempt reopen method
+     * @param int $maxattempts Number of max attempts
      * @param string $attemptreopened The attempt reopened status
      */
-    public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $attemptreopenmethod,
+    public function is_resubmission_allowed($assignid, $reportgenspeed, $submissiontype, $maxattempts,
                                             $attemptreopened = null) {
         global $DB, $CFG;
 
@@ -135,12 +135,10 @@ class turnitin_assign {
             $maxfilesubmissions = $result->value;
         }
 
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-
         // If resubmissions are enabled in a Turnitin sense.
         if ($reportgenspeed > 0) {
-            // If the attempt reopened method is none, or an attempt has not been reopened/has previous submission.
-            if ($attemptreopenmethod == ASSIGN_ATTEMPT_REOPEN_METHOD_NONE || $attemptreopened == 'submitted') {
+            // If the maximum number of attempts is 1, or an attempt has not been reopened/has previous submission.
+            if ($maxattempts == 1 || $attemptreopened == 'submitted') {
                 // If this is a text or file submission, or we can only submit one file.
                 if ($submissiontype == 'text_content' || ($submissiontype == 'file' && $maxfilesubmissions == 1)) {
                     // Treat this as a resubmission.

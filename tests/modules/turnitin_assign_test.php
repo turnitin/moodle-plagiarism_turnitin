@@ -74,27 +74,27 @@ final class turnitin_assign_test extends \advanced_testcase {
         $moduleobject = new \turnitin_assign();
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+            1);
         $this->assertTrue($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+            1);
         $this->assertTrue($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL);
+            5);
         $this->assertFalse($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 0, 'file',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+            1);
         $this->assertFalse($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 0, 'text_content',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+            1);
         $this->assertFalse($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL);
+            5);
         $this->assertFalse($resubmissionallowed);
     }
 
@@ -117,12 +117,11 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         // Create module object.
         $moduleobject = new \turnitin_assign();
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'file', ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+        $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'file', 1);
         $this->assertFalse($resubmissionallowed);
 
         $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'text_content',
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+            1);
         $this->assertTrue($resubmissionallowed);
     }
 }

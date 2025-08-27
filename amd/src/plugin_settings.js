@@ -8,7 +8,7 @@
 
 require.config({
     paths: {
-        'plagiarism_turnitin/datatables': '/plagiarism/turnitin/vendorjs/datatables.min',
+        'plagiarism_turnitin/datatables': M.cfg.wwwroot + '/plagiarism/turnitin/vendorjs/datatables.min',
     }
 });
 

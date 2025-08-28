@@ -246,6 +246,10 @@ final class lib_test extends \advanced_testcase {
         // Get the config.
         $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
 
-        $this->assertObjectNotHasProperty("plagiarism_turnitin_test", $config);
+        if (method_exists($this, 'assertObjectNotHasProperty')) {
+            $this->assertObjectNotHasProperty("plagiarism_turnitin_test", $config);
+        } else {
+            $this->assertObjectNotHasAttribute("plagiarism_turnitin_test", $config);
+        }
     }
 }

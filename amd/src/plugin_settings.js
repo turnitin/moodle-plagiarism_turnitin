@@ -102,7 +102,7 @@ define(['jquery',
                       var accounturl = $('#id_plagiarism_turnitin_apiurl').val();
           
                       $.ajax({
-                          type: "POST",
+                          type: "GET",
                           url: url,
                           dataType: "json",
                           data: {

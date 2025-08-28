@@ -381,7 +381,7 @@ class turnitin_view {
                 $mform->setType('plagiarism_rubric', PARAM_RAW);
             }
             // Only relevant for Assignments and Coursework
-            if ($modulename == 'mod_assign' || $modulename == 'mod_coursework') {
+            if ($modulename === 'mod_assign' || $modulename === 'mod_coursework') {
                 $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
                     ['class' => 'tii_anonblindmarkingnote']));
             }

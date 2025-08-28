@@ -31,6 +31,10 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php
 
 require_login();
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+	  \core\session\manager::write_close();
+}
+
 $action = required_param('action', PARAM_ALPHAEXT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);

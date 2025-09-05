@@ -838,7 +838,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                   } else {
                       $quizattemptclass = 'quiz_attempt';
                   }
-                  $attempt = $quizattemptclass::create($linkarray["area"]);
+                  $attempt = $quizattemptclass::create_from_usage_id($linkarray["area"]);
 
                   $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
                                      ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());
@@ -2054,9 +2054,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $dtpost = strtotime('+6 months');
         }
 
-        // Ensure post date can't be before start date.
-        if ($dtpost < $dtstart) {
-            $dtpost = $dtstart;
+        // Ensure post date is at least 1 second after the start date.
+        $dtstart_plus_1_sec = clone $dtstart;
+        $dtstart_plus_1_sec->add(new DateInterval('PT1S'));
+        if ($dtpost < $dtstart_plus_1_sec) {
+            $dtpost = $dtstart_plus_1_sec;
         }
 
         // Set due date, dependent on various things.

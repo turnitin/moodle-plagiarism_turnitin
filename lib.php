@@ -838,7 +838,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                   } else {
                       $quizattemptclass = 'quiz_attempt';
                   }
-                  $attempt = $quizattemptclass::create($linkarray["area"]);
+                  $attempt = $quizattemptclass::create_from_usage_id($linkarray["area"]);
 
                   $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
                                      ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());

@@ -2056,7 +2056,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         } else {
             $dtstart_plus_1_sec = new DateTime("@$dtstart");
         }
-
         $dtstart_plus_1_sec->add(new DateInterval('PT1S'));
         if ($dtpost < $dtstart_plus_1_sec->getTimestamp()) {
             $dtpost = $dtstart_plus_1_sec->getTimestamp();

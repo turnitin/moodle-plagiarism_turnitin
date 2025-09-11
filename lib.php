@@ -2051,15 +2051,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Ensure post date is at least 1 second after the start date.
-        if (is_numeric($dtstart)) {
-            $dtstart_plus_1_sec = (new DateTime())->setTimestamp($dtstart);
-        }
-        else {
+        if ($dtstart instanceof DateTime) {
             $dtstart_plus_1_sec = clone $dtstart;
+        } else {
+            $dtstart_plus_1_sec = new DateTime("@$dtstart");
         }
         $dtstart_plus_1_sec->add(new DateInterval('PT1S'));
-        if ($dtpost < $dtstart_plus_1_sec) {
-            $dtpost = $dtstart_plus_1_sec;
+        if ($dtpost < $dtstart_plus_1_sec->getTimestamp()) {
+            $dtpost = $dtstart_plus_1_sec->getTimestamp();
         }
 
         // Set due date, dependent on various things.
@@ -2194,7 +2193,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submissionids = array();
         $reportsexpected = array();
         $assignmentids = array();
-        
+
         // Grab all plagiarism files where all the following conditions are met:
         // 1. The file has been successfully sent to TII
         // 2. The submission is ready to recieve a similarity score (either it doesn't already have a similarity score or it's set to regenerate)

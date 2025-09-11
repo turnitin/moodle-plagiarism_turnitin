@@ -2052,9 +2052,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Ensure post date is at least 1 second after the start date.
         if (is_numeric($dtstart)) {
-            $dtstart = (new DateTime())->setTimestamp($dtstart);
+            $dtstart_plus_1_sec = (new DateTime())->setTimestamp($dtstart);
         }
-        $dtstart_plus_1_sec = clone $dtstart;
+        else {
+            $dtstart_plus_1_sec = clone $dtstart;
+        }
         $dtstart_plus_1_sec->add(new DateInterval('PT1S'));
         if ($dtpost < $dtstart_plus_1_sec) {
             $dtpost = $dtstart_plus_1_sec;

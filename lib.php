@@ -3451,7 +3451,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                             $userid = ($moduledata->teamsubmission) ? 0 : $queueditem->userid;
 
                             $moodlesubmission = $DB->get_record('assign_submission', ['assignment' => $cm->instance,
-                                            'userid' => $queueditem->userid, 'id' => $queueditem->itemid, ], 'id');
+                                            'userid' => $userid, 'id' => $queueditem->itemid, ], 'id');
                             $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             ['submission' => $moodlesubmission->id], 'onlinetext');
                             $textcontent = $moodletextsubmission->onlinetext;

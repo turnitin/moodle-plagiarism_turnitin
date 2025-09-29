@@ -165,7 +165,12 @@ class turnitin_quiz {
             // Check if this is the slot the mark is for by matching content.
 
             $answerslot = $answer ? $answer.$slot : $slot;
-            if (sha1($answerslot) == $identifier) {
+
+            $oldidentifier = sha1($answerslot);
+            $newidentifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$attempt->get_cmid().
+                                  ' slot'.$slot.' attempt'.$attempt->get_attempt_number());
+
+            if ($identifier == $oldidentifier || $identifier == $newidentifier) {
                 // Translate the TFS grade to a mark for the question.
                 $questionmaxmark = $attempt->get_question_attempt($slot)->get_max_mark();
 

@@ -974,14 +974,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get turnitin file details.
                 if (is_null($plagiarismfile)) {
                     $params = [
-                        'userid' => $linkarray["userid"],
                         'cm' => $linkarray["cmid"],
                         'identifier1' => $identifier,
                         'identifier2' => $oldidentifier,
                     ];
                     $sql = 'SELECT * FROM {plagiarism_turnitin_files}
-                            WHERE userid = :userid
-                            AND cm = :cm
+                            WHERE cm = :cm
                             AND (identifier = :identifier1 OR identifier = :identifier2)
                             ORDER BY lastmodified DESC';
                     $plagiarismfiles = $DB->get_records_sql($sql, $params, 0, 1);

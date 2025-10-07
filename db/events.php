@@ -56,6 +56,7 @@ $observers = [
     [
         'eventname' => '\mod_quiz\event\attempt_submitted',
         'callback' => 'plagiarism_turnitin_observer::quiz_submitted',
+        'internal' => false,
     ],
     [
         'eventname' => '\core\event\course_module_deleted',

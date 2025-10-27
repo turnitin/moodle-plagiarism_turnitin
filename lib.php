@@ -3782,7 +3782,7 @@ function plagiarism_turnitin_activitylog($string, $activity) {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
     }
 
-    if (isset($config->plagiarism_turnitin_enablediagnostic)) {
+    if (!empty($config->plagiarism_turnitin_enablediagnostic)) {
         // We only keep 10 log files, delete any additional files.
         $prefix = "activitylog_";
 

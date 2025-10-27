@@ -77,6 +77,10 @@ class turnitin_user {
      * @var string
      */
     private $instructorrubrics;
+    /**
+     * @var string
+     */
+    private $usermessages;
 
     /**
      * Constructor for the Turnitin User class

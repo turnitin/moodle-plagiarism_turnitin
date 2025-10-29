@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2025073101;
+$plugin->version = 2025102901;
 
 $plugin->release = "4.1+";
 $plugin->requires = 2018051700;

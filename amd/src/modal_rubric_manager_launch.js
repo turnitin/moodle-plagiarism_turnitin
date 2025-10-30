@@ -101,10 +101,7 @@ define(
                             $('#id_plagiarism_rubric').append(optgroup);
 
                         } else {
-                            $($('#id_plagiarism_rubric')).append($('<option>', {
-                                value: i,
-                                text: val
-                            }));
+                            $('#id_plagiarism_rubric').append(new Option(val, i, false, false)).trigger('change');
                         }
                     });
 

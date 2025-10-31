@@ -569,6 +569,19 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025073101, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2025102901) {
+				// Add unique constraint on external ID of each submission
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2025102901, 'plagiarism', 'turnitin');
+    }
+
+
     return $result;
 }
 

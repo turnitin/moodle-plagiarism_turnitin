@@ -276,6 +276,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
         global $DB, $PAGE, $COURSE;
 
+        // Don't allow this plugin to be used on the site home page
+        if ($COURSE->id == 1) {
+            return;
+        }
+
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
             $cmid = optional_param('update', null, PARAM_INT);
@@ -3782,7 +3787,7 @@ function plagiarism_turnitin_activitylog($string, $activity) {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
     }
 
-    if (isset($config->plagiarism_turnitin_enablediagnostic)) {
+    if (!empty($config->plagiarism_turnitin_enablediagnostic)) {
         // We only keep 10 log files, delete any additional files.
         $prefix = "activitylog_";
 

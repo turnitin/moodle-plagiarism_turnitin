@@ -956,7 +956,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     break;
 
                 case "coursework":
-                    if ($moduledata->use_groups) {
+                    if ($moduledata->usegroups) {
                         $coursework = new \mod_coursework\models\coursework($moduledata->id);
 
                         $user = $DB->get_record('user', ['id' => $linkarray["userid"]]);

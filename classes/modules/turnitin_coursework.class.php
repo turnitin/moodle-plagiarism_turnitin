@@ -128,7 +128,7 @@ class turnitin_coursework {
                 WHERE         cs.id   =   cf.submissionid
                 AND           cs.authorid         =   :authorid
                 AND           cs.courseworkid     =   :courseworkid
-                AND           cf.stage_identifier =   :stage";
+                AND           cf.stageidentifier =   :stage";
 
         $params = ['stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid];
 

@@ -2534,15 +2534,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $attempt = 0;
         $tiisubmissionid = null;
 
-        // If the EULA hasn't been accepted, don't save submission and don't submit to Tii.
-        $coursedata = $this->get_course_data($cm->id, $cm->course);
-        $user = new turnitin_user($author, "Learner");
-        $user->join_user_to_class($coursedata->turnitin_cid);
-        $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
-        if ($eulaaccepted != 1) {
-            return true;
-        }
-
         // If the submission is already in the queue in an error state, remove it
         $DB->delete_records('plagiarism_turnitin_files', [
                 'cm' => $cm->id,

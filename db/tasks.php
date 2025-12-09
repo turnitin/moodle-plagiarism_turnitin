@@ -43,4 +43,13 @@ $tasks = [
         'dayofweek' => '*',
         'month' => '*',
     ],
+    [
+        'classname' => 'plagiarism_turnitin\task\cleanup_queued_submissions',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '*/1',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
 ];

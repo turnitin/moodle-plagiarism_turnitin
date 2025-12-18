@@ -835,7 +835,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else if ($cm->modname == 'quiz') {
                     $submissiontype = 'quiz_answer';
                 }
-                $content = $moduleobject->set_content($linkarray, $cm);
+                $content = empty($linkarray['content']) ? $moduleobject->set_content($linkarray, $cm) : $linkarray['content'];
                 if ($submissiontype === 'quiz_answer') {
 
                   if (class_exists('\mod_quiz\quiz_attempt')) {

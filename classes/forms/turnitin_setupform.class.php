@@ -172,6 +172,17 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('pp_agreement_desc',
             'plagiarism_turnitin'));
 
+        $mform->addElement('text', 'plagiarism_turnitin_cron_submissions_limit', get_string('turnitin_cron_submissions_limit', 'plagiarism_turnitin'));
+        $mform->setType('plagiarism_turnitin_cron_submissions_limit', PARAM_INT);
+        $mform->setDefault('plagiarism_turnitin_cron_submissions_limit', 100);
+
+        $mform->addElement('duration', 'plagiarism_turnitin_cron_submissions_cleanup', get_string('turnitin_cron_submissions_cleanup', 'plagiarism_turnitin'));
+        $mform->addElement('static', 'turnitin_cron_submissions_cleanup_desc', null, get_string('turnitin_cron_submissions_cleanup_desc', 'plagiarism_turnitin'));
+        $mform->setDefault('plagiarism_turnitin_cron_submissions_cleanup', 10800);
+
+        $mform->addElement('textarea', 'plagiarism_turnitin_agreement', get_string("pp_agreement", "plagiarism_turnitin"), 'wrap="virtual" rows="10" cols="50"');
+        $mform->addElement('static', 'plagiarism_turnitin_agreement_desc', null, get_string('pp_agreement_desc', 'plagiarism_turnitin'));
+
         // Student data privacy settings.
         $mform->addElement('header', 'plagiarism_privacy', get_string('studentdataprivacy', 'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_privacy');
@@ -282,7 +293,7 @@ class turnitin_setupform extends moodleform {
 
         $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", ];
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "cron_submissions_limit", "cron_submissions_cleanup"];
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

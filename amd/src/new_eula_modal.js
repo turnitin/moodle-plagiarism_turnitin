@@ -40,6 +40,10 @@ define(['jquery',
                             modal.getRoot().find('.modal').addClass('tii_pp_modal_eula');
                             modal.getRoot().find('.modal-content').addClass('tii_pp_modal_eula_content');
 
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                window.location.reload();
+                            });
+
                             EulaEventListener.attach();
                         });
                 });

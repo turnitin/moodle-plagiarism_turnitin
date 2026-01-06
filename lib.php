@@ -835,7 +835,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else if ($cm->modname == 'quiz') {
                     $submissiontype = 'quiz_answer';
                 }
-                $content = $moduleobject->set_content($linkarray, $cm);
+                $content = empty($linkarray['content']) ? $moduleobject->set_content($linkarray, $cm) : $linkarray['content'];
                 if ($submissiontype === 'quiz_answer') {
 
                   if (class_exists('\mod_quiz\quiz_attempt')) {
@@ -2862,12 +2862,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
-                // Queue text content.
-                // We don't have access to the text content in the event handler, so use userid, cmid, slot, and attempt number to create a unique hash
-                $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.' slot'.$slot.' attempt'.$attempt->get_attempt_number());
-                $result = $this->queue_submission_to_turnitin(
+                // Queue text content only if the file submission type indicates that the quiz question contains online text
+                if ($qa->get_question()->responseformat !== 'noinline') {
+                    // We don't have access to the text content in the event handler, so use userid, cmid, slot, and attempt number to create a unique hash
+                    $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.' slot'.$slot.' attempt'.$attempt->get_attempt_number());
+                    $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
+								}
 
                 $files = $qa->get_last_qt_files('attachments', $context->id);
                 foreach ($files as $file) {

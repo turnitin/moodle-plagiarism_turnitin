@@ -82,8 +82,12 @@ final class turnitin_quiz_test extends \advanced_testcase {
         quiz_start_new_attempt($quizobj, $quba, $attempt, 1, $timenow);
         quiz_attempt_save_started($quizobj, $quba, $attempt);
         $attemptobj = $quizattemptclass::create($attempt->id);
-        $attemptobj->process_submit($timenow, false);
-        $attemptobj->process_grade_submission($timenow);
+        if (method_exists($attemptobj, 'process_submit') && method_exists($attemptobj, 'process_grade_submission')) {
+            $attemptobj->process_submit($timenow, false);
+            $attemptobj->process_grade_submission($timenow);
+        } else {
+            $attemptobj->process_finish($timenow, false);
+        }
 
         // Expect no marks or grade for the attempt yet.
         $attemptobj = $quizattemptclass::create($attempt->id);

@@ -28,42 +28,52 @@ $observers = [
     [
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_file_uploaded',
+        'internal'  => false
     ],
     [
         'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_onlinetext_uploaded',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_workshop\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::workshop_file_uploaded',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_forum\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::forum_file_uploaded',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_assign\event\assessable_submitted',
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_submitted',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_assign\event\submission_removed',
         'callback'  => 'plagiarism_turnitin_observer::assignsubmission_removed',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_coursework\event\assessable_uploaded',
         'callback'  => 'plagiarism_turnitin_observer::coursework_submitted',
+        'internal'  => false
     ],
     [
         'eventname' => '\mod_quiz\event\attempt_submitted',
         'callback' => 'plagiarism_turnitin_observer::quiz_submitted',
+        'internal' => false
     ],
     [
         'eventname' => '\core\event\course_module_deleted',
         'callback'  => 'plagiarism_turnitin_observer::course_module_deleted',
+        'internal'  => true
     ],
     [
         'eventname' => '\core\event\course_reset_ended',
         'callback'  => 'plagiarism_plugin_turnitin::course_reset',
         'includefile' => 'plagiarism/turnitin/lib.php',
+        'internal'  => true
     ],
 ];

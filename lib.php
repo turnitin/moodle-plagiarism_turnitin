@@ -2247,13 +2247,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
-            // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-            $now = strtotime('now');
-            $dtdue = (!empty($moduledata[$tiisubmission->modname]->duedate)) ? $moduledata[$tiisubmission->modname]->duedate : 0;
-            if ($tiisubmission->duedate_report_refresh != 1 && $now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
-                $this->set_duedate_report_refresh($tiisubmission->id, 1);
-            }
-
             if (!isset($reportsexpected[$tiisubmission->cm])) {
 
                 $reportsexpected[$tiisubmission->cm] = 1;

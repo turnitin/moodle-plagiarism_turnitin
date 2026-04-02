@@ -230,4 +230,19 @@ class turnitin_assign {
     public function initialise_post_date($moduledata) {
         return 0;
     }
+
+    public function get_submission_users($cm, $moduledata, $userid): array {
+        if (!$moduledata->teamsubmission) {
+            return [$userid];
+        }
+
+        $assignment = new assign(context_module::instance($cm->id), $cm, null);
+        $group = $assignment->get_submission_group($userid);
+
+        if (!$group) {
+            return [$userid];
+        }
+
+        return array_keys(groups_get_members($group->id));
+    }
 }

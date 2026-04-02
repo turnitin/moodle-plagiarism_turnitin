@@ -146,4 +146,23 @@ class turnitin_coursework {
     public function initialise_post_date($moduledata) {
         return 0;
     }
+
+    public function get_submission_users($cm, $moduledata, $userid): ?array {
+        global $DB;
+
+        if (!$moduledata->usegroups) {
+            return [$userid];
+        }
+
+        $coursework = new \mod_coursework\models\coursework($moduledata->id);
+        $user = $DB->get_record('user', ['id' => $userid]);
+        $user = mod_coursework\models\user::find($user);
+        $group = $coursework->get_student_group($user);
+
+        if (!$group) {
+            return [$userid];
+        }
+
+        return array_keys(groups_get_members($group->id));
+    }
 }

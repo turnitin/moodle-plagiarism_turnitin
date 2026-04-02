@@ -170,4 +170,8 @@ class turnitin_workshop {
     public function initialise_post_date($moduledata) {
         return $moduledata->assessmentend;
     }
+
+    public function get_submission_users($cm, $moduledata, $userid): array {
+        return [$userid];
+    }
 }

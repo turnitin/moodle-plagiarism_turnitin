@@ -110,6 +110,28 @@ class turnitin_coursework {
         return \mod_coursework\event\assessable_uploaded::create($params);
     }
 
+    private function is_ucl_version() {
+        global $DB;
+
+        static $uclversion;
+
+        if (isset($uclversion)) {
+            return $uclversion;
+        }
+
+        $feedbackcolumns = $DB->get_columns('coursework_feedbacks');
+
+        if (key_exists('stageidentifier', $feedbackcolumns)) {
+            $uclversion = true;
+        } else if (key_exists('stage_identifier', $feedbackcolumns)) {
+            $uclversion = false;
+        } else {
+            throw new \core\exception\coding_exception('Cannot find stageidentifier column');
+        }
+
+        return $uclversion;
+    }
+
     /**
      * Get the current grade query
      *
@@ -122,13 +144,15 @@ class turnitin_coursework {
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
+        $stageidcol = $this->is_ucl_version() ? 'stageidentifier' : 'stage_identifier';
+
         $sql = "SELECT         *
                 FROM           {coursework_submissions}    cs,
                                {coursework_feedbacks}      cf
                 WHERE         cs.id   =   cf.submissionid
                 AND           cs.authorid         =   :authorid
                 AND           cs.courseworkid     =   :courseworkid
-                AND           cf.stage_identifier =   :stage";
+                AND           cf.$stageidcol =   :stage";
 
         $params = ['stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid];
 
@@ -150,7 +174,9 @@ class turnitin_coursework {
     public function get_submission_users($cm, $moduledata, $userid): ?array {
         global $DB;
 
-        if (!$moduledata->usegroups) {
+        if ($this->is_ucl_version() && !$moduledata->usegroups) {
+            return [$userid];
+        } else if (!$this->is_ucl_version() && !$moduledata->use_groups) {
             return [$userid];
         }
 

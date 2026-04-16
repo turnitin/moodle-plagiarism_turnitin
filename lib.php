@@ -2211,6 +2211,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
           WHERE statuscode = ?
           AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
           AND ( orcapable = ? OR orcapable IS NULL )
+          AND externalid IS NOT NULL
           ORDER BY externalid DESC',
           ['success', 1]
         );
@@ -2225,7 +2226,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Cache module data
         $moduledata = [];
-        foreach ($submissions as $submission) {
+        foreach ($submissions as $tiisubmission) {
             if (!array_key_exists($tiisubmission->modname, $moduledata)) {
                 $moduledata[$tiisubmission->modname] = $DB->get_record($tiisubmission->modname, ['id' => $tiisubmission->instance]);
             }

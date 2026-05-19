@@ -2033,7 +2033,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 ['assignment' => $cm->instance,
                                     'workflowstate' => 'released', ]);
 
-                            $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+1 month');
+                            $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+6 month');
                         }
                         break;
                     default:

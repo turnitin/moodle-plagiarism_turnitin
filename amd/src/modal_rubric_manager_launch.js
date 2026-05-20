@@ -13,10 +13,9 @@ define(
         'core/notification',
         'core/custom_interaction_events',
         'core/modal',
-        'core/modal_registry',
         'core/modal_events'
     ],
-    function($, Ajax, Notification, CustomEvents, Modal, ModalRegistry, ModalEvents) {
+    function($, Ajax, Notification, CustomEvents, Modal, ModalEvents) {
 
         var registered = false;
         var SELECTORS = {
@@ -114,15 +113,6 @@ define(
         }
 
         ModalRubricManagerLaunch.refreshRubricSelect = refreshRubricSelect;
-
-        // Automatically register with the modal registry the first time this module is imported so that
-        // you can create modals of this type using the modal factory.
-        if (!registered) {
-            ModalRegistry.register(ModalRubricManagerLaunch.TYPE,
-                ModalRubricManagerLaunch,
-                'plagiarism_turnitin/modal_rubric_manager_launch');
-            registered = true;
-        }
 
         return ModalRubricManagerLaunch;
     }

@@ -544,7 +544,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     public function render_eula_form($cm) {
-        global $OUTPUT, $USER;
+        global $OUTPUT, $PAGE, $USER;
 
         $output = '';
 
@@ -560,9 +560,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $user = new turnitin_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ?
-            $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+                $user->get_accepted_user_agreement() : $user->useragreementaccepted;
 
-            if ($eulaaccepted != 1) {
+            if (empty($eulaaccepted)) {
                 $eulalink = html_writer::tag('span',
                     get_string('turnitinppulapre', 'plagiarism_turnitin'),
                     ['class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form']
@@ -579,7 +579,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     get_string('turnitinppulapre', 'plagiarism_turnitin'),
                     false
                 );
-                $form .= " ".get_string('noscriptula', 'plagiarism_turnitin');
+
+                if ($cm->modname !== 'forum') {
+                    $form .= " ".get_string('noscriptula', 'plagiarism_turnitin');
+                }
 
                 $noscripteula = html_writer::tag('noscript', $form, ['class' => 'warning turnitin_ula_noscript']);
             }
@@ -1339,6 +1342,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
 
                 $output .= html_writer::tag('div', '', ['class' => 'clear']);
+            }
+
+            if ($cm->modname == 'forum') {
+                $output .= $this->render_eula_form($cm);
             }
 
             $output = html_writer::tag('div', $output, ['class' => 'tii_links_container']);

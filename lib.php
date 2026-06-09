@@ -519,12 +519,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-            if ($CFG->version >= 2023100900) {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
-            } else {
-                // TODO: We can remove this when we no longer have to support Moodle versions 4.3 and below
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-            }
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),
@@ -638,18 +633,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
-        // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
-        // Version of Moodle, we will use the supported versin of Modal dialog.
-        if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
-
-        } else {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        }
-
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
@@ -703,12 +688,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $USER, $PAGE;
 
-        if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
-        } else {
-            // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        }
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
         $output = "";
 
@@ -838,12 +818,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $content = empty($linkarray['content']) ? $moduleobject->set_content($linkarray, $cm) : $linkarray['content'];
                 if ($submissiontype === 'quiz_answer') {
 
-                  if (class_exists('\mod_quiz\quiz_attempt')) {
-                      $quizattemptclass = '\mod_quiz\quiz_attempt';
-                  } else {
-                      $quizattemptclass = 'quiz_attempt';
-                  }
-                  $attempt = $quizattemptclass::create_from_usage_id($linkarray["area"]);
+                  $attempt = \mod_quiz\quiz_attempt::create_from_usage_id($linkarray["area"]);
 
                   $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
                                      ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());
@@ -2844,12 +2819,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
 
-            if (class_exists('\mod_quiz\quiz_attempt')) {
-                $quizattemptclass = '\mod_quiz\quiz_attempt';
-            } else {
-                $quizattemptclass = 'quiz_attempt';
-            }
-            $attempt = $quizattemptclass::create($eventdata['objectid']);
+            $attempt = \mod_quiz\quiz_attempt::create($eventdata['objectid']);
 
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
@@ -3514,13 +3484,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
                 try {
-                    if (class_exists('\mod_quiz\quiz_attempt')) {
-                        $quizattemptclass = '\mod_quiz\quiz_attempt';
-                    } else {
-                        $quizattemptclass = 'quiz_attempt';
-                    }
-                    $attempt = $quizattemptclass::create($queueditem->itemid);
-
+                    $attempt = \mod_quiz\quiz_attempt::create($queueditem->itemid);
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
                     mtrace('Attempt not found on submission. Identifier: '.$queueditem->identifier);

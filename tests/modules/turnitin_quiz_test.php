@@ -59,13 +59,8 @@ final class turnitin_quiz_test extends \advanced_testcase {
             'layout' => '1,0',
         ]);
 
-        if (class_exists('\mod_quiz\quiz_settings')) {
-            $quizsettingsclass = '\mod_quiz\quiz_settings';
-            $quizattemptclass = '\mod_quiz\quiz_attempt';
-        } else {
-            $quizsettingsclass = 'quiz';
-            $quizattemptclass = 'quiz_attempt';
-        }
+        $quizsettingsclass = '\mod_quiz\quiz_settings';
+        $quizattemptclass = '\mod_quiz\quiz_attempt';
 
         $quizobj = $quizsettingsclass::create($quiz->id, $user->id);
         $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());

@@ -254,6 +254,7 @@ $string['errorcode16'] = 'This file has not been submitted to Turnitin because t
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
+$string['cleanupqueuedsubmissions'] = 'Cleanup Queued Files from the Turnitin Plagiarism Plugin';
 
 $string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';
@@ -319,3 +320,6 @@ $string['turnitineula'] = 'Turnitin EULA';
 $string['dbexport'] = 'Database Export';
 $string['dbexporttable'] = 'Export {$a} data';
 $string['invalidtablename'] = 'Table {$a} could not be exported';
+$string['turnitin_cron_submissions_limit'] = 'Turnitin cron submissions limit';
+$string['turnitin_cron_submissions_cleanup'] = 'Turnitin cron submissions cleanup timeframe';
+$string['turnitin_cron_submissions_cleanup_desc'] = 'Cleanup task will reset all queued submissions that have not been sent after this period of time';

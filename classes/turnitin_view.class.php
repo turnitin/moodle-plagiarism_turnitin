@@ -82,13 +82,45 @@ class turnitin_view {
     }
 
     /**
+     * Prints the sub-tab menu for the Default Settings page, one tab per enabled module.
+     *
+     * @param string $modulename The currently active module type tab.
+     */
+    public function draw_defaults_subtab_menu($modulename) {
+        global $CFG, $OUTPUT;
+
+        // Enabled module which support plagiarism.
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $enabledmods = $plagiarismturnitin->get_enabled_supported_modules();
+
+        if (empty($enabledmods)) {
+            echo $OUTPUT->notification(get_string('noenabledmodules', 'plagiarism_turnitin'), 'info');
+            return;
+        }
+
+        $tabs = [];
+        foreach ($enabledmods as $mod) {
+            $displayname = get_string('pluginname', $mod);
+            $tabs[] = new tabobject(
+                'defaults_' . $mod,
+                $CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults&modulename=' . $mod,
+                $displayname,
+                $displayname,
+                false
+            );
+        }
+
+        print_tabs([$tabs], 'defaults_' . $modulename);
+    }
+
+    /**
      * Due to moodle's internal plugin hooks we can not use our bespoke form class for Turnitin
      * settings. This form shows in settings > defaults as well as the activity creation screen.
      *
      * @param moodleform $mform The form object
      * @param object $course The course object
      * @param string $location The location of the form
-     * @param string $modulename The name of the module
+     * @param string $modulename The module name with 'mod_' prefix, e.g. 'mod_assign'
      * @param int $cmid The course module id
      * @param int $currentrubric The current rubric id
      * @return void
@@ -140,7 +172,12 @@ class turnitin_view {
                             2 => get_string('excludepercent', 'plagiarism_turnitin'), ];
 
         if ($location == "defaults") {
-            $mform->addElement('header', 'turnitin_plugin_header', get_string('turnitindefaults', 'plagiarism_turnitin'));
+            // Retrieve the human-readable module name from Moodle's language strings.
+            $displayname = !empty($modulename) ? get_string('pluginname', $modulename) : '';
+            $heading = empty($modulename)
+                ? get_string('turnitindefaults', 'plagiarism_turnitin')
+                : get_string('defaultsformodule', 'plagiarism_turnitin', $displayname);
+            $mform->addElement('header', 'turnitin_plugin_header', $heading);
             $mform->addElement('html', get_string("defaultsdesc", "plagiarism_turnitin"));
         }
 
@@ -222,7 +259,25 @@ class turnitin_view {
             }
         }
 
-        $locks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
+
+        $alllocks = $DB->get_records_sql("SELECT name, value FROM {plagiarism_turnitin_config} WHERE cm IS NULL");
+
+        // If we know the module type, filter the global lock records to only those
+        // prefixed with that module type and strip the prefix, so lock() can look
+        // up plain field names like 'use_turnitin_lock'.
+        if (!empty($modulename)) {
+            $lockprefix = $modulename . '_';
+            $lockprefixlen = strlen($lockprefix);
+            $locks = [];
+            foreach ($alllocks as $name => $record) {
+                if (strpos($name, $lockprefix) === 0) {
+                    $unprefixedname = substr($name, $lockprefixlen);
+                    $locks[$unprefixedname] = $record;
+                }
+            }
+        } else {
+            $locks = $alllocks;
+        }
 
         if (empty($configwarning)) {
             $mform->addElement('select', 'use_turnitin', get_string("useturnitin", "plagiarism_turnitin"), $options);
@@ -234,13 +289,22 @@ class turnitin_view {
             $mform->addHelpButton('plagiarism_show_student_report', 'studentreports', 'plagiarism_turnitin');
 
             if ($mform->elementExists('submissiondrafts') || $location == 'defaults') {
-                $tiidraftoptions = [0 => get_string("submitondraft", "plagiarism_turnitin"),
-                                         1 => get_string("submitonfinal", "plagiarism_turnitin"), ];
+                // Only show draft submit option for modules that support draft submissions.
+                // At activity level it is always shown when the submissiondrafts element exists.
+                // At defaults level, check the module's DB table for a submissiondrafts column.
+                $showdraftsubmit = ($location != 'defaults')
+                    || empty($modulename)
+                    || $plagiarismturnitin->module_supports_submission_drafts($modulename);
 
-                $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit",
-                    "plagiarism_turnitin"), $tiidraftoptions);
-                $this->lock($mform, $location, $locks);
-                $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
+                if ($showdraftsubmit) {
+                    $tiidraftoptions = [0 => get_string("submitondraft", "plagiarism_turnitin"),
+                                             1 => get_string("submitonfinal", "plagiarism_turnitin"), ];
+
+                    $mform->addElement('select', 'plagiarism_draft_submit', get_string("draftsubmit",
+                        "plagiarism_turnitin"), $tiidraftoptions);
+                    $this->lock($mform, $location, $locks);
+                    $mform->disabledIf('plagiarism_draft_submit', 'submissiondrafts', 'eq', 0);
+                }
             }
 
             $mform->addElement('select', 'plagiarism_allow_non_or_submissions', get_string("allownonor",
@@ -388,6 +452,11 @@ class turnitin_view {
 
             $mform->addElement('hidden', 'action', "defaults");
             $mform->setType('action', PARAM_RAW);
+
+            if ($location == 'defaults' && !empty($modulename)) {
+                $mform->addElement('hidden', 'modulename', $modulename);
+                $mform->setType('modulename', PARAM_ALPHANUMEXT);
+            }
         } else {
             $mform->addElement('hidden', 'use_turnitin', 0);
             $mform->setType('use_turnitin', PARAM_INT);

@@ -582,6 +582,98 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025103102, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2025102901.01) {
+        // Migrate global default settings to per-module-type prefixed records.
+        // For every module that supports FEATURE_PLAGIARISM, copy all existing
+        // cm=NULL global defaults into new {modtype}_{fieldname} records so each
+        // module type can have its own independent defaults going forward.
+        // The original un-prefixed records are then deleted.
+        //
+        // Only the fields that belong to the Default Settings tab are touched;
+        // any other cm=NULL records (e.g. internal config values) are left alone.
+        $defaultsettingsfields = [
+            'use_turnitin',
+            'plagiarism_show_student_report',
+            'plagiarism_draft_submit',
+            'plagiarism_allow_non_or_submissions',
+            'plagiarism_submitpapersto',
+            'plagiarism_compare_student_papers',
+            'plagiarism_compare_internet',
+            'plagiarism_compare_journals',
+            'plagiarism_report_gen',
+            'plagiarism_compare_institution',
+            'plagiarism_exclude_biblio',
+            'plagiarism_exclude_quoted',
+            'plagiarism_exclude_matches',
+            'plagiarism_exclude_matches_value',
+            'plagiarism_rubric',
+            'plagiarism_transmatch',
+            'plagiarism_locked_message',
+        ];
+
+        // Build the full whitelist: each field plus its _lock companion.
+        $allowedfields = [];
+        foreach ($defaultsettingsfields as $field) {
+            $allowedfields[] = $field;
+            $allowedfields[] = $field . '_lock';
+        }
+        $allowedfields = array_unique($allowedfields);
+
+        // Fetch only the cm=NULL records that belong to the Default Settings tab.
+        $existingdefaults = $DB->get_records('plagiarism_turnitin_config', ['cm' => null]);
+        $existingdefaults = array_filter($existingdefaults, function ($record) use ($allowedfields) {
+            return in_array($record->name, $allowedfields);
+        });
+
+         // Supported modules.
+        $allmodsinfo = core_component::get_plugin_list('mod');
+        $supportedmods = [];
+        foreach (array_keys($allmodsinfo) as $mod) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                $supportedmods[] = 'mod_' . $mod;
+            }
+        }
+        sort($supportedmods);
+
+        // Build a set of known module prefixes so we can skip already-migrated records.
+        $modprefixes = [];
+        foreach ($supportedmods as $mod) {
+            $modprefixes[] = $mod . '_';
+        }
+
+        foreach ($supportedmods as $mod) {
+            foreach ($existingdefaults as $record) {
+                $newname = $mod . '_' . $record->name;
+                // Only insert if the per-modtype record does not already exist.
+                if (!$DB->record_exists('plagiarism_turnitin_config', ['cm' => null, 'name' => $newname])) {
+                    $newrecord = new stdClass();
+                    $newrecord->cm = null;
+                    $newrecord->name = $newname;
+                    $newrecord->value = $record->value;
+                    $newrecord->config_hash = $newrecord->cm . "_" . $newrecord->name;
+                    $DB->insert_record('plagiarism_turnitin_config', $newrecord);
+                }
+            }
+        }
+
+        // Delete the original un-prefixed Default Settings records now that every
+        // supported module type has its own prefixed copy.
+        foreach ($existingdefaults as $record) {
+            $alreadyprefixed = false;
+            foreach ($modprefixes as $prefix) {
+                if (strpos($record->name, $prefix) === 0) {
+                    $alreadyprefixed = true;
+                    break;
+                }
+            }
+            if (!$alreadyprefixed) {
+                $DB->delete_records('plagiarism_turnitin_config', ['id' => $record->id]);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2025102901.01, 'plagiarism', 'turnitin');
+    }
+
     return $result;
 }
 

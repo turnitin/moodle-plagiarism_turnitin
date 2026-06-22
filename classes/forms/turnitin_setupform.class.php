@@ -56,17 +56,18 @@ class turnitin_setupform extends moodleform {
         $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin').'</br></br>');
 
         // Loop through all modules that support Plagiarism.
-        $mods = array_keys(core_component::get_plugin_list('mod'));
+        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $mods = $plagiarismturnitin->get_plagiarism_supported_modules();
         foreach ($mods as $mod) {
-            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                $mform->addElement('advcheckbox',
-                    'plagiarism_turnitin_mod_'.$mod,
-                    get_string('useturnitin_mod', 'plagiarism_turnitin', ucfirst($mod)),
-                    '',
-                    null,
-                    [0, 1]
-                );
-            }
+            $displayname = get_string('pluginname', $mod);
+            $mform->addElement(
+                'advcheckbox',
+                'plagiarism_turnitin_' . $mod,
+                get_string('useturnitin_mod', 'plagiarism_turnitin', $displayname),
+                '',
+                null,
+                [0, 1]
+            );
         }
 
         // Enable/disable the ad-hoc send submissions task

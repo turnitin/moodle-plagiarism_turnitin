@@ -13,11 +13,10 @@ define(
         'core/notification',
         'core/custom_interaction_events',
         'core/modal',
-        'core/modal_registry',
         'core/modal_events',
         'plagiarism_turnitin/eula_event_listener'
     ],
-    function($, Ajax, Notification, CustomEvents, Modal, ModalRegistry, ModalEvents, EulaEventListener) {
+    function($, Ajax, Notification, CustomEvents, Modal, ModalEvents, EulaEventListener) {
 
         var registered = false;
         var SELECTORS = {
@@ -68,13 +67,6 @@ define(
          */
         function processEula() {
             EulaEventListener.attach();
-        }
-
-        // Automatically register with the modal registry the first time this module is imported so that
-        // you can create modals of this type using the modal factory.
-        if (!registered) {
-            ModalRegistry.register(ModalEulaLaunch.TYPE, ModalEulaLaunch, 'plagiarism_turnitin/modal_eula_launch');
-            registered = true;
         }
 
         return ModalEulaLaunch;

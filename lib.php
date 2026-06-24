@@ -1333,6 +1333,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             'span', '<!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').
             ' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$turnitinassignid.' -->');
 
+        // If we're displaying links for an assignment with group submissions enabled, only show the DV link to the submitting student
+        if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
+            $context = context_course::instance($cm->course);
+            $assign = new assign($context, $cm, null);
+            if ($assign->get_instance()->teamsubmission && isset($USER->id) && $plagiarismfile->submitter != $USER->id) {
+                $output .= html_writer::tag('div', get_string('nonsubmittingstudentinfo', 'plagiarism_turnitin'), ['class' => 'tii_nonsubmitter_info']);
+            }
+        }
+
         return $output;
     }
 

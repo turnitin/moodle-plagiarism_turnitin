@@ -1359,7 +1359,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             ' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$turnitinassignid.' -->');
 
         // If we're displaying links for an assignment with group submissions enabled, only show the DV link to the submitting student
-        if ($cm->modname === 'assign' && !$istutor) {
+        if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
             $context = context_course::instance($cm->course);
             $assign = new assign($context, $cm, null);
             if ($assign->get_instance()->teamsubmission && $plagiarismfile->submitter != $USER->id) {

@@ -254,6 +254,7 @@ $string['errorcode16'] = 'This file has not been submitted to Turnitin because t
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
+$string['syncgrades'] = 'Sync Grades for the Turnitin Plagiarism Plugin';
 
 $string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';

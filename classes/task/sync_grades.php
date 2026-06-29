@@ -87,7 +87,7 @@ class sync_grades extends \core\task\scheduled_task {
                 $modinfo = get_fast_modinfo($course_id);
                 $cm = $modinfo->get_cm($assignment->cm);
                 $status = $pluginturnitin->update_grades_from_tii($cm);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 mtrace('Failed to update grade from tii: ' . $e->getMessage());
                 continue;
             }

@@ -150,13 +150,8 @@ class turnitin_quiz {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        if (class_exists('\mod_quiz\quiz_attempt')) {
-            $quizattemptclass = '\mod_quiz\quiz_attempt';
-        } else {
-            $quizattemptclass = 'quiz_attempt';
-        }
 
-        $attempt = $quizattemptclass::create($attemptid);
+        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
         $quba = question_engine::load_questions_usage_by_activity($attempt->get_uniqueid());
 
         // Loop through each question slot.
@@ -165,7 +160,12 @@ class turnitin_quiz {
             // Check if this is the slot the mark is for by matching content.
 
             $answerslot = $answer ? $answer.$slot : $slot;
-            if (sha1($answerslot) == $identifier) {
+
+            $oldidentifier = sha1($answerslot);
+            $newidentifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$attempt->get_cmid().
+                                  ' slot'.$slot.' attempt'.$attempt->get_attempt_number());
+
+            if ($identifier == $oldidentifier || $identifier == $newidentifier) {
                 // Translate the TFS grade to a mark for the question.
                 $questionmaxmark = $attempt->get_question_attempt($slot)->get_max_mark();
 
@@ -184,13 +184,7 @@ class turnitin_quiz {
         $update->sumgrades = $quba->get_total_mark();
         $DB->update_record('quiz_attempts', $update);
 
-        if (class_exists('\mod_quiz\grade_calculator')) {
-            // Support Moodle 4.3+.
-            $attempt->get_quizobj()->get_grade_calculator()->recompute_final_grade($userid);
-        } else {
-            // Support older Moodle versions.
-            quiz_save_best_grade($attempt->get_quiz(), $userid);
-        }
+        $attempt->get_quizobj()->get_grade_calculator()->recompute_final_grade($userid);
 
         $transaction->allow_commit();
     }

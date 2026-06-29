@@ -319,3 +319,5 @@ $string['turnitineula'] = 'Turnitin EULA';
 $string['dbexport'] = 'Database Export';
 $string['dbexporttable'] = 'Export {$a} data';
 $string['invalidtablename'] = 'Table {$a} could not be exported';
+
+$string['nonsubmittingstudentinfo'] = 'In order to view the turnitin report or feedback for this group submission, please contact either your instructor or the student who submitted on behalf of your group.';

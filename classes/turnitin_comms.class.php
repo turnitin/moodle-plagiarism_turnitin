@@ -91,7 +91,7 @@ class turnitin_comms {
         }
 
         $this->diagnostic = (isset($config->plagiarism_turnitin_enablediagnostic)) ?
-            $config->plagiarism_turnitin_enablediagnostic : 1;
+            $config->plagiarism_turnitin_enablediagnostic : 0;
         $this->langcode = $this->get_lang();
     }
 

@@ -276,6 +276,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
         global $DB, $PAGE, $COURSE;
 
+        // Don't allow this plugin to be used on the site home page
+        if ($COURSE->id == 1) {
+            return;
+        }
+
         if (has_capability('plagiarism/turnitin:enable', $context)) {
             // Get Course module id and values.
             $cmid = optional_param('update', null, PARAM_INT);
@@ -514,12 +519,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
-            if ($CFG->version >= 2023100900) {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
-            } else {
-                // TODO: We can remove this when we no longer have to support Moodle versions 4.3 and below
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-            }
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
             $rubricviewlink = html_writer::tag('span',
                 get_string('launchrubricview', 'plagiarism_turnitin'),
@@ -539,7 +539,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     public function render_eula_form($cm) {
-        global $OUTPUT, $USER;
+        global $OUTPUT, $PAGE, $USER;
 
         $output = '';
 
@@ -555,9 +555,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $user = new turnitin_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ?
-            $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+                $user->get_accepted_user_agreement() : $user->useragreementaccepted;
 
-            if ($eulaaccepted != 1) {
+            if (empty($eulaaccepted)) {
                 $eulalink = html_writer::tag('span',
                     get_string('turnitinppulapre', 'plagiarism_turnitin'),
                     ['class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form']
@@ -574,7 +574,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     get_string('turnitinppulapre', 'plagiarism_turnitin'),
                     false
                 );
-                $form .= " ".get_string('noscriptula', 'plagiarism_turnitin');
+
+                if ($cm->modname !== 'forum') {
+                    $form .= " ".get_string('noscriptula', 'plagiarism_turnitin');
+                }
 
                 $noscripteula = html_writer::tag('noscript', $form, ['class' => 'warning turnitin_ula_noscript']);
             }
@@ -633,18 +636,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'origreport_open');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/open_viewer', 'grademark_open');
-        // Moodle 4.3 uses a new Modal dialog that is not compatible with older versions of Moodle. Depending on the user's
-        // Version of Moodle, we will use the supported versin of Modal dialog.
-        if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
-
-        } else {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/eula', 'eulaLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        }
-
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_eula_modal', 'newEulaLaunch');
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
         $PAGE->requires->js_call_amd('plagiarism_turnitin/resend_submission', 'resendSubmission');
 
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
@@ -698,12 +691,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function get_links($linkarray) {
         global $CFG, $DB, $OUTPUT, $USER, $PAGE;
 
-        if ($CFG->version >= 2023100900) {
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
-        } else {
-            // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below
-            $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-        }
+        $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
 
         $output = "";
 
@@ -830,15 +818,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else if ($cm->modname == 'quiz') {
                     $submissiontype = 'quiz_answer';
                 }
-                $content = $moduleobject->set_content($linkarray, $cm);
+                $content = empty($linkarray['content']) ? $moduleobject->set_content($linkarray, $cm) : $linkarray['content'];
                 if ($submissiontype === 'quiz_answer') {
 
-                  if (class_exists('\mod_quiz\quiz_attempt')) {
-                      $quizattemptclass = '\mod_quiz\quiz_attempt';
-                  } else {
-                      $quizattemptclass = 'quiz_attempt';
-                  }
-                  $attempt = $quizattemptclass::create_from_usage_id($linkarray["area"]);
+                  $attempt = \mod_quiz\quiz_attempt::create_from_usage_id($linkarray["area"]);
 
                   $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
                                      ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());
@@ -974,14 +957,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Get turnitin file details.
                 if (is_null($plagiarismfile)) {
                     $params = [
-                        'userid' => $linkarray["userid"],
                         'cm' => $linkarray["cmid"],
                         'identifier1' => $identifier,
                         'identifier2' => $oldidentifier,
                     ];
                     $sql = 'SELECT * FROM {plagiarism_turnitin_files}
-                            WHERE userid = :userid
-                            AND cm = :cm
+                            WHERE cm = :cm
                             AND (identifier = :identifier1 OR identifier = :identifier2)
                             ORDER BY lastmodified DESC';
                     $plagiarismfiles = $DB->get_records_sql($sql, $params, 0, 1);
@@ -1338,6 +1319,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $output .= html_writer::tag('div', '', ['class' => 'clear']);
             }
 
+            if ($cm->modname == 'forum') {
+                $output .= $this->render_eula_form($cm);
+            }
+
             $output = html_writer::tag('div', $output, ['class' => 'tii_links_container']);
         }
 
@@ -1347,6 +1332,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $output .= html_writer::tag(
             'span', '<!-- Turnitin Plagiarism plugin Version: '.get_config('plagiarism_turnitin', 'version').
             ' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$turnitinassignid.' -->');
+
+        // If we're displaying links for an assignment with group submissions enabled, only show the DV link to the submitting student
+        if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
+            $context = context_course::instance($cm->course);
+            $assign = new assign($context, $cm, null);
+            if ($assign->get_instance()->teamsubmission && isset($USER->id) && $plagiarismfile->submitter != $USER->id) {
+                $output .= html_writer::tag('div', get_string('nonsubmittingstudentinfo', 'plagiarism_turnitin'), ['class' => 'tii_nonsubmitter_info']);
+            }
+        }
 
         return $output;
     }
@@ -2030,7 +2024,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 ['assignment' => $cm->instance,
                                     'workflowstate' => 'released', ]);
 
-                            $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+1 month');
+                            $dtpost = ($gradesreleased) ? strtotime('-5 minutes') : strtotime('+6 month');
                         }
                         break;
                     default:
@@ -2208,6 +2202,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
           WHERE statuscode = ?
           AND ( similarityscore IS NULL OR duedate_report_refresh = 1 )
           AND ( orcapable = ? OR orcapable IS NULL )
+          AND externalid IS NOT NULL
           ORDER BY externalid DESC',
           ['success', 1]
         );
@@ -2222,7 +2217,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Cache module data
         $moduledata = [];
-        foreach ($submissions as $submission) {
+        foreach ($submissions as $tiisubmission) {
             if (!array_key_exists($tiisubmission->modname, $moduledata)) {
                 $moduledata[$tiisubmission->modname] = $DB->get_record($tiisubmission->modname, ['id' => $tiisubmission->instance]);
             }
@@ -2532,12 +2527,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $tiisubmissionid = null;
 
         // If the EULA hasn't been accepted, don't save submission and don't submit to Tii.
-        $coursedata = $this->get_course_data($cm->id, $cm->course);
-        $user = new turnitin_user($author, "Learner");
-        $user->join_user_to_class($coursedata->turnitin_cid);
-        $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
-        if ($eulaaccepted != 1) {
-            return true;
+        $tiiuser = $DB->get_record("plagiarism_turnitin_users", ["userid" => $author], "user_agreement_accepted");
+        // -1 indicates the user declined the eula
+        if (empty($tiiuser->user_agreement_accepted) || $tiiuser->user_agreement_accepted == '-1') {
+            $coursedata = $this->get_course_data($cm->id, $cm->course);
+            $user = new turnitin_user($author, "Learner");
+            $user->join_user_to_class($coursedata->turnitin_cid);
+            $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
+            if ($eulaaccepted != 1) {
+                return true;
+            }
         }
 
         // If the submission is already in the queue in an error state, remove it
@@ -2841,12 +2840,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Queue every question submitted in a quiz attempt.
         if ($eventdata['eventtype'] == 'quiz_submitted') {
 
-            if (class_exists('\mod_quiz\quiz_attempt')) {
-                $quizattemptclass = '\mod_quiz\quiz_attempt';
-            } else {
-                $quizattemptclass = 'quiz_attempt';
-            }
-            $attempt = $quizattemptclass::create($eventdata['objectid']);
+            $attempt = \mod_quiz\quiz_attempt::create($eventdata['objectid']);
 
             foreach ($attempt->get_slots() as $slot) {
                 $qa = $attempt->get_question_attempt($slot);
@@ -2855,12 +2849,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
                 $eventdata['other']['content'] = $qa->get_response_summary();
 
-                // Queue text content.
-                // We don't have access to the text content in the event handler, so use userid, cmid, slot, and attempt number to create a unique hash
-                $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.' slot'.$slot.' attempt'.$attempt->get_attempt_number());
-                $result = $this->queue_submission_to_turnitin(
+                // Queue text content only if the file submission type indicates that the quiz question contains online text
+                if ($qa->get_question()->responseformat !== 'noinline') {
+                    // We don't have access to the text content in the event handler, so use userid, cmid, slot, and attempt number to create a unique hash
+                    $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.' slot'.$slot.' attempt'.$attempt->get_attempt_number());
+                    $result = $this->queue_submission_to_turnitin(
                         $cm, $author, $submitter, $identifier, 'quiz_answer',
                         $eventdata['objectid'], $eventdata['eventtype']);
+								}
 
                 $files = $qa->get_last_qt_files('attachments', $context->id);
                 foreach ($files as $file) {
@@ -3415,10 +3411,12 @@ function plagiarism_turnitin_send_queued_submissions() {
                     }
 
                     // Prevent submissions queue breaking if file is wrong format
+                    $settings = $pluginturnitin->get_settings($cm->id);
+                    $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
                     $filename = $file->get_filename();
                     $pathinfo = pathinfo($filename);
                     $extension = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
-                    if (!in_array('.'.$extension, $turnitinacceptedfiles)) {
+                    if (!$acceptanyfiletype && !in_array('.'.$extension, $turnitinacceptedfiles)) {
                         $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File format is not supported. The filename is '
                           .$file->get_filename(). ' and the extension is '.$extension;
                         plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_WRONG_FORMAT');
@@ -3447,7 +3445,7 @@ function plagiarism_turnitin_send_queued_submissions() {
                             $userid = ($moduledata->teamsubmission) ? 0 : $queueditem->userid;
 
                             $moodlesubmission = $DB->get_record('assign_submission', ['assignment' => $cm->instance,
-                                            'userid' => $queueditem->userid, 'id' => $queueditem->itemid, ], 'id');
+                                            'userid' => $userid, 'id' => $queueditem->itemid, ], 'id');
                             $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             ['submission' => $moodlesubmission->id], 'onlinetext');
                             $textcontent = $moodletextsubmission->onlinetext;
@@ -3509,13 +3507,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
                 try {
-                    if (class_exists('\mod_quiz\quiz_attempt')) {
-                        $quizattemptclass = '\mod_quiz\quiz_attempt';
-                    } else {
-                        $quizattemptclass = 'quiz_attempt';
-                    }
-                    $attempt = $quizattemptclass::create($queueditem->itemid);
-
+                    $attempt = \mod_quiz\quiz_attempt::create($queueditem->itemid);
                 } catch (Exception $e) {
                     plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
                     mtrace('Attempt not found on submission. Identifier: '.$queueditem->identifier);
@@ -3784,7 +3776,7 @@ function plagiarism_turnitin_activitylog($string, $activity) {
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
     }
 
-    if (isset($config->plagiarism_turnitin_enablediagnostic)) {
+    if (!empty($config->plagiarism_turnitin_enablediagnostic)) {
         // We only keep 10 log files, delete any additional files.
         $prefix = "activitylog_";
 

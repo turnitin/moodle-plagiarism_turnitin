@@ -73,7 +73,7 @@ class sync_grades extends \core\task\scheduled_task {
         $grade_sync_assingments = $DB->get_records_sql($sql, $params);
 
         foreach ($grade_sync_assingments as $assignment) {
-            if ($assignment->duedate < $grade_sync_cutoff && $assignment->value < $current_time) {
+            if ($assignment->duedate > $grade_sync_cutoff && $assignment->value < $current_time) {
                 mtrace('Attempting grade sync for cmid: ' . $assignment->cm . '...');
                 $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
                 $modinfo = get_fast_modinfo($course_id);
@@ -83,7 +83,7 @@ class sync_grades extends \core\task\scheduled_task {
                     $to_write = new stdClass();
                     $to_write->id = $assignment->id;
                     $to_write->cm = $assignment->cm;
-                    $to_write->value = $assignment->value;
+                    $to_write->value = $current_time;
                     $to_write->config_hash = $assignment->config_hash;
                     $DB->update_record('plagiarism_turnitin_config', $to_write);
                     mtrace('Successfully synced grades from Turnitin');

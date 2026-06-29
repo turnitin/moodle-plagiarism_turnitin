@@ -560,15 +560,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022072501, 'plagiarism', 'turnitin');
     }
 
-    if ($oldversion < 2025073101) {
-        $table = new xmldb_table('plagiarism_turnitin_files');
-
-        // Add index on statuscode
-        $table->add_index('statuscode', XMLDB_INDEX_NOTUNIQUE, ['statuscode']);
-
-        upgrade_plugin_savepoint(true, 2025073101, 'plagiarism', 'turnitin');
-    }
-
     if ($oldversion < 2025103101) {
 				// Add unique constraint on external ID of each submission
         $table = new xmldb_table('plagiarism_turnitin_files');
@@ -581,6 +572,15 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025103101, 'plagiarism', 'turnitin');
     }
 
+    if ($oldversion < 2025103102) {
+        $table = new xmldb_table('plagiarism_turnitin_files');
+        $index = new xmldb_index('statuscode', XMLDB_INDEX_NOTUNIQUE, ['statuscode']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2025103102, 'plagiarism', 'turnitin');
+    }
 
     return $result;
 }

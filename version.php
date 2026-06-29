@@ -24,7 +24,7 @@
 
 $plugin->version = 2025103102;
 
-$plugin->release = "4.1+";
+$plugin->release = "4.5+";
 $plugin->requires = 2018051700;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;

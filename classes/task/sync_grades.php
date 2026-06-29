@@ -25,8 +25,6 @@
 
 namespace plagiarism_turnitin\task;
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-
 /**
  * Send queued submissions to Turnitin.
  */
@@ -48,7 +46,13 @@ class sync_grades extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $DB;
+        global $CFG, $DB;
+        
+        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        $pluginturnitin = new \plagiarism_plugin_turnitin();
+        if (!$pluginturnitin->is_plugin_configured()) {
+            return;
+        }
 
         $one_week_in_seconds = 7 * 24 * 60 * 60;
         $one_hour_in_seconds = 60 * 60;
@@ -56,8 +60,6 @@ class sync_grades extends \core\task\scheduled_task {
         $grade_sync_cutoff = $current_time - $one_week_in_seconds;
         $resync_time = $current_time - $one_hour_in_seconds;
         mtrace('grade sync cutoff: ' . userdate($grade_sync_cutoff));
-
-        $pluginturnitin = new \plagiarism_plugin_turnitin();
 
         // Get list of all PP enabled activity modules that might need grade sync
         $sql = "SELECT ptc.id, ptc.cm, ptc.name, ptc.value, ptc.config_hash, m.name AS modtype,
@@ -82,7 +84,7 @@ class sync_grades extends \core\task\scheduled_task {
                 $cm = $modinfo->get_cm($assignment->cm);
                 $status = $pluginturnitin->update_grades_from_tii($cm);
                 if ($status) {
-                    $to_write = new stdClass();
+                    $to_write = new \stdClass();
                     $to_write->id = $assignment->id;
                     $to_write->cm = $assignment->cm;
                     $to_write->value = $current_time;

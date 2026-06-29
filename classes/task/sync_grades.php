@@ -55,11 +55,8 @@ class sync_grades extends \core\task\scheduled_task {
         }
 
         $one_week_in_seconds = 7 * 24 * 60 * 60;
-        $one_hour_in_seconds = 60 * 60;
         $current_time = time();
         $grade_sync_cutoff = $current_time - $one_week_in_seconds;
-        $resync_time = $current_time - $one_hour_in_seconds;
-        mtrace('grade sync cutoff: ' . userdate($grade_sync_cutoff));
 
         // Get list of all PP enabled activity modules that might need grade sync
         $sql = "SELECT ptc.id, ptc.cm, ptc.name, ptc.value, ptc.config_hash, m.name AS modtype,
@@ -73,27 +70,37 @@ class sync_grades extends \core\task\scheduled_task {
             LEFT JOIN {workshop} w ON (m.name = 'workshop' AND w.id = cm.instance)
                 WHERE ptc.name = :configname
                   AND m.name IN ('assign', 'quiz', 'forum', 'workshop')";
-        $params = ['configname' => 'grades_last_synced'];
-        $grade_sync_assingments = $DB->get_records_sql($sql, $params);
+        $params = ['configname' => 'turnitin_assignid'];
+        $grade_sync_assignments = $DB->get_records_sql($sql, $params);
 
-        foreach ($grade_sync_assingments as $assignment) {
-            if ($assignment->duedate > $grade_sync_cutoff && $assignment->value < $resync_time) {
-                mtrace('Attempting grade sync for cmid: ' . $assignment->cm . '...');
-                $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
-                $modinfo = get_fast_modinfo($course_id);
-                $cm = $modinfo->get_cm($assignment->cm);
-                $status = $pluginturnitin->update_grades_from_tii($cm);
-                if ($status) {
-                    $to_write = new \stdClass();
-                    $to_write->id = $assignment->id;
-                    $to_write->cm = $assignment->cm;
-                    $to_write->value = $current_time;
-                    $to_write->config_hash = $assignment->config_hash;
-                    $DB->update_record('plagiarism_turnitin_config', $to_write);
-                    mtrace('Successfully synced grades from Turnitin');
-                } else {
-                    mtrace('No new grades found in Turnitin');
-                }
+        foreach ($grade_sync_assignments as $assignment) {
+            if ($assignment->duedate != 0 && $assignment->duedate < $grade_sync_cutoff) {
+                continue;
+            }
+
+            $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
+            $modinfo = get_fast_modinfo($course_id);
+            $cm = $modinfo->get_cm($assignment->cm);
+            $status = $pluginturnitin->update_grades_from_tii($cm);
+            if ($status) {
+                mtrace('Successfully synced grades for cmid ' . $cm->id);
+            } else {
+               mtrace('No new grades found for cmid ' . $cm->id);
+            }
+
+            // Update the last synced time
+            $to_write = new \stdClass();
+            $to_write->cm = $assignment->cm;
+            $to_write->name = 'grades_last_synced';
+            $to_write->value = $current_time;
+            $to_write->config_hash = $assignment->cm . '_grades_last_synced';
+
+            $record = $DB->get_record('plagiarism_turnitin_config', [ 'name' => 'grades_last_synced', 'cm' => $assignment->cm ]);
+            if ($record) {
+                $to_write->id = $record->id;
+                $DB->update_record('plagiarism_turnitin_config', $to_write);
+            } else {
+                $DB->insert_record('plagiarism_turnitin_config', $to_write);
             }
         }
     }

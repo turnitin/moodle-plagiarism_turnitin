@@ -51,8 +51,10 @@ class sync_grades extends \core\task\scheduled_task {
         global $DB;
 
         $one_week_in_seconds = 7 * 24 * 60 * 60;
+        $one_hour_in_seconds = 60 * 60;
         $current_time = time();
         $grade_sync_cutoff = $current_time - $one_week_in_seconds;
+        $resync_time = $current_time - $one_hour_in_seconds;
         mtrace('grade sync cutoff: ' . userdate($grade_sync_cutoff));
 
         $pluginturnitin = new \plagiarism_plugin_turnitin();
@@ -73,7 +75,7 @@ class sync_grades extends \core\task\scheduled_task {
         $grade_sync_assingments = $DB->get_records_sql($sql, $params);
 
         foreach ($grade_sync_assingments as $assignment) {
-            if ($assignment->duedate > $grade_sync_cutoff && $assignment->value < $current_time) {
+            if ($assignment->duedate > $grade_sync_cutoff && $assignment->value < $resync_time) {
                 mtrace('Attempting grade sync for cmid: ' . $assignment->cm . '...');
                 $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
                 $modinfo = get_fast_modinfo($course_id);

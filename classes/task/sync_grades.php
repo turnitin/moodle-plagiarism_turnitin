@@ -53,6 +53,10 @@ class sync_grades extends \core\task\scheduled_task {
         if (!$pluginturnitin->is_plugin_configured()) {
             return;
         }
+        if (!$pluginturnitin->test_turnitin_connection()) {
+            mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
+            return;
+        }
 
         $one_week_in_seconds = 7 * 24 * 60 * 60;
         $current_time = time();
@@ -74,14 +78,20 @@ class sync_grades extends \core\task\scheduled_task {
         $grade_sync_assignments = $DB->get_records_sql($sql, $params);
 
         foreach ($grade_sync_assignments as $assignment) {
-            if (!empty($assignment->duedate) && $assignment->duedate < $grade_sync_cutoff) {
+            if ($assignment->duedate < $grade_sync_cutoff) {
                 continue;
             }
 
-            $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
-            $modinfo = get_fast_modinfo($course_id);
-            $cm = $modinfo->get_cm($assignment->cm);
-            $status = $pluginturnitin->update_grades_from_tii($cm);
+            try {
+                $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
+                $modinfo = get_fast_modinfo($course_id);
+                $cm = $modinfo->get_cm($assignment->cm);
+                $status = $pluginturnitin->update_grades_from_tii($cm);
+            } catch (Exception $e) {
+                mtrace('Failed to update grade from tii: ' . $e->getMessage());
+                continue;
+            }
+
             if ($status) {
                 mtrace('Successfully synced grades for cmid ' . $cm->id);
             } else {

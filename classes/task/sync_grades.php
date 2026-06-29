@@ -74,7 +74,7 @@ class sync_grades extends \core\task\scheduled_task {
         $grade_sync_assignments = $DB->get_records_sql($sql, $params);
 
         foreach ($grade_sync_assignments as $assignment) {
-            if ($assignment->duedate != 0 && $assignment->duedate < $grade_sync_cutoff) {
+            if (!empty($assignment->duedate) && $assignment->duedate < $grade_sync_cutoff) {
                 continue;
             }
 

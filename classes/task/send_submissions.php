@@ -65,7 +65,7 @@ class send_submissions extends \core\task\scheduled_task {
             mtrace('Checking for queued submissions...');
             $queueditems = $DB->get_records_select("plagiarism_turnitin_files",
                 "statuscode = 'queued' OR statuscode = 'pending'", null,
-                'lastmodified', '*', 0, PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT);
+                'lastmodified');
             if (empty($queueditems)) {
                 mtrace('No queued items found.');
                 return;

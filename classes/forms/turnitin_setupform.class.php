@@ -46,6 +46,7 @@ class turnitin_setupform extends moodleform {
         global $DB, $CFG;
 
         $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $ynoptions = [0 => get_string('no'), 1 => get_string('yes')];
 
         $mform = $this->_form;
 
@@ -67,6 +68,11 @@ class turnitin_setupform extends moodleform {
                 );
             }
         }
+
+        // Enable/disable the ad-hoc send submissions task
+        $mform->addElement('select', 'plagiarism_turnitin_enableadhocsubmissions', get_string('enableadhocsubmissions',
+            'plagiarism_turnitin'), $ynoptions);
+        $mform->setDefault('plagiarism_turnitin_enableadhocsubmissions', 0);
 
         $mform->addElement('header', 'plagiarism_turnitinconfig', get_string('tiiaccountconfig',
             'plagiarism_turnitin'));
@@ -102,7 +108,6 @@ class turnitin_setupform extends moodleform {
             'plagiarism_turnitin'));
         $mform->setExpanded('plagiarism_debugginglogs');
 
-        $ynoptions = [0 => get_string('no'), 1 => get_string('yes')];
         $diagnosticoptions = [
             0 => get_string('diagnosticoptions_0', 'plagiarism_turnitin'),
             1 => get_string('diagnosticoptions_1', 'plagiarism_turnitin'),
@@ -282,7 +287,7 @@ class turnitin_setupform extends moodleform {
 
         $properties = ["accountid", "secretkey", "apiurl", "enablediagnostic", "usegrademark", "enablepeermark",
             "useanon", "transmatch", "repositoryoption", "agreement", "enablepseudo", "pseudofirstname",
-            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", ];
+            "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "enableadhocsubmissions"];
 
         foreach ($properties as $property) {
             plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);

@@ -63,13 +63,22 @@ class send_submissions extends \core\task\scheduled_task {
             }
           
             mtrace('Checking for queued submissions...');
+
+            // Grab all queued or pending submissions.
             $queueditems = $DB->get_records_select("plagiarism_turnitin_files",
                 "statuscode = 'queued' OR statuscode = 'pending'", null,
                 'lastmodified');
+
             if (empty($queueditems)) {
                 mtrace('No queued items found.');
                 return;
             }
+
+            // Set the submissions status to in flight so subsequent cron runs don't try to queue them again.
+            // The status will be updated to either complete or error by the ad hoc task.
+            $DB->set_field_select("plagiarism_turnitin_files", "statuscode", "in_flight", 
+                "statuscode = 'queued' OR statuscode = 'pending'");
+
             mtrace('Found ' . count($queueditems) . ' queued submissions.');
             mtrace('Queueing ad-hoc tasks...');
             foreach ($queueditems as $item) {

@@ -340,14 +340,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            // Check if files have already been submitted and disable exclude biblio and quoted if turnitin is enabled.
-            if ($cmid != 0) {
-                if ($DB->record_exists('plagiarism_turnitin_files', ['cm' => $cmid])) {
-                    $mform->disabledIf('plagiarism_exclude_biblio', 'use_turnitin');
-                    $mform->disabledIf('plagiarism_exclude_quoted', 'use_turnitin');
-                }
-            }
-
             // Set the default value for each option as the value we have stored.
             foreach ($plagiarismelements as $element) {
                 if (isset($plagiarismvalues[$element])) {

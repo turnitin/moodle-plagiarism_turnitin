@@ -765,6 +765,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
         }
 
+        $isnonsubmitterforgroupassign = false;
+
         // Create module object.
         $moduleclass = "turnitin_".$cm->modname;
         $moduleobject = new $moduleclass;
@@ -1060,11 +1062,21 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             // This class is applied so that only the user who submitted or a tutor can open the DV.
                             $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
 
+                            if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
+                                $context = context_course::instance($cm->course);
+                                $assign = new assign($context, $cm, null);
+                                if ($assign->get_instance()->teamsubmission && isset($USER->id) && $plagiarismfile->submitter != $USER->id) {
+                                    $isnonsubmitterforgroupassign = true;
+                                }
+                            }
+
                             // Output container for OR Score.
-                            $ordivclass = 'row_score pp_origreport '.$useropenclass.' origreport_'.$plagiarismfile->externalid.'_'.
-                                $linkarray["cmid"];
-                            $output .= html_writer::tag('div', $orscorehtml, ['class' => $ordivclass, 'tabindex' => '0',
-                                'role' => 'link']);
+                            if (!$isnonsubmitterforgroupassign) {
+                                $ordivclass = 'row_score pp_origreport '.$useropenclass.' origreport_'.$plagiarismfile->externalid.'_'.
+                                    $linkarray["cmid"];
+                                $output .= html_writer::tag('div', $orscorehtml, ['class' => $ordivclass, 'tabindex' => '0',
+                                    'role' => 'link']);
+                            }
                         }
 
                         if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
@@ -1326,12 +1338,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             ' Course ID: '.$coursedata->turnitin_cid.' TII assignment ID: '.$turnitinassignid.' -->');
 
         // If we're displaying links for an assignment with group submissions enabled, only show the DV link to the submitting student
-        if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
-            $context = context_course::instance($cm->course);
-            $assign = new assign($context, $cm, null);
-            if ($assign->get_instance()->teamsubmission && isset($USER->id) && $plagiarismfile->submitter != $USER->id) {
-                $output .= html_writer::tag('div', get_string('nonsubmittingstudentinfo', 'plagiarism_turnitin'), ['class' => 'tii_nonsubmitter_info']);
-            }
+        if ($isnonsubmitterforgroupassign) {
+            $output .= html_writer::tag('div', get_string('nonsubmittingstudentinfo', 'plagiarism_turnitin'), ['class' => 'tii_nonsubmitter_info']);
         }
 
         return $output;

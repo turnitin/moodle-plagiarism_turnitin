@@ -820,8 +820,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                   $identifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
                                      ' slot'.$linkarray["itemid"].' attempt'.$attempt->get_attempt_number());
                   $oldidentifier = sha1($content.$linkarray["itemid"]);
-                }
-                else {
+                } else if ($submissiontype === 'forum_post') {
+                  $identifier = sha1('forum_post user'.$linkarray['userid'].' cm'.$cm->id.' '.$content);
+                  $oldidentifier = sha1($content);
+                } else {
                   $identifier = sha1($content);
                 }
             }
@@ -2886,7 +2888,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $moodlesubmission->message;
             }
 
-            $identifier = sha1($eventdata['other']['content']);
+            if ($cm->modname == 'forum') {
+                $identifier = sha1('forum_post user'.$author.' cm'.$cm->id.' '.$eventdata['other']['content']);
+            } else {
+                $identifier = sha1($eventdata['other']['content']);
+            }
 
             // Check if content has been submitted before and return if so.
             $result = $this->queue_submission_to_turnitin(

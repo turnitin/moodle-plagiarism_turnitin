@@ -824,10 +824,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                   $identifier = sha1('forum_post user'.$linkarray['userid'].' cm'.$cm->id.' '.$content);
                   $oldidentifier = sha1($content);
                 } else if ($cm->modname == 'assign') {
-                    $itemid = $moduleobject->get_onlinetext(
-                        !empty($moduledata->teamsubmission) ? 0 : $linkarray['userid'],
-                        $cm
-                    )->itemid;
+                    $itemid = $moduleobject->get_onlinetext($linkarray['userid'], $cm)->itemid;
                     $identifier = sha1('text_content cm'.$cm->id.' itemid'.$itemid.' '.$content);
                     $oldidentifier = sha1($content);
                 } else {

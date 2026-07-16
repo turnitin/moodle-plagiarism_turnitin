@@ -160,6 +160,12 @@ class turnitin_assign {
     public function get_onlinetext($userid, $cm) {
         global $DB;
 
+        // Team submissions are stored with userid 0.
+        $assign = $DB->get_record('assign', ['id' => $cm->instance], 'teamsubmission');
+        if (!empty($assign->teamsubmission)) {
+            $userid = 0;
+        }
+
         // Get latest text content submitted as we do not have submission id.
         $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
                                         [$userid, $cm->instance], 'id DESC', 'id', 0, 1);

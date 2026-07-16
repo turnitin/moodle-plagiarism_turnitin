@@ -823,6 +823,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 } else if ($submissiontype === 'forum_post') {
                   $identifier = sha1('forum_post user'.$linkarray['userid'].' cm'.$cm->id.' '.$content);
                   $oldidentifier = sha1($content);
+                } else if ($cm->modname == 'assign') {
+                    $itemid = $moduleobject->get_onlinetext(
+                        !empty($moduledata->teamsubmission) ? 0 : $linkarray['userid'],
+                        $cm
+                    )->itemid;
+                    $identifier = sha1('text_content cm'.$cm->id.' itemid'.$itemid.' '.$content);
+                    $oldidentifier = sha1($content);
                 } else {
                   $identifier = sha1($content);
                 }
@@ -1548,9 +1555,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Get latest submission.
                     $moduleobject = new turnitin_assign();
                     $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
-                    $latestidentifier = sha1($latesttext->onlinetext);
+                    $latestidentifier = sha1(
+                        'text_content cm'.$cm->id.' itemid'.$latesttext->itemid.' '.$latesttext->onlinetext
+                    );
+                    $oldlatestidentifier = sha1($latesttext->onlinetext);
                     // Check submission being graded is latest.
-                    if ($submissiondata->identifier != $latestidentifier) {
+                    if ($submissiondata->identifier != $latestidentifier
+                            && $submissiondata->identifier != $oldlatestidentifier) {
                         $gbupdaterequired = false;
                     }
                 }
@@ -2890,6 +2901,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             if ($cm->modname == 'forum') {
                 $identifier = sha1('forum_post user'.$author.' cm'.$cm->id.' '.$eventdata['other']['content']);
+            } else if ($cm->modname == 'assign') {
+                $identifier = sha1('text_content cm'.$cm->id.' itemid'.$eventdata['objectid'].' '.
+                    $eventdata['other']['content']);
             } else {
                 $identifier = sha1($eventdata['other']['content']);
             }

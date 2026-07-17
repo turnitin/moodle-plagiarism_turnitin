@@ -158,30 +158,11 @@ class turnitin_assign {
      * @throws dml_exception
      */
     public function get_onlinetext($userid, $cm) {
-        global $CFG, $DB;
+        global $DB;
 
-        $assign = $DB->get_record('assign', ['id' => $cm->instance], 'teamsubmission');
-        if (!empty($assign->teamsubmission)) {
-            // Team submissions are keyed by groupid (userid is stored as 0).
-            require_once($CFG->dirroot . '/mod/assign/locallib.php');
-            $context = context_course::instance($cm->course);
-            $assignment = new assign($context, $cm, null);
-            $group = $assignment->get_submission_group($userid);
-
-            $onlinetextdata = new stdClass();
-            if (empty($group)) {
-                $onlinetextdata->itemid = 0;
-                return $onlinetextdata;
-            }
-
-            $submissions = $DB->get_records_select('assign_submission', ' assignment = ? AND groupid = ? ',
-                                            [$cm->instance, $group->id], 'id DESC', 'id', 0, 1);
-        } else {
-            // Get latest text content submitted as we do not have submission id.
-            $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
-                                            [$userid, $cm->instance], 'id DESC', 'id', 0, 1);
-        }
-
+        // Get latest text content submitted as we do not have submission id.
+        $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
+                                        [$userid, $cm->instance], 'id DESC', 'id', 0, 1);
         $submission = end($submissions);
         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             ['submission' => $submission->id], 'onlinetext, onlineformat');

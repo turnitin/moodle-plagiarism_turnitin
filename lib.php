@@ -2656,8 +2656,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                 if ($previoussubmission) {
                     // Don't submit if submission hasn't changed.
-                    if (in_array($previoussubmission->statuscode, ["success", "error"])
-                            && $timemodified <= $previoussubmission->lastmodified) {
+                    if ($timemodified <= $previoussubmission->lastmodified) {
                         return true;
                     } else if ($moduledata->resubmission_allowed) {
                         // Replace submission in the specific circumstance where Turnitin can accommodate resubmissions.

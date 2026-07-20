@@ -1552,14 +1552,16 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     // Get latest submission.
                     $moduleobject = new turnitin_assign();
                     $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
-                    $latestidentifier = sha1(
-                        'text_content cm'.$cm->id.' itemid'.$latesttext->itemid.' '.$latesttext->onlinetext
-                    );
-                    $oldlatestidentifier = sha1($latesttext->onlinetext);
-                    // Check submission being graded is latest.
-                    if ($submissiondata->identifier != $latestidentifier
-                            && $submissiondata->identifier != $oldlatestidentifier) {
-                        $gbupdaterequired = false;
+                    if (!empty($latesttext)) {
+                        $latestidentifier = sha1(
+                            'text_content cm'.$cm->id.' itemid'.$latesttext->itemid.' '.$latesttext->onlinetext
+                        );
+                        $oldlatestidentifier = sha1($latesttext->onlinetext);
+                        // Check submission being graded is latest.
+                        if ($submissiondata->identifier != $latestidentifier
+                                && $submissiondata->identifier != $oldlatestidentifier) {
+                            $gbupdaterequired = false;
+                        }
                     }
                 }
             }

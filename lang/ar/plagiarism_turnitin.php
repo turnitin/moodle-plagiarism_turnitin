@@ -267,3 +267,6 @@ $string['reportgenspeed_help'] = "هناك ثلاثة خيارات لإعداد 
 $string['turnitinuseanon_desc'] = 'اختر ما اذا كنت ستسمح للتعليم المجهول عند تقييم الإرسالات.<br /><i>(هذا متوفر فقط للمستخدمين الذين يكون لديهم التعليم المجهول مكونًا في حساباتهم)</i>';
 
 $string['nonsubmittingstudentinfo'] = "لعرض تقرير أو ملاحظات Turnitin لتسليم هذه المجموعة، يُرجى الاتصال بمعلمك أو الطالب الذي قام بالتسليم نيابة عن مجموعتك.";
+
+$string['enableadhocsubmissions'] = "تمكين معالجة المهام المخصصة لقائمة انتظار التسليم";
+$string['adhoc_sendqueuedsubmission'] = "مهمة مخصصة: إرسال تسليم مُدرج في قائمة انتظار من Turnitin Plagiarism Plugin";

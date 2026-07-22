@@ -3447,7 +3447,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
                 $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
                 $filename = $file->get_filename();
                 $pathinfo = pathinfo($filename);
-                $extension = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
+                $extension = strtolower(isset($pathinfo['extension']) ? $pathinfo['extension'] : '');
                 if (!$acceptanyfiletype && !in_array('.'.$extension, $turnitinacceptedfiles)) {
                     $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File format is not supported. The filename is '
                       .$file->get_filename(). ' and the extension is '.$extension;

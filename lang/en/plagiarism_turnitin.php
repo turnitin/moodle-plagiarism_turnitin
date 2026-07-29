@@ -122,6 +122,7 @@ $string['id'] = 'Id';
 $string['student'] = 'Student';
 $string['course'] = 'Course';
 $string['module'] = 'Module';
+$string['enableadhocsubmissions'] = 'Enable ad-hoc task processing for the submission queue';
 
 $string['tiiaccountconfig'] = 'Turnitin Account Configuration';
 $string['turnitinaccountid'] = 'Turnitin Account ID';
@@ -254,6 +255,8 @@ $string['errorcode16'] = 'This file has not been submitted to Turnitin because t
 $string['queued'] = 'Queued';
 $string['updatereportscores'] = 'Update Report Scores for Turnitin Plagiarism Plugin';
 $string['sendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Plagiarism Plugin';
+$string['syncgrades'] = 'Sync Grades for the Turnitin Plagiarism Plugin';
+$string['adhoc_sendqueuedsubmission'] = 'Ad-hoc task: Send a queued submission from the Turnitin Plagiarism Plugin';
 
 $string['privacy:metadata:plagiarism_turnitin_files'] = 'Information that links a Moodle submission to a Turnitin submission.';
 $string['privacy:metadata:plagiarism_turnitin_files:userid'] = 'The ID of the user who has made a submission.';
@@ -319,3 +322,5 @@ $string['turnitineula'] = 'Turnitin EULA';
 $string['dbexport'] = 'Database Export';
 $string['dbexporttable'] = 'Export {$a} data';
 $string['invalidtablename'] = 'Table {$a} could not be exported';
+
+$string['nonsubmittingstudentinfo'] = 'In order to view the turnitin report or feedback for this group submission, please contact either your instructor or the student who submitted on behalf of your group.';

@@ -13,10 +13,9 @@ define(
         'core/notification',
         'core/custom_interaction_events',
         'core/modal',
-        'core/modal_registry',
         'core/modal_events'
     ],
-    function($, Ajax, Notification, CustomEvents, Modal, ModalRegistry, ModalEvents) {
+    function($, Ajax, Notification, CustomEvents, Modal, ModalEvents) {
 
         var registered = false;
         var SELECTORS = {
@@ -58,15 +57,6 @@ define(
                 }
             }.bind(this));
         };
-
-        // Automatically register with the modal registry the first time this module is imported so that
-        // you can create modals of this type using the modal factory.
-        if (!registered) {
-            ModalRegistry.register(ModalPeermarkReviewsLaunch.TYPE,
-                ModalPeermarkReviewsLaunch,
-                'plagiarism_turnitin/modal_peermark_reviews_launch');
-            registered = true;
-        }
 
         return ModalPeermarkReviewsLaunch;
     }

@@ -150,17 +150,10 @@ class turnitin_view {
             // Add in custom Javascript and CSS.
             $PAGE->requires->jquery_plugin('ui');
             $PAGE->requires->js_call_amd('plagiarism_turnitin/refresh_submissions', 'refreshSubmissions');
-            if ($CFG->version >= 2023100900) {
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
-            } else {
-                // phpcs:disable moodle.Commenting.TodoComment
-                // TODO: We can remove these when we no longer have to support Moodle versions 4.3 and below.
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/peermark', 'peermarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/quickmark', 'quickmarkLaunch');
-                $PAGE->requires->js_call_amd('plagiarism_turnitin/rubric', 'rubric');
-            }
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_peermark', 'newPeermarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_quickmark', 'newQuickmarkLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');
+
             // Refresh Grades.
             $refreshgrades = '';
             if ($cmid != 0) {

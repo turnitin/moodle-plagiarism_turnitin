@@ -320,6 +320,12 @@ button.pp-resubmit-files {
     margin-bottom: 16px;
 }
 
+.tii_nonsubmitter_info {
+    border: 1px solid #6FCAFF;
+    background: #BBE6FF;
+    padding: 10px;
+}
+
 iframe html{background:none;}
 
 .selectlong {

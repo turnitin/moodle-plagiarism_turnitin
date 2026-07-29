@@ -22,10 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2025102901;
+$plugin->version = 2026072901;
 
-$plugin->release = "4.1+";
-$plugin->requires = 2018051700;
+$plugin->release = "4.5+";
+$plugin->requires = 2024100700;
 $plugin->component = 'plagiarism_turnitin';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->cron = 0;

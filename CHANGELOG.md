@@ -1,3 +1,26 @@
+### Date:       2026-July-29
+### Release:    v2026072901
+
+---
+
+#### Implemented Ad-Hoc Tasks for Sending Submissions
+An option is now available in the plugin settings to enable parralel processing for submissions.
+When this is enabled, submissions will be sent to Turnitin asynchronously.
+
+#### Implemented Grade Sync Scheduled Task
+Grades will now be synced automatically as a scheduled task instead of syncing only when an instructor interacts with a similarity report.
+
+#### Fixed Group Submission ID Generation
+An issue was observed where two or more group submissions with the same text could be linked to the same similarity report. This has now been fixed.
+
+#### Fixed Unsupported Filetype bug
+A bug was found where unsupported file types could not be uploaded, when the assignment was set to allow any file type. This is now fixed.
+
+#### Able to Edit Bibiliography Settings After Submission Has Been Made
+We added the ability to edit bibliography/quoted materials settings after the first submission has been made to an assignment, bringing this integration in line with Feedback Studio's native functionality.
+
+---
+
 ### Date:       2025-October-29
 ### Release:    v2025102901
 

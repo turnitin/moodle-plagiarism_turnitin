@@ -3486,41 +3486,17 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
             break;
 
         case 'quiz_answer':
-            if (!is_null($queueditem->externalid)) {
-                $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
+            $quizcontent = $moduleobject->get_submission_content(
+                $queueditem, $cm, $user->id, $settings["plagiarism_report_gen"]
+            );
+            $apimethod   = $quizcontent['apimethod'];
+            $textcontent = $quizcontent['textcontent'];
+            $title       = $quizcontent['title'];
+            $filename    = $quizcontent['filename'];
+            $errorcode   = $quizcontent['errorcode'];
+            if ($errorcode !== 0) {
+                mtrace('Quiz answer content not found on submission. Identifier: ' . $queueditem->identifier);
             }
-
-            require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-            try {
-                $attempt = \mod_quiz\quiz_attempt::create($queueditem->itemid);
-            } catch (Exception $e) {
-                plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), "PP_NO_ATTEMPT");
-                mtrace('Attempt not found on submission. Identifier: '.$queueditem->identifier);
-                $errorcode = 14;
-                break;
-            }
-
-            // Attempt to find the matching slot for the queued item.
-            // For each slot, check whether the hash matches.
-            foreach ($attempt->get_slots() as $slot) {
-                $qa = $attempt->get_question_attempt($slot);
-                if ($queueditem->identifier == sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$cm->id.
-                                                    ' slot'.$slot.' attempt'.$attempt->get_attempt_number())) {
-                    $textcontent = $qa->get_response_summary();
-                    break;
-                }
-            }
-
-            if (!empty($textcontent)) {
-                $textcontent = strip_tags($textcontent);
-                $title = 'quizanswer_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
-                $filename = $title;
-            } else {
-                plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
-                mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
-                $errorcode = 9;
-            }
-
             break;
     }
 

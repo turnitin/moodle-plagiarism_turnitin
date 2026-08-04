@@ -37,7 +37,6 @@
   <source>
     <include>
       <directory suffix=".php">classes</directory>
-      <directory suffix=".php">tests/generator</directory>
       <file>lib.php</file>
       <file>locallib.php</file>
     </include>

@@ -292,4 +292,42 @@ final class turnitin_settings_test extends \advanced_testcase {
         $config = turnitin_settings::admin_config();
         $this->assertFalse(isset($config->plagiarism_turnitin_notpresent));
     }
+
+    // Is_plugin_configured tests.
+
+    /**
+     * Test that is_plugin_configured returns false when no credentials are set.
+     */
+    public function test_is_plugin_configured_returns_false_when_not_configured(): void {
+        $this->resetAfterTest();
+
+        $this->assertFalse(turnitin_settings::is_plugin_configured());
+    }
+
+    /**
+     * Test that is_plugin_configured returns false when only some credentials are set.
+     */
+    public function test_is_plugin_configured_returns_false_with_partial_config(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        // secretkey intentionally not set.
+
+        $this->assertFalse(turnitin_settings::is_plugin_configured());
+    }
+
+    /**
+     * Test that is_plugin_configured returns true when all three required
+     * credentials are present.
+     */
+    public function test_is_plugin_configured_returns_true_when_fully_configured(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
+
+        $this->assertTrue(turnitin_settings::is_plugin_configured());
+    }
 }

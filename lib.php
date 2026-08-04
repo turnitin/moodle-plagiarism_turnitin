@@ -135,17 +135,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean whether the plugin is configured for Turnitin.
      **/
     public function is_plugin_configured() {
-        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
-
-        if (
-            empty($config->plagiarism_turnitin_accountid) ||
-            empty($config->plagiarism_turnitin_apiurl) ||
-            empty($config->plagiarism_turnitin_secretkey)
-        ) {
-            return false;
-        }
-
-        return true;
+        return \plagiarism_turnitin\turnitin_settings::is_plugin_configured();
     }
 
     /**

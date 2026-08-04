@@ -140,4 +140,18 @@ class turnitin_settings {
             set_config($field, $data->$property, 'plagiarism_turnitin');
         }
     }
+
+    /**
+     * Check whether the plugin has been configured with the three required
+     * Turnitin account credentials.
+     *
+     * @return bool True when accountid, apiurl and secretkey are all non-empty.
+     */
+    public static function is_plugin_configured(): bool {
+        $config = self::admin_config();
+
+        return !empty($config->plagiarism_turnitin_accountid)
+            && !empty($config->plagiarism_turnitin_apiurl)
+            && !empty($config->plagiarism_turnitin_secretkey);
+    }
 }

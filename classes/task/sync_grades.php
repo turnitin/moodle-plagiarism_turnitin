@@ -25,6 +25,8 @@
 
 namespace plagiarism_turnitin\task;
 
+use plagiarism_turnitin\turnitin_settings;
+
 /**
  * Send queued submissions to Turnitin.
  */
@@ -49,7 +51,7 @@ class sync_grades extends \core\task\scheduled_task {
 
         require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $pluginturnitin = new \plagiarism_plugin_turnitin();
-        if (!$pluginturnitin->is_plugin_configured()) {
+        if (!turnitin_settings::is_plugin_configured()) {
             return;
         }
         if (!$pluginturnitin->test_turnitin_connection()) {

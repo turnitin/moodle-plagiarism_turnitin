@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           path: plugin
 

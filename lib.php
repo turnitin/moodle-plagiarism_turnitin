@@ -3419,95 +3419,56 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     $apimethod = "createSubmission";
     switch ($queueditem->submissiontype) {
         case 'file':
-        case 'text_content':
-            // Get file data or prepare text submission.
-            if ($queueditem->submissiontype == 'file') {
-                $fs = get_file_storage();
-                $file = $fs->get_file_by_hash($queueditem->identifier);
+            $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? true : false;
+            $assigncontent = $moduleobject->get_submission_content(
+                $queueditem, $cm, $moduledata, $acceptanyfiletype, $turnitinacceptedfiles
+            );
+            $apimethod   = $assigncontent['apimethod'];
+            $textcontent = $assigncontent['textcontent'];
+            $title       = $assigncontent['title'];
+            $filename    = $assigncontent['filename'];
+            $errorcode   = $assigncontent['errorcode'];
 
-                if (!$file) {
-                    plagiarism_turnitin_activitylog('File not found for submission: '.$queueditem->id, 'PP_NO_FILE');
-                    mtrace('File not found for submission. Identifier: '.$queueditem->id);
-                    $errorcode = 9;
-                    break;
-                }
-
-                // Prevent submissions queue breaking if file is too large and a larger size limit has been set in Moodle
-                if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
-                    $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File size is '.$file->get_filesize().
-                        ' bytes, and the max filesize that Turnitin can accept is '.PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE.' bytes.';
-                    plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_TOO_LARGE');
-                    mtrace($errorstring);
-                    $errorcode = 2;
-                    break;
-                }
-
-                // Prevent submissions queue breaking if file is wrong format
-                $settings = $pluginturnitin->get_settings($cm->id);
-                $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
-                $filename = $file->get_filename();
-                $pathinfo = pathinfo($filename);
-                $extension = strtolower(isset($pathinfo['extension']) ? $pathinfo['extension'] : '');
-                if (!$acceptanyfiletype && !in_array('.'.$extension, $turnitinacceptedfiles)) {
-                    $errorstring = 'File with ID '.$queueditem->id.' cannot be sent to turnitin: File format is not supported. The filename is '
-                      .$file->get_filename(). ' and the extension is '.$extension;
-                    plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_WRONG_FORMAT');
-                    mtrace($errorstring);
-                    $errorcode = 16;
-                    break;
-                }
-
-                $title = $file->get_filename();
-                $filename = $file->get_filename();
-
-                try {
-                    $textcontent = $file->get_content();
-                } catch (Exception $e) {
-                    plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
-                    mtrace($e);
-                    mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
-                    $errorcode = 9;
-                    break;
-                }
-            } else {
-                // Get the actual text content for a submission.
-                switch ($cm->modname) {
-                    case 'assign':
-                        $userid = ($moduledata->teamsubmission) ? 0 : $queueditem->userid;
-
-                        $moodlesubmission = $DB->get_record('assign_submission', ['assignment' => $cm->instance,
-                                        'userid' => $userid, 'id' => $queueditem->itemid, ], 'id');
-                        $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                        ['submission' => $moodlesubmission->id], 'onlinetext');
-                        $textcontent = $moodletextsubmission->onlinetext;
-                        break;
-
-                    case 'workshop':
-                        $moodlesubmission = $DB->get_record('workshop_submissions',
-                                                    ['id' => $queueditem->itemid], 'content');
-                        $textcontent = $moodlesubmission->content;
-                        break;
-                }
-
-                $title = 'onlinetext_'.$user->id."_".$cm->id."_".$cm->instance.'.txt';
-                $filename = $title;
-                $textcontent = html_to_text($textcontent);
+            if ($errorcode !== 0) {
+                mtrace('File submission error for identifier: ' . $queueditem->identifier);
             }
 
-            // Use Replace submission method if resubmissions are allowed or create if we have no Turnitin Id.
-            if (!is_null($queueditem->externalid)) {
-                $apimethod = ($moduledata->resubmission_allowed) ? "replaceSubmission" : "createSubmission";
+            break;
 
+        case 'text_content':
+            if ($cm->modname === 'assign') {
+                $assigncontent = $moduleobject->get_submission_content(
+                    $queueditem, $cm, $moduledata, false, []
+                );
+                $apimethod   = $assigncontent['apimethod'];
+                $textcontent = $assigncontent['textcontent'];
+                $title       = $assigncontent['title'];
+                $filename    = $assigncontent['filename'];
+                $errorcode   = $assigncontent['errorcode'];
+            } else if ($cm->modname === 'workshop') {
+                // TODO: extract into turnitin_workshop::get_submission_content() as part of ongoing refactor.
+                $moodlesubmission = $DB->get_record('workshop_submissions',
+                    ['id' => $queueditem->itemid], 'content');
+                $textcontent = html_to_text($moodlesubmission->content);
+                $title = 'onlinetext_' . $user->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
+                $filename = $title;
+
+                if (!is_null($queueditem->externalid)) {
+                    $apimethod = ($moduledata->resubmission_allowed) ? 'replaceSubmission' : 'createSubmission';
+                }
+            }
+
+            if ($errorcode === 0) {
                 // Delete old text content submissions from Turnitin if not replacing.
-                if ($settings["plagiarism_report_gen"] == 0 && $queueditem->submissiontype == 'text_content') {
+                if (!is_null($queueditem->externalid) && $settings["plagiarism_report_gen"] == 0) {
                     $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->userid);
                 }
-            }
 
-            // Remove any old text submissions from Moodle DB if there are any as there is only one per submission.
-            if (!empty($queueditem->itemid) && $queueditem->submissiontype == "text_content") {
-                $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $queueditem->itemid,
-                                                                $queueditem->submissiontype, $queueditem->identifier);
+                // Remove any old text submissions from Moodle DB — only one text submission per user is kept.
+                if (!empty($queueditem->itemid)) {
+                    $pluginturnitin->clean_old_turnitin_submissions($cm, $user->id, $queueditem->itemid,
+                                                                    $queueditem->submissiontype, $queueditem->identifier);
+                }
             }
 
             break;

@@ -230,4 +230,174 @@ class turnitin_assign {
     public function initialise_post_date($moduledata) {
         return 0;
     }
+
+    /**
+     * Retrieve the text content, title and API method for a file or text_content submission
+     * to Turnitin.
+     *
+     * Returns an array with keys:
+     *   - textcontent:  raw bytes (file) or decoded plain text (text_content)
+     *   - title:        filename used in Turnitin
+     *   - filename:     same as title
+     *   - apimethod:    'createSubmission' or 'replaceSubmission'
+     *   - errorcode:    0 on success; 2 = file too large, 9 = file/content not found,
+     *                   16 = unsupported file extension
+     *
+     * Side effects (deleting old TII submissions, cleaning the local DB) are intentionally
+     * left to the caller in lib.php — they require the plugin instance and don't belong here.
+     *
+     * @param stdClass $queueditem      Row from plagiarism_turnitin_files
+     * @param stdClass $cm              Course module record
+     * @param stdClass $moduledata      Row from the assign table, augmented with resubmission_allowed
+     * @param bool     $acceptanyfiletype  True when the assignment allows non-standard file types
+     * @param array    $acceptedfiles   List of accepted extensions, e.g. ['.pdf', '.docx']
+     * @return array
+     */
+    public function get_submission_content(
+        \stdClass $queueditem,
+        \stdClass $cm,
+        \stdClass $moduledata,
+        bool $acceptanyfiletype,
+        array $acceptedfiles
+    ): array {
+        if ($queueditem->submissiontype === 'file') {
+            return $this->get_file_submission_content($queueditem, $moduledata, $acceptanyfiletype, $acceptedfiles);
+        }
+
+        return $this->get_text_submission_content($queueditem, $cm, $moduledata);
+    }
+
+    /**
+     * Retrieve content for a file submission.
+     *
+     * @param stdClass $queueditem
+     * @param stdClass $moduledata
+     * @param bool     $acceptanyfiletype
+     * @param array    $acceptedfiles
+     * @return array
+     */
+    private function get_file_submission_content(
+        \stdClass $queueditem,
+        \stdClass $moduledata,
+        bool $acceptanyfiletype,
+        array $acceptedfiles
+    ): array {
+        $fs   = get_file_storage();
+        $file = $fs->get_file_by_hash($queueditem->identifier);
+
+        if (!$file) {
+            plagiarism_turnitin_activitylog('File not found for submission: ' . ($queueditem->id ?? ''), 'PP_NO_FILE');
+            return $this->error_result(9);
+        }
+
+        if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
+            $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File size is '
+                . $file->get_filesize() . ' bytes, and the max filesize that Turnitin can accept is '
+                . PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE . ' bytes.';
+            plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_TOO_LARGE');
+            return $this->error_result(2);
+        }
+
+        $pathinfo  = pathinfo($file->get_filename());
+        $extension = strtolower($pathinfo['extension'] ?? '');
+        if (!$acceptanyfiletype && !in_array('.' . $extension, $acceptedfiles)) {
+            $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File format is not '
+                . 'supported. The filename is ' . $file->get_filename() . ' and the extension is ' . $extension;
+            plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_WRONG_FORMAT');
+            return $this->error_result(16);
+        }
+
+        try {
+            $textcontent = $file->get_content();
+        } catch (\Exception $e) {
+            plagiarism_turnitin_activitylog(
+                'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
+            );
+            return $this->error_result(9);
+        }
+
+        $apimethod = $this->resolve_apimethod($queueditem->externalid, $moduledata->resubmission_allowed);
+
+        return [
+            'errorcode'   => 0,
+            'apimethod'   => $apimethod,
+            'textcontent' => $textcontent,
+            'title'       => $file->get_filename(),
+            'filename'    => $file->get_filename(),
+        ];
+    }
+
+    /**
+     * Retrieve content for an online text submission.
+     *
+     * The submission record is looked up by itemid (assign_submission.id). For team
+     * submissions, Moodle stores the submission against userid = 0, so we use that
+     * rather than the individual student's id.
+     *
+     * @param stdClass $queueditem
+     * @param stdClass $cm
+     * @param stdClass $moduledata
+     * @return array
+     */
+    private function get_text_submission_content(
+        \stdClass $queueditem,
+        \stdClass $cm,
+        \stdClass $moduledata
+    ): array {
+        global $DB;
+
+        $userid = $moduledata->teamsubmission ? 0 : $queueditem->userid;
+
+        $moodlesubmission = $DB->get_record(
+            'assign_submission',
+            ['assignment' => $cm->instance, 'userid' => $userid, 'id' => $queueditem->itemid],
+            'id'
+        );
+        $moodletextsubmission = $DB->get_record(
+            'assignsubmission_onlinetext',
+            ['submission' => $moodlesubmission->id],
+            'onlinetext'
+        );
+
+        $textcontent = html_to_text($moodletextsubmission->onlinetext);
+        $title       = 'onlinetext_' . $queueditem->userid . '_' . $cm->id . '_' . $cm->instance . '.txt';
+        $apimethod   = $this->resolve_apimethod($queueditem->externalid, $moduledata->resubmission_allowed);
+
+        return [
+            'errorcode'   => 0,
+            'apimethod'   => $apimethod,
+            'textcontent' => $textcontent,
+            'title'       => $title,
+            'filename'    => $title,
+        ];
+    }
+
+    /**
+     * Decide whether to create a new submission or replace an existing one.
+     *
+     * We only replace when a previous submission exists (externalid set) and the
+     * assignment is configured to allow resubmissions — otherwise Turnitin needs
+     * a fresh submission to recalculate similarity.
+     *
+     * @param string|null $externalid
+     * @param bool        $resubmissionallowed
+     * @return string 'createSubmission' or 'replaceSubmission'
+     */
+    private function resolve_apimethod(?string $externalid, bool $resubmissionallowed): string {
+        if (!is_null($externalid) && $resubmissionallowed) {
+            return 'replaceSubmission';
+        }
+        return 'createSubmission';
+    }
+
+    /**
+     * Build a uniform error result array.
+     *
+     * @param int $errorcode
+     * @return array
+     */
+    private function error_result(int $errorcode): array {
+        return ['errorcode' => $errorcode, 'apimethod' => 'createSubmission',
+                'textcontent' => null, 'title' => null, 'filename' => null];
+    }
 }

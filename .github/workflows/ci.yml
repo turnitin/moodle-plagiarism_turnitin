@@ -102,8 +102,7 @@ jobs:
 
       - name: Moodle Code Checker
         if: ${{ !cancelled() }}
-        # Vendor files and generated AMD bundles are excluded — they're not our code.
-        run: moodle-plugin-ci phpcs --max-warnings 0 --ignore-path vendor
+        run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Validating
         if: ${{ !cancelled() }}

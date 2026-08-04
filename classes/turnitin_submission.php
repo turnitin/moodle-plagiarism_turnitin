@@ -193,4 +193,108 @@ class turnitin_submission {
 
         return $file;
     }
+
+    /**
+     * Mark an existing submission row as errored and increment its attempt counter.
+     *
+     * Called whenever processing fails partway through so the cron can retry or
+     * the admin can see the failure reason in the errors view.
+     *
+     * @param int $submissionid The plagiarism_turnitin_files row id.
+     * @param int $attempt      The current attempt number (will be incremented by one).
+     * @param int $errorcode    Error code identifying the failure reason.
+     * @return bool True on success.
+     */
+    public static function save_errored(int $submissionid, int $attempt, int $errorcode): bool {
+        global $DB;
+
+        $plagiarismfile = new \stdClass();
+        $plagiarismfile->id        = $submissionid;
+        $plagiarismfile->statuscode = 'error';
+        $plagiarismfile->attempt   = $attempt + 1;
+        $plagiarismfile->errorcode = $errorcode;
+
+        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+            turnitin_logger::log(
+                'Update record failed (Submission: ' . $submissionid . ') - ',
+                'PP_UPDATE_SUB_ERROR'
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Persist a submission row — inserting when $submissionid is 0, updating otherwise.
+     *
+     * The attempt counter is always incremented by one from $attempt so that each
+     * processing pass is recorded even if the status stays the same.
+     *
+     * @param \stdClass   $cm             Course module record.
+     * @param int         $userid         Moodle user id of the submitting student.
+     * @param int         $submissionid   Existing row id, or 0 to insert a new row.
+     * @param string      $identifier     Pathnamehash (file) or content hash (text).
+     * @param string      $statuscode     'queued', 'pending', 'success', or 'error'.
+     * @param string|null $tiisubmissionid Turnitin submission UUID, or null if not yet submitted.
+     * @param int         $submitter      Moodle user id of whoever triggered the submission.
+     * @param int         $itemid         Moodle file/submission itemid.
+     * @param string      $submissiontype One of 'file', 'text_content', 'forum_post', 'quiz_answer'.
+     * @param int         $attempt        Current attempt number (stored as attempt + 1).
+     * @param int|null    $errorcode      Error code, or null on success.
+     * @param string|null $errormsg       Error message, or null on success.
+     * @return bool True on success.
+     */
+    public static function save(
+        \stdClass $cm,
+        int $userid,
+        int $submissionid,
+        string $identifier,
+        string $statuscode,
+        ?string $tiisubmissionid,
+        int $submitter,
+        int $itemid,
+        string $submissiontype,
+        int $attempt,
+        ?int $errorcode = null,
+        ?string $errormsg = null
+    ): bool {
+        global $DB;
+
+        $plagiarismfile = new \stdClass();
+        if ($submissionid !== 0) {
+            $plagiarismfile->id = $submissionid;
+        }
+        $plagiarismfile->cm             = $cm->id;
+        $plagiarismfile->userid         = $userid;
+        $plagiarismfile->identifier     = $identifier;
+        $plagiarismfile->statuscode     = $statuscode;
+        $plagiarismfile->similarityscore = null;
+        $plagiarismfile->externalid     = $tiisubmissionid;
+        $plagiarismfile->errorcode      = empty($errorcode) ? null : $errorcode;
+        $plagiarismfile->errormsg       = empty($errormsg) ? null : $errormsg;
+        $plagiarismfile->attempt        = $attempt + 1;
+        $plagiarismfile->transmatch     = 0;
+        $plagiarismfile->lastmodified   = time();
+        $plagiarismfile->submissiontype = $submissiontype;
+        $plagiarismfile->itemid         = $itemid;
+        $plagiarismfile->submitter      = $submitter;
+
+        if ($submissionid !== 0) {
+            if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                turnitin_logger::log(
+                    'Update record failed (CM: ' . $cm->id . ', User: ' . $userid . ') - ',
+                    'PP_UPDATE_SUB_ERROR'
+                );
+            }
+        } else {
+            if (!$DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
+                turnitin_logger::log(
+                    'Insert record failed (CM: ' . $cm->id . ', User: ' . $userid . ') - ',
+                    'PP_INSERT_SUB_ERROR'
+                );
+            }
+        }
+
+        return true;
+    }
 }

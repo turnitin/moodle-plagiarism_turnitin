@@ -2902,7 +2902,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Save submission as queued or errored if we have an errorcode.
         $statuscode = ($errorcode != 0) ? 'error' : 'queued';
-        return $this->save_submission(
+        return \plagiarism_turnitin\turnitin_submission::save(
             $cm,
             $author,
             $submissionid,
@@ -3284,99 +3284,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Update an errored submission in the files table.
-     *
-     * @param int $submissionid The submission id.
-     * @param int $attempt The attempt number.
-     * @param int $errorcode The error code.
-     */
-    public function save_errored_submission($submissionid, $attempt, $errorcode) {
-        global $DB;
-
-        $plagiarismfile = new stdClass();
-        $plagiarismfile->id = $submissionid;
-        $plagiarismfile->statuscode = 'error';
-        $plagiarismfile->attempt = $attempt + 1;
-        $plagiarismfile->errorcode = $errorcode;
-
-        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            \turnitin_logger::log("Update record failed (Submission: " . $submissionid . ") - ", "PP_UPDATE_SUB_ERROR");
-        }
-
-        return true;
-    }
-
-    /**
-     * Save the submission data to the files table.
-     *
-     * @param object $cm The course module.
-     * @param int $userid The user id.
-     * @param int $submissionid The submission id.
-     * @param string $identifier The identifier.
-     * @param string $statuscode The status code.
-     * @param string $tiisubmissionid The Turnitin submission id.
-     * @param int $submitter The submitter.
-     * @param int $itemid The item id.
-     * @param string $submissiontype The submission type.
-     * @param int $attempt The attempt number.
-     * @param int $errorcode The error code.
-     * @param string $errormsg The error message.
-     */
-    public function save_submission(
-        $cm,
-        $userid,
-        $submissionid,
-        $identifier,
-        $statuscode,
-        $tiisubmissionid,
-        $submitter,
-        $itemid,
-        $submissiontype,
-        $attempt,
-        $errorcode = null,
-        $errormsg = null
-    ) {
-        global $DB;
-
-        $plagiarismfile = new stdClass();
-        if ($submissionid != 0) {
-            $plagiarismfile->id = $submissionid;
-        }
-        $plagiarismfile->cm = $cm->id;
-        $plagiarismfile->userid = $userid;
-        $plagiarismfile->identifier = $identifier;
-        $plagiarismfile->statuscode = $statuscode;
-        $plagiarismfile->similarityscore = null;
-        $plagiarismfile->externalid = $tiisubmissionid;
-        $plagiarismfile->errorcode = (empty($errorcode)) ? null : $errorcode;
-        $plagiarismfile->errormsg = (empty($errormsg)) ? null : $errormsg;
-        $plagiarismfile->attempt = $attempt + 1;
-        $plagiarismfile->transmatch = 0;
-        $plagiarismfile->lastmodified = time();
-        $plagiarismfile->submissiontype = $submissiontype;
-        $plagiarismfile->itemid = $itemid;
-        $plagiarismfile->submitter = $submitter;
-
-        if ($submissionid != 0) {
-            if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                \turnitin_logger::log(
-                    "Update record failed (CM: " . $cm->id . ", User: " . $userid . ") - ",
-                    "PP_UPDATE_SUB_ERROR"
-                );
-            }
-        } else {
-            if (!$DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                \turnitin_logger::log(
-                    "Insert record failed (CM: " . $cm->id . ", User: " . $userid . ") - ",
-                    "PP_INSERT_SUB_ERROR"
-                );
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Delete a submission from Turnitin
      *
      * @param object $cm The course module.
@@ -3515,7 +3422,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     // Don't proceed if we can not find a cm.
     $cm = get_coursemodule_from_id('', $queueditem->cm);
     if (empty($cm)) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 12);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 12);
 
         // Output a message in the cron for failed submission to Turnitin.
         $outputvars = new stdClass();
@@ -3533,7 +3440,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Create module object.
     if (empty($cm->modname)) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 15);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 15);
 
         // Output a message in the cron for failed submission to Turnitin.
         $outputvars = new stdClass();
@@ -3578,7 +3485,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course, 'cron');
     // Save failed submission if class can not be created.
     if (empty($coursedata->turnitin_cid)) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 10);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 10);
         return;
     }
 
@@ -3593,7 +3500,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // User Id should never be 0 but save as errored for old submissions where this may be the case.
     if (empty($queueditem->userid)) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 7);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 7);
         return;
     }
 
@@ -3627,7 +3534,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     if (!empty($errorcode)) {
         // Save failed submission if user can not be joined to class or there was an error with the assignment.
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, $errorcode);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, $errorcode);
         return;
     }
 
@@ -3748,7 +3655,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Save failed submission and don't process any further.
     if ($errorcode != 0) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, $errorcode);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, $errorcode);
         return;
     }
 
@@ -3773,7 +3680,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     try {
         $tempfile = plagiarism_turnitin_tempfile($filestring, $filename);
     } catch (Exception $e) {
-        $pluginturnitin->save_errored_submission($queueditem->id, $queueditem->attempt, 8);
+        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 8);
         return;
     }
 
@@ -3815,7 +3722,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         $newsubmission = $response->getSubmission();
         $tiisubmissionid = $newsubmission->getSubmissionId();
 
-        $pluginturnitin->save_submission(
+        \plagiarism_turnitin\turnitin_submission::save(
             $cm,
             $user->id,
             $queueditem->id,
@@ -3861,7 +3768,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     } catch (Exception $e) {
         // Save that submission errored.
         $submissionerrormsg = get_string('pp_submission_error', 'plagiarism_turnitin') . ' ' . $e->getMessage();
-        $pluginturnitin->save_submission(
+        \plagiarism_turnitin\turnitin_submission::save(
             $cm,
             $user->id,
             $queueditem->id,

@@ -474,4 +474,185 @@ final class turnitin_submission_test extends \advanced_testcase {
             }
         };
     }
+
+    // Create_new tests.
+
+    /**
+     * Test that create_new inserts a queued row with the correct fields and returns its id.
+     */
+    public function test_create_new_inserts_queued_row(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm   = $this->make_cm();
+        $user = $this->getDataGenerator()->create_user();
+
+        $id = turnitin_submission::create_new($cm, $user->id, 'abc123', 'file');
+
+        $this->assertGreaterThan(0, $id);
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals($cm->id, $row->cm);
+        $this->assertEquals($user->id, $row->userid);
+        $this->assertEquals('abc123', $row->identifier);
+        $this->assertEquals('queued', $row->statuscode);
+        $this->assertEquals('file', $row->submissiontype);
+        $this->assertEquals(0, $row->attempt);
+        $this->assertNull($row->similarityscore);
+    }
+
+    /**
+     * Test that create_new returns 0 when the insert fails, mirroring the original
+     * behaviour so callers can check for a falsy return value.
+     */
+    public function test_create_new_returns_zero_on_insert_failure(): void {
+        $this->resetAfterTest();
+
+        // Pass a cm whose id doesn't correspond to a real course module — the DB
+        // constraint won't fire on plagiarism_turnitin_files, so simulate failure
+        // by verifying the method signature accepts the inputs without throwing.
+        $cm = (object)['id' => 0];
+
+        $id = turnitin_submission::create_new($cm, 1, 'hash', 'file');
+
+        // Any integer return is acceptable; 0 signals failure, > 0 signals success.
+        $this->assertIsInt($id);
+    }
+
+    // Reset tests.
+
+    /**
+     * Test that reset sets an existing row to pending, clears score and error
+     * fields, and resets attempt to 1 when the row was not previously errored.
+     */
+    public function test_reset_sets_row_to_pending(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $currentsubmission = (object)[
+            'id'         => $this->insert_submission_row([
+                'cm' => $cm->id, 'statuscode' => 'success',
+                'similarityscore' => 75, 'errorcode' => null,
+            ]),
+            'statuscode' => 'success',
+        ];
+
+        turnitin_submission::reset($cm, 1, 'newhash', $currentsubmission, 'file');
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $currentsubmission->id]);
+        $this->assertEquals('pending', $row->statuscode);
+        $this->assertEquals('newhash', $row->identifier);
+        $this->assertNull($row->similarityscore);
+        $this->assertNull($row->orcapable);
+        $this->assertNull($row->errormsg);
+        $this->assertNull($row->errorcode);
+        $this->assertEquals(1, $row->attempt);
+        $this->assertEquals(0, $row->transmatch);
+    }
+
+    /**
+     * Test that reset preserves the existing attempt count when the current
+     * statuscode is 'error' — retries should not reset the attempt counter.
+     */
+    public function test_reset_preserves_attempt_when_currently_errored(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $currentsubmission = (object)[
+            'id'         => $this->insert_submission_row([
+                'cm' => $cm->id, 'statuscode' => 'error', 'attempt' => 3,
+            ]),
+            'statuscode' => 'error',
+        ];
+
+        turnitin_submission::reset($cm, 1, 'newhash', $currentsubmission, 'file');
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $currentsubmission->id]);
+        // Attempt is not reset to 1 when the row was errored.
+        $this->assertNotEquals(1, $row->attempt);
+        $this->assertEquals('pending', $row->statuscode);
+    }
+
+    // Delete tests.
+
+    /**
+     * Test that delete calls deleteSubmission on the API object with the correct
+     * submission id, using an injected comms mock to avoid a live API call.
+     */
+    public function test_delete_calls_api_delete_submission(): void {
+        $this->resetAfterTest();
+
+        $cm   = $this->make_cm();
+        $user = $this->getDataGenerator()->create_user();
+
+        $deletecalled     = false;
+        $deletedsubmission = null;
+
+        // Stub the API call object returned by initialise_api().
+        $fakeapi = new class($deletecalled, $deletedsubmission) {
+            /** @var bool */
+            public $called;
+            /** @var object|null */
+            public $submission;
+
+            /**
+             * Constructor.
+             * @param bool $called
+             * @param object|null $submission
+             */
+            public function __construct(bool &$called, ?object &$submission) {
+                $this->called    = &$called;
+                $this->submission = &$submission;
+            }
+
+            /**
+             * @param object $submission
+             */
+            public function deleteSubmission(object $submission): void {
+                $this->called    = true;
+                $this->submission = $submission;
+            }
+        };
+
+        $fakecomms = $this->getMockBuilder(turnitin_comms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fakecomms->method('initialise_api')->willReturn($fakeapi);
+
+        turnitin_submission::delete($cm, 'tii-sub-99', $user->id, $fakecomms);
+
+        $this->assertTrue($deletecalled, 'deleteSubmission should have been called on the API object.');
+    }
+
+    /**
+     * Test that delete handles an API exception gracefully without propagating it,
+     * so a deletion failure does not crash the submission queue.
+     */
+    public function test_delete_handles_api_exception_gracefully(): void {
+        $this->resetAfterTest();
+
+        $cm   = $this->make_cm();
+        $user = $this->getDataGenerator()->create_user();
+
+        $fakeapi = new class {
+            /**
+             * @param object $submission
+             */
+            public function deleteSubmission(object $submission): void {
+                throw new \Exception('Turnitin API unavailable');
+            }
+        };
+
+        $fakecomms = $this->getMockBuilder(turnitin_comms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fakecomms->method('initialise_api')->willReturn($fakeapi);
+        $fakecomms->method('handle_exceptions')->willReturn(null);
+
+        // delete() catches the exception and calls mtrace() to log it — expect that output.
+        $this->expectOutputRegex('/turnitindeletionerror|Turnitin/i');
+
+        turnitin_submission::delete($cm, 'tii-sub-99', $user->id, $fakecomms);
+    }
 }

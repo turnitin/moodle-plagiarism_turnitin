@@ -3109,24 +3109,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $submissiontype The submission type.
      **/
     private function create_new_tii_submission($cm, $userid, $identifier, $submissiontype) {
-        global $DB;
-
-        $plagiarismfile = new stdClass();
-        $plagiarismfile->cm = $cm->id;
-        $plagiarismfile->userid = $userid;
-        $plagiarismfile->identifier = $identifier;
-        $plagiarismfile->statuscode = "queued";
-        $plagiarismfile->similarityscore = null;
-        $plagiarismfile->attempt = 0; // This will be incremented when saved.
-        $plagiarismfile->transmatch = 0;
-        $plagiarismfile->submissiontype = $submissiontype;
-
-        if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            \turnitin_logger::log("Insert record failed (CM: " . $cm->id . ", User: " . $userid . ")", "PP_NEW_SUB");
-            $fileid = 0;
-        }
-
-        return $fileid;
+        return \plagiarism_turnitin\turnitin_submission::create_new($cm, $userid, $identifier, $submissiontype);
     }
 
     /**
@@ -3139,25 +3122,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $submissiontype The submission type.
      **/
     private function reset_tii_submission($cm, $userid, $identifier, $currentsubmission, $submissiontype) {
-        global $DB;
-
-        $plagiarismfile = new stdClass();
-        $plagiarismfile->id = $currentsubmission->id;
-        $plagiarismfile->identifier = $identifier;
-        $plagiarismfile->statuscode = "pending";
-        $plagiarismfile->similarityscore = null;
-        if ($currentsubmission->statuscode != "error") {
-            $plagiarismfile->attempt = 1;
-        }
-        $plagiarismfile->transmatch = 0;
-        $plagiarismfile->submissiontype = $submissiontype;
-        $plagiarismfile->orcapable = null;
-        $plagiarismfile->errormsg = null;
-        $plagiarismfile->errorcode = null;
-
-        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            \turnitin_logger::log("Update record failed (CM: " . $cm->id . ", User: " . $userid . ")", "PP_REPLACE_SUB");
-        }
+        \plagiarism_turnitin\turnitin_submission::reset($cm, $userid, $identifier, $currentsubmission, $submissiontype);
     }
 
     /**
@@ -3245,27 +3210,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param int $userid The user id.
      */
     public function delete_tii_submission($cm, $submissionid, $userid) {
-        global $DB;
-        $user = $DB->get_record('user', ['id' => $userid]);
-
-        // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-
-        $submission = new TiiSubmission();
-        $submission->setSubmissionId($submissionid);
-
-        try {
-            $turnitincall->deleteSubmission($submission);
-        } catch (Exception $e) {
-            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror', false);
-
-            mtrace('-------------------------');
-            mtrace(get_string('turnitindeletionerror', 'plagiarism_turnitin') . ': ' . $e->getMessage());
-            mtrace('User:  ' . $user->id . ' - ' . $user->firstname . ' ' . $user->lastname . ' (' . $user->email . ')');
-            mtrace('Course Module: ' . $cm->id . '');
-            mtrace('-------------------------');
-        }
+        \plagiarism_turnitin\turnitin_submission::delete($cm, $submissionid, $userid);
     }
 
     /**

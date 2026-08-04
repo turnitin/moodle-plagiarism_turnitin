@@ -182,6 +182,19 @@ class turnitin_submission {
     }
 
     /**
+     * Get the file information from Moodle. We really specifically only need the itemid.
+     */
+    public function get_file_info() {
+        $fs = get_file_storage();
+
+        if (!$file = $fs->get_file_by_hash($this->submissiondata->identifier)) {
+            return false;
+        }
+
+        return $file;
+    }
+
+    /**
      * Update a submission row with fresh data from a Turnitin API response.
      *
      * Writes similarity score, grade, transmatch flag and feedback metadata back
@@ -377,5 +390,125 @@ class turnitin_submission {
         }
 
         return true;
+    }
+
+    /**
+     * Insert a new queued row into plagiarism_turnitin_files.
+     *
+     * Used when there is no existing row for this cm/user/identifier combination.
+     * The attempt counter starts at 0 and is incremented on first processing.
+     *
+     * @param \stdClass $cm             Course module record.
+     * @param int       $userid         Moodle user id.
+     * @param string    $identifier     Pathnamehash (file) or content hash (text).
+     * @param string    $submissiontype One of 'file', 'text_content', 'forum_post', 'quiz_answer'.
+     * @return int The new row id, or 0 on failure.
+     */
+    public static function create_new(\stdClass $cm, int $userid, string $identifier, string $submissiontype): int {
+        global $DB;
+
+        $plagiarismfile = new \stdClass();
+        $plagiarismfile->cm             = $cm->id;
+        $plagiarismfile->userid         = $userid;
+        $plagiarismfile->identifier     = $identifier;
+        $plagiarismfile->statuscode     = 'queued';
+        $plagiarismfile->similarityscore = null;
+        $plagiarismfile->attempt        = 0;
+        $plagiarismfile->transmatch     = 0;
+        $plagiarismfile->submissiontype = $submissiontype;
+
+        if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
+            turnitin_logger::log(
+                'Insert record failed (CM: ' . $cm->id . ', User: ' . $userid . ')',
+                'PP_NEW_SUB'
+            );
+            return 0;
+        }
+
+        return $fileid;
+    }
+
+    /**
+     * Reset an existing row to pending so it will be reprocessed by the cron.
+     *
+     * Called when the content changes (e.g. a resubmission) — resets scores and
+     * clears error state. The attempt counter is only reset to 1 when the row was
+     * not previously in an error state, to preserve retry history for errored rows.
+     *
+     * @param \stdClass $cm                 Course module record.
+     * @param int       $userid             Moodle user id (used for logging only).
+     * @param string    $identifier         New identifier for the updated content.
+     * @param \stdClass $currentsubmission  The existing plagiarism_turnitin_files row.
+     * @param string    $submissiontype     Submission type string.
+     */
+    public static function reset(
+        \stdClass $cm,
+        int $userid,
+        string $identifier,
+        \stdClass $currentsubmission,
+        string $submissiontype
+    ): void {
+        global $DB;
+
+        $plagiarismfile = new \stdClass();
+        $plagiarismfile->id             = $currentsubmission->id;
+        $plagiarismfile->identifier     = $identifier;
+        $plagiarismfile->statuscode     = 'pending';
+        $plagiarismfile->similarityscore = null;
+        if ($currentsubmission->statuscode != 'error') {
+            $plagiarismfile->attempt = 1;
+        }
+        $plagiarismfile->transmatch     = 0;
+        $plagiarismfile->submissiontype = $submissiontype;
+        $plagiarismfile->orcapable      = null;
+        $plagiarismfile->errormsg       = null;
+        $plagiarismfile->errorcode      = null;
+
+        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+            turnitin_logger::log(
+                'Update record failed (CM: ' . $cm->id . ', User: ' . $userid . ')',
+                'PP_REPLACE_SUB'
+            );
+        }
+    }
+
+    /**
+     * Delete a submission from Turnitin via the API.
+     *
+     * Exceptions are caught and logged rather than propagated so that a failed
+     * deletion does not abort the submission queue processing that called this.
+     *
+     * @param \stdClass       $cm          Course module record (used in error logging).
+     * @param string          $submissionid Turnitin submission UUID.
+     * @param int             $userid       Moodle user id (used in error logging).
+     * @param turnitin_comms|null $comms   Injected comms object; creates a real one if null.
+     */
+    public static function delete(
+        \stdClass $cm,
+        string $submissionid,
+        int $userid,
+        ?turnitin_comms $comms = null
+    ): void {
+        global $DB;
+
+        $turnitincomms = $comms ?? new turnitin_comms();
+        $turnitincall  = $turnitincomms->initialise_api();
+
+        $submission = new \TiiSubmission();
+        $submission->setSubmissionId($submissionid);
+
+        try {
+            $turnitincall->deleteSubmission($submission);
+        } catch (\Exception $e) {
+            $turnitincomms->handle_exceptions($e, 'turnitindeletionerror', false);
+
+            $user = $DB->get_record('user', ['id' => $userid]);
+            mtrace('-------------------------');
+            mtrace(get_string('turnitindeletionerror', 'plagiarism_turnitin') . ': ' . $e->getMessage());
+            mtrace('User:  ' . $user->id . ' - ' . $user->firstname . ' ' . $user->lastname
+                . ' (' . $user->email . ')');
+            mtrace('Course Module: ' . $cm->id . '');
+            mtrace('-------------------------');
+        }
     }
 }

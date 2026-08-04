@@ -40,6 +40,8 @@ use PHPUnit\Framework\Attributes\CoversFunction;
  * @package turnitin
  */
 #[CoversFunction('\plagiarism_turnitin_override_repository')]
+#[CoversFunction('\plagiarism_turnitin_retrieve_successful_submissions')]
+#[CoversFunction('\plagiarism_turnitin_lock_anonymous_marking')]
 final class locallib_test extends \advanced_testcase {
     /**
      * Test that we have the correct repository depending on the config settings.
@@ -95,5 +97,116 @@ final class locallib_test extends \advanced_testcase {
         );
         $response = plagiarism_turnitin_override_repository($submitpapersto);
         $this->assertEquals(PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY, $response);
+    }
+
+    /**
+     * Test that retrieve_successful_submissions returns rows that match the given
+     * author, cmid and identifier when they have not been successfully submitted
+     * or queued.
+     */
+    public function test_retrieve_successful_submissions_returns_matching_rows(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm   = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+        $user = $this->getDataGenerator()->create_user();
+
+        // Insert a row that should be returned (status = 'pending', not 'success' or 'queued').
+        $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm'             => $cm->cmid,
+            'userid'         => $user->id,
+            'identifier'     => 'abc123',
+            'statuscode'     => 'pending',
+            'attempt'        => 0,
+            'submissiontype' => 'file',
+            'itemid'         => 0,
+            'submitter'      => $user->id,
+            'lastmodified'   => time(),
+            'transmatch'     => 0,
+        ]);
+
+        $results = plagiarism_turnitin_retrieve_successful_submissions($user->id, $cm->cmid, 'abc123');
+
+        $this->assertCount(1, $results);
+    }
+
+    /**
+     * Test that retrieve_successful_submissions excludes rows with statuscode
+     * 'success' or 'queued' — those have already been handled and should not
+     * trigger a duplicate submission.
+     */
+    public function test_retrieve_successful_submissions_excludes_success_and_queued(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm   = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+        $user = $this->getDataGenerator()->create_user();
+
+        foreach (['success', 'queued'] as $status) {
+            $DB->insert_record('plagiarism_turnitin_files', (object)[
+                'cm'             => $cm->cmid,
+                'userid'         => $user->id,
+                'identifier'     => 'abc123',
+                'statuscode'     => $status,
+                'attempt'        => 0,
+                'submissiontype' => 'file',
+                'itemid'         => 0,
+                'submitter'      => $user->id,
+                'lastmodified'   => time(),
+                'transmatch'     => 0,
+            ]);
+        }
+
+        $results = plagiarism_turnitin_retrieve_successful_submissions($user->id, $cm->cmid, 'abc123');
+
+        $this->assertCount(0, $results);
+    }
+
+    /**
+     * Test that lock_anonymous_marking inserts a 'submitted' config record for
+     * the given cmid the first time it is called.
+     */
+    public function test_lock_anonymous_marking_inserts_record(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        $this->assertFalse($DB->record_exists(
+            'plagiarism_turnitin_config',
+            ['cm' => $cm->cmid, 'name' => 'submitted']
+        ));
+
+        plagiarism_turnitin_lock_anonymous_marking($cm->cmid);
+
+        $this->assertTrue($DB->record_exists(
+            'plagiarism_turnitin_config',
+            ['cm' => $cm->cmid, 'name' => 'submitted', 'value' => 1]
+        ));
+    }
+
+    /**
+     * Test that calling lock_anonymous_marking twice does not create a duplicate
+     * record — the function is idempotent.
+     */
+    public function test_lock_anonymous_marking_is_idempotent(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        plagiarism_turnitin_lock_anonymous_marking($cm->cmid);
+        plagiarism_turnitin_lock_anonymous_marking($cm->cmid);
+
+        $count = $DB->count_records('plagiarism_turnitin_config', ['cm' => $cm->cmid, 'name' => 'submitted']);
+        $this->assertEquals(1, $count);
     }
 }

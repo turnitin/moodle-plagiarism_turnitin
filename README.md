@@ -133,3 +133,37 @@ open /tmp/turnitin-coverage/index.html
 The report is scoped to the plugin's own code (`classes/`, `lib.php`, `locallib.php`) and
 excludes Moodle core. This is configured via the `<source>` block in
 `tests/phpunit.xml` and the `pcov.directory` setting baked into the Docker image.
+
+Code Style
+=====================================
+
+The plugin follows the [Moodle coding standard](https://moodledev.io/general/development/policies/codingstyle).
+Style is checked automatically in CI via `moodle-plugin-ci phpcs`. `phpcs` and its
+auto-fixer `phpcbf` are pre-installed in the Docker image.
+
+### Check for style violations
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  phpcs --standard=/opt/moodle-plugin-ci/vendor/moodlehq/moodle-cs/moodle \
+        --extensions=php \
+        --ignore=vendor,vendorjs \
+        /usr/share/nginx/html/public/plagiarism/turnitin
+"
+```
+
+### Auto-fix violations
+
+The vast majority of violations can be fixed automatically:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  phpcbf --standard=/opt/moodle-plugin-ci/vendor/moodlehq/moodle-cs/moodle \
+         --extensions=php \
+         --ignore=vendor,vendorjs \
+         /usr/share/nginx/html/public/plagiarism/turnitin
+"
+```
+
+Any remaining violations after running `phpcbf` require manual attention — typically
+missing docblocks, variable naming, or comments that need punctuation.

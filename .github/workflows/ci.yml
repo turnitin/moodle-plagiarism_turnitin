@@ -96,6 +96,16 @@ jobs:
           DB: pgsql
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
 
+      - name: Initialise PHPUnit
+        # --no-init skipped PHPUnit setup. Run init.php directly.
+        # Moodle 5.x places files under moodle/public/; earlier versions use moodle/ directly.
+        run: |
+          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
+            php moodle/public/admin/tool/phpunit/cli/init.php
+          else
+            php moodle/admin/tool/phpunit/cli/init.php
+          fi
+
       - name: PHP Lint
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint

@@ -24,6 +24,7 @@
 
 namespace plagiarism_turnitin;
 
+// phpcs:disable moodle.PHPUnit.TestCaseCovers
 use core_competency\course_competency;
 use PHPUnit\Framework\Attributes\CoversNothing;
 

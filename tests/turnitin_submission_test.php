@@ -26,6 +26,8 @@ namespace plagiarism_turnitin;
 
 defined('MOODLE_INTERNAL') || die();
 
+// phpcs:disable moodle.PHPUnit.TestCaseCovers
+
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 

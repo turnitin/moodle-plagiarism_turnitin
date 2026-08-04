@@ -31,6 +31,8 @@ use plagiarism_turnitin\privacy\provider;
 
 defined('MOODLE_INTERNAL') || die();
 
+// phpcs:disable moodle.PHPUnit.TestCaseCovers
+
 global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');

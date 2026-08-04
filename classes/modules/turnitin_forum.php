@@ -24,6 +24,9 @@
  * @copyright 2012 iParadigms LLC *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_turnitin\modules;
+
 class turnitin_forum {
 
     /**
@@ -140,7 +143,7 @@ class turnitin_forum {
             [$queueditem->userid, $queueditem->itemid]);
 
         if (!$forumpost) {
-            turnitin_logger::log(
+            \plagiarism_turnitin\turnitin_logger::log(
                 'File content not found on submission: ' . ($queueditem->identifier ?? ''),
                 'PP_NO_FILE'
             );

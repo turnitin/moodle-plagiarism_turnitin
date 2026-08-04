@@ -26,8 +26,6 @@ use Integrations\PhpSdk\TiiClass;
 
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
 require_login();
 
@@ -66,15 +64,15 @@ switch ($action) {
     case "get_dv_html":
         $submissionid = required_param('submissionid', PARAM_INT);
         $dvtype = optional_param('dvtype', 'default', PARAM_ALPHAEXT);
-        $user = new turnitin_user($USER->id, $userrole);
-        $coursedata = turnitin_assignment::get_course_data($cm->course);
+        $user = new \turnitin_user($USER->id, $userrole);
+        $coursedata = \turnitin_assignment::get_course_data($cm->course);
 
         if ($userrole == 'Instructor') {
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
 
         // Update course data in Turnitin.
-        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment = new \turnitin_assignment(0);
         $turnitinassignment->edit_tii_course($coursedata);
 
         // Edit assignment in Turnitin in case any changes have been made that would affect DV.
@@ -84,7 +82,7 @@ switch ($action) {
         if ($syncassignment['success']) {
             $return = html_writer::tag(
                 "div",
-                turnitin_view::output_launch_form(
+                \turnitin_view::output_launch_form(
                     $dvtype,
                     $submissionid,
                     $user->tiiuserid,
@@ -154,12 +152,12 @@ switch ($action) {
                 $tiiassignmentid = $tiiassignment['tiiassignmentid'];
             }
 
-            $user = new turnitin_user($USER->id, "Instructor");
+            $user = new \turnitin_user($USER->id, "Instructor");
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
                 'div',
-                turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
+                \turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',
@@ -176,13 +174,13 @@ switch ($action) {
         if (is_enrolled($context)) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', [ 'cm' => $cm->id, 'name' => 'turnitin_assignid' ]);
 
-            $user = new turnitin_user($USER->id, "Learner");
-            $coursedata = turnitin_assignment::get_course_data($cm->course);
+            $user = new \turnitin_user($USER->id, "Learner");
+            $coursedata = \turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
                 'div',
-                turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
+                \turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',
@@ -203,13 +201,13 @@ switch ($action) {
         if ($userrole == 'Instructor' || $isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
 
-            $user = new turnitin_user($USER->id, $userrole);
-            $coursedata = turnitin_assignment::get_course_data($cm->course);
+            $user = new \turnitin_user($USER->id, $userrole);
+            $coursedata = \turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
                 'div',
-                turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
+                \turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',
@@ -239,11 +237,11 @@ switch ($action) {
         if ($message == 'turnitin_eula_accepted') {
             $eulauser->user_agreement_accepted = 1;
             $logstring = "User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.";
-            turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
+            \turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
             $eulauser->user_agreement_accepted = -1;
             $logstring = "User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.";
-            turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
+            \turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
         }
 
         // Update the user using the above object.
@@ -259,7 +257,7 @@ switch ($action) {
         $forumpost = optional_param('forumpost', '', PARAM_BASE64);
         $submissionid = required_param('submissionid', PARAM_INT);
 
-        $tiisubmission = new turnitin_submission($submissionid,
+        $tiisubmission = new \turnitin_submission($submissionid,
                                                 ['forumdata' => $forumdata, 'forumpost' => $forumpost]);
 
         if ($tiisubmission->recreate_submission_event()) {
@@ -279,7 +277,7 @@ switch ($action) {
         $errors = [];
         $return['success'] = true;
         foreach ($submissionids as $submissionid) {
-            $tiisubmission = new turnitin_submission($submissionid);
+            $tiisubmission = new \turnitin_submission($submissionid);
             if (!$tiisubmission->recreate_submission_event()) {
                 $return['success'] = false;
                 $errors[] = $submissionid;
@@ -302,7 +300,7 @@ switch ($action) {
             $accountshared = required_param('accountshared', PARAM_RAW);
             $url = required_param('url', PARAM_RAW);
 
-            $turnitincomms = new turnitin_comms($accountid, $accountshared, $url);
+            $turnitincomms = new \turnitin_comms($accountid, $accountshared, $url);
 
             // We only want an API log entry for this if diagnostic mode is set to Debugging.
             if (empty($config)) {
@@ -336,7 +334,7 @@ switch ($action) {
         $PAGE->set_context(context_system::instance());
         if (is_siteadmin()) {
             header('Content-type: application/json; charset=utf-8');
-            echo json_encode(turnitin_user::plagiarism_turnitin_getusers());
+            echo json_encode(\turnitin_user::plagiarism_turnitin_getusers());
         } else {
             throw new \moodle_exception('accessdenied', 'admin');
         }
@@ -351,14 +349,14 @@ switch ($action) {
 
         if (has_capability('moodle/course:update', context_course::instance($courseid))) {
             // Set Rubric options to instructor rubrics.
-            $instructor = new turnitin_user($USER->id, 'Instructor');
+            $instructor = new \turnitin_user($USER->id, 'Instructor');
             $instructor->set_user_values_from_tii();
             $instructorrubrics = $instructor->get_instructor_rubrics();
 
             $options = [0 => get_string('norubric', 'plagiarism_turnitin')] + $instructorrubrics;
 
             // Get rubrics that are shared on the Turnitin account.
-            $turnitinclass = new turnitin_class($courseid);
+            $turnitinclass = new \turnitin_class($courseid);
 
             $turnitinclass->read_class_from_tii();
             $sharedrubrics = $turnitinclass->sharedrubrics;

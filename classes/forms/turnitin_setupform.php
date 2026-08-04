@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -33,7 +35,7 @@ require_once($CFG->libdir."/formslib.php");
 /**
  * Defines the form for the Turnitin plugin settings.
  */
-class turnitin_setupform extends moodleform {
+class turnitin_setupform extends \moodleform {
 
     /**
      * Define the form.
@@ -45,7 +47,7 @@ class turnitin_setupform extends moodleform {
     public function definition() {
         global $DB, $CFG;
 
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $ynoptions = [0 => get_string('no'), 1 => get_string('yes')];
 
         $mform = $this->_form;
@@ -290,7 +292,7 @@ class turnitin_setupform extends moodleform {
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "enableadhocsubmissions"];
 
         foreach ($properties as $property) {
-            plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);
+            \plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_".$property);
         }
     }
 }

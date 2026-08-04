@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_user.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/turnitin_user.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2018 Turnitin
@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/tests/generator/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
 /**
@@ -59,7 +58,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a Moodle use.
      *
-     * @covers \turnitin_user::get_moodle_user
+     * @covers turnitin_user::get_moodle_user
      * @return void
      */
     public function test_get_moodle_user(): void {
@@ -67,7 +66,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
 
         $student = $this->getDataGenerator()->create_user();
 
-        $turnitinuser = new \turnitin_user(0, null, null, null, null);
+        $turnitinuser = new turnitin_user(0, null, null, null, null);
         $response = $turnitinuser->get_moodle_user($student->id);
 
         // Check that we have an object back with user details. No need to check all params.
@@ -78,26 +77,26 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a pseudo domain.
      *
-     * @covers \turnitin_user::get_pseudo_domain
+     * @covers turnitin_user::get_pseudo_domain
      * @return void
      */
     public function test_get_pseudo_domain(): void {
         $this->resetAfterTest();
 
-        $response = \turnitin_user::get_pseudo_domain();
+        $response = turnitin_user::get_pseudo_domain();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN, $response);
     }
 
     /**
      * Test that we can get a pseudo first name.
      *
-     * @covers \turnitin_user::get_pseudo_firstname
+     * @covers turnitin_user::get_pseudo_firstname
      * @return void
      */
     public function test_get_pseudo_firstname(): void {
         $this->resetAfterTest();
 
-        $turnitinuser = new \turnitin_user(0, null, null, null, null);
+        $turnitinuser = new turnitin_user(0, null, null, null, null);
         $response = $turnitinuser->get_pseudo_firstname();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
@@ -105,7 +104,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a pseudo last name.
      *
-     * @covers \turnitin_user::get_pseudo_lastname
+     * @covers turnitin_user::get_pseudo_lastname
      * @return void
      * @throws dml_exception
      */
@@ -119,7 +118,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         set_config('plagiarism_turnitin_pseudolastname', 1, 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_lastnamegen', 1, 'plagiarism_turnitin');
 
-        $turnitinuser = new \turnitin_user($student->id, null, null, null, null);
+        $turnitinuser = new turnitin_user($student->id, null, null, null, null);
         $response = $turnitinuser->get_pseudo_lastname();
         $this->assertEquals(PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME, $response);
     }
@@ -127,7 +126,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get unlink a user from Turnitin.
      *
-     * @covers \turnitin_user::unlink_user
+     * @covers turnitin_user::unlink_user
      * @return void
      * @throws dml_exception
      */
@@ -144,7 +143,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         $this->assertEquals(1, $count);
 
         // Unlink the user.
-        $turnitinuser = new \turnitin_user(0, null, null, null, null);
+        $turnitinuser = new turnitin_user(0, null, null, null, null);
         $turnitinuser->unlink_user($testuser["joins"][0]);
 
         // We should have a Turnitin user ID of 0.

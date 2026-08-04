@@ -24,6 +24,9 @@
  * @copyright 2012 iParadigms LLC *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_turnitin\modules;
+
 class turnitin_assign {
 
     /**
@@ -167,7 +170,7 @@ class turnitin_assign {
         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             ['submission' => $submission->id], 'onlinetext, onlineformat');
 
-        $onlinetextdata = new stdClass();
+        $onlinetextdata = new \stdClass();
         $onlinetextdata->itemid = $submission->id;
 
         if (isset($moodletextsubmission->onlinetext)) {
@@ -286,7 +289,7 @@ class turnitin_assign {
         $file = $fs->get_file_by_hash($queueditem->identifier);
 
         if (!$file) {
-            turnitin_logger::log('File not found for submission: ' . ($queueditem->id ?? ''), 'PP_NO_FILE');
+            \plagiarism_turnitin\turnitin_logger::log('File not found for submission: ' . ($queueditem->id ?? ''), 'PP_NO_FILE');
             return $this->error_result(9);
         }
 
@@ -294,7 +297,7 @@ class turnitin_assign {
             $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File size is '
                 . $file->get_filesize() . ' bytes, and the max filesize that Turnitin can accept is '
                 . PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE . ' bytes.';
-            turnitin_logger::log($errorstring, 'PP_FILE_TOO_LARGE');
+            \plagiarism_turnitin\turnitin_logger::log($errorstring, 'PP_FILE_TOO_LARGE');
             return $this->error_result(2);
         }
 
@@ -303,14 +306,14 @@ class turnitin_assign {
         if (!$acceptanyfiletype && !in_array('.' . $extension, $acceptedfiles)) {
             $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File format is not '
                 . 'supported. The filename is ' . $file->get_filename() . ' and the extension is ' . $extension;
-            turnitin_logger::log($errorstring, 'PP_FILE_WRONG_FORMAT');
+            \plagiarism_turnitin\turnitin_logger::log($errorstring, 'PP_FILE_WRONG_FORMAT');
             return $this->error_result(16);
         }
 
         try {
             $textcontent = $file->get_content();
         } catch (\Exception $e) {
-            turnitin_logger::log(
+            \plagiarism_turnitin\turnitin_logger::log(
                 'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
             );
             return $this->error_result(9);

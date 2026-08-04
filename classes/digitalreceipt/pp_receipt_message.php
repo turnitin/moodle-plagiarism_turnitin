@@ -59,7 +59,7 @@ class pp_receipt_message {
      * @return string
      */
     public function build_message($input) {
-        $message = new stdClass();
+        $message = new \stdClass();
         $message->firstname = $input['firstname'];
         $message->lastname = $input['lastname'];
         $message->submission_title = $input['submission_title'];
@@ -84,7 +84,7 @@ class pp_receipt_message {
      * @return string
      */
     public function build_instructor_message($input) {
-        $message = new stdClass();
+        $message = new \stdClass();
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
         if ( isset($input['assignment_part']) ) {

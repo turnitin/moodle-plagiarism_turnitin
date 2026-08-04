@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+namespace plagiarism_turnitin\modules;
 
 // phpcs:disable moodle.Commenting.TodoComment
 // TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
@@ -152,7 +150,7 @@ class turnitin_quiz {
         $transaction = $DB->start_delegated_transaction();
 
         $attempt = \mod_quiz\quiz_attempt::create($attemptid);
-        $quba = question_engine::load_questions_usage_by_activity($attempt->get_uniqueid());
+        $quba = \question_engine::load_questions_usage_by_activity($attempt->get_uniqueid());
 
         // Loop through each question slot.
         foreach ($attempt->get_slots() as $slot) {
@@ -176,9 +174,9 @@ class turnitin_quiz {
         }
 
         // Save changes.
-        question_engine::save_questions_usage_by_activity($quba);
+        \question_engine::save_questions_usage_by_activity($quba);
 
-        $update = new stdClass();
+        $update = new \stdClass();
         $update->id = $attemptid;
         $update->timemodified = time();
         $update->sumgrades = $quba->get_total_mark();
@@ -213,7 +211,7 @@ class turnitin_quiz {
         try {
             $attempt = \mod_quiz\quiz_attempt::create($queueditem->itemid);
         } catch (\Exception $e) {
-            turnitin_logger::log(get_string('errorcode14', 'plagiarism_turnitin'), 'PP_NO_ATTEMPT');
+            \plagiarism_turnitin\turnitin_logger::log(get_string('errorcode14', 'plagiarism_turnitin'), 'PP_NO_ATTEMPT');
             return $this->error_result(14);
         }
 
@@ -231,7 +229,7 @@ class turnitin_quiz {
         }
 
         if (empty($textcontent)) {
-            turnitin_logger::log(
+            \plagiarism_turnitin\turnitin_logger::log(
                 'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
             );
             return $this->error_result(9);

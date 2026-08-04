@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 use Integrations\PhpSdk\TiiUser;
 use Integrations\PhpSdk\TiiClass;
 use Integrations\PhpSdk\TiiPseudoUser;
@@ -157,7 +159,7 @@ class turnitin_user {
      * @return string The pseudo domain
      */
     public static function get_pseudo_domain() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ?
             PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
 
@@ -170,7 +172,7 @@ class turnitin_user {
      * @return string A pseudo firstname address
      */
     public function get_pseudo_firstname() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
         return !empty( $config->plagiarism_turnitin_pseudofirstname ) ?
             $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
@@ -183,14 +185,14 @@ class turnitin_user {
      */
     public function get_pseudo_lastname() {
         global $DB;
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id,
             'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
 
         if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 &&
             $config->plagiarism_turnitin_lastnamegen == 1) {
             $uniqueid = strtoupper(strrev(uniqid()));
-            $userinfoob = new stdClass();
+            $userinfoob = new \stdClass();
             $userinfoob->userid = $this->id;
             $userinfoob->fieldid = $config->plagiarism_turnitin_pseudolastname;
             $userinfoob->data = $uniqueid;
@@ -247,7 +249,7 @@ class turnitin_user {
      * @throws TurnitinApiException
      */
     private function find_tii_user_id() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $tiiuserid = null;
 
         $turnitincomms = new turnitin_comms();
@@ -273,7 +275,7 @@ class turnitin_user {
         } catch (TurnitinApiException $e) {
             // In case of a Turnitin exception we rethrow as get_tii_user_id will catch this exception.
             throw $e;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
             $turnitincomms->handle_exceptions($e, 'userfinderror', $toscreen);
         }
@@ -286,7 +288,7 @@ class turnitin_user {
      * @return var Turnitin user id
      */
     private function create_tii_user() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $tiiuserid = null;
 
         $turnitincomms = new turnitin_comms();
@@ -318,7 +320,7 @@ class turnitin_user {
 
             return $tiiuserid;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
             $turnitincomms->handle_exceptions($e, 'usercreationerror', $toscreen);
         }
@@ -331,7 +333,7 @@ class turnitin_user {
      * @return boolean
      */
     public function edit_tii_user() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
@@ -347,7 +349,7 @@ class turnitin_user {
 
             try {
                 $turnitincall->updateUser($user);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $toscreen = ($this->workflowcontext == "cron") ? false : true;
                 $turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
                 return false;
@@ -365,7 +367,7 @@ class turnitin_user {
      */
     public function unlink_user($tiidbid) {
         global $DB;
-        $tiiuser = new stdClass();
+        $tiiuser = new \stdClass();
         $tiiuser->id = $tiidbid;
         $tiiuser->turnitin_uid = 0;
 
@@ -387,7 +389,7 @@ class turnitin_user {
      */
     private function save_tii_user() {
         global $DB;
-        $user = new stdClass();
+        $user = new \stdClass();
         $user->userid = $this->id;
         $user->turnitin_uid = $this->tiiuserid;
         $user->turnitin_utp = 1;
@@ -424,7 +426,7 @@ class turnitin_user {
 
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
-            $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         }
         if (isset($config->plagiarism_turnitin_enablediagnostic) && $config->plagiarism_turnitin_enablediagnostic != 2) {
             $turnitincomms->set_diagnostic(0);
@@ -443,7 +445,7 @@ class turnitin_user {
                 $tiicourseid.")", "REQUEST");
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Ignore exception as we don't need it, this saves time as the alternative
             // is checking all class memberships to see if user is already enrolled.
             $faultcode = $e->getFaultCode();
@@ -476,7 +478,7 @@ class turnitin_user {
             if ($readuser->getAcceptedUserAgreement()) {
                 $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $this->id]);
 
-                $tiiuserinfo = new stdClass();
+                $tiiuserinfo = new \stdClass();
                 $tiiuserinfo->id = $turnitinuser->id;
                 $tiiuserinfo->user_agreement_accepted = 1;
 
@@ -485,7 +487,7 @@ class turnitin_user {
             } else {
                 return false;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Avoid API calls when running unit tests.
             if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
                 return true;
@@ -522,7 +524,7 @@ class turnitin_user {
 
             return $tiiuser;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             try {
                 // We need to join the user to the account, we can only do that by adding the user to a class
                 // make one and add them, then delete it. Awful workaround but should be rare.
@@ -609,7 +611,7 @@ class turnitin_user {
     public static function plagiarism_turnitin_getusers() {
         global $DB;
 
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         parse_str($_SERVER["REQUEST_URI"], $params);
 
         $return = [];
@@ -671,7 +673,7 @@ class turnitin_user {
 
         $return["aaData"] = [];
         foreach ($users as $user) {
-            $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', ["class" => "browser_checkbox"]);
+            $checkbox = \html_writer::checkbox('userids[]', $user->id, false, '', ["class" => "browser_checkbox"]);
 
             $pseudoemail = "";
             if (!empty($config->plagiarism_turnitin_enablepseudo)) {

@@ -26,10 +26,8 @@ require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/tablelib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
 
-$turnitinview = new turnitin_view();
+$turnitinview = new \turnitin_view();
 
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
@@ -77,10 +75,10 @@ switch ($cmd) {
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
 
-        $user = new turnitin_user($USER->id, "Learner");
+        $user = new \turnitin_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= turnitin_view::output_launch_form(
+        $output .= \turnitin_view::output_launch_form(
             "useragreement",
             0,
             $user->tiiuserid,

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_quiz.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_quiz.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -31,6 +31,7 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use plagiarism_turnitin\modules\turnitin_quiz;
 
 /**
  * Tests for Turnitin quiz class.
@@ -38,7 +39,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\turnitin_quiz::class)]
+#[CoversClass(turnitin_quiz::class)]
 final class turnitin_quiz_test extends \advanced_testcase {
 
     /** @var stdClass Quiz instance created in setUp. */
@@ -108,7 +109,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $this->assertEquals(0.0, $attemptobj->get_sum_marks());
         $this->assertEquals(0.0, quiz_get_best_grade($this->quiz, $this->user->id));
 
-        $tiiquiz    = new \turnitin_quiz;
+        $tiiquiz    = new turnitin_quiz;
         $answer     = $attemptobj->get_question_attempt(1)->get_response_summary();
         $identifier = sha1($answer . 1);
         $tiiquiz->update_mark($this->attemptid, $identifier, $this->user->id, 75, $this->quiz->grade);
@@ -131,7 +132,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
 
         [$cm, $queueditem, $attemptobj] = $this->create_quiz_submission(null);
 
-        $result = (new \turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
+        $result = (new turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('createSubmission', $result['apimethod']);
@@ -153,7 +154,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
 
         [$cm, $queueditem] = $this->create_quiz_submission('tii-existing-id');
 
-        $result = (new \turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
+        $result = (new turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('replaceSubmission', $result['apimethod']);
@@ -168,7 +169,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
 
         [$cm, $queueditem] = $this->create_quiz_submission('tii-existing-id');
 
-        $result = (new \turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 0);
+        $result = (new turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 0);
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('createSubmission', $result['apimethod']);
@@ -184,7 +185,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $cm         = get_coursemodule_from_instance('quiz', $this->quiz->id);
         $queueditem = $this->make_queued_item(999999, 'nonexistent-hash', null);
 
-        $result = (new \turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
+        $result = (new turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
 
         $this->assertEquals(14, $result['errorcode']);
         $this->assertNull($result['textcontent']);
@@ -202,7 +203,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         [$cm, $queueditem] = $this->create_quiz_submission(null);
         $queueditem->identifier = 'does-not-match-any-slot';
 
-        $result = (new \turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
+        $result = (new turnitin_quiz())->get_submission_content($queueditem, $cm, $this->user->id, 1);
 
         $this->assertEquals(9, $result['errorcode']);
     }

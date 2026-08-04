@@ -21,6 +21,9 @@
  * @copyright 2012 iParadigms LLC *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_turnitin;
+
 class turnitin_submission {
 
     /**
@@ -162,7 +165,7 @@ class turnitin_submission {
                 break;
         }
 
-        $submissiondata = new stdClass();
+        $submissiondata = new \stdClass();
         $submissiondata->id = $this->id;
         $submissiondata->statuscode = 'queued';
 

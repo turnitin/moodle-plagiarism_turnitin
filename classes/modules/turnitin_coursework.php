@@ -18,13 +18,16 @@
 // TODO: Split out all module specific code from plagiarism/turnitin/lib.php.
 
 /**
- * Class turnitin_workshop
+ * Class turnitin_coursework
  *
  * @package   plagiarism_turnitin
  * @copyright 2012 iParadigms LLC *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class turnitin_workshop {
+
+namespace plagiarism_turnitin\modules;
+
+class turnitin_coursework {
 
     /**
      * @var string
@@ -43,8 +46,8 @@ class turnitin_workshop {
      * The constructor
      */
     public function __construct() {
-        $this->modname = 'workshop';
-        $this->gradestable = 'grade_grades';
+        $this->modname = 'coursework';
+        $this->gradestable = $this->modname.'_feedbacks';
         $this->filecomponent = 'mod_'.$this->modname;
     }
 
@@ -53,23 +56,24 @@ class turnitin_workshop {
      *
      * @param context $context The context
      * @return bool
-     * @throws coding_exception
      */
     public function is_tutor($context) {
-        return has_capability($this->get_tutor_capability(), $context);
+        $capabilities = [$this->get_tutor_capability(), 'mod/coursework:addagreedgrade',
+            'mod/coursework:addallocatedagreedgrade', 'mod/coursework:administergrades', ];
+        return has_any_capability($capabilities, $context);
     }
 
     /**
-     * Whether the user has the capability to view the full report
+     * Check if the user has the capability to add the initial grade
      *
      * @return string
      */
     public function get_tutor_capability() {
-        return 'plagiarism/turnitin:viewfullreport';
+        return 'mod/'.$this->modname.':addinitialgrade';
     }
 
     /**
-     * Whether the user is enrolled on the course and has the capability to submit a workshop submission
+     * Whether the user is enrolled on the course and has the capability to submit coursework
      *
      * @param context $context The context
      * @param int $userid The user id
@@ -81,68 +85,32 @@ class turnitin_workshop {
     }
 
     /**
-     * Get the author of the workshop submission
+     * Get the author of the submission
      *
      * @param int $itemid The item id
-     * @return void
-     */
-    public function get_author($itemid) {
-        return;
-    }
-
-    /**
-     * Set the content of the workshop submission
-     *
-     * @param array $linkarray The link array
-     * @param int $moduleid The module id
-     * @return mixed
-     */
-    public function set_content($linkarray, $moduleid) {
-        return $linkarray["content"];
-    }
-
-    /**
-     * Get the onlinetext
-     *
-     * @param int $userid The user id
-     * @param object $cm The course module.
-     * @return stdClass
+     * @return int
      * @throws dml_exception
      */
-    public function get_onlinetext($userid, $cm) {
+    public function get_author($itemid) {
         global $DB;
 
-        $submission = $DB->get_record('workshop_submissions',
-                                        ['authorid' => $userid, 'workshopid' => $cm->instance]);
+        $id = 0;
 
-        $onlinetextdata = new stdClass();
-        $onlinetextdata->itemid = $submission->id;
-        $onlinetextdata->onlinetext = $submission->content;
-        $onlinetextdata->onlineformat = $submission->contentformat;
+        if ($submission = $DB->get_record('coursework_submissions', ['id' => $itemid])) {
+            $id = $submission->authorid;
+        }
 
-        return $onlinetextdata;
+        return $id;
     }
 
     /**
      * Create a file event
      *
      * @param array $params The params
-     * @return \core\event\base
-     * @throws coding_exception
+     * @return mixed
      */
     public function create_file_event($params) {
-        return \mod_workshop\event\assessable_uploaded::create($params);
-    }
-
-    /**
-     * Create a text event
-     *
-     * @param array $params The params
-     * @return \core\event\base
-     * @throws coding_exception
-     */
-    public function create_text_event($params) {
-        return \mod_workshop\event\assessable_uploaded::create($params);
+        return \mod_coursework\event\assessable_uploaded::create($params);
     }
 
     /**
@@ -151,23 +119,34 @@ class turnitin_workshop {
      * @param int $userid The user id
      * @param int $moduleid The module id
      * @param int $itemid The item id
-     * @return false|mixed|stdClass
+     * @return false|mixed
      * @throws dml_exception
      */
     public function get_current_gradequery($userid, $moduleid, $itemid = 0) {
         global $DB;
 
-        $currentgradequery = $DB->get_record('grade_grades', ['userid' => $userid, 'itemid' => $itemid]);
-        return $currentgradequery;
+        $sql = "SELECT         *
+                FROM           {coursework_submissions}    cs,
+                               {coursework_feedbacks}      cf
+                WHERE         cs.id   =   cf.submissionid
+                AND           cs.authorid         =   :authorid
+                AND           cs.courseworkid     =   :courseworkid
+                AND           cf.stage_identifier =   :stage";
+
+        $params = ['stage' => 'final_agreed_1', 'authorid' => $userid, 'courseworkid' => $moduleid];
+
+        $currentgradesquery = $DB->get_record_sql($sql, $params);
+
+        return $currentgradesquery;
     }
 
     /**
      * Initialise the post date for the module
      *
      * @param stdClass $moduledata The module data
-     * @return mixed
+     * @return int
      */
     public function initialise_post_date($moduledata) {
-        return $moduledata->assessmentend;
+        return 0;
     }
 }

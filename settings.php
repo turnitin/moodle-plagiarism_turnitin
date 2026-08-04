@@ -26,9 +26,8 @@ require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 
-$turnitinview = new turnitin_view();
+$turnitinview = new \turnitin_view();
 
 $cssurl = new moodle_url('/plagiarism/turnitin/amd/src/datatables.css');
 $PAGE->requires->css($cssurl);
@@ -138,9 +137,8 @@ switch ($do) {
     case "config":
         $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_setupform.class.php');
 
-        $tiisetupform = new turnitin_setupform();
+        $tiisetupform = new \turnitin_setupform();
 
         // Save posted form data.
         if (($data = $tiisetupform->get_data()) && confirm_sesskey()) {
@@ -158,9 +156,8 @@ switch ($do) {
     case "defaults":
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_defaultsettingsform.class.php');
 
-        $mform = new turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
+        $mform = new \turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
         $mform->display();
         break;
@@ -239,7 +236,7 @@ switch ($do) {
                     }
 
                     // Unlink user from Turnitin.
-                    $user = new turnitin_user(
+                    $user = new \turnitin_user(
                         $muser->id,
                         $role = null,
                         $enrol = null,
@@ -251,7 +248,7 @@ switch ($do) {
                     // Relink user.
                     if (!is_null($relink)) {
                         // The user object will create user in Turnitin.
-                        $user = new turnitin_user($muser->id);
+                        $user = new \turnitin_user($muser->id);
                     }
 
                 } else {
@@ -294,8 +291,7 @@ switch ($do) {
             ['relink', get_string('relinkusers', 'plagiarism_turnitin')], ];
         $customdata["multi_submit_buttons"] = $multisubmitbuttons;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');
-        $optionsform = new turnitin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
+        $optionsform = new \turnitin_form($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=unlinkusers',
             $customdata);
 
         echo $OUTPUT->header();

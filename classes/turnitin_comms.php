@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -73,7 +75,7 @@ class turnitin_comms {
      * @throws moodle_exception
      */
     public function __construct($accountid = null, $accountshared = null, $url = null) {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
         if (!is_null($url)) {
             $this->tiiapiurl = $url;

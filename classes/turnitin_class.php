@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 use Integrations\PhpSdk\TiiClass;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 
 /**
  * Class turnitin_class
@@ -92,7 +90,7 @@ class turnitin_class {
 
             $this->sharedrubrics = $rubricarray;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $turnitincomms->handle_exceptions($e, 'coursegeterror', false);
         }
     }

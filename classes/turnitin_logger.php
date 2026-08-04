@@ -28,6 +28,9 @@
  * @copyright Turnitin
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_turnitin;
+
 class turnitin_logger {
 
     /** @var int Maximum number of daily log files to retain. */
@@ -53,7 +56,7 @@ class turnitin_logger {
         global $CFG;
 
         if (self::$config === null) {
-            self::$config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            self::$config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         }
 
         if (empty(self::$config->plagiarism_turnitin_enablediagnostic)) {

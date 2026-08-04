@@ -26,7 +26,6 @@
 // Require libs.
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 
 $cssurl = new moodle_url('/plagiarism/turnitin/styles.css');
 $PAGE->requires->css($cssurl);
@@ -41,7 +40,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 $table = optional_param('table', null, PARAM_ALPHANUMEXT);
 $dataformat = optional_param('dataformat', null, PARAM_ALPHANUMEXT);
 
-$turnitinview = new turnitin_view();
+$turnitinview = new \turnitin_view();
 
 $exportfile = "export_".$table."_".date('Y-m-d_His');
 

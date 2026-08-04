@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 use Integrations\PhpSdk\TiiLTI;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
 
 /**
  * Define the turnitin_view class
@@ -62,17 +60,17 @@ class turnitin_view {
         global $OUTPUT;
 
         $tabs = [];
-        $tabs[] = new tabobject('turnitinsettings', 'settings.php',
+        $tabs[] = new \tabobject('turnitinsettings', 'settings.php',
                         get_string('config', 'plagiarism_turnitin'), get_string('config', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitindefaults', 'settings.php?do=defaults',
+        $tabs[] = new \tabobject('turnitindefaults', 'settings.php?do=defaults',
                         get_string('defaults', 'plagiarism_turnitin'), get_string('defaults', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('dbexport', new moodle_url('/plagiarism/turnitin/dbexport.php'),
+        $tabs[] = new \tabobject('dbexport', new \moodle_url('/plagiarism/turnitin/dbexport.php'),
             get_string('dbexport', 'plagiarism_turnitin'));
-        $tabs[] = new tabobject('apilog', 'settings.php?do=apilog',
+        $tabs[] = new \tabobject('apilog', 'settings.php?do=apilog',
                         get_string('logs'), get_string('logs'), false);
-        $tabs[] = new tabobject('unlinkusers', 'settings.php?do=unlinkusers',
+        $tabs[] = new \tabobject('unlinkusers', 'settings.php?do=unlinkusers',
             get_string('unlinkusers', 'plagiarism_turnitin'), get_string('unlinkusers', 'plagiarism_turnitin'), false);
-        $tabs[] = new tabobject('turnitinerrors', 'settings.php?do=errors',
+        $tabs[] = new \tabobject('turnitinerrors', 'settings.php?do=errors',
                         get_string('errors', 'plagiarism_turnitin'), get_string('errors', 'plagiarism_turnitin'), false);
         print_tabs([$tabs], $currenttab);
 
@@ -101,7 +99,7 @@ class turnitin_view {
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
 
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
         $configwarning = '';
         $rubrics = [];
 
@@ -131,7 +129,7 @@ class turnitin_view {
         }
 
         $options = [0 => get_string('no'), 1 => get_string('yes')];
-        $plagiarismturnitin = new plagiarism_plugin_turnitin();
+        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
         $genparams = $plagiarismturnitin->plagiarism_get_report_gen_speed_params();
         $genoptions = [0 => get_string('reportgen_immediate_add_immediate', 'plagiarism_turnitin'),
                             1 => get_string('reportgen_immediate_add_duedate', 'plagiarism_turnitin'),
@@ -160,9 +158,9 @@ class turnitin_view {
                 // If assignment has submissions then show a refresh grades button.
                 $numsubs = $DB->count_records('plagiarism_turnitin_files', ['cm' => $cmid]);
                 if ($numsubs > 0) {
-                    $refreshgrades = html_writer::tag(
+                    $refreshgrades = \html_writer::tag(
                         'div',
-                        html_writer::tag(
+                        \html_writer::tag(
                             'span',
                             get_string('turnitinrefreshsubmissions', 'plagiarism_turnitin')
                         ),
@@ -173,7 +171,7 @@ class turnitin_view {
                         ]
                     );
 
-                    $refreshgrades .= html_writer::tag('div', html_writer::tag('span',
+                    $refreshgrades .= \html_writer::tag('div', \html_writer::tag('span',
                         get_string('turnitinrefreshingsubmissions', 'plagiarism_turnitin')),
                         ['class' => 'plagiarism_turnitin_refreshing_grades']);
                 }
@@ -183,7 +181,7 @@ class turnitin_view {
             $quickmarkmanagerlink = '';
             if ($config->plagiarism_turnitin_usegrademark) {
 
-                $quickmarkmanagerlink .= html_writer::tag(
+                $quickmarkmanagerlink .= \html_writer::tag(
                     'a',
                     get_string('launchquickmarkmanager', 'plagiarism_turnitin'),
                     [
@@ -194,7 +192,7 @@ class turnitin_view {
                     ]
                 );
 
-                $quickmarkmanagerlink = html_writer::tag('div', $quickmarkmanagerlink, ['class' => 'row_quickmark_manager']);
+                $quickmarkmanagerlink = \html_writer::tag('div', $quickmarkmanagerlink, ['class' => 'row_quickmark_manager']);
             }
 
             $useturnitin = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cmid, 'name' => 'use_turnitin']);
@@ -203,7 +201,7 @@ class turnitin_view {
             $peermarkmanagerlink = '';
             if (!empty($config->plagiarism_turnitin_enablepeermark) && !empty($useturnitin->value)) {
                 if ($cmid != 0) {
-                    $peermarkmanagerlink .= html_writer::tag(
+                    $peermarkmanagerlink .= \html_writer::tag(
                         'a',
                         get_string('launchpeermarkmanager', 'plagiarism_turnitin'),
                         [
@@ -213,7 +211,7 @@ class turnitin_view {
                             'tabindex' => 0,
                         ]
                     );
-                    $peermarkmanagerlink = html_writer::tag('div', $peermarkmanagerlink, ['class' => 'row_peermark_manager']);
+                    $peermarkmanagerlink = \html_writer::tag('div', $peermarkmanagerlink, ['class' => 'row_peermark_manager']);
                 }
             }
 
@@ -281,7 +279,7 @@ class turnitin_view {
                     break;
             }
 
-            $mform->addElement('html', html_writer::tag('div', get_string('checkagainstnote', 'plagiarism_turnitin'),
+            $mform->addElement('html', \html_writer::tag('div', get_string('checkagainstnote', 'plagiarism_turnitin'),
                                                                                 ['class' => 'tii_checkagainstnote']));
 
             $mform->addElement('select', 'plagiarism_compare_student_papers', get_string("spapercheck",
@@ -345,7 +343,7 @@ class turnitin_view {
                     }
                 }
 
-                $rubricmanagerlink = html_writer::tag(
+                $rubricmanagerlink = \html_writer::tag(
                     'span',
                     get_string('launchrubricmanager', 'plagiarism_turnitin'),
                     [
@@ -359,7 +357,7 @@ class turnitin_view {
                     ]
                 );
 
-                $rubricmanagerlink = html_writer::tag('div', $rubricmanagerlink, ['class' => 'row_rubric_manager']);
+                $rubricmanagerlink = \html_writer::tag('div', $rubricmanagerlink, ['class' => 'row_rubric_manager']);
                 $mform->addElement('selectgroups', 'plagiarism_rubric', get_string('attachrubric', 'plagiarism_turnitin'),
                     $rubrics);
                 $mform->addElement('static', 'rubric_link', '', $rubricmanagerlink);
@@ -375,7 +373,7 @@ class turnitin_view {
             }
             // Only relevant for Assignments and Coursework
             if ($modulename === 'mod_assign' || $modulename === 'mod_coursework') {
-                $mform->addElement('html', html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
+                $mform->addElement('html', \html_writer::tag('div', get_string('anonblindmarkingnote', 'plagiarism_turnitin'),
                     ['class' => 'tii_anonblindmarkingnote']));
             }
 
@@ -413,16 +411,16 @@ class turnitin_view {
         $limit = 100;
         $offset = $page * $limit;
 
-        $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
+        $plagiarismpluginturnitin = new \plagiarism_plugin_turnitin();
         $filescount = $plagiarismpluginturnitin->get_file_upload_errors(0, 0, true);
         $files = $plagiarismpluginturnitin->get_file_upload_errors($offset, $limit);
 
-        $baseurl = new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'errors']);
+        $baseurl = new \moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'errors']);
         $pagingbar = $OUTPUT->paging_bar($filescount, $page, $limit, $baseurl);
 
         // Do the table headers.
         $cells = [];
-        $selectall = html_writer::checkbox('errors_select_all', false, false, '', ["class" => "select_all_checkbox"]);
+        $selectall = \html_writer::checkbox('errors_select_all', false, false, '', ["class" => "select_all_checkbox"]);
         $cells["checkbox"] = new html_table_cell($selectall);
         $cells["id"] = new html_table_cell(get_string('id', 'plagiarism_turnitin'));
         $cells["user"] = new html_table_cell(get_string('student', 'plagiarism_turnitin'));
@@ -453,23 +451,23 @@ class turnitin_view {
 
                     $cm = get_coursemodule_from_id($v->moduletype, $v->cm);
 
-                    $checkbox = html_writer::checkbox('check_'.$k, $k, false, '', ["class" => "errors_checkbox"]);
+                    $checkbox = \html_writer::checkbox('check_'.$k, $k, false, '', ["class" => "errors_checkbox"]);
                     $cells["checkbox"] = new html_table_cell($checkbox);
 
                     $cells["id"] = new html_table_cell($k);
                     $cells["user"] = new html_table_cell($v->firstname." ".$v->lastname." (".$v->email.")");
 
-                    $courselink = new moodle_url($CFG->wwwroot.'/course/view.php', ['id' => $v->courseid]);
-                    $cells["course"] = new html_table_cell(html_writer::link($courselink,
+                    $courselink = new \moodle_url($CFG->wwwroot.'/course/view.php', ['id' => $v->courseid]);
+                    $cells["course"] = new html_table_cell(\html_writer::link($courselink,
                                                                 $v->coursename, ['title' => $v->coursename]));
 
-                    $modulelink = new moodle_url($CFG->wwwroot.'/mod/'.$v->moduletype.'/view.php', ['id' => $v->cm]);
-                    $cells["module"] = new html_table_cell(html_writer::link($modulelink, $cm->name, ['title' => $cm->name]));
+                    $modulelink = new \moodle_url($CFG->wwwroot.'/mod/'.$v->moduletype.'/view.php', ['id' => $v->cm]);
+                    $cells["module"] = new html_table_cell(\html_writer::link($modulelink, $cm->name, ['title' => $cm->name]));
 
                     if ($v->submissiontype == "file") {
                         $fs = get_file_storage();
                         if ($file = $fs->get_file_by_hash($v->identifier)) {
-                            $cells["file"] = new html_table_cell(html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
+                            $cells["file"] = new html_table_cell(\html_writer::link($CFG->wwwroot.'/pluginfile.php/'.
                                                     $file->get_contextid().'/'.$file->get_component().'/'.$file->get_filearea().'/'.
                                                     $file->get_itemid().'/'.$file->get_filename(),
                                                     $OUTPUT->pix_icon('fileicon', 'open '.$file->get_filename(),
@@ -509,7 +507,7 @@ class turnitin_view {
                     $string = str_replace($fnd, $rep, get_string('deleteconfirm', 'plagiarism_turnitin'));
 
                     $attributes["onclick"] = "return confirm('".$string."');";
-                    $cells["delete"] = new html_table_cell(html_writer::link($CFG->wwwroot.
+                    $cells["delete"] = new html_table_cell(\html_writer::link($CFG->wwwroot.
                                             '/plagiarism/turnitin/settings.php?do=errors&action=deletefile&id='.$k,
                                             $OUTPUT->pix_icon('delete', get_string('deletesubmission', 'plagiarism_turnitin'),
                                                 'plagiarism_turnitin'), $attributes));
@@ -531,7 +529,7 @@ class turnitin_view {
             }
         }
         $table->data = $rows;
-        $output = html_writer::table($table);
+        $output = \html_writer::table($table);
 
         return $pagingbar.$output.$pagingbar;
     }

@@ -20,7 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 global $DB;
 
-require_once($CFG->dirroot . '/plagiarism/turnitin/classes/turnitin_user.class.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/webservice/tests/helpers.php');
 
@@ -53,7 +52,7 @@ abstract class plagiarism_turnitin_test_lib extends \advanced_testcase {
 
         for ($i = 0; $i < $numberofusers; $i++) {
             $role = isset($roles[$i]) ? $roles[$i] : 'Instructor';
-            $newuser = new \turnitin_user( $i + 1, $role, false, 'site', false );
+            $newuser = new turnitin_user( $i + 1, $role, false, 'site', false );
             array_push($return['plagiarism_turnitin_users'], $newuser);
             $joinid = $this->join_test_user($newuser);
             array_push($return['joins'], $joinid);

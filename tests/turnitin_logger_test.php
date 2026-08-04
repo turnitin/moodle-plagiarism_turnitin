@@ -36,13 +36,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
  *
  * @package plagiarism_turnitin
  */
-#[CoversClass(\turnitin_logger::class)]
+#[CoversClass(turnitin_logger::class)]
 final class turnitin_logger_test extends \advanced_testcase {
 
     public function setUp(): void {
         parent::setUp();
         // Reset the static config cache so set_config() calls in each test take effect.
-        \turnitin_logger::reset_config_cache();
+        turnitin_logger::reset_config_cache();
     }
 
     /**
@@ -54,7 +54,7 @@ final class turnitin_logger_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_enablediagnostic', 0, 'plagiarism_turnitin');
 
-        \turnitin_logger::log('test message', 'TEST');
+        turnitin_logger::log('test message', 'TEST');
 
         $logdir  = $CFG->tempdir . '/plagiarism_turnitin/logs';
         $logfile = $logdir . '/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
@@ -70,7 +70,7 @@ final class turnitin_logger_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_enablediagnostic', 1, 'plagiarism_turnitin');
 
-        \turnitin_logger::log('something happened', 'REQUEST');
+        turnitin_logger::log('something happened', 'REQUEST');
 
         $logdir  = $CFG->tempdir . '/plagiarism_turnitin/logs';
         $logfile = $logdir . '/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
@@ -91,7 +91,7 @@ final class turnitin_logger_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_enablediagnostic', 1, 'plagiarism_turnitin');
 
-        \turnitin_logger::log('checking format', 'API_ERROR');
+        turnitin_logger::log('checking format', 'API_ERROR');
 
         $logfile  = $CFG->tempdir . '/plagiarism_turnitin/logs/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
         $contents = file_get_contents($logfile);
@@ -113,7 +113,7 @@ final class turnitin_logger_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_enablediagnostic', 1, 'plagiarism_turnitin');
 
-        \turnitin_logger::log('line one<br/>line two', 'API_ERROR');
+        turnitin_logger::log('line one<br/>line two', 'API_ERROR');
 
         $logfile  = $CFG->tempdir . '/plagiarism_turnitin/logs/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
         $contents = file_get_contents($logfile);
@@ -142,7 +142,7 @@ final class turnitin_logger_test extends \advanced_testcase {
             $oldfiles[] = basename($filename);
         }
 
-        \turnitin_logger::log('trigger pruning', 'TEST');
+        turnitin_logger::log('trigger pruning', 'TEST');
 
         // After logging, exactly 10 old files + today's file should remain (11 total).
         // The 2 oldest (2020-01-01, 2020-01-02) should have been pruned.
@@ -162,8 +162,8 @@ final class turnitin_logger_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_enablediagnostic', 1, 'plagiarism_turnitin');
 
-        \turnitin_logger::log('first entry', 'REQUEST');
-        \turnitin_logger::log('second entry', 'REQUEST');
+        turnitin_logger::log('first entry', 'REQUEST');
+        turnitin_logger::log('second entry', 'REQUEST');
 
         $logfile  = $CFG->tempdir . '/plagiarism_turnitin/logs/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
         $contents = file_get_contents($logfile);

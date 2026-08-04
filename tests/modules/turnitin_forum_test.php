@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_forum.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_forum.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -30,13 +30,14 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use plagiarism_turnitin\modules\turnitin_forum;
 
 /**
  * Tests for API comms class
  *
  * @package turnitin
  */
-#[CoversClass(\turnitin_forum::class)]
+#[CoversClass(turnitin_forum::class)]
 final class turnitin_forum_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */
@@ -106,7 +107,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new \turnitin_forum();
+        $moduleobject = new turnitin_forum();
 
         $params = [
             'content' => $this->post->message,
@@ -125,7 +126,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new \turnitin_forum();
+        $moduleobject = new turnitin_forum();
 
         $params = [
             'content' => 'content should not come back',
@@ -146,7 +147,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
         $cm = get_coursemodule_from_instance('forum', $this->forum->id);
 
-        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
 
         $expectedtitle = 'forumpost_' . $this->post->userid . '_' . $cm->id . '_' . $cm->instance
             . '_' . $this->post->id . '.txt';
@@ -172,7 +173,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
         $cm = get_coursemodule_from_instance('forum', $this->forum->id);
 
-        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
 
         $this->assertStringContainsString('&', $result['textcontent']);
         $this->assertStringNotContainsString('&amp;', $result['textcontent']);
@@ -191,7 +192,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
         $cm = get_coursemodule_from_instance('forum', $this->forum->id);
 
-        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('replaceSubmission', $result['apimethod']);
@@ -207,7 +208,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
         $cm = get_coursemodule_from_instance('forum', $this->forum->id);
 
-        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 0);
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 0);
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('createSubmission', $result['apimethod']);
@@ -223,7 +224,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->post->userid, 999999, null);
         $cm = get_coursemodule_from_instance('forum', $this->forum->id);
 
-        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
 
         $this->assertEquals(9, $result['errorcode']);
         $this->assertNull($result['textcontent']);

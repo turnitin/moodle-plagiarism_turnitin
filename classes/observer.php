@@ -47,7 +47,7 @@ class plagiarism_turnitin_observer {
         \core\event\course_reset_ended $event) {
         $eventdata = $event->get_data();
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->course_reset($eventdata);
     }
 
@@ -62,7 +62,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'file_uploaded';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -76,7 +76,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'forum';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -90,7 +90,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'workshop';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -104,7 +104,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'content_uploaded';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -119,7 +119,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'coursework';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -133,7 +133,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -147,7 +147,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'submission_removed';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 
@@ -161,7 +161,7 @@ class plagiarism_turnitin_observer {
         $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['other']['modulename'] = 'quiz';
 
-        $plugin = new plagiarism_plugin_turnitin();
+        $plugin = new \plagiarism_plugin_turnitin();
         $plugin->event_handler($eventdata);
     }
 }

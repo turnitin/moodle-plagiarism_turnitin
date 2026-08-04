@@ -70,23 +70,9 @@ require_once($CFG->dirroot.'/plagiarism/lib.php');
 // Get helper methods.
 require_once($CFG->dirroot.'/plagiarism/turnitin/locallib.php');
 
-// Include plugin classes.
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_assignment.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_logger.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_class.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_submission.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_user.class.php');
+// Classes in classes/ are autoloaded by Moodle's PSR-4 autoloader.
+// The digital receipt helper is not namespaced so still needs explicit loading.
 require_once($CFG->dirroot.'/plagiarism/turnitin/classes/digitalreceipt/pp_receipt_message.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_form.class.php');
-
-// Include supported module specific code.
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_assign.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_forum.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_quiz.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_workshop.class.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/modules/turnitin_coursework.class.php');
 
 /**
  * Class plagiarism_plugin_turnitin
@@ -318,7 +304,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $plagiarismelements = $this->get_settings_fields();
 
-            $turnitinview = new turnitin_view();
+            $turnitinview = new \turnitin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ?
                 $plagiarismvalues["plagiarism_rubric"] : 0;
 
@@ -328,7 +314,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $PAGE->pagetype != 'course-editdefaultcompletion' &&
                 $PAGE->pagetype != 'course-defaultcompletion') {
                 // Check for existing settings and add the form.
-                $course = turnitin_assignment::get_course_data($COURSE->id, "site");
+                $course = \turnitin_assignment::get_course_data($COURSE->id, "site");
                 $turnitinview->add_elements_to_settings_form($mform, $course, "activity", $modulename, $cmid,
                     $plagiarismvalues["plagiarism_rubric"]);
             }
@@ -433,7 +419,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $workflowcontext The context of the workflow
      */
     public function test_turnitin_connection($workflowcontext = 'site') {
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $tiiapi = $turnitincomms->initialise_api();
 
         $class = new TiiClass();
@@ -545,7 +531,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiconnection) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
 
-            $user = new turnitin_user($USER->id, "Learner");
+            $user = new \turnitin_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ?
                 $user->get_accepted_user_agreement() : $user->useragreementaccepted;
@@ -559,7 +545,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eula = html_writer::tag('div', $eulalink, ['class' => 'pp_turnitin_eula'.$eulaignoredclass,
                                             'data-userid' => $user->id, ]);
 
-                $form = turnitin_view::output_launch_form(
+                $form = \turnitin_view::output_launch_form(
                     "useragreement",
                     0,
                     $user->tiiuserid,
@@ -579,13 +565,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if (!empty($eula)) {
                 $output .= $eula.$noscripteula;
 
-                $turnitincomms = new turnitin_comms();
+                $turnitincomms = new \turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 $customdata = ["disable_form_change_checker" => true,
                                     "elements" => [['html', $OUTPUT->box('', '', 'useragreement_inputs')]], ];
 
-                $eulaform = new turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
+                $eulaform = new \turnitin_form($turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT, $customdata,
                                                         'POST', $target = 'eulaWindow', ['id' => 'eula_launch']);
                 $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
             }
@@ -648,7 +634,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $workflowcontext The context of the workflow
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        $coursedata = turnitin_assignment::get_course_data($courseid, $workflowcontext);
+        $coursedata = \turnitin_assignment::get_course_data($courseid, $workflowcontext);
 
         // Get add from querystring to work out module type.
         $add = optional_param('add', '', PARAM_TEXT);
@@ -769,7 +755,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $isnonsubmitterforgroupassign = false;
 
         // Create module object.
-        $moduleclass = "turnitin_".$cm->modname;
+        $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
         $moduleobject = new $moduleclass;
 
         // Work out if logged in user is a tutor on this activity module.
@@ -877,7 +863,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $eulashown = false;
                     }
 
-                    $user = new turnitin_user($USER->id, "Learner");
+                    $user = new \turnitin_user($USER->id, "Learner");
                     $success = $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // Variable $success is false if there is no Turnitin connection and null if user has previously been enrolled.
@@ -900,12 +886,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!empty($eula)) {
                             $output .= $eula;
 
-                            $turnitincomms = new turnitin_comms();
+                            $turnitincomms = new \turnitin_comms();
                             $turnitincall = $turnitincomms->initialise_api();
 
                             $customdata = ["disable_form_change_checker" => true,
                                     "elements" => [['html', $OUTPUT->box('', '', 'useragreement_inputs')]], ];
-                            $eulaform = new turnitin_form(
+                            $eulaform = new \turnitin_form(
                                 $turnitincall->getApiBaseUrl().TiiLTI::EULAENDPOINT,
                                 $customdata,
                                 'POST',
@@ -1171,7 +1157,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             if (!empty($plagiarismsettings['turnitin_assignid'])) {
                                 if ($_SESSION["updated_pm"][$cm->id] <= (time() - (60 * 2))) {
                                     $this->refresh_peermark_assignments($cm, $plagiarismsettings['turnitin_assignid']);
-                                    $turnitinassignment = new turnitin_assignment($cm->instance);
+                                    $turnitinassignment = new \turnitin_assignment($cm->instance);
                                     $_SESSION["peermark_assignments"][$cm->id] =
                                         $turnitinassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
                                     $_SESSION["updated_pm"][$cm->id] = time();
@@ -1309,7 +1295,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($DB->get_record('user', ['id' => $linkarray["userid"]])) {
                             // We need to check for security that the user is actually on the course.
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
-                                $user = new turnitin_user($linkarray["userid"], "Learner");
+                                $user = new \turnitin_user($linkarray["userid"], "Learner");
                                 if ($user->useragreementaccepted != 1) {
                                     $erroricon = html_writer::tag('div', $OUTPUT->pix_icon('doc-x-grey',
                                         get_string('errorcode3', 'plagiarism_turnitin'), 'plagiarism_turnitin'),
@@ -1362,7 +1348,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismvalues = $this->get_settings($cm->id);
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Get the submission ids from Turnitin that have been updated.
@@ -1401,7 +1387,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Refresh updated submissions.
         $return = true;
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
@@ -1442,7 +1428,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -1551,7 +1537,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     }
                 } else if ($submissiondata->submissiontype == "text_content") {
                     // Get latest submission.
-                    $moduleobject = new turnitin_assign();
+                    $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
                     $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
                     if (!empty($latesttext)) {
                         $latestidentifier = sha1(
@@ -1579,7 +1565,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 // Update grades, for the quiz we update marks for questions instead.
                 if ($cm->modname == "quiz") {
                     $quiz = $DB->get_record('quiz', ['id' => $cm->instance]);
-                    $tq = new turnitin_quiz();
+                    $tq = new \plagiarism_turnitin\modules\turnitin_quiz();
                     if (!is_null($plagiarismfile->grade)) {
                         $tq->update_mark(
                             $submissiondata->itemid,
@@ -1623,7 +1609,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Ignore NULL grades and files no longer part of submission.
 
             // Create module object.
-            $moduleclass = "turnitin_".$cm->modname;
+            $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
             $moduleobject = new $moduleclass;
 
             // Get file from pathname hash.
@@ -1835,10 +1821,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $CFG;
 
         // Create module object.
-        $moduleclass = "turnitin_".$modname;
+        $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $modname;
         $moduleobject = new $moduleclass;
 
-        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment = new \turnitin_assignment(0);
         $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $workflowcontext);
 
         // Join all admins and instructors to the course in Turnitin if it was created.
@@ -1857,7 +1843,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $allinstructors = array_merge($admins, $tutorids);
             foreach ($allinstructors as $instructor) {
                 // Create the admin as a user within Turnitin.
-                $user = new turnitin_user($instructor, 'Instructor');
+                $user = new \turnitin_user($instructor, 'Instructor');
                 $user->join_user_to_class($turnitincourse->turnitin_cid);
             }
         }
@@ -1880,7 +1866,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $assignment = new TiiAssignment();
@@ -2101,14 +2087,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiassignment = $DB->get_record('plagiarism_turnitin_config',
             ['cm' => $cm->id, 'name' => 'turnitin_assignid'], 'value')) {
             $assignment->setAssignmentId($tiiassignment->value);
-            $turnitinassignment = new turnitin_assignment(0);
+            $turnitinassignment = new \turnitin_assignment(0);
 
             $return = $turnitinassignment->edit_tii_assignment($assignment, $workflowcontext);
             $return['errorcode'] = ($return['success']) ? 0 : 6;
 
             return $return;
         } else {
-            $turnitinassignment = new turnitin_assignment(0);
+            $turnitinassignment = new \turnitin_assignment(0);
             $turnitinassignid = $turnitinassignment->create_tii_assignment($assignment, $workflowcontext);
 
             if (!$turnitinassignid) {
@@ -2136,7 +2122,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function update_rubric_from_tii($cm) {
         global $DB;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $assignment = new TiiAssignment();
 
@@ -2299,7 +2285,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             foreach ($submissionbatches as $submissionsbatch) {
 
                 // Initialise Comms Object.
-                $turnitincomms = new turnitin_comms();
+                $turnitincomms = new \turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 try {
@@ -2379,7 +2365,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     private function check_local_submission_state($assignmentids, $submissionids) {
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $tiisubmissionids = [];
 
@@ -2436,7 +2422,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     private function get_course_id_from_assignment_id($assignmentid) {
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -2510,7 +2496,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        $turnitinassignment = new turnitin_assignment(0);
+        $turnitinassignment = new \turnitin_assignment(0);
         $turnitinassignment->edit_tii_course($coursedata);
 
         $coursedata->turnitin_cid = $turnitincid;
@@ -2544,7 +2530,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // -1 indicates the user declined the eula
         if (!isset($tiiuser) || empty($tiiuser->user_agreement_accepted) || $tiiuser->user_agreement_accepted == '-1') {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
-            $user = new turnitin_user($author, "Learner");
+            $user = new \turnitin_user($author, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
             if ($eulaaccepted != 1) {
@@ -2574,7 +2560,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             (!isset($settings["plagiarism_compare_journals"]) || !$settings["plagiarism_compare_journals"]) &&
             (!isset($settings["plagiarism_compare_institution"]) || !$settings["plagiarism_compare_institution"])) {
             // If all comparison options are disabled then don't submit to Turnitin.
-            turnitin_logger::log('No comparison options selected for assignment with cmid: '.$cm->id.' not sending to Turnitin', 'NO_COMPARISON_OPTIONS_SELECTED');
+            \turnitin_logger::log('No comparison options selected for assignment with cmid: '.$cm->id.' not sending to Turnitin', 'NO_COMPARISON_OPTIONS_SELECTED');
             return true;
         }
         // Get module data.
@@ -2598,7 +2584,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $_SESSION["moodlesubmissionstatus"] = $moodlesubmission->status;
             }
 
-            $turnitinassign = new turnitin_assign();
+            $turnitinassign = new \plagiarism_turnitin\modules\turnitin_assign();
             $moduledata->resubmission_allowed = $turnitinassign->is_resubmission_allowed(
                 $cm->instance,
                 $settings["plagiarism_report_gen"],
@@ -2921,7 +2907,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $file = $fs->get_file_by_hash($pathnamehash);
 
                 if (!$file) {
-                    turnitin_logger::log('File not found: '.$pathnamehash, 'PP_NO_FILE');
+                    \turnitin_logger::log('File not found: '.$pathnamehash, 'PP_NO_FILE');
                     $result = true;
                     continue;
                 } else if ($file->get_filename() === '.') {
@@ -2931,7 +2917,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $fh = $file->get_content_file_handle();
                         fclose($fh);
                     } catch (Exception $e) {
-                        turnitin_logger::log('File content not found: '.$pathnamehash, 'PP_NO_FILE');
+                        \turnitin_logger::log('File content not found: '.$pathnamehash, 'PP_NO_FILE');
                         mtrace($e);
                         mtrace('File content not found. pathnamehash: '.$pathnamehash);
                         $result = true;
@@ -2969,7 +2955,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->submissiontype = $submissiontype;
 
         if (!$fileid = $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitin_logger::log("Insert record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_NEW_SUB");
+            \turnitin_logger::log("Insert record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_NEW_SUB");
             $fileid = 0;
         }
 
@@ -3003,7 +2989,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->errorcode = null;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitin_logger::log("Update record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_REPLACE_SUB");
+            \turnitin_logger::log("Update record failed (CM: ".$cm->id.", User: ".$userid.")", "PP_REPLACE_SUB");
         }
     }
 
@@ -3022,7 +3008,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $deletestr = '';
 
         // Create module object.
-        $moduleclass = "turnitin_".$cm->modname;
+        $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
         $moduleobject = new $moduleclass;
 
         if ($submissiontype == 'file') {
@@ -3098,7 +3084,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->errorcode = $errorcode;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            turnitin_logger::log("Update record failed (Submission: ".$submissionid.") - ", "PP_UPDATE_SUB_ERROR");
+            \turnitin_logger::log("Update record failed (Submission: ".$submissionid.") - ", "PP_UPDATE_SUB_ERROR");
         }
 
         return true;
@@ -3145,12 +3131,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if ($submissionid != 0) {
             if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                turnitin_logger::log("Update record failed (CM: ".$cm->id.", User: ".$userid.") - ",
+                \turnitin_logger::log("Update record failed (CM: ".$cm->id.", User: ".$userid.") - ",
                     "PP_UPDATE_SUB_ERROR");
             }
         } else {
             if (!$DB->insert_record('plagiarism_turnitin_files', $plagiarismfile)) {
-                turnitin_logger::log("Insert record failed (CM: ".$cm->id.", User: ".$userid.") - ",
+                \turnitin_logger::log("Insert record failed (CM: ".$cm->id.", User: ".$userid.") - ",
                     "PP_INSERT_SUB_ERROR");
             }
         }
@@ -3170,7 +3156,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $user = $DB->get_record('user', ['id' => $userid]);
 
         // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = new \turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $submission = new TiiSubmission();
@@ -3307,7 +3293,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         $outputvars->cm = $queueditem->cm;
         $outputvars->userid = $queueditem->userid;
 
-        turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
+        \turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
         return;
     }
 
@@ -3325,11 +3311,11 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         $outputvars->cm = $queueditem->cm;
         $outputvars->userid = $queueditem->userid;
 
-        turnitin_logger::log(get_string('errorcode15', 'plagiarism_turnitin', $outputvars), "PP_NO_ACTIVITY_MODULE");
+        \turnitin_logger::log(get_string('errorcode15', 'plagiarism_turnitin', $outputvars), "PP_NO_ACTIVITY_MODULE");
         return;
     }
     
-    $moduleclass = "turnitin_".$cm->modname;
+    $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
     $moduleobject = new $moduleclass;
 
     // Get module data.
@@ -3362,7 +3348,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // Update course data in Turnitin.
-    $turnitinassignment = new turnitin_assignment(0);
+    $turnitinassignment = new \turnitin_assignment(0);
     $turnitinassignment->edit_tii_course($coursedata);
 
     // Previously failed submissions may not have a value for submitter.
@@ -3378,11 +3364,11 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Join User to course.
     try {
-        $user = new turnitin_user($queueditem->userid, 'Learner', true, 'cron');
+        $user = new \turnitin_user($queueditem->userid, 'Learner', true, 'cron');
         $user->edit_tii_user();
         $user->join_user_to_class($coursedata->turnitin_cid);
     } catch (Exception $e) {
-        $user = new turnitin_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
+        $user = new \turnitin_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
         $errorcode = 7;
     }
 
@@ -3447,7 +3433,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
                 $filename    = $assigncontent['filename'];
                 $errorcode   = $assigncontent['errorcode'];
             } else if ($cm->modname === 'workshop') {
-                // TODO: extract into turnitin_workshop::get_submission_content() as part of ongoing refactor.
+                // TODO: extract into \turnitin_workshop::get_submission_content() as part of ongoing refactor.
                 $moodlesubmission = $DB->get_record('workshop_submissions',
                     ['id' => $queueditem->itemid], 'content');
                 $textcontent = html_to_text($moodlesubmission->content);
@@ -3551,7 +3537,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     if ($queueditem->userid != $queueditem->submitter) {
 
-        $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
+        $instructor = new \turnitin_user($queueditem->submitter, 'Instructor');
 
         // These should be true but in case of an edge case where a user has been deleted in Tii.
         if ($instructor->edit_tii_user() && $instructor->join_user_to_class($coursedata->turnitin_cid)) {
@@ -3564,7 +3550,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     $submission->setSubmissionDataPath($tempfile);
 
     // Initialise Comms Object.
-    $turnitincomms = new turnitin_comms();
+    $turnitincomms = new \turnitin_comms();
     $turnitincall = $turnitincomms->initialise_api();
 
     try {
@@ -3688,7 +3674,7 @@ function plagiarism_turnitin_print_error($input, $module = 'plagiarism_turnitin'
     global $CFG;
 
     // This is to be changed in INT-10691.
-    turnitin_logger::log($input, "PRINT_ERROR");
+    \turnitin_logger::log($input, "PRINT_ERROR");
 
     $message = (is_null($module)) ? $input : get_string($input, $module, $param);
     $linkid = optional_param('id', 0, PARAM_INT);
@@ -3725,10 +3711,10 @@ function plagiarism_turnitin_mtrace($string, $eol) {
 /**
  * Log activity / errors.
  *
- * @deprecated Use turnitin_logger::log() directly.
+ * @deprecated Use \turnitin_logger::log() directly.
  * @param string $string The string describing the activity
  * @param string $activity The activity prompting the log
  */
 function plagiarism_turnitin_activitylog($string, $activity) {
-    turnitin_logger::log($string, $activity);
+    \turnitin_logger::log($string, $activity);
 }

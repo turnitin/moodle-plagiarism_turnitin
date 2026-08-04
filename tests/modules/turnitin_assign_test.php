@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_assign.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_assign.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -31,13 +31,14 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use plagiarism_turnitin\modules\turnitin_assign;
 
 /**
  * Tests for assign
  *
  * @package turnitin
  */
-#[CoversClass(\turnitin_assign::class)]
+#[CoversClass(turnitin_assign::class)]
 final class turnitin_assign_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */
@@ -82,7 +83,7 @@ final class turnitin_assign_test extends \advanced_testcase {
     public function test_check_is_resubmission_allowed(): void {
         $this->resetAfterTest(true);
 
-        $moduleobject = new \turnitin_assign();
+        $moduleobject = new turnitin_assign();
 
         $this->assertTrue($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file', 1));
         $this->assertTrue($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content', 1));
@@ -106,7 +107,7 @@ final class turnitin_assign_test extends \advanced_testcase {
             'assignsubmission_file_maxsizebytes' => 10,
         ]);
 
-        $moduleobject = new \turnitin_assign();
+        $moduleobject = new turnitin_assign();
         $this->assertFalse($moduleobject->is_resubmission_allowed($assign->id, 1, 'file', 1));
         $this->assertTrue($moduleobject->is_resubmission_allowed($assign->id, 1, 'text_content', 1));
     }
@@ -124,7 +125,7 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('essay.docx', 'Hello world');
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, ['.docx']
         );
 
@@ -145,7 +146,7 @@ final class turnitin_assign_test extends \advanced_testcase {
         $queueditem->externalid = 'tii-existing-id';
         $moduledata->resubmission_allowed = true;
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, ['.docx']
         );
 
@@ -164,7 +165,7 @@ final class turnitin_assign_test extends \advanced_testcase {
         $queueditem->externalid = 'tii-existing-id';
         $moduledata->resubmission_allowed = false;
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, ['.docx']
         );
 
@@ -181,7 +182,7 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, ['.docx', '.pdf']
         );
 
@@ -197,7 +198,7 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, true, ['.docx', '.pdf']
         );
 
@@ -214,7 +215,7 @@ final class turnitin_assign_test extends \advanced_testcase {
         $queueditem = $this->make_queued_item($this->student->id, 0, 'file', 'nonexistenthash');
         $moduledata = $this->make_moduledata(false, false);
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, ['.docx']
         );
 
@@ -234,7 +235,7 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         [$cm, $queueditem, $moduledata] = $this->create_text_submission('<p>My essay &amp; thoughts</p>');
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, []
         );
 
@@ -256,7 +257,7 @@ final class turnitin_assign_test extends \advanced_testcase {
 
         [$cm, $queueditem, $moduledata] = $this->create_text_submission('Some content');
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, []
         );
 
@@ -282,7 +283,7 @@ final class turnitin_assign_test extends \advanced_testcase {
             '<p>Team effort</p>', $teamassign, $this->student->id, true
         );
 
-        $result = (new \turnitin_assign())->get_submission_content(
+        $result = (new turnitin_assign())->get_submission_content(
             $queueditem, $cm, $moduledata, false, []
         );
 

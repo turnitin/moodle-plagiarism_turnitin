@@ -90,7 +90,7 @@ docker exec moodle502-moodle-1 bash -c "
 docker exec moodle502-moodle-1 bash -c "
   cd /usr/share/nginx/html/public &&
   /usr/share/nginx/html/vendor/bin/phpunit \
-    --configuration plagiarism/turnitin/tests/phpunit.xml
+    --configuration plagiarism/turnitin/phpunit.xml
 "
 ```
 
@@ -101,7 +101,7 @@ docker exec moodle502-moodle-1 bash -c "
 docker exec moodle502-moodle-1 bash -c "
   cd /usr/share/nginx/html/public &&
   /usr/share/nginx/html/vendor/bin/phpunit \
-    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --configuration plagiarism/turnitin/phpunit.xml \
     --filter turnitin_forum_test
 "
 
@@ -109,7 +109,7 @@ docker exec moodle502-moodle-1 bash -c "
 docker exec moodle502-moodle-1 bash -c "
   cd /usr/share/nginx/html/public &&
   /usr/share/nginx/html/vendor/bin/phpunit \
-    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --configuration plagiarism/turnitin/phpunit.xml \
     --filter test_get_submission_content_returns_content_for_new_submission
 "
 ```
@@ -123,7 +123,7 @@ an HTML report, then copy it out of the container to view in a browser:
 docker exec moodle502-moodle-1 bash -c "
   cd /usr/share/nginx/html/public &&
   /usr/share/nginx/html/vendor/bin/phpunit \
-    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --configuration plagiarism/turnitin/phpunit.xml \
     --coverage-html /tmp/turnitin-coverage
 " && \
 docker cp moodle502-moodle-1:/tmp/turnitin-coverage /tmp/turnitin-coverage && \
@@ -132,7 +132,7 @@ open /tmp/turnitin-coverage/index.html
 
 The report is scoped to the plugin's own code (`classes/`, `lib.php`, `locallib.php`) and
 excludes Moodle core. This is configured via the `<source>` block in
-`tests/phpunit.xml` and the `pcov.directory` setting baked into the Docker image.
+`phpunit.xml` and the `pcov.directory` setting baked into the Docker image.
 
 Code Style
 =====================================

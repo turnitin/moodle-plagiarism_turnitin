@@ -2,7 +2,7 @@
 <phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-  bootstrap="../../../lib/phpunit/bootstrap.php"
+  bootstrap="../../lib/phpunit/bootstrap.php"
   processIsolation="false"
   backupGlobals="false"
   cacheResult="false"
@@ -36,17 +36,17 @@
 
   <testsuites>
     <testsuite name="plagiarism_turnitin_tests_testsuite">
-      <directory suffix="_test.php">.</directory>
-      <exclude>fixtures</exclude>
+      <directory suffix="_test.php">tests</directory>
+      <exclude>tests/fixtures</exclude>
     </testsuite>
   </testsuites>
 
   <source>
     <include>
-      <directory suffix=".php">../classes</directory>
-      <directory suffix=".php">generator</directory>
-      <file>../lib.php</file>
-      <file>../locallib.php</file>
+      <directory suffix=".php">classes</directory>
+      <directory suffix=".php">tests/generator</directory>
+      <file>lib.php</file>
+      <file>locallib.php</file>
     </include>
   </source>
 

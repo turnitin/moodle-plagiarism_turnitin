@@ -3520,7 +3520,9 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
             $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", [$user->id, $queueditem->itemid]);
 
             if ($forumpost) {
-                $textcontent = strip_tags($forumpost->message);
+                // html_to_text() strips tags and decodes HTML entities (e.g. &amp; becomes &), matching
+                // the behaviour used for assign/workshop text_content submissions.
+                $textcontent = html_to_text($forumpost->message);
                 $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
                 $filename = $title;
             } else {

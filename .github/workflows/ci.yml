@@ -55,12 +55,31 @@ jobs:
           path: plugin
 
       - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          ini-values: max_input_vars=5000
-          # Coverage is handled locally via PCOV in Docker; keeping CI fast with none here.
-          coverage: none
+        run: |
+          # The Sury PPA is the same source shivammathur/setup-php uses internally.
+          # We install directly to stay within the enterprise action allowlist.
+          sudo apt-get install -y ca-certificates apt-transport-https software-properties-common
+          sudo curl -sSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
+          echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+            | sudo tee /etc/apt/sources.list.d/sury-php.list
+          sudo apt-get update -q
+
+          sudo apt-get install -y \
+            php${{ matrix.php }} \
+            php${{ matrix.php }}-cli \
+            php${{ matrix.php }}-curl \
+            php${{ matrix.php }}-gd \
+            php${{ matrix.php }}-intl \
+            php${{ matrix.php }}-mbstring \
+            php${{ matrix.php }}-pgsql \
+            php${{ matrix.php }}-soap \
+            php${{ matrix.php }}-xml \
+            php${{ matrix.php }}-xmlrpc \
+            php${{ matrix.php }}-zip
+
+          sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
+          echo "max_input_vars=5000" | sudo tee /etc/php/${{ matrix.php }}/cli/conf.d/99-moodle.ini
+          php --version
 
       - name: Initialise moodle-plugin-ci
         run: |

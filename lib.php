@@ -3768,13 +3768,3 @@ function plagiarism_turnitin_print_error(
     throw new \moodle_exception($input, 'plagiarism_turnitin', $link, $message);
     exit();
 }
-
-/**
- * Override Moodle's mtrace function for methods shared with tasks.
- *
- * @param string $string The string to output
- * @param string $eol The end of line character
- */
-function plagiarism_turnitin_mtrace($string, $eol) {
-    return true;
-}

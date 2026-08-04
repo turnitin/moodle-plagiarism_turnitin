@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 // phpcs:disable moodle.PHPUnit.TestCaseCovers
 
 global $CFG;
+require_once($CFG->dirroot . '/plagiarism/turnitin/tests/classes/helpers.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 

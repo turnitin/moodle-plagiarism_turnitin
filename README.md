@@ -54,6 +54,12 @@ TII_APIBASEURL: "https://api.turnitin.com"
 Unit Tests
 =====================================
 
+PHPUnit tests run automatically on every push and pull request via GitHub Actions
+(see `.github/workflows/ci.yml`). The workflow uses
+[moodle-plugin-ci](https://github.com/moodlehq/moodle-plugin-ci) to spin up a full
+Moodle environment against PostgreSQL and runs the test suite across the supported
+PHP and Moodle version matrix.
+
 Tests require a running Moodle instance. The local Docker setup provides this via the
 `moodle502-moodle-1` container.
 

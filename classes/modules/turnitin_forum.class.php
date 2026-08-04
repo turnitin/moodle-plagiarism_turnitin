@@ -140,7 +140,7 @@ class turnitin_forum {
             [$queueditem->userid, $queueditem->itemid]);
 
         if (!$forumpost) {
-            plagiarism_turnitin_activitylog(
+            turnitin_logger::log(
                 'File content not found on submission: ' . ($queueditem->identifier ?? ''),
                 'PP_NO_FILE'
             );

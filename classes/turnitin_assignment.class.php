@@ -126,7 +126,7 @@ class turnitin_assignment {
                 $turnitincourse->id = $insertid;
             }
 
-            plagiarism_turnitin_activitylog("Class created - ".$turnitincourse->courseid." | ".$turnitincourse->turnitin_cid.
+            turnitin_logger::log("Class created - ".$turnitincourse->courseid." | ".$turnitincourse->turnitin_cid.
                 " | ".$course->fullname . " (Moodle PP)" , "REQUEST");
 
             return $turnitincourse;
@@ -176,7 +176,7 @@ class turnitin_assignment {
                 plagiarism_turnitin_print_error('classupdateerror', 'plagiarism_turnitin', null, null, __FILE__, __LINE__);
                 exit();
             } else {
-                plagiarism_turnitin_activitylog("Class edited - ".$update->turnitin_ctl." (".$update->id.")", "REQUEST");
+                turnitin_logger::log("Class edited - ".$update->turnitin_ctl." (".$update->id.")", "REQUEST");
             }
         } catch (Exception $e) {
             $this->turnitincomms->handle_exceptions($e, 'classupdateerror', false);
@@ -218,7 +218,7 @@ class turnitin_assignment {
             $newassignment = $this->api_get_assignment($response);
             $assignmentid = $this->api_get_assignment_id($newassignment);
 
-            plagiarism_turnitin_activitylog("Assignment created as Turnitin Assignment (".$assignmentid.")", "REQUEST");
+            turnitin_logger::log("Assignment created as Turnitin Assignment (".$assignmentid.")", "REQUEST");
 
             return $assignmentid;
         } catch (Exception $e) {
@@ -248,7 +248,7 @@ class turnitin_assignment {
 
             $_SESSION["assignment_updated"][$assignmentid] = time();
 
-            plagiarism_turnitin_activitylog("Turnitin Assignment updated - id: ".$assignmentid, "REQUEST");
+            turnitin_logger::log("Turnitin Assignment updated - id: ".$assignmentid, "REQUEST");
 
             return ['success' => true, 'tiiassignmentid' => $assignmentid];
 

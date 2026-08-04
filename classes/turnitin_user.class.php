@@ -314,7 +314,7 @@ class turnitin_user {
             $newuser = $response->getUser();
             $tiiuserid = $newuser->getUserId();
 
-            plagiarism_turnitin_activitylog("Turnitin User created: ".$this->id." (".$tiiuserid.")", "REQUEST");
+            turnitin_logger::log("Turnitin User created: ".$this->id." (".$tiiuserid.")", "REQUEST");
 
             return $tiiuserid;
 
@@ -376,7 +376,7 @@ class turnitin_user {
             $DB->update_record('plagiarism_turnitin_users', $tiiuser);
         }
 
-        plagiarism_turnitin_activitylog("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
+        turnitin_logger::log("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
     }
 
 
@@ -439,7 +439,7 @@ class turnitin_user {
         try {
             $turnitincall->createMembership($membership);
 
-            plagiarism_turnitin_activitylog("User ".$this->id." (".$this->tiiuserid.") joined to class (".
+            turnitin_logger::log("User ".$this->id." (".$this->tiiuserid.") joined to class (".
                 $tiicourseid.")", "REQUEST");
 
             return true;

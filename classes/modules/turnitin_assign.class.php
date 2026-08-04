@@ -286,7 +286,7 @@ class turnitin_assign {
         $file = $fs->get_file_by_hash($queueditem->identifier);
 
         if (!$file) {
-            plagiarism_turnitin_activitylog('File not found for submission: ' . ($queueditem->id ?? ''), 'PP_NO_FILE');
+            turnitin_logger::log('File not found for submission: ' . ($queueditem->id ?? ''), 'PP_NO_FILE');
             return $this->error_result(9);
         }
 
@@ -294,7 +294,7 @@ class turnitin_assign {
             $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File size is '
                 . $file->get_filesize() . ' bytes, and the max filesize that Turnitin can accept is '
                 . PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE . ' bytes.';
-            plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_TOO_LARGE');
+            turnitin_logger::log($errorstring, 'PP_FILE_TOO_LARGE');
             return $this->error_result(2);
         }
 
@@ -303,14 +303,14 @@ class turnitin_assign {
         if (!$acceptanyfiletype && !in_array('.' . $extension, $acceptedfiles)) {
             $errorstring = 'File with ID ' . ($queueditem->id ?? '') . ' cannot be sent to turnitin: File format is not '
                 . 'supported. The filename is ' . $file->get_filename() . ' and the extension is ' . $extension;
-            plagiarism_turnitin_activitylog($errorstring, 'PP_FILE_WRONG_FORMAT');
+            turnitin_logger::log($errorstring, 'PP_FILE_WRONG_FORMAT');
             return $this->error_result(16);
         }
 
         try {
             $textcontent = $file->get_content();
         } catch (\Exception $e) {
-            plagiarism_turnitin_activitylog(
+            turnitin_logger::log(
                 'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
             );
             return $this->error_result(9);

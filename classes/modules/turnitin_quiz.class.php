@@ -213,7 +213,7 @@ class turnitin_quiz {
         try {
             $attempt = \mod_quiz\quiz_attempt::create($queueditem->itemid);
         } catch (\Exception $e) {
-            plagiarism_turnitin_activitylog(get_string('errorcode14', 'plagiarism_turnitin'), 'PP_NO_ATTEMPT');
+            turnitin_logger::log(get_string('errorcode14', 'plagiarism_turnitin'), 'PP_NO_ATTEMPT');
             return $this->error_result(14);
         }
 
@@ -231,7 +231,7 @@ class turnitin_quiz {
         }
 
         if (empty($textcontent)) {
-            plagiarism_turnitin_activitylog(
+            turnitin_logger::log(
                 'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
             );
             return $this->error_result(9);

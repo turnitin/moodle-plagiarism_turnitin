@@ -190,7 +190,7 @@ class turnitin_comms {
             $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
         }
 
-        plagiarism_turnitin_activitylog($errorstr, "API_ERROR");
+        turnitin_logger::log($errorstr, "API_ERROR");
         if ($toscreen) {
             plagiarism_turnitin_print_error($errorstr, null);
         } else if ($embedded) {

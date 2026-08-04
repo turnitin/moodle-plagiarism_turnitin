@@ -3778,14 +3778,3 @@ function plagiarism_turnitin_print_error(
 function plagiarism_turnitin_mtrace($string, $eol) {
     return true;
 }
-
-/**
- * Log activity / errors.
- *
- * @deprecated Use \turnitin_logger::log() directly.
- * @param string $string The string describing the activity
- * @param string $activity The activity prompting the log
- */
-function plagiarism_turnitin_activitylog($string, $activity) {
-    \turnitin_logger::log($string, $activity);
-}

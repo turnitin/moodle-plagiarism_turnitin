@@ -38,10 +38,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_test extends \advanced_testcase {
-
-    // -------------------------------------------------------------------------
-    // save_errored.
-    // -------------------------------------------------------------------------
+    // Save_errored tests.
 
     /**
      * Test that save_errored sets statuscode to error, increments the attempt
@@ -78,9 +75,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertEquals(14, $row->errorcode);
     }
 
-    // -------------------------------------------------------------------------
-    // save — insert path (submissionid = 0).
-    // -------------------------------------------------------------------------
+    // Save tests: insert path (submissionid = 0).
 
     /**
      * Test that save inserts a new row when submissionid is 0, and that all
@@ -130,9 +125,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertGreaterThan(0, $row->id);
     }
 
-    // -------------------------------------------------------------------------
-    // save — update path (submissionid != 0).
-    // -------------------------------------------------------------------------
+    // Save tests: update path (submissionid != 0).
 
     /**
      * Test that save updates an existing row when a non-zero submissionid is given.
@@ -203,9 +196,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertNull($row->errormsg);
     }
 
-    // -------------------------------------------------------------------------
-    // Helper.
-    // -------------------------------------------------------------------------
+    // Helpers.
 
     /**
      * Insert a minimal row into plagiarism_turnitin_files and return its id.

@@ -38,10 +38,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_settings::class)]
 final class turnitin_settings_test extends \advanced_testcase {
-
-    // -------------------------------------------------------------------------
-    // admin_config.
-    // -------------------------------------------------------------------------
+    // Admin_config tests.
 
     /**
      * Test that admin_config returns a stdClass with all plugin config values.
@@ -59,9 +56,7 @@ final class turnitin_settings_test extends \advanced_testcase {
         $this->assertEquals('https://api.turnitin.com', $config->plagiarism_turnitin_apiurl);
     }
 
-    // -------------------------------------------------------------------------
-    // module_enabled.
-    // -------------------------------------------------------------------------
+    // Module_enabled tests.
 
     /**
      * Test that module_enabled returns the configured value for a module type.
@@ -83,9 +78,7 @@ final class turnitin_settings_test extends \advanced_testcase {
         $this->assertFalse(turnitin_settings::module_enabled('mod_assign'));
     }
 
-    // -------------------------------------------------------------------------
-    // fields.
-    // -------------------------------------------------------------------------
+    // Fields tests.
 
     /**
      * Test that fields returns all expected per-CM setting field names.
@@ -102,9 +95,7 @@ final class turnitin_settings_test extends \advanced_testcase {
         $this->assertCount(16, $fields);
     }
 
-    // -------------------------------------------------------------------------
-    // for_cm.
-    // -------------------------------------------------------------------------
+    // For_cm tests.
 
     /**
      * Test that for_cm with a null cmid returns only the site-wide default settings,
@@ -255,9 +246,7 @@ final class turnitin_settings_test extends \advanced_testcase {
         $this->assertEquals('0', $settings['plagiarism_compare_internet']);
     }
 
-    // -------------------------------------------------------------------------
-    // set_config.
-    // -------------------------------------------------------------------------
+    // Set_config tests.
 
     /**
      * Test that set_config saves a value when the full prefixed property name is given.

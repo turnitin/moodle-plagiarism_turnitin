@@ -36,7 +36,6 @@ namespace plagiarism_turnitin;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitin_settings {
-
     /**
      * Return the plugin-wide admin config from Moodle's config table.
      *

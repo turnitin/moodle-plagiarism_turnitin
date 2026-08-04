@@ -94,8 +94,8 @@ final class turnitin_quiz_test extends \advanced_testcase {
             1 => ['answer' => 'This is my essay answer.', 'answerformat' => FORMAT_PLAIN],
         ]);
 
-        // process_submit() + process_grade_submission() were introduced after Moodle 4.5.
-        // process_finish() is the compatible equivalent that works across all supported versions.
+        // Use process_submit/process_grade_submission on Moodle 5.x where they exist;
+        // fall back to process_finish() which covers all supported versions from 4.5.
         if (method_exists($attemptobj, 'process_submit')) {
             $attemptobj->process_submit($timenow, false);
             $attemptobj->process_grade_submission($timenow);

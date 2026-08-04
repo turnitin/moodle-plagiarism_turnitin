@@ -2340,7 +2340,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (count($validatedsubmissions['missingTiiSubmissions']) > 0) {
             foreach ($validatedsubmissions['missingTiiSubmissions'] as $missingsubmission) {
                 try {
-                    $this->invalidate_missing_submission($missingsubmission);
+                    \plagiarism_turnitin\turnitin_submission::invalidate_missing($missingsubmission);
                 } catch (Exception $e) {
                     mtrace("An exception was thrown while attempting to update plagiarism turnitin file submission:
                     $missingsubmission "
@@ -2458,34 +2458,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             'trimmedSubmissions' => array_intersect($submissionids, $tiisubmissionids),
             'missingTiiSubmissions' => array_diff($submissionids, $tiisubmissionids),
         ];
-    }
-
-    /**
-     * Invalidate a missing submission.
-     *
-     * @param int $missingsubmission The missing submission id.
-     * @return void
-     * @throws dml_exception
-     */
-    private function invalidate_missing_submission($missingsubmission) {
-        global $DB;
-        $currentsubmission = $DB->get_record(
-            'plagiarism_turnitin_files',
-            ['externalid' => $missingsubmission],
-            'id, cm, externalid, userid'
-        );
-        $plagiarismfile = new stdClass();
-        $plagiarismfile->id = $currentsubmission->id;
-        $plagiarismfile->externalid = $currentsubmission->externalid;
-        $plagiarismfile->userid = $currentsubmission->userid;
-        $plagiarismfile->statuscode = 'error';
-        $plagiarismfile->errorcode = 13;
-
-        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            mtrace("File failed to update: " . $plagiarismfile->id);
-        } else {
-            mtrace("File updated: " . $plagiarismfile->id);
-        }
     }
 
     /**

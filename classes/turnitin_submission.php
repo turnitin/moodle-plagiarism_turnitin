@@ -511,4 +511,37 @@ class turnitin_submission {
             mtrace('-------------------------');
         }
     }
+
+    /**
+     * Mark a submission as errored when it is missing from Turnitin.
+     *
+     * Looks up the local row by its Turnitin externalid, then sets statuscode='error'
+     * and errorcode=13. Errorcode 13 is the signal that tells the cron the submission
+     * needs to be requeued — turnitin_submission::update() will clear it and set
+     * statuscode='success' when Turnitin confirms the submission is back.
+     *
+     * @param string $externalid Turnitin submission UUID (externalid column value).
+     */
+    public static function invalidate_missing(string $externalid): void {
+        global $DB;
+
+        $currentsubmission = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['externalid' => $externalid],
+            'id, externalid, userid'
+        );
+
+        $plagiarismfile = new \stdClass();
+        $plagiarismfile->id         = $currentsubmission->id;
+        $plagiarismfile->externalid = $currentsubmission->externalid;
+        $plagiarismfile->userid     = $currentsubmission->userid;
+        $plagiarismfile->statuscode = 'error';
+        $plagiarismfile->errorcode  = 13;
+
+        if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
+            mtrace('File failed to update: ' . $plagiarismfile->id);
+        } else {
+            mtrace('File updated: ' . $plagiarismfile->id);
+        }
+    }
 }

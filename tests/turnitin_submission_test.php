@@ -41,7 +41,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_test extends \advanced_testcase {
     // Save_errored tests.
-
     /**
      * Test that save_errored sets statuscode to error, increments the attempt
      * counter, and records the errorcode on the existing row.
@@ -676,5 +675,54 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->expectOutputRegex('/turnitindeletionerror|Turnitin/i');
 
         turnitin_submission::delete($cm, 'tii-sub-99', $user->id, $fakecomms);
+    }
+
+    // Invalidate_missing tests.
+
+    /**
+     * Test that invalidate_missing sets the statuscode to 'error' and errorcode to 13
+     * on the row matching the given externalid, so the cron will attempt reprocessing.
+     */
+    public function test_invalidate_missing_sets_error_state(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $id = $this->insert_submission_row([
+            'statuscode' => 'success',
+            'externalid' => 'tii-ext-001',
+        ]);
+
+        // Suppress the mtrace() output emitted on success.
+        $this->expectOutputRegex('/File updated/');
+
+        turnitin_submission::invalidate_missing('tii-ext-001');
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals('error', $row->statuscode);
+        $this->assertEquals(13, $row->errorcode);
+    }
+
+    /**
+     * Test that invalidate_missing preserves the externalid and userid on the
+     * updated row — only the status and errorcode should change.
+     */
+    public function test_invalidate_missing_preserves_externalid_and_userid(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->insert_submission_row([
+            'userid'     => $user->id,
+            'statuscode' => 'success',
+            'externalid' => 'tii-ext-002',
+        ]);
+
+        $this->expectOutputRegex('/File updated/');
+
+        turnitin_submission::invalidate_missing('tii-ext-002');
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['externalid' => 'tii-ext-002']);
+        $this->assertEquals($user->id, $row->userid);
+        $this->assertEquals('tii-ext-002', $row->externalid);
     }
 }

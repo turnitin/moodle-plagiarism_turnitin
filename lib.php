@@ -2461,29 +2461,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Get a class Id from Turnitin if you only have an assignment id.
-     *
-     * @param int $assignmentid The assignment id.
-     */
-    private function get_course_id_from_assignment_id($assignmentid) {
-        // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
-        $turnitincall = $turnitincomms->initialise_api();
-
-        try {
-            $assignment = new TiiAssignment();
-            $assignment->setAssignmentId($assignmentid);
-
-            $response = $turnitincall->readAssignment($assignment);
-            $readassignment = $response->getAssignment();
-
-            return $readassignment->getClassId();
-        } catch (Exception $e) {
-            $turnitincomms->handle_exceptions($e, 'assigngeterror', false);
-        }
-    }
-
-    /**
      * Previous incarnations of this plugin did not store the turnitin course id so we have to get this using the assignment id.
      * If that wasn't linked with turnitin then we have to check all the modules on this course.
      *
@@ -2498,7 +2475,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cmid,
                                                     'name' => 'turnitin_assignid', ])
         ) {
-            $tiicourseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
+            $tiicourseid = (new \turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
         } else {
             $coursemods = get_course_mods($courseid);
             foreach ($coursemods as $coursemod) {
@@ -2507,7 +2484,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $coursemod->id,
                                                                                         'name' => 'turnitin_assignid', ])
                     ) {
-                        $tiicourseid = $this->get_course_id_from_assignment_id($tiiassignment->value);
+                        $tiicourseid = (new \turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
                     }
                 }
             }

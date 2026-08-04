@@ -389,4 +389,29 @@ class turnitin_assignment {
     public function api_get_title($assignment) {
         return $assignment->getTitle();
     }
+
+    /**
+     * Look up the Turnitin class (course) id for a given assignment id by reading
+     * the assignment from the Turnitin API.
+     *
+     * Returns null when the API call fails so callers can handle the missing id
+     * gracefully rather than receiving an exception mid-cron.
+     *
+     * @param int $assignmentid Turnitin assignment id.
+     * @return int|null The Turnitin class id, or null on API failure.
+     */
+    public function get_course_id_from_assignment_id(int $assignmentid): ?int {
+        $turnitincall = $this->turnitincomms->initialise_api();
+
+        try {
+            $assignment = new \TiiAssignment();
+            $assignment->setAssignmentId($assignmentid);
+
+            $response = $turnitincall->readAssignment($assignment);
+            return $response->getAssignment()->getClassId();
+        } catch (\Exception $e) {
+            $this->turnitincomms->handle_exceptions($e, 'assigngeterror', false);
+            return null;
+        }
+    }
 }

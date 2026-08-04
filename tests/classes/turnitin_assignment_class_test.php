@@ -378,4 +378,89 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
         $response = $assignment->get_peermark_assignments(2, $peermark->parent_tii_assign_id);
         $this->assertCount(0, $response);
     }
+
+    /**
+     * Test that get_course_id_from_assignment_id returns the class id from the
+     * API response when the call succeeds.
+     */
+    public function test_get_course_id_from_assignment_id_returns_class_id(): void {
+        $this->resetAfterTest();
+
+        $fakeassignment = new class {
+            // phpcs:ignore moodle.NamingConventions.ValidFunctionName.LowercaseMethod,moodle.Commenting.MissingDocblock.MissingTestcaseMethodDescription
+            public function getClassId(): int {
+                return 42;
+            }
+        };
+
+        $fakeresponse = new class ($fakeassignment) {
+            /** @var object */
+            private $assignment;
+
+            /**
+             * Constructor.
+             * @param object $assignment
+             */
+            public function __construct(object $assignment) {
+                $this->assignment = $assignment;
+            }
+
+            // phpcs:ignore moodle.NamingConventions.ValidFunctionName.LowercaseMethod,moodle.Commenting.MissingDocblock.MissingTestcaseMethodDescription
+            public function getAssignment(): object {
+                return $this->assignment;
+            }
+        };
+
+        $fakeapi = new class ($fakeresponse) {
+            /** @var object */
+            private $response;
+
+            /**
+             * Constructor.
+             * @param object $response
+             */
+            public function __construct(object $response) {
+                $this->response = $response;
+            }
+
+            // phpcs:ignore moodle.NamingConventions.ValidFunctionName.LowercaseMethod,moodle.Commenting.MissingDocblock.MissingTestcaseMethodDescription
+            public function readAssignment(object $assignment): object {
+                return $this->response;
+            }
+        };
+
+        $fakecomms = $this->getMockBuilder(turnitin_comms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fakecomms->method('initialise_api')->willReturn($fakeapi);
+
+        $result = (new turnitin_assignment(0, $fakecomms))->get_course_id_from_assignment_id(99);
+
+        $this->assertEquals(42, $result);
+    }
+
+    /**
+     * Test that get_course_id_from_assignment_id returns null and does not throw
+     * when the API call fails, so callers can handle the missing course id gracefully.
+     */
+    public function test_get_course_id_from_assignment_id_returns_null_on_api_failure(): void {
+        $this->resetAfterTest();
+
+        $fakeapi = new class {
+            // phpcs:ignore moodle.NamingConventions.ValidFunctionName.LowercaseMethod,moodle.Commenting.MissingDocblock.MissingTestcaseMethodDescription
+            public function readAssignment(object $assignment): void {
+                throw new \Exception('API unavailable');
+            }
+        };
+
+        $fakecomms = $this->getMockBuilder(turnitin_comms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fakecomms->method('initialise_api')->willReturn($fakeapi);
+        $fakecomms->method('handle_exceptions')->willReturn(null);
+
+        $result = (new turnitin_assignment(0, $fakecomms))->get_course_id_from_assignment_id(99);
+
+        $this->assertNull($result);
+    }
 }

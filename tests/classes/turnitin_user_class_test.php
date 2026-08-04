@@ -31,11 +31,14 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/tests/generator/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
+use PHPUnit\Framework\Attributes\CoversClass;
+
 /**
  * Tests for Turnitin user class
  *
  * @package turnitin
  */
+#[CoversClass(turnitin_user::class)]
 final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
 
     /**
@@ -58,7 +61,6 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a Moodle use.
      *
-     * @covers turnitin_user::get_moodle_user
      * @return void
      */
     public function test_get_moodle_user(): void {
@@ -77,7 +79,6 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a pseudo domain.
      *
-     * @covers turnitin_user::get_pseudo_domain
      * @return void
      */
     public function test_get_pseudo_domain(): void {
@@ -90,7 +91,6 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a pseudo first name.
      *
-     * @covers turnitin_user::get_pseudo_firstname
      * @return void
      */
     public function test_get_pseudo_firstname(): void {
@@ -104,7 +104,6 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get a pseudo last name.
      *
-     * @covers turnitin_user::get_pseudo_lastname
      * @return void
      * @throws dml_exception
      */
@@ -126,7 +125,6 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     /**
      * Test that we can get unlink a user from Turnitin.
      *
-     * @covers turnitin_user::unlink_user
      * @return void
      * @throws dml_exception
      */

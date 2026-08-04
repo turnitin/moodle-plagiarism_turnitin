@@ -30,11 +30,14 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
+use PHPUnit\Framework\Attributes\CoversClass;
+
 /**
  * Tests for Turnitin assignment class
  *
  * @package turnitin
  */
+#[CoversClass(turnitin_assignment::class)]
 final class turnitin_assignment_class_test extends \advanced_testcase {
 
     /**
@@ -51,7 +54,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can get a course data.
      *
-     * @covers turnitin_assignment::get_course_data
      * @return void
      * @throws \dml_exception
      */
@@ -78,7 +80,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can create a tii course.
      *
-     * @covers turnitin_assignment::create_tii_course
      * @return void
      * @throws \dml_exception
      */
@@ -137,7 +138,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can edit a tii course.
      *
-     * @covers turnitin_assignment::edit_tii_course
      * @return void
      * @throws \dml_exception
      */
@@ -197,7 +197,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can truncate a title.
      *
-     * @covers turnitin_assignment::truncate_title
      * @return void
      */
     public function test_truncate_title(): void {
@@ -218,7 +217,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can get create a tii assignment.
      *
-     * @covers turnitin_assignment::create_tii_assignment
      * @return void
      */
     public function test_create_tii_assignment(): void {
@@ -256,7 +254,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can get edit a tii assignment.
      *
-     * @covers turnitin_assignment::edit_tii_assignment
      * @return void
      * @throws \coding_exception
      */
@@ -347,7 +344,6 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
     /**
      * Test that we can get a peermark assignment.
      *
-     * @covers turnitin_assignment::get_peermark_assignments
      * @return void
      * @throws \dml_exception
      */

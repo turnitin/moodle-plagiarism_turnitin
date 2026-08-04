@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 /**
  * Class plagiarism_turnitin_observer
@@ -31,7 +31,8 @@ class plagiarism_turnitin_observer {
      * @param \core\event\course_module_deleted $event
      */
     public static function course_module_deleted(
-        \core\event\course_module_deleted $event) {
+        \core\event\course_module_deleted $event
+    ) {
         global $DB;
         $eventdata = $event->get_data();
 
@@ -44,7 +45,8 @@ class plagiarism_turnitin_observer {
      * @param \core\event\course_reset_ended $event
      */
     public static function course_reset(
-        \core\event\course_reset_ended $event) {
+        \core\event\course_reset_ended $event
+    ) {
         $eventdata = $event->get_data();
 
         $plugin = new \plagiarism_plugin_turnitin();
@@ -57,7 +59,8 @@ class plagiarism_turnitin_observer {
      * @param \assignsubmission_file\event\assessable_uploaded $event
      */
     public static function assignsubmission_file_uploaded(
-        \assignsubmission_file\event\assessable_uploaded $event) {
+        \assignsubmission_file\event\assessable_uploaded $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'file_uploaded';
         $eventdata['other']['modulename'] = 'assign';
@@ -71,7 +74,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_forum\event\assessable_uploaded $event
      */
     public static function forum_file_uploaded(
-        \mod_forum\event\assessable_uploaded $event) {
+        \mod_forum\event\assessable_uploaded $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'forum';
@@ -85,7 +89,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_workshop\event\assessable_uploaded $event
      */
     public static function workshop_file_uploaded(
-        \mod_workshop\event\assessable_uploaded $event) {
+        \mod_workshop\event\assessable_uploaded $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'workshop';
@@ -99,7 +104,8 @@ class plagiarism_turnitin_observer {
      * @param \assignsubmission_onlinetext\event\assessable_uploaded $event
      */
     public static function assignsubmission_onlinetext_uploaded(
-        \assignsubmission_onlinetext\event\assessable_uploaded $event) {
+        \assignsubmission_onlinetext\event\assessable_uploaded $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'content_uploaded';
         $eventdata['other']['modulename'] = 'assign';
@@ -114,7 +120,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_coursework\event\assessable_uploaded $event
      */
     public static function coursework_submitted(
-        \mod_coursework\event\assessable_uploaded $event) {
+        \mod_coursework\event\assessable_uploaded $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'coursework';
@@ -128,7 +135,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_assign\event\assessable_submitted $event
      */
     public static function assignsubmission_submitted(
-        \mod_assign\event\assessable_submitted $event) {
+        \mod_assign\event\assessable_submitted $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'assign';
@@ -142,7 +150,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_assign\event\submission_removed $event
      */
     public static function assignsubmission_removed(
-        \mod_assign\event\submission_removed $event) {
+        \mod_assign\event\submission_removed $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'submission_removed';
         $eventdata['other']['modulename'] = 'assign';
@@ -156,7 +165,8 @@ class plagiarism_turnitin_observer {
      * @param \mod_quiz\event\attempt_submitted $event
      */
     public static function quiz_submitted(
-        \mod_quiz\event\attempt_submitted $event) {
+        \mod_quiz\event\attempt_submitted $event
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['other']['modulename'] = 'quiz';

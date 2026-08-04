@@ -29,7 +29,6 @@ namespace plagiarism_turnitin\task;
  * Send queued submissions to Turnitin.
  */
 class send_submissions extends \core\task\scheduled_task {
-
     /**
      * Get the name of the task.
      *
@@ -48,7 +47,7 @@ class send_submissions extends \core\task\scheduled_task {
     public function execute() {
         global $CFG, $DB;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $plugin = new \plagiarism_plugin_turnitin();
         if (!$plugin->is_plugin_configured()) {
             return;
@@ -61,13 +60,16 @@ class send_submissions extends \core\task\scheduled_task {
                 mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
                 return;
             }
-          
+
             mtrace('Checking for queued submissions...');
 
             // Grab all queued or pending submissions.
-            $queueditems = $DB->get_records_select("plagiarism_turnitin_files",
-                "statuscode = 'queued' OR statuscode = 'pending'", null,
-                'lastmodified');
+            $queueditems = $DB->get_records_select(
+                "plagiarism_turnitin_files",
+                "statuscode = 'queued' OR statuscode = 'pending'",
+                null,
+                'lastmodified'
+            );
 
             if (empty($queueditems)) {
                 mtrace('No queued items found.');
@@ -77,9 +79,9 @@ class send_submissions extends \core\task\scheduled_task {
             mtrace('Found ' . count($queueditems) . ' queued submissions.');
             mtrace('Queueing ad-hoc tasks...');
             foreach ($queueditems as $item) {
-              $adhoctask = adhoc_send_submission::instance($item);
-              \core\task\manager::queue_adhoc_task($adhoctask, true);
-              mtrace('  Queued submission for upload: ' . json_encode($item));
+                $adhoctask = adhoc_send_submission::instance($item);
+                \core\task\manager::queue_adhoc_task($adhoctask, true);
+                mtrace('  Queued submission for upload: ' . json_encode($item));
             }
             mtrace('Done.');
         } else {

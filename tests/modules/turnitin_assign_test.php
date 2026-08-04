@@ -40,7 +40,6 @@ use plagiarism_turnitin\modules\turnitin_assign;
  */
 #[CoversClass(turnitin_assign::class)]
 final class turnitin_assign_test extends \advanced_testcase {
-
     /** @var stdClass created in setUp. */
     protected $course;
 
@@ -73,9 +72,7 @@ final class turnitin_assign_test extends \advanced_testcase {
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // Existing is_resubmission_allowed tests
-    // -------------------------------------------------------------------------
+    // Existing is_resubmission_allowed tests.
 
     /**
      * Test to check whether resubmissions are allowed.
@@ -112,9 +109,7 @@ final class turnitin_assign_test extends \advanced_testcase {
         $this->assertTrue($moduleobject->is_resubmission_allowed($assign->id, 1, 'text_content', 1));
     }
 
-    // -------------------------------------------------------------------------
-    // get_submission_content — file submissions
-    // -------------------------------------------------------------------------
+    // Get_submission_content: file submissions.
 
     /**
      * Test that a valid file submission returns its content, the original filename as
@@ -126,7 +121,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('essay.docx', 'Hello world');
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, ['.docx']
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -147,7 +146,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         $moduledata->resubmission_allowed = true;
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, ['.docx']
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -166,7 +169,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         $moduledata->resubmission_allowed = false;
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, ['.docx']
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -183,7 +190,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, ['.docx', '.pdf']
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx', '.pdf']
         );
 
         $this->assertEquals(16, $result['errorcode']);
@@ -199,7 +210,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, true, ['.docx', '.pdf']
+            $queueditem,
+            $cm,
+            $moduledata,
+            true,
+            ['.docx', '.pdf']
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -216,15 +231,17 @@ final class turnitin_assign_test extends \advanced_testcase {
         $moduledata = $this->make_moduledata(false, false);
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, ['.docx']
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
         );
 
         $this->assertEquals(9, $result['errorcode']);
     }
 
-    // -------------------------------------------------------------------------
-    // get_submission_content — text_content submissions
-    // -------------------------------------------------------------------------
+    // Get_submission_content: text_content submissions.
 
     /**
      * Test that an online text submission returns the plain text content and correct
@@ -236,12 +253,16 @@ final class turnitin_assign_test extends \advanced_testcase {
         [$cm, $queueditem, $moduledata] = $this->create_text_submission('<p>My essay &amp; thoughts</p>');
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, []
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
         );
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertEquals('createSubmission', $result['apimethod']);
-        // html_to_text() should decode entities and strip tags.
+        // The html_to_text() call should decode entities and strip tags.
         $this->assertStringContainsString('My essay & thoughts', $result['textcontent']);
         $this->assertStringNotContainsString('&amp;', $result['textcontent']);
         $this->assertStringStartsWith('onlinetext_', $result['title']);
@@ -258,7 +279,11 @@ final class turnitin_assign_test extends \advanced_testcase {
         [$cm, $queueditem, $moduledata] = $this->create_text_submission('Some content');
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, []
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
         );
 
         $expectedtitle = 'onlinetext_' . $this->student->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
@@ -280,20 +305,25 @@ final class turnitin_assign_test extends \advanced_testcase {
         ]);
 
         [$cm, $queueditem, $moduledata] = $this->create_text_submission(
-            '<p>Team effort</p>', $teamassign, $this->student->id, true
+            '<p>Team effort</p>',
+            $teamassign,
+            $this->student->id,
+            true
         );
 
         $result = (new turnitin_assign())->get_submission_content(
-            $queueditem, $cm, $moduledata, false, []
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
         );
 
         $this->assertEquals(0, $result['errorcode']);
         $this->assertStringContainsString('Team effort', $result['textcontent']);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+    // Helpers.
 
     /**
      * Store a file in the Moodle file API and return the cm, queued item and module data
@@ -335,8 +365,8 @@ final class turnitin_assign_test extends \advanced_testcase {
     ): array {
         global $DB;
 
-        $assign  = $assign  ?? $this->assign;
-        $userid  = $userid  ?? $this->student->id;
+        $assign  = $assign ?? $this->assign;
+        $userid  = $userid ?? $this->student->id;
         $cm      = get_coursemodule_from_instance('assign', $assign->id);
 
         // The submission userid is 0 for team submissions.

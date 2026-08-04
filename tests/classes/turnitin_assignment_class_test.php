@@ -39,7 +39,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_assignment::class)]
 final class turnitin_assignment_class_test extends \advanced_testcase {
-
     /**
      * Set Overwrite mtrace to avoid output during the tests.
      */
@@ -264,7 +263,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
         $assignment->id    = 1;
         $assignment->title = "This is a test assignment.";
 
-        // --- Scenario 1: successful update ---
+        // Scenario 1: successful update.
         $mock = $this->make_assignment_mock(
             ['api_update_assignment', 'api_get_assignment_id', 'api_get_title'],
             false
@@ -276,7 +275,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
         $this->assertEquals(true, $response["success"]);
         $this->assertEquals(1, $response["tiiassignmentid"]);
 
-        // --- Scenario 2: exception in default workflow ---
+        // Scenario 2: exception in default workflow.
         // A fresh mock is required because PHPUnit 11 forbids adding expectations
         // to a mock object after it has already been invoked.
         $mockerr = $this->make_assignment_mock(
@@ -291,10 +290,11 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
             $this->assertEquals(false, $response["success"]);
             $this->assertEquals(get_string('editassignmenterror', 'plagiarism_turnitin'), $response["error"]);
         } catch (\Throwable $e) {
-            $this->fail('edit_tii_assignment should catch exceptions internally, got: ' . get_class($e) . ': ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            $detail = get_class($e) . ': ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine();
+            $this->fail('edit_tii_assignment should catch exceptions internally, got: ' . $detail);
         }
 
-        // --- Scenario 3: exception in cron workflow ---
+        // Scenario 3: exception in cron workflow.
         $mockcron = $this->make_assignment_mock(
             ['api_update_assignment', 'api_get_assignment_id', 'api_get_title'],
             true

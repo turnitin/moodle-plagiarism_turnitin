@@ -25,6 +25,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
 $renamedclasses = [
     'turnitin_assign'              => 'plagiarism_turnitin\\modules\\turnitin_assign',
     'turnitin_assignment'          => 'plagiarism_turnitin\\turnitin_assignment',

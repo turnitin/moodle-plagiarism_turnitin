@@ -40,7 +40,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_user::class)]
 final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
-
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|(turnitin_comms&\PHPUnit\Framework\MockObject\MockObject)
      */

@@ -29,7 +29,6 @@ namespace plagiarism_turnitin;
  * Define the form for the Turnitin plugin settings.
  */
 class turnitin_defaultsettingsform extends \moodleform {
-
     /**
      * Define the form.
      *
@@ -39,7 +38,6 @@ class turnitin_defaultsettingsform extends \moodleform {
         global $CFG;
 
         $mform = $this->_form;
-
 
         $turnitinview = new turnitin_view();
         $turnitinview->add_elements_to_settings_form($mform, [], "defaults");

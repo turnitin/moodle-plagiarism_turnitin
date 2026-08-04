@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
-
     /**
      * Return the paths of the course data along with the function used for restoring that data.
      */
@@ -86,16 +85,20 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $recordexists = ($data->name == 'turnitin_assign') ? $DB->record_exists('plagiarism_turnitin_config',
-                ['name' => 'turnitin_assign', 'value' => $data->value]) : false;
-            $recordexists = ($data->name == 'turnitin_assignid') ? $DB->record_exists('plagiarism_turnitin_config',
-                ['name' => 'turnitin_assignid', 'value' => $data->value]) : $recordexists;
+            $recordexists = ($data->name == 'turnitin_assign') ? $DB->record_exists(
+                'plagiarism_turnitin_config',
+                ['name' => 'turnitin_assign', 'value' => $data->value]
+            ) : false;
+            $recordexists = ($data->name == 'turnitin_assignid') ? $DB->record_exists(
+                'plagiarism_turnitin_config',
+                ['name' => 'turnitin_assignid', 'value' => $data->value]
+            ) : $recordexists;
 
             if (!$recordexists) {
                 $data = (object)$data;
                 $data->name = ($data->name == 'turnitin_assign') ? 'turnitin_assignid' : $data->name;
                 $data->cm = $this->task->get_moduleid();
-                $data->config_hash = $data->cm."_".$data->name;
+                $data->config_hash = $data->cm . "_" . $data->name;
 
                 $DB->insert_record('plagiarism_turnitin_config', $data);
             }
@@ -116,8 +119,10 @@ class restore_plagiarism_turnitin_plugin extends restore_plagiarism_plugin {
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
-            $recordexists = (!empty($data->externalid)) ? $DB->record_exists('plagiarism_turnitin_files',
-                ['externalid' => $data->externalid]) : false;
+            $recordexists = (!empty($data->externalid)) ? $DB->record_exists(
+                'plagiarism_turnitin_files',
+                ['externalid' => $data->externalid]
+            ) : false;
 
             if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();

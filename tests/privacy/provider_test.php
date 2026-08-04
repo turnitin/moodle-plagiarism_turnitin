@@ -48,7 +48,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(\plagiarism_turnitin\privacy\provider::class)]
 final class provider_test extends \core_privacy\tests\provider_testcase {
-
     /**
      * Test for _get_metadata shim.
      */
@@ -229,7 +228,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $plagiarismfile->submitter = $student->id;
 
         for ($i = 0; $i < $numsubmissions; $i++) {
-            // externalid must be unique per row due to a database unique index constraint.
+            // Externalid must be unique per row due to a database unique index constraint.
             $plagiarismfile->externalid = $externalidbase++;
             $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile);
         }

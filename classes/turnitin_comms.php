@@ -31,8 +31,8 @@ namespace plagiarism_turnitin;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
 
 use Integrations\PhpSdk\TurnitinAPI;
 
@@ -40,7 +40,6 @@ use Integrations\PhpSdk\TurnitinAPI;
  * Defines turnitin_comms class
  */
 class turnitin_comms {
-
     /**
      * @var mixed
      */
@@ -89,7 +88,7 @@ class turnitin_comms {
         $this->tiisecretkey = is_null($accountshared) ? $config->plagiarism_turnitin_secretkey : $accountshared;
 
         if (empty($this->tiiaccountid) || empty($this->tiiapiurl) || empty($this->tiisecretkey)) {
-            plagiarism_turnitin_print_error( 'configureerror', 'plagiarism_turnitin' );
+            plagiarism_turnitin_print_error('configureerror', 'plagiarism_turnitin');
         }
 
         $this->diagnostic = (isset($config->plagiarism_turnitin_enablediagnostic)) ?
@@ -106,12 +105,17 @@ class turnitin_comms {
     public function initialise_api($istestingconnection = false) {
         global $CFG, $tiipp;
 
-        $api = new TurnitinAPI($this->tiiaccountid, $this->tiiapiurl, $this->tiisecretkey,
-                                $this->tiiintegrationid, $this->langcode);
+        $api = new TurnitinAPI(
+            $this->tiiaccountid,
+            $this->tiiapiurl,
+            $this->tiisecretkey,
+            $this->tiiintegrationid,
+            $this->langcode
+        );
 
         // Enable logging if diagnostic mode is turned on.
         if ($this->diagnostic) {
-            $api->setLogPath($CFG->tempdir.'/plagiarism_turnitin/logs/');
+            $api->setLogPath($CFG->tempdir . '/plagiarism_turnitin/logs/');
         }
 
         // Use Moodle's proxy settings if specified.
@@ -166,30 +170,30 @@ class turnitin_comms {
     public function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
         $errorstr = "";
         if (!empty($tterrorstr)) {
-            $errorstr = get_string($tterrorstr, 'plagiarism_turnitin')."<br/><br/>";
+            $errorstr = get_string($tterrorstr, 'plagiarism_turnitin') . "<br/><br/>";
             if ($embedded == true) {
-                $errorstr .= get_string('tii_submission_failure', 'plagiarism_turnitin')."<br/><br/>";
+                $errorstr .= get_string('tii_submission_failure', 'plagiarism_turnitin') . "<br/><br/>";
             }
         }
 
         if (is_callable([$e, 'getFaultCode'])) {
-            $errorstr .= get_string('faultcode', 'plagiarism_turnitin').": ".$e->getFaultCode()." | ";
+            $errorstr .= get_string('faultcode', 'plagiarism_turnitin') . ": " . $e->getFaultCode() . " | ";
         }
 
         if (is_callable([$e, 'getFile'])) {
-            $errorstr .= get_string('file').": ".$e->getFile()." | ";
+            $errorstr .= get_string('file') . ": " . $e->getFile() . " | ";
         }
 
         if (is_callable([$e, 'getLine'])) {
-            $errorstr .= get_string('line', 'plagiarism_turnitin').": ".$e->getLine()." | ";
+            $errorstr .= get_string('line', 'plagiarism_turnitin') . ": " . $e->getLine() . " | ";
         }
 
         if (is_callable([$e, 'getMessage'])) {
-            $errorstr .= get_string('message', 'plagiarism_turnitin').": ".$e->getMessage()." | ";
+            $errorstr .= get_string('message', 'plagiarism_turnitin') . ": " . $e->getMessage() . " | ";
         }
 
         if (is_callable([$e, 'getCode'])) {
-            $errorstr .= get_string('code', 'plagiarism_turnitin').": ".$e->getCode();
+            $errorstr .= get_string('code', 'plagiarism_turnitin') . ": " . $e->getCode();
         }
 
         turnitin_logger::log($errorstr, "API_ERROR");

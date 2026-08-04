@@ -39,7 +39,6 @@ use plagiarism_turnitin\modules\turnitin_forum;
  */
 #[CoversClass(turnitin_forum::class)]
 final class turnitin_forum_test extends \advanced_testcase {
-
     /** @var stdClass created in setUp. */
     protected $forum;
 
@@ -247,5 +246,4 @@ final class turnitin_forum_test extends \advanced_testcase {
         $item->identifier = '';
         return $item;
     }
-
 }

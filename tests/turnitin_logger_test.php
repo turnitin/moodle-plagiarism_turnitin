@@ -38,7 +38,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_logger::class)]
 final class turnitin_logger_test extends \advanced_testcase {
-
     public function setUp(): void {
         parent::setUp();
         // Reset the static config cache so set_config() calls in each test take effect.
@@ -96,7 +95,7 @@ final class turnitin_logger_test extends \advanced_testcase {
         $logfile  = $CFG->tempdir . '/plagiarism_turnitin/logs/activitylog_' . gmdate('Y-m-d', time()) . '.txt';
         $contents = file_get_contents($logfile);
 
-        // Format: "2026-08-05 12:34:56 +0000 (API_ERROR) - checking format"
+        // Format: "2026-08-05 12:34:56 +0000 (API_ERROR) - checking format".
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4} \(API_ERROR\) - checking format/',
             $contents

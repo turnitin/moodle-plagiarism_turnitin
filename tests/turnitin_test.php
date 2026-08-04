@@ -25,7 +25,6 @@
 namespace plagiarism_turnitin;
 
 use core_competency\course_competency;
-
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 /**

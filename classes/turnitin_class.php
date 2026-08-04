@@ -26,7 +26,6 @@ use Integrations\PhpSdk\TiiClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitin_class {
-
     /**
      * @var int
      */
@@ -89,7 +88,6 @@ class turnitin_class {
             }
 
             $this->sharedrubrics = $rubricarray;
-
         } catch (\Exception $e) {
             $turnitincomms->handle_exceptions($e, 'coursegeterror', false);
         }

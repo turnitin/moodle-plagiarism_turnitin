@@ -26,7 +26,6 @@ namespace plagiarism_turnitin\modules;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitin_quiz {
-
     /**
      * @var string
      */
@@ -46,7 +45,7 @@ class turnitin_quiz {
     public function __construct() {
         $this->modname = 'quiz';
         $this->gradestable = 'grade_grades';
-        $this->filecomponent = 'mod_'.$this->modname;
+        $this->filecomponent = 'mod_' . $this->modname;
     }
 
     /**
@@ -69,7 +68,7 @@ class turnitin_quiz {
      * @throws coding_exception
      */
     public function user_enrolled_on_course($context, $userid) {
-        return has_capability('mod/'.$this->modname.':attempt', $context, $userid);
+        return has_capability('mod/' . $this->modname . ':attempt', $context, $userid);
     }
 
     /**
@@ -88,7 +87,7 @@ class turnitin_quiz {
      * @return string
      */
     public function get_tutor_capability() {
-        return 'mod/'.$this->modname.':grade';
+        return 'mod/' . $this->modname . ':grade';
     }
 
     /**
@@ -157,11 +156,11 @@ class turnitin_quiz {
             $answer = $attempt->get_question_attempt($slot)->get_response_summary();
             // Check if this is the slot the mark is for by matching content.
 
-            $answerslot = $answer ? $answer.$slot : $slot;
+            $answerslot = $answer ? $answer . $slot : $slot;
 
             $oldidentifier = sha1($answerslot);
-            $newidentifier = sha1('quiz_attempt user'.$attempt->get_userid().' cm'.$attempt->get_cmid().
-                                  ' slot'.$slot.' attempt'.$attempt->get_attempt_number());
+            $newidentifier = sha1('quiz_attempt user' . $attempt->get_userid() . ' cm' . $attempt->get_cmid() .
+                                  ' slot' . $slot . ' attempt' . $attempt->get_attempt_number());
 
             if ($identifier == $oldidentifier || $identifier == $newidentifier) {
                 // Translate the TFS grade to a mark for the question.
@@ -169,7 +168,10 @@ class turnitin_quiz {
 
                 $mark = $this->calculate_mark($grade, $questionmaxmark, $quizgrade);
                 $quba->get_question_attempt($slot)->manual_grade(
-                    'Graded using Turnitin Feedback Studio', $mark, FORMAT_HTML);
+                    'Graded using Turnitin Feedback Studio',
+                    $mark,
+                    FORMAT_HTML
+                );
             }
         }
 
@@ -230,7 +232,8 @@ class turnitin_quiz {
 
         if (empty($textcontent)) {
             \plagiarism_turnitin\turnitin_logger::log(
-                'File content not found on submission: ' . $queueditem->identifier, 'PP_NO_FILE'
+                'File content not found on submission: ' . $queueditem->identifier,
+                'PP_NO_FILE'
             );
             return $this->error_result(9);
         }
@@ -261,5 +264,4 @@ class turnitin_quiz {
         return ['errorcode' => $errorcode, 'apimethod' => 'createSubmission',
                 'textcontent' => null, 'title' => null, 'filename' => null];
     }
-
 }

@@ -41,7 +41,6 @@ use plagiarism_turnitin\modules\turnitin_quiz;
  */
 #[CoversClass(turnitin_quiz::class)]
 final class turnitin_quiz_test extends \advanced_testcase {
-
     /** @var stdClass Quiz instance created in setUp. */
     protected $quiz;
 
@@ -109,7 +108,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $this->assertEquals(0.0, $attemptobj->get_sum_marks());
         $this->assertEquals(0.0, quiz_get_best_grade($this->quiz, $this->user->id));
 
-        $tiiquiz    = new turnitin_quiz;
+        $tiiquiz    = new turnitin_quiz();
         $answer     = $attemptobj->get_question_attempt(1)->get_response_summary();
         $identifier = sha1($answer . 1);
         $tiiquiz->update_mark($this->attemptid, $identifier, $this->user->id, 75, $this->quiz->grade);
@@ -119,9 +118,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $this->assertEquals(75.0, quiz_get_best_grade($this->quiz, $this->user->id));
     }
 
-    // -------------------------------------------------------------------------
-    // get_submission_content tests
-    // -------------------------------------------------------------------------
+    // Get_submission_content tests.
 
     /**
      * Test that get_submission_content returns the stripped answer text, a correctly
@@ -208,9 +205,7 @@ final class turnitin_quiz_test extends \advanced_testcase {
         $this->assertEquals(9, $result['errorcode']);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+    // Helpers.
 
     /**
      * Build the identifier hash for slot 1 of the attempt created in setUp(), and return

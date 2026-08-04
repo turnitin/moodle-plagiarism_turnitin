@@ -32,13 +32,13 @@ function plagiarism_turnitin_override_repository($submitpapersto) {
     $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
 
     switch ($config->plagiarism_turnitin_repositoryoption) {
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD: // Force Standard Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
             break;
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO; // Force No Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO: // Force No Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY;
             break;
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL; // Force Individual Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL: // Force Individual Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY;
             break;
     }
@@ -59,12 +59,12 @@ function plagiarism_turnitin_retrieve_successful_submissions($author, $cmid, $id
     global $CFG, $DB;
 
     // Check if the same answer has been submitted previously. Remove if so.
-    list($insql, $inparams) = $DB->get_in_or_equal(['success', 'queued'], SQL_PARAMS_QM, 'param', false);
+    [$insql, $inparams] = $DB->get_in_or_equal(['success', 'queued'], SQL_PARAMS_QM, 'param', false);
     $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
 
     $plagiarismfiles = $DB->get_records_select(
         "plagiarism_turnitin_files",
-        " userid = ? AND cm = ? AND identifier = ? AND ".$typefield. " " .$insql,
+        " userid = ? AND cm = ? AND identifier = ? AND " . $typefield . " " . $insql,
         array_merge([$author, $cmid, $identifier], $inparams)
     );
 
@@ -84,12 +84,22 @@ function plagiarism_turnitin_lock_anonymous_marking($cmid) {
     $configfield->value = 1;
     $configfield->config_hash = $configfield->cm . "_" . $configfield->name;
 
-    if (!$DB->get_field('plagiarism_turnitin_config', 'id',
-        (['cm' => $cmid, 'name' => 'submitted']))) {
+    if (
+        !$DB->get_field(
+            'plagiarism_turnitin_config',
+            'id',
+            (['cm' => $cmid, 'name' => 'submitted'])
+        )
+    ) {
         if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
             plagiarism_turnitin_print_error(
                 'defaultupdateerror',
-                'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                'plagiarism_turnitin',
+                null,
+                null,
+                __FILE__,
+                __LINE__
+            );
         }
     }
 }

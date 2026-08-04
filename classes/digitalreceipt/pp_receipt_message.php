@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pp_receipt_message {
-
     /**
      * Send digital receipt to submitter
      *
@@ -64,7 +63,7 @@ class pp_receipt_message {
         $message->lastname = $input['lastname'];
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
-        if ( isset($input['assignment_part']) ) {
+        if (isset($input['assignment_part'])) {
             $message->assignment_part = ": " . $input['assignment_part'];
         } else {
             $message->assignment_part = "";
@@ -87,7 +86,7 @@ class pp_receipt_message {
         $message = new \stdClass();
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
-        if ( isset($input['assignment_part']) ) {
+        if (isset($input['assignment_part'])) {
             $message->assignment_part = ": " . $input['assignment_part'];
         } else {
             $message->assignment_part = "";

@@ -27,8 +27,14 @@
 
 namespace plagiarism_turnitin\modules;
 
+/**
+ * Class turnitin_workshop
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2012 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class turnitin_workshop {
-
     /**
      * @var string
      */
@@ -48,7 +54,7 @@ class turnitin_workshop {
     public function __construct() {
         $this->modname = 'workshop';
         $this->gradestable = 'grade_grades';
-        $this->filecomponent = 'mod_'.$this->modname;
+        $this->filecomponent = 'mod_' . $this->modname;
     }
 
     /**
@@ -80,7 +86,7 @@ class turnitin_workshop {
      * @throws coding_exception
      */
     public function user_enrolled_on_course($context, $userid) {
-        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+        return has_capability('mod/' . $this->modname . ':submit', $context, $userid);
     }
 
     /**
@@ -115,8 +121,10 @@ class turnitin_workshop {
     public function get_onlinetext($userid, $cm) {
         global $DB;
 
-        $submission = $DB->get_record('workshop_submissions',
-                                        ['authorid' => $userid, 'workshopid' => $cm->instance]);
+        $submission = $DB->get_record(
+            'workshop_submissions',
+            ['authorid' => $userid, 'workshopid' => $cm->instance]
+        );
 
         $onlinetextdata = new \stdClass();
         $onlinetextdata->itemid = $submission->id;

@@ -31,8 +31,14 @@
 
 namespace plagiarism_turnitin;
 
+/**
+ * Diagnostic activity logger for the Turnitin plagiarism plugin.
+ *
+ * @package   plagiarism_turnitin
+ * @copyright Turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class turnitin_logger {
-
     /** @var int Maximum number of daily log files to retain. */
     const MAX_LOG_FILES = 10;
 

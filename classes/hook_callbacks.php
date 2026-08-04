@@ -15,19 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Hook callbacks for the Turnitin plagiarism plugin.
+ *
  * @package   plagiarism_turnitin
  * @copyright 2025 Turnitin
  * @author    Jack Milgate
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_turnitin;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core\hook\output\before_footer_html_generation;
 
+/**
+ * Hook callback handlers for plagiarism_turnitin.
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2025 Turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class hook_callbacks {
-
     /**
      * This is a workaround to allow the EULA to be displayed on the quiz page.
      * This function fires on every page, but only does anything if the user is on the quiz page.
@@ -43,10 +50,10 @@ class hook_callbacks {
         }
 
         // Include lib.php so we can access the Turnitin plagiarism plugin class.
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $pluginturnitin = new \plagiarism_plugin_turnitin();
 
-        $moduletiienabled = $pluginturnitin->get_config_settings('mod_'.$PAGE->cm->modname);
+        $moduletiienabled = $pluginturnitin->get_config_settings('mod_' . $PAGE->cm->modname);
         // Exit if Turnitin is not being used for this activity type.
         if (empty($moduletiienabled)) {
             return;

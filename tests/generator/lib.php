@@ -20,8 +20,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 global $DB;
 
-require_once($CFG->dirroot.'/course/lib.php');
-require_once($CFG->dirroot.'/webservice/tests/helpers.php');
+require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 /**
  * plagiarism_turnitin module data generator class
@@ -36,7 +36,6 @@ require_once($CFG->dirroot.'/webservice/tests/helpers.php');
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class plagiarism_turnitin_test_lib extends \advanced_testcase {
-
     /**
      * Creates a number of test plagiarism_turnitin users, creates an equivalent moodle user for each, and handles the database
      * association work.
@@ -52,7 +51,7 @@ abstract class plagiarism_turnitin_test_lib extends \advanced_testcase {
 
         for ($i = 0; $i < $numberofusers; $i++) {
             $role = isset($roles[$i]) ? $roles[$i] : 'Instructor';
-            $newuser = new turnitin_user( $i + 1, $role, false, 'site', false );
+            $newuser = new turnitin_user($i + 1, $role, false, 'site', false);
             array_push($return['plagiarism_turnitin_users'], $newuser);
             $joinid = $this->join_test_user($newuser);
             array_push($return['joins'], $joinid);

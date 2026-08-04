@@ -22,9 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->libdir.'/tablelib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->libdir . '/tablelib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 
 $turnitinview = new \turnitin_view();
@@ -56,8 +56,11 @@ switch ($cmd) {
         $tiicourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $courseid]);
         $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
 
-        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
-            ["class" => "launch_form"]);
+        echo html_writer::tag(
+            "div",
+            $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
+            ["class" => "launch_form"]
+        );
         echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");
@@ -66,8 +69,11 @@ switch ($cmd) {
     case "quickmarkmanager":
         $PAGE->set_pagelayout('embedded');
 
-        echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
-            ["class" => "launch_form"]);
+        echo html_writer::tag(
+            "div",
+            $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
+            ["class" => "launch_form"]
+        );
         echo html_writer::script("<!--
                                     window.document.forms[0].submit();
                                     //-->");

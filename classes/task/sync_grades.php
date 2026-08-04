@@ -29,7 +29,6 @@ namespace plagiarism_turnitin\task;
  * Send queued submissions to Turnitin.
  */
 class sync_grades extends \core\task\scheduled_task {
-
     /**
      * Get the name of the task.
      *
@@ -47,8 +46,8 @@ class sync_grades extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG, $DB;
-        
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $pluginturnitin = new \plagiarism_plugin_turnitin();
         if (!$pluginturnitin->is_plugin_configured()) {
             return;
@@ -58,11 +57,11 @@ class sync_grades extends \core\task\scheduled_task {
             return;
         }
 
-        $one_week_in_seconds = 7 * 24 * 60 * 60;
-        $current_time = time();
-        $grade_sync_cutoff = $current_time - $one_week_in_seconds;
+        $oneweekinseconds = 7 * 24 * 60 * 60;
+        $currenttime = time();
+        $gradesynccutoff = $currenttime - $oneweekinseconds;
 
-        // Get list of all PP enabled activity modules that might need grade sync
+        // Get list of all PP enabled activity modules that might need grade sync.
         $sql = "SELECT ptc.id, ptc.cm, ptc.name, ptc.value, ptc.config_hash, m.name AS modtype,
                       COALESCE(a.duedate, q.timeclose, f.cutoffdate, w.submissionend) AS duedate
                   FROM {plagiarism_turnitin_config} ptc
@@ -75,16 +74,16 @@ class sync_grades extends \core\task\scheduled_task {
                 WHERE ptc.name = :configname
                   AND m.name IN ('assign', 'quiz', 'forum', 'workshop')";
         $params = ['configname' => 'turnitin_assignid'];
-        $grade_sync_assignments = $DB->get_records_sql($sql, $params);
+        $gradesynccassignments = $DB->get_records_sql($sql, $params);
 
-        foreach ($grade_sync_assignments as $assignment) {
-            if ($assignment->duedate < $grade_sync_cutoff) {
+        foreach ($gradesynccassignments as $assignment) {
+            if ($assignment->duedate < $gradesynccutoff) {
                 continue;
             }
 
             try {
-                $course_id = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
-                $modinfo = get_fast_modinfo($course_id);
+                $courseid = $DB->get_field('course_modules', 'course', ['id' => $assignment->cm], MUST_EXIST);
+                $modinfo = get_fast_modinfo($courseid);
                 $cm = $modinfo->get_cm($assignment->cm);
                 $status = $pluginturnitin->update_grades_from_tii($cm);
             } catch (\Exception $e) {
@@ -95,22 +94,25 @@ class sync_grades extends \core\task\scheduled_task {
             if ($status) {
                 mtrace('Successfully synced grades for cmid ' . $cm->id);
             } else {
-               mtrace('No new grades found for cmid ' . $cm->id);
+                mtrace('No new grades found for cmid ' . $cm->id);
             }
 
-            // Update the last synced time
-            $to_write = new \stdClass();
-            $to_write->cm = $assignment->cm;
-            $to_write->name = 'grades_last_synced';
-            $to_write->value = $current_time;
-            $to_write->config_hash = $assignment->cm . '_grades_last_synced';
+            // Update the last synced time.
+            $towrite = new \stdClass();
+            $towrite->cm = $assignment->cm;
+            $towrite->name = 'grades_last_synced';
+            $towrite->value = $currenttime;
+            $towrite->config_hash = $assignment->cm . '_grades_last_synced';
 
-            $record = $DB->get_record('plagiarism_turnitin_config', [ 'name' => 'grades_last_synced', 'cm' => $assignment->cm ]);
+            $record = $DB->get_record(
+                'plagiarism_turnitin_config',
+                ['name' => 'grades_last_synced', 'cm' => $assignment->cm]
+            );
             if ($record) {
-                $to_write->id = $record->id;
-                $DB->update_record('plagiarism_turnitin_config', $to_write);
+                $towrite->id = $record->id;
+                $DB->update_record('plagiarism_turnitin_config', $towrite);
             } else {
-                $DB->insert_record('plagiarism_turnitin_config', $to_write);
+                $DB->insert_record('plagiarism_turnitin_config', $towrite);
             }
         }
     }

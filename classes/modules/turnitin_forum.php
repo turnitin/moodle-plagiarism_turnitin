@@ -27,8 +27,14 @@
 
 namespace plagiarism_turnitin\modules;
 
+/**
+ * Class turnitin_forum
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2012 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class turnitin_forum {
-
     /**
      * @var string
      */
@@ -48,7 +54,7 @@ class turnitin_forum {
     public function __construct() {
         $this->modname = 'forum';
         $this->gradestable = 'grade_grades';
-        $this->filecomponent = 'mod_'.$this->modname;
+        $this->filecomponent = 'mod_' . $this->modname;
     }
 
     /**
@@ -80,7 +86,7 @@ class turnitin_forum {
      * @throws coding_exception
      */
     public function user_enrolled_on_course($context, $userid) {
-        return has_capability('mod/'.$this->modname.':replypost', $context, $userid);
+        return has_capability('mod/' . $this->modname . ':replypost', $context, $userid);
     }
 
     /**
@@ -139,8 +145,11 @@ class turnitin_forum {
             $apimethod = ($reportgen == 0) ? 'createSubmission' : 'replaceSubmission';
         }
 
-        $forumpost = $DB->get_record_select('forum_posts', 'userid = ? AND id = ?',
-            [$queueditem->userid, $queueditem->itemid]);
+        $forumpost = $DB->get_record_select(
+            'forum_posts',
+            'userid = ? AND id = ?',
+            [$queueditem->userid, $queueditem->itemid]
+        );
 
         if (!$forumpost) {
             \plagiarism_turnitin\turnitin_logger::log(
@@ -151,7 +160,7 @@ class turnitin_forum {
                     'title' => null, 'filename' => null];
         }
 
-        // html_to_text() strips tags and decodes HTML entities (e.g. &amp; becomes &), matching
+        // Strip tags and decode HTML entities (e.g. &amp; becomes &), matching
         // the behaviour used for assign/workshop text_content submissions.
         $textcontent = html_to_text($forumpost->message);
         $title = 'forumpost_' . $queueditem->userid . '_' . $cm->id . '_' . $cm->instance
@@ -213,9 +222,9 @@ class turnitin_forum {
      */
     public function get_discussionid($forumdata) {
         global $CFG;
-        require_once($CFG->dirroot.'/mod/forum/lib.php');
+        require_once($CFG->dirroot . '/mod/forum/lib.php');
 
-        list($querystrid, $discussionid, $reply, $edit, $delete) = explode('_', $forumdata);
+        [$querystrid, $discussionid, $reply, $edit, $delete] = explode('_', $forumdata);
 
         if (empty($discussionid)) {
             $parent = '';

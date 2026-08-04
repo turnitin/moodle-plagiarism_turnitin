@@ -24,19 +24,19 @@
 
 use Integrations\PhpSdk\TiiClass;
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 require_login();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-	  \core\session\manager::write_close();
+      \core\session\manager::write_close();
 }
 
 $action = required_param('action', PARAM_ALPHAEXT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);
-if ( !empty( $cmid ) ) {
+if (!empty($cmid)) {
     $cm = get_coursemodule_from_id('', $cmid);
     $context = context_course::instance($cm->course);
 
@@ -48,7 +48,7 @@ if ( !empty( $cmid ) ) {
             $userrole = (has_capability('plagiarism/turnitin:viewfullreport', $context)) ? 'Instructor' : 'Learner';
             break;
         default:
-            $userrole = (has_capability('mod/'.$cm->modname.':grade', $context)) ? 'Instructor' : 'Learner';
+            $userrole = (has_capability('mod/' . $cm->modname . ':grade', $context)) ? 'Instructor' : 'Learner';
             break;
     }
 }
@@ -99,7 +99,7 @@ switch ($action) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
 
-        include_once($CFG->libdir."/gradelib.php");
+        include_once($CFG->libdir . "/gradelib.php");
 
         $submissionid = optional_param('submission', 0, PARAM_INT);
 
@@ -111,17 +111,21 @@ switch ($action) {
             $moduleconfigvalue->value = time();
 
             // If we have a turnitin timestamp stored then update it, otherwise create it.
-            if ($timestampid = $DB->get_record('plagiarism_turnitin_config',
-                                        ['cm' => $cm->id, 'name' => 'grades_last_synced'], 'id')) {
+            if (
+                $timestampid = $DB->get_record(
+                    'plagiarism_turnitin_config',
+                    ['cm' => $cm->id, 'name' => 'grades_last_synced'],
+                    'id'
+                )
+            ) {
                 $moduleconfigvalue->id = $timestampid->id;
                 $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
             } else {
                 $moduleconfigvalue->cm = $cm->id;
                 $moduleconfigvalue->name = 'grades_last_synced';
-                $moduleconfigvalue->config_hash = $moduleconfigvalue->cm."_".$moduleconfigvalue->name;
+                $moduleconfigvalue->config_hash = $moduleconfigvalue->cm . "_" . $moduleconfigvalue->name;
                 $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
             }
-
         } else {
             $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
         }
@@ -137,7 +141,6 @@ switch ($action) {
         break;
 
     case "peermarkmanager":
-
         if ($userrole == 'Instructor') {
             $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
             $coursedata = $plagiarismpluginturnitin->get_course_data($cm->id, $cm->course);
@@ -194,8 +197,8 @@ switch ($action) {
         break;
 
     case "peermarkreviews":
-        $replypost = 'mod/'.$cm->modname.':replypost';
-        $submit = 'mod/'.$cm->modname.':submit';
+        $replypost = 'mod/' . $cm->modname . ':replypost';
+        $submit = 'mod/' . $cm->modname . ':submit';
         $isstudent = ($cm->modname == "forum") ? has_capability($replypost, $context) : has_capability($submit, $context);
 
         if ($userrole == 'Instructor' || $isstudent) {
@@ -236,11 +239,11 @@ switch ($action) {
         $eulauser->user_agreement_accepted = 0;
         if ($message == 'turnitin_eula_accepted') {
             $eulauser->user_agreement_accepted = 1;
-            $logstring = "User ".$USER->id." (".$turnitinuser->turnitin_uid.") accepted the EULA.";
+            $logstring = "User " . $USER->id . " (" . $turnitinuser->turnitin_uid . ") accepted the EULA.";
             \turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
         } else if ($message == 'turnitin_eula_declined') {
             $eulauser->user_agreement_accepted = -1;
-            $logstring = "User ".$USER->id." (".$turnitinuser->turnitin_uid.") declined the EULA.";
+            $logstring = "User " . $USER->id . " (" . $turnitinuser->turnitin_uid . ") declined the EULA.";
             \turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
         }
 
@@ -257,8 +260,10 @@ switch ($action) {
         $forumpost = optional_param('forumpost', '', PARAM_BASE64);
         $submissionid = required_param('submissionid', PARAM_INT);
 
-        $tiisubmission = new \turnitin_submission($submissionid,
-                                                ['forumdata' => $forumdata, 'forumpost' => $forumpost]);
+        $tiisubmission = new \turnitin_submission(
+            $submissionid,
+            ['forumdata' => $forumdata, 'forumpost' => $forumpost]
+        );
 
         if ($tiisubmission->recreate_submission_event()) {
             $return = ['success' => true];
@@ -266,7 +271,6 @@ switch ($action) {
         break;
 
     case "resubmit_events":
-
         if (!confirm_sesskey()) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }

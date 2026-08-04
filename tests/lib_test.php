@@ -39,7 +39,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(\plagiarism_plugin_turnitin::class)]
 final class lib_test extends \advanced_testcase {
-
     /**
      * Test that the plugin is configured correctly.
      *

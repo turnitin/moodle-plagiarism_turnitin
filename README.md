@@ -50,3 +50,80 @@ If you would like them yourself along with the other Moodle tests, please includ
 TII_ACCOUNT: [your Turnitin account ID]
 TII_SECRET: [your 8-character secret]
 TII_APIBASEURL: "https://api.turnitin.com"
+
+Unit Tests
+=====================================
+
+Tests require a running Moodle instance. The local Docker setup provides this via the
+`moodle502-moodle-1` container.
+
+Before running tests for the first time (or after rebuilding the container), initialise
+the PHPUnit environment:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  php admin/tool/phpunit/cli/init.php
+"
+```
+
+If init fails with "Can not use database for testing, try different prefix", drop and
+reinitialise:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  php admin/tool/phpunit/cli/init.php --drop &&
+  php admin/tool/phpunit/cli/init.php
+"
+```
+
+### Run all unit tests
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/tests/phpunit.xml
+"
+```
+
+### Run a specific test class or method
+
+```bash
+# All tests in a class
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --filter turnitin_forum_test
+"
+
+# A single test method
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --filter test_get_submission_content_returns_content_for_new_submission
+"
+```
+
+### Generate a code coverage report
+
+PCOV is pre-installed in the Docker image. Run the suite with `--coverage-html` to produce
+an HTML report, then copy it out of the container to view in a browser:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/tests/phpunit.xml \
+    --coverage-html /tmp/turnitin-coverage
+" && \
+docker cp moodle502-moodle-1:/tmp/turnitin-coverage /tmp/turnitin-coverage && \
+open /tmp/turnitin-coverage/index.html
+```
+
+The report is scoped to the plugin's own code (`classes/`, `lib.php`, `locallib.php`) and
+excludes Moodle core. This is configured via the `<source>` block in
+`tests/phpunit.xml` and the `pcov.directory` setting baked into the Docker image.

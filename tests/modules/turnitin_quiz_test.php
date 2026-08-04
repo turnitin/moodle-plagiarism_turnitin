@@ -38,7 +38,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package plagiarism_turnitin
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass('\turnitin_quiz')]
+#[CoversClass(\turnitin_quiz::class)]
 final class turnitin_quiz_test extends \advanced_testcase {
     /**
      * Proves that essay response marks are correctly updated.

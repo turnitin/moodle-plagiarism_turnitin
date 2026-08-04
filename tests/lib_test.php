@@ -30,17 +30,14 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for API comms class
  *
  * @package turnitin
  */
-#[CoversFunction('plagiarism_turnitin\plagiarism_plugin_turnitin::is_plugin_configured')]
-#[CoversFunction('plagiarism_turnitin\plagiarism_plugin_turnitin::check_group_submission')]
-#[CoversFunction('plagiarism_turnitin\plagiarism_plugin_turnitin::plagiarism_get_report_gen_speed_params')]
-#[CoversFunction('plagiarism_turnitin\plagiarism_plugin_turnitin::plagiarism_set_config')]
+#[CoversClass(\plagiarism_plugin_turnitin::class)]
 final class lib_test extends \advanced_testcase {
 
     /**

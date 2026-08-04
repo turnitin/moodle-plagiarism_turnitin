@@ -41,16 +41,12 @@ if (!class_exists('\core_privacy\tests\provider_testcase')) {
     return;
 }
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for plagiarsm/turnitin/privacy
  */
-#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::_get_metadata')]
-#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::get_contexts_for_userid')]
-#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::export_plagiarism_user_data')]
-#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_user')]
-#[CoversFunction('\core_plagiarism\privacy\legacy_polyfill::delete_plagiarism_for_context')]
+#[CoversClass(\plagiarism_turnitin\privacy\provider::class)]
 final class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
@@ -204,6 +200,10 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
+        // Use a static counter so each call to create_submission() gets a unique
+        // base externalid, avoiding the unique index constraint on that column.
+        static $externalidbase = 100000000;
+
         $libtest = new \plagiarism_turnitin\lib_test("create_submission");
         $result = $libtest->create_assign_with_student_and_teacher([
             'assignsubmission_onlinetext_enabled' => 1,
@@ -221,7 +221,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $plagiarismfile->identifier = "abcd";
         $plagiarismfile->statuscode = "success";
         $plagiarismfile->similarityscore = 50;
-        $plagiarismfile->externalid = 123456789;
         $plagiarismfile->attempt = 1;
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->lastmodified = time();
@@ -230,6 +229,8 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $plagiarismfile->submitter = $student->id;
 
         for ($i = 0; $i < $numsubmissions; $i++) {
+            // externalid must be unique per row due to a database unique index constraint.
+            $plagiarismfile->externalid = $externalidbase++;
             $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile);
         }
 

@@ -30,14 +30,14 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for assign
  *
  * @package turnitin
  */
-#[CoversFunction('\turnitin_assign::is_resubmission_allowed')]
+#[CoversClass(\turnitin_assign::class)]
 final class turnitin_assign_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */

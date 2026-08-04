@@ -29,14 +29,14 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for API comms class
  *
  * @package turnitin
  */
-#[CoversFunction('\turnitin_forum::set_content')]
+#[CoversClass(\turnitin_forum::class)]
 final class turnitin_forum_test extends \advanced_testcase {
 
     /** @var stdClass created in setUp. */

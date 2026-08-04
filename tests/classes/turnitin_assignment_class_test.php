@@ -110,7 +110,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(['api_create_class', 'api_get_class', 'api_get_class_id'])
+            ->onlyMethods(['api_create_class', 'api_get_class', 'api_get_class_id'])
             ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
@@ -169,7 +169,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(['api_update_class', 'api_set_class_id'])
+            ->onlyMethods(['api_update_class', 'api_set_class_id'])
             ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
@@ -240,7 +240,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
             ->with("");
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(['api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'])
+            ->onlyMethods(['api_create_assignment', 'api_get_assignment', 'api_get_assignment_id'])
             ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 
@@ -285,7 +285,7 @@ final class turnitin_assignment_class_test extends \advanced_testcase {
             ->withAnyParameters();
 
         $mock = $this->getMockBuilder('turnitin_assignment')
-            ->setMethods(['api_update_assignment', 'api_get_assignment_id', 'api_get_title'])
+            ->onlyMethods(['api_update_assignment', 'api_get_assignment_id', 'api_get_title'])
             ->setConstructorArgs([0, $faketiicomms])
             ->getMock();
 

@@ -90,7 +90,8 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        # --no-init skips Behat initialisation, which requires dev dependencies we don't install.
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
         env:
           DB: pgsql
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}

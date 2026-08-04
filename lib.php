@@ -1519,7 +1519,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm,
             $submissionid,
             $tiisubmission,
-            function($cm, $tiisubmission, $userid) use ($submissionid) {
+            function ($cm, $tiisubmission, $userid) use ($submissionid) {
                 global $DB;
 
                 // Determine whether the gradebook should be updated for this submission.
@@ -1545,7 +1545,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                 $assignmentdata['userid'] = $submissiondata->userid;
                             }
                             $submission = $DB->get_records(
-                                'assign_submission', $assignmentdata, 'id DESC', 'id, attemptnumber', '0', '1'
+                                'assign_submission',
+                                $assignmentdata,
+                                'id DESC',
+                                'id, attemptnumber',
+                                '0',
+                                '1'
                             );
                             $item = current($submission);
                             if ($item->id != $itemid) {

@@ -261,10 +261,10 @@ class turnitin_submission {
 
         if (
             $submissiondata->similarityscore != $plagiarismfile->similarityscore ||
-            $submissiondata->grade           != $plagiarismfile->grade           ||
-            $submissiondata->orcapable       != $plagiarismfile->orcapable       ||
-            $submissiondata->student_read    != $plagiarismfile->student_read    ||
-            $submissiondata->gm_feedback     != $plagiarismfile->gm_feedback
+            $submissiondata->grade != $plagiarismfile->grade           ||
+            $submissiondata->orcapable != $plagiarismfile->orcapable       ||
+            $submissiondata->student_read != $plagiarismfile->student_read    ||
+            $submissiondata->gm_feedback != $plagiarismfile->gm_feedback
         ) {
             $updaterequired = true;
         }

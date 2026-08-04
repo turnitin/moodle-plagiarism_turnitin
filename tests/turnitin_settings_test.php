@@ -312,7 +312,7 @@ final class turnitin_settings_test extends \advanced_testcase {
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
-        // secretkey intentionally not set.
+        // Secretkey intentionally not set.
 
         $this->assertFalse(turnitin_settings::is_plugin_configured());
     }

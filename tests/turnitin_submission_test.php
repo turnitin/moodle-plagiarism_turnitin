@@ -40,7 +40,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_test extends \advanced_testcase {
-
     // Save_errored tests.
 
     /**
@@ -318,19 +317,19 @@ final class turnitin_submission_test extends \advanced_testcase {
             'orcapable' => 0, 'student_read' => 0, 'gm_feedback' => 0,
         ]);
 
-        $gradeCallbackFired = false;
+        $gradecallbackfired = false;
         $tiisubmission = $this->make_tii_submission([
             'similarity' => 42, 'translated' => 0, 'grade' => null,
             'orcapable' => 0, 'feedback_exists' => 0, 'author_viewed' => 0,
         ]);
 
-        $result = turnitin_submission::update($cm, $id, $tiisubmission, function() use (&$gradeCallbackFired) {
-            $gradeCallbackFired = true;
+        $result = turnitin_submission::update($cm, $id, $tiisubmission, function () use (&$gradecallbackfired) {
+            $gradecallbackfired = true;
             return true;
         });
 
         $this->assertTrue($result);
-        $this->assertFalse($gradeCallbackFired, 'Grade callback should not fire when nothing changed.');
+        $this->assertFalse($gradecallbackfired, 'Grade callback should not fire when nothing changed.');
     }
 
     /**
@@ -344,20 +343,20 @@ final class turnitin_submission_test extends \advanced_testcase {
         $cm = $this->make_cm();
         $id = $this->insert_submission_row(['cm' => $cm->id, 'similarityscore' => 10]);
 
-        $callbackArgs = [];
+        $callbackargs = [];
         $tiisubmission = $this->make_tii_submission([
             'similarity' => 99, 'translated' => 0, 'grade' => 85,
             'orcapable' => 0, 'feedback_exists' => 0, 'author_viewed' => 0,
         ]);
 
-        turnitin_submission::update($cm, $id, $tiisubmission, function($cbcm, $cbsubmission, $cbuserid) use (&$callbackArgs) {
-            $callbackArgs = [$cbcm, $cbsubmission, $cbuserid];
+        turnitin_submission::update($cm, $id, $tiisubmission, function ($cbcm, $cbsubmission, $cbuserid) use (&$callbackargs) {
+            $callbackargs = [$cbcm, $cbsubmission, $cbuserid];
             return true;
         });
 
-        $this->assertNotEmpty($callbackArgs, 'Grade callback should have been invoked.');
-        $this->assertSame($cm, $callbackArgs[0]);
-        $this->assertSame($tiisubmission, $callbackArgs[1]);
+        $this->assertNotEmpty($callbackargs, 'Grade callback should have been invoked.');
+        $this->assertSame($cm, $callbackargs[0]);
+        $this->assertSame($tiisubmission, $callbackargs[1]);
     }
 
     /**
@@ -431,7 +430,8 @@ final class turnitin_submission_test extends \advanced_testcase {
             'author_viewed'   => 0,
         ], $values);
 
-        return new class($values) {
+        // phpcs:disable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
+        return new class ($values) {
             /** @var array */
             private $v;
 
@@ -443,36 +443,54 @@ final class turnitin_submission_test extends \advanced_testcase {
                 $this->v = $v;
             }
 
-            /** @return mixed */
+            /**
+             * Get value from stub.
+             * @return mixed
+             */
             public function getOverallSimilarity() {
                 return $this->v['similarity'];
             }
 
-            /** @return mixed */
+            /**
+             * Get value from stub.
+             * @return mixed
+             */
             public function getTranslatedOverallSimilarity() {
                 return $this->v['translated'];
             }
 
-            /** @return mixed */
+            /**
+             * Get value from stub.
+             * @return mixed
+             */
             public function getGrade() {
                 return $this->v['grade'];
             }
 
-            /** @return int */
+            /**
+             * Get value from stub.
+             * @return int
+             */
             public function getOriginalityReportCapable() {
                 return $this->v['orcapable'];
             }
 
-            /** @return int */
+            /**
+             * Get value from stub.
+             * @return int
+             */
             public function getFeedbackExists() {
                 return $this->v['feedback_exists'];
             }
 
-            /** @return int */
+            /**
+             * Get value from stub.
+             * @return int
+             */
             public function getAuthorLastViewedFeedback() {
                 return $this->v['author_viewed'];
             }
-        };
+        }; // phpcs:enable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
     }
 
     // Create_new tests.
@@ -590,7 +608,8 @@ final class turnitin_submission_test extends \advanced_testcase {
         $deletedsubmission = null;
 
         // Stub the API call object returned by initialise_api().
-        $fakeapi = new class($deletecalled, $deletedsubmission) {
+        // phpcs:disable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
+        $fakeapi = new class ($deletecalled, $deletedsubmission) {
             /** @var bool */
             public $called;
             /** @var object|null */
@@ -607,13 +626,14 @@ final class turnitin_submission_test extends \advanced_testcase {
             }
 
             /**
+             * Delete a submission via the API.
              * @param object $submission
              */
             public function deleteSubmission(object $submission): void {
                 $this->called    = true;
                 $this->submission = $submission;
             }
-        };
+        }; // phpcs:enable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
 
         $fakecomms = $this->getMockBuilder(turnitin_comms::class)
             ->disableOriginalConstructor()
@@ -635,14 +655,16 @@ final class turnitin_submission_test extends \advanced_testcase {
         $cm   = $this->make_cm();
         $user = $this->getDataGenerator()->create_user();
 
+        // phpcs:disable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
         $fakeapi = new class {
             /**
+             * Delete a submission via the API.
              * @param object $submission
              */
             public function deleteSubmission(object $submission): void {
                 throw new \Exception('Turnitin API unavailable');
             }
-        };
+        }; // phpcs:enable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
 
         $fakecomms = $this->getMockBuilder(turnitin_comms::class)
             ->disableOriginalConstructor()
@@ -650,7 +672,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         $fakecomms->method('initialise_api')->willReturn($fakeapi);
         $fakecomms->method('handle_exceptions')->willReturn(null);
 
-        // delete() catches the exception and calls mtrace() to log it — expect that output.
+        // Delete() catches the exception and calls mtrace() to log it — expect that output.
         $this->expectOutputRegex('/turnitindeletionerror|Turnitin/i');
 
         turnitin_submission::delete($cm, 'tii-sub-99', $user->id, $fakecomms);

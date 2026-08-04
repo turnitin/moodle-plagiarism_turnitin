@@ -1533,144 +1533,98 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @throws dml_transaction_exception
      */
     private function update_submission($cm, $submissionid, $tiisubmission) {
-        global $DB;
+        return \plagiarism_turnitin\turnitin_submission::update(
+            $cm,
+            $submissionid,
+            $tiisubmission,
+            function($cm, $tiisubmission, $userid) use ($submissionid) {
+                global $DB;
 
-        $return = true;
-        $updaterequired = false;
+                // Determine whether the gradebook should be updated for this submission.
+                // We skip it when the submission is not the latest attempt, to avoid
+                // overwriting a more recent grade with an older one.
+                $gbupdaterequired = true;
+                $submissiondata = $DB->get_record(
+                    'plagiarism_turnitin_files',
+                    ['id' => $submissionid],
+                    'identifier, submissiontype, userid'
+                );
 
-        $fields = 'id, cm, userid, identifier, itemid, similarityscore, grade, submissiontype, orcapable,';
-        $fields .= 'student_read, gm_feedback, errorcode';
-        if ($submissiondata = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], $fields)) {
-            // Build Plagiarism file object.
-            $plagiarismfile = new stdClass();
-            $plagiarismfile->id = $submissiondata->id;
-            $plagiarismfile->similarityscore = (is_numeric($tiisubmission->getOverallSimilarity())) ?
-                $tiisubmission->getOverallSimilarity() : null;
-            $plagiarismfile->transmatch = 0;
-            if ((int)$tiisubmission->getTranslatedOverallSimilarity() > $tiisubmission->getOverallSimilarity()) {
-                $plagiarismfile->similarityscore = $tiisubmission->getTranslatedOverallSimilarity();
-                $plagiarismfile->transmatch = 1;
-            }
-            $plagiarismfile->grade = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
-            $plagiarismfile->orcapable = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
-            $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
-
-            // If error code is 13, set the status to success otherwise resetting the errorcode will hide the submission.
-            if ($submissiondata->errorcode == 13) {
-                $plagiarismfile->statuscode = 'success';
-            }
-
-            // Reset Error Values.
-            $plagiarismfile->errorcode = null;
-            $plagiarismfile->errormsg = null;
-
-            // Update feedback timestamp.
-            $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0) ?
-                strtotime($tiisubmission->getAuthorLastViewedFeedback()) : 0;
-
-            // Identify if an update is required for the similarity score and grade.
-            if (
-                $submissiondata->similarityscore != $plagiarismfile->similarityscore ||
-                $submissiondata->grade != $plagiarismfile->grade ||
-                $submissiondata->orcapable != $plagiarismfile->orcapable ||
-                $submissiondata->student_read != $plagiarismfile->student_read ||
-                $submissiondata->gm_feedback != $plagiarismfile->gm_feedback
-            ) {
-                $updaterequired = true;
-            }
-
-            // Don't update grademark if the submission is not part of the latest attempt.
-            $gbupdaterequired = $updaterequired;
-            if ($cm->modname == "assign") {
-                if ($submissiondata->submissiontype == "file") {
-                    $fs = get_file_storage();
-                    if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
-                        $itemid = $file->get_itemid();
-
-                        $assignmentdata = ["assignment" => $cm->instance];
-
-                        // Check whether submission is a group submission.
-                        $groupid = $this->check_group_submission($cm, $submissiondata->userid);
-                        if ($groupid) {
-                            $assignmentdata['groupid'] = $groupid;
+                if ($cm->modname == "assign" && $submissiondata) {
+                    if ($submissiondata->submissiontype == "file") {
+                        $fs = get_file_storage();
+                        if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
+                            $itemid = $file->get_itemid();
+                            $assignmentdata = ["assignment" => $cm->instance];
+                            $groupid = $this->check_group_submission($cm, $submissiondata->userid);
+                            if ($groupid) {
+                                $assignmentdata['groupid'] = $groupid;
+                            } else {
+                                $assignmentdata['userid'] = $submissiondata->userid;
+                            }
+                            $submission = $DB->get_records(
+                                'assign_submission', $assignmentdata, 'id DESC', 'id, attemptnumber', '0', '1'
+                            );
+                            $item = current($submission);
+                            if ($item->id != $itemid) {
+                                $gbupdaterequired = false;
+                            }
                         } else {
-                            $assignmentdata['userid'] = $submissiondata->userid;
-                        }
-                        $submission = $DB->get_records(
-                            'assign_submission',
-                            $assignmentdata,
-                            'id DESC',
-                            'id, attemptnumber',
-                            '0',
-                            '1'
-                        );
-
-                        $item = current($submission);
-                        if ($item->id != $itemid) {
-                             $gbupdaterequired = false;
-                        }
-                    } else {
-                        $gbupdaterequired = false;
-                    }
-                } else if ($submissiondata->submissiontype == "text_content") {
-                    // Get latest submission.
-                    $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
-                    $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
-                    if (!empty($latesttext)) {
-                        $latestidentifier = sha1(
-                            'text_content cm' . $cm->id . ' itemid' . $latesttext->itemid . ' ' . $latesttext->onlinetext
-                        );
-                        $oldlatestidentifier = sha1($latesttext->onlinetext);
-                        // Check submission being graded is latest.
-                        if (
-                            $submissiondata->identifier != $latestidentifier
-                                && $submissiondata->identifier != $oldlatestidentifier
-                        ) {
                             $gbupdaterequired = false;
+                        }
+                    } else if ($submissiondata->submissiontype == "text_content") {
+                        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
+                        $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
+                        if (!empty($latesttext)) {
+                            $latestidentifier = sha1(
+                                'text_content cm' . $cm->id . ' itemid' . $latesttext->itemid
+                                    . ' ' . $latesttext->onlinetext
+                            );
+                            $oldlatestidentifier = sha1($latesttext->onlinetext);
+                            if (
+                                $submissiondata->identifier != $latestidentifier
+                                    && $submissiondata->identifier != $oldlatestidentifier
+                            ) {
+                                $gbupdaterequired = false;
+                            }
                         }
                     }
                 }
-            }
 
-            // Only update as necessary.
-            if ($updaterequired) {
-                $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
-
-                // Coursework grading would be broken by syncing grades as Turnitin doesn't support Double marking.
                 if ($cm->modname == "coursework") {
                     return true;
                 }
 
-                // Update grades, for the quiz we update marks for questions instead.
                 if ($cm->modname == "quiz") {
                     $quiz = $DB->get_record('quiz', ['id' => $cm->instance]);
+                    $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], 'grade');
                     $tq = new \plagiarism_turnitin\modules\turnitin_quiz();
                     if (!is_null($plagiarismfile->grade)) {
                         $tq->update_mark(
-                            $submissiondata->itemid,
+                            $submissiondata->itemid ?? 0,
                             $submissiondata->identifier,
-                            $submissiondata->userid,
+                            $userid,
                             $plagiarismfile->grade,
                             $quiz->grade
                         );
                     }
-                } else {
-                    $gradeitem = $DB->get_record(
-                        'grade_items',
-                        ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
-                        'courseid' => $cm->course,
-                        'itemnumber' => 0,
-                        ]
-                    );
-
-                    if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
-                        $return = $this->update_grade($cm, $tiisubmission, $submissiondata->userid);
-                    }
+                    return true;
                 }
-            }
-        }
 
-        return $return;
+                $gradeitem = $DB->get_record(
+                    'grade_items',
+                    ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
+                     'courseid' => $cm->course, 'itemnumber' => 0]
+                );
+
+                $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], 'grade');
+                if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
+                    return $this->update_grade($cm, $tiisubmission, $userid);
+                }
+
+                return true;
+            }
+        );
     }
 
     /**

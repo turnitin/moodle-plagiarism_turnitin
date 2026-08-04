@@ -182,9 +182,90 @@ class turnitin_submission {
     }
 
     /**
-     * Get the file information from Moodle. We really specifically only need the itemid.
+     * Update a submission row with fresh data from a Turnitin API response.
+     *
+     * Writes similarity score, grade, transmatch flag and feedback metadata back
+     * to plagiarism_turnitin_files. When any of those values have changed, the
+     * $gradeupdate callable is invoked so the caller can sync the Moodle gradebook.
+     * This keeps the DB update logic testable in isolation from the gradebook coupling.
+     *
+     * The transmatch flag is set to 1 when the translated similarity score exceeds
+     * the original — Turnitin uses this for multilingual submissions.
+     *
+     * @param \stdClass $cm            Course module record.
+     * @param int       $submissionid  plagiarism_turnitin_files row id.
+     * @param object    $tiisubmission Turnitin API submission object (TiiSubmission).
+     * @param callable  $gradeupdate   Called as $gradeupdate($cm, $tiisubmission, $userid)
+     *                                 when an update to the gradebook is needed.
+     * @return bool True on success or when no update was needed.
      */
-    public function get_file_info() {
+    public static function update(
+        \stdClass $cm,
+        int $submissionid,
+        object $tiisubmission,
+        callable $gradeupdate
+    ): bool {
+        global $DB;
+
+        $return = true;
+        $updaterequired = false;
+
+        $fields = 'id, cm, userid, identifier, itemid, similarityscore, grade, submissiontype,'
+            . ' orcapable, student_read, gm_feedback, errorcode';
+        $submissiondata = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], $fields);
+        if (!$submissiondata) {
+            return true;
+        }
+
+        $plagiarismfile = new \stdClass();
+        $plagiarismfile->id = $submissiondata->id;
+
+        // Use the translated score when it exceeds the original — this covers multilingual submissions.
+        $plagiarismfile->similarityscore = is_numeric($tiisubmission->getOverallSimilarity())
+            ? $tiisubmission->getOverallSimilarity()
+            : null;
+        $plagiarismfile->transmatch = 0;
+        if ((int)$tiisubmission->getTranslatedOverallSimilarity() > $tiisubmission->getOverallSimilarity()) {
+            $plagiarismfile->similarityscore = $tiisubmission->getTranslatedOverallSimilarity();
+            $plagiarismfile->transmatch = 1;
+        }
+
+        $plagiarismfile->grade      = ($tiisubmission->getGrade() == '') ? null : $tiisubmission->getGrade();
+        $plagiarismfile->orcapable  = ($tiisubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
+        $plagiarismfile->gm_feedback = $tiisubmission->getFeedbackExists();
+
+        // Errorcode 13 is a special Turnitin retry state — clear it and mark as success.
+        if ($submissiondata->errorcode == 13) {
+            $plagiarismfile->statuscode = 'success';
+        }
+
+        $plagiarismfile->errorcode = null;
+        $plagiarismfile->errormsg  = null;
+
+        $plagiarismfile->student_read = ($tiisubmission->getAuthorLastViewedFeedback() > 0)
+            ? strtotime($tiisubmission->getAuthorLastViewedFeedback())
+            : 0;
+
+        if (
+            $submissiondata->similarityscore != $plagiarismfile->similarityscore ||
+            $submissiondata->grade           != $plagiarismfile->grade           ||
+            $submissiondata->orcapable       != $plagiarismfile->orcapable       ||
+            $submissiondata->student_read    != $plagiarismfile->student_read    ||
+            $submissiondata->gm_feedback     != $plagiarismfile->gm_feedback
+        ) {
+            $updaterequired = true;
+        }
+
+        if ($updaterequired) {
+            $DB->update_record('plagiarism_turnitin_files', $plagiarismfile);
+            $return = $gradeupdate($cm, $tiisubmission, $submissiondata->userid);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Get the file information from Moodle. We really specifically only need the itemid.
         $fs = get_file_storage();
 
         if (!$file = $fs->get_file_by_hash($this->submissiondata->identifier)) {

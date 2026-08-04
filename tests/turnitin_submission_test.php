@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for the static save methods on turnitin_submission.
+ * Unit tests for turnitin_submission.
  *
  * @package    plagiarism_turnitin
  * @copyright  Turnitin
@@ -34,12 +34,13 @@ require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
- * Tests for turnitin_submission::save and turnitin_submission::save_errored.
+ * Tests for turnitin_submission static methods.
  *
  * @package plagiarism_turnitin
  */
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_test extends \advanced_testcase {
+
     // Save_errored tests.
 
     /**
@@ -198,12 +199,197 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertNull($row->errormsg);
     }
 
+    // Update tests.
+
+    /**
+     * Test that update writes the similarity score and transmatch=0 to the DB
+     * when the translated score does not exceed the original.
+     */
+    public function test_update_writes_similarity_score(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row(['cm' => $cm->id, 'similarityscore' => null]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 42, 'translated' => 40]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, fn() => true);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals(42, $row->similarityscore);
+        $this->assertEquals(0, $row->transmatch);
+    }
+
+    /**
+     * Test that when the translated similarity score exceeds the original,
+     * the translated score is stored and transmatch is set to 1.
+     */
+    public function test_update_uses_translated_score_when_higher(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row(['cm' => $cm->id, 'similarityscore' => null]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 30, 'translated' => 55]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, fn() => true);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals(55, $row->similarityscore);
+        $this->assertEquals(1, $row->transmatch);
+    }
+
+    /**
+     * Test that update stores a null similarity score when Turnitin returns a
+     * non-numeric value (e.g. the report is not yet processed).
+     */
+    public function test_update_stores_null_when_similarity_not_numeric(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row(['cm' => $cm->id, 'similarityscore' => null]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => null, 'translated' => 0]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, fn() => true);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertNull($row->similarityscore);
+    }
+
+    /**
+     * Test that update resets errorcode and errormsg to null, clearing any
+     * previously stored error state when a new score arrives.
+     */
+    public function test_update_clears_error_fields(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'similarityscore' => null,
+            'errorcode' => 7, 'errormsg' => 'old error',
+        ]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'translated' => 0]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, fn() => true);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertNull($row->errorcode);
+        $this->assertNull($row->errormsg);
+    }
+
+    /**
+     * Test that when errorcode is 13 (a special Turnitin retry state), update
+     * sets statuscode to 'success' so the submission is no longer shown as errored.
+     */
+    public function test_update_sets_statuscode_success_when_errorcode_is_13(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'similarityscore' => null, 'errorcode' => 13,
+        ]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'translated' => 0]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, fn() => true);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals('success', $row->statuscode);
+    }
+
+    /**
+     * Test that update returns true without writing to the DB when nothing has
+     * changed — avoiding unnecessary DB writes on repeated score checks.
+     */
+    public function test_update_skips_db_write_when_nothing_changed(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'similarityscore' => 42, 'grade' => null,
+            'orcapable' => 0, 'student_read' => 0, 'gm_feedback' => 0,
+        ]);
+
+        $gradeCallbackFired = false;
+        $tiisubmission = $this->make_tii_submission([
+            'similarity' => 42, 'translated' => 0, 'grade' => null,
+            'orcapable' => 0, 'feedback_exists' => 0, 'author_viewed' => 0,
+        ]);
+
+        $result = turnitin_submission::update($cm, $id, $tiisubmission, function() use (&$gradeCallbackFired) {
+            $gradeCallbackFired = true;
+            return true;
+        });
+
+        $this->assertTrue($result);
+        $this->assertFalse($gradeCallbackFired, 'Grade callback should not fire when nothing changed.');
+    }
+
+    /**
+     * Test that the grade callback is invoked when the similarity score changes,
+     * passing the cm and tiisubmission through correctly.
+     */
+    public function test_update_invokes_grade_callback_when_score_changes(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $id = $this->insert_submission_row(['cm' => $cm->id, 'similarityscore' => 10]);
+
+        $callbackArgs = [];
+        $tiisubmission = $this->make_tii_submission([
+            'similarity' => 99, 'translated' => 0, 'grade' => 85,
+            'orcapable' => 0, 'feedback_exists' => 0, 'author_viewed' => 0,
+        ]);
+
+        turnitin_submission::update($cm, $id, $tiisubmission, function($cbcm, $cbsubmission, $cbuserid) use (&$callbackArgs) {
+            $callbackArgs = [$cbcm, $cbsubmission, $cbuserid];
+            return true;
+        });
+
+        $this->assertNotEmpty($callbackArgs, 'Grade callback should have been invoked.');
+        $this->assertSame($cm, $callbackArgs[0]);
+        $this->assertSame($tiisubmission, $callbackArgs[1]);
+    }
+
+    /**
+     * Test that update returns true when the submission row does not exist,
+     * handling stale external IDs gracefully without throwing.
+     */
+    public function test_update_returns_true_when_submission_not_found(): void {
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'translated' => 0]);
+
+        $result = turnitin_submission::update($cm, 99999, $tiisubmission, fn() => true);
+
+        $this->assertTrue($result);
+    }
+
     // Helpers.
+
+    /**
+     * Create a minimal course module stdClass for use in tests.
+     */
+    private function make_cm(): \stdClass {
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        return get_coursemodule_from_instance('assign', $assign->id);
+    }
 
     /**
      * Insert a minimal row into plagiarism_turnitin_files and return its id.
      *
-     * @param array $overrides Field values to set, merged over sensible defaults.
+     * @param array $overrides Field values merged over sensible defaults.
      * @return int The new row id.
      */
     private function insert_submission_row(array $overrides = []): int {
@@ -222,6 +408,70 @@ final class turnitin_submission_test extends \advanced_testcase {
             'transmatch'     => 0,
         ], $overrides);
 
-        return $DB->insert_record('plagiarism_turnitin_files', (object)$row);
+        return $DB->insert_record('plagiarism_turnitin_files', (object) $row);
+    }
+
+    /**
+     * Build a minimal TiiSubmission stub with configurable return values.
+     *
+     * Using an anonymous class avoids a dependency on the vendor SDK in tests
+     * while providing exactly the interface turnitin_submission::update() needs.
+     *
+     * @param array $values Keyed by: similarity, translated, grade, orcapable,
+     *                      feedback_exists, author_viewed.
+     * @return object
+     */
+    private function make_tii_submission(array $values): object {
+        $values = array_merge([
+            'similarity'      => 0,
+            'translated'      => 0,
+            'grade'           => null,
+            'orcapable'       => 0,
+            'feedback_exists' => 0,
+            'author_viewed'   => 0,
+        ], $values);
+
+        return new class($values) {
+            /** @var array */
+            private $v;
+
+            /**
+             * Constructor.
+             * @param array $v
+             */
+            public function __construct(array $v) {
+                $this->v = $v;
+            }
+
+            /** @return mixed */
+            public function getOverallSimilarity() {
+                return $this->v['similarity'];
+            }
+
+            /** @return mixed */
+            public function getTranslatedOverallSimilarity() {
+                return $this->v['translated'];
+            }
+
+            /** @return mixed */
+            public function getGrade() {
+                return $this->v['grade'];
+            }
+
+            /** @return int */
+            public function getOriginalityReportCapable() {
+                return $this->v['orcapable'];
+            }
+
+            /** @return int */
+            public function getFeedbackExists() {
+                return $this->v['feedback_exists'];
+            }
+
+            /** @return int */
+            public function getAuthorLastViewedFeedback() {
+                return $this->v['author_viewed'];
+            }
+        };
     }
 }

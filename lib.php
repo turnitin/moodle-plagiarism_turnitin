@@ -131,14 +131,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Check if plugin has been configured with Turnitin account details.
-     * @return boolean whether the plugin is configured for Turnitin.
-     **/
-    public function is_plugin_configured() {
-        return \plagiarism_turnitin\turnitin_settings::is_plugin_configured();
-    }
-
-    /**
      * Save the form data associated with the plugin
      *
      * @param object $data the form data to save
@@ -216,7 +208,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cmid = optional_param('update', null, PARAM_INT);
 
             // Return no form if the plugin isn't configured.
-            if (!$this->is_plugin_configured()) {
+            if (!\plagiarism_turnitin\turnitin_settings::is_plugin_configured()) {
                 return;
             }
 
@@ -439,7 +431,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Exit here if the plugin is not configured for Turnitin.
-        if (!$this->is_plugin_configured()) {
+        if (!\plagiarism_turnitin\turnitin_settings::is_plugin_configured()) {
             return $output;
         }
 
@@ -1905,7 +1897,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         // Return here if the plugin is not configured for Turnitin.
-        if (!$this->is_plugin_configured()) {
+        if (!\plagiarism_turnitin\turnitin_settings::is_plugin_configured()) {
             return;
         }
 

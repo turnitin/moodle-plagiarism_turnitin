@@ -42,36 +42,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(\plagiarism_plugin_turnitin::class)]
 final class lib_test extends \advanced_testcase {
     /**
-     * Test that the plugin is configured correctly.
-     *
-     * @return void
-     */
-    public function test_is_plugin_configured(): void {
-        $this->resetAfterTest();
-
-        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
-
-        // Check if plugin is configured with no plugin config set.
-        $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
-        $this->assertEquals(false, $ispluginconfigured);
-
-        // Check if plugin is configured with only account id set.
-        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
-        $this->assertEquals(false, $ispluginconfigured);
-
-        // Check if plugin is configured with account id and apiurl set.
-        set_config('plagiarism_turnitin_apiurl', 'http://www.test.com', 'plagiarism_turnitin');
-        $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
-        $this->assertEquals(false, $ispluginconfigured);
-
-        // Check if plugin is configured with account id, apiurl and secretkey set.
-        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
-        $ispluginconfigured = $plagiarismturnitin->is_plugin_configured();
-        $this->assertEquals(true, $ispluginconfigured);
-    }
-
-    /**
      * Test that group submissions are correctly checked.
      *
      * @return void

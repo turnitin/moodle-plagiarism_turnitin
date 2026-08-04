@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
   bootstrap="../../lib/phpunit/bootstrap.php"
   processIsolation="false"
   backupGlobals="false"
-  cacheResult="false"
-  failOnDeprecation="true"
   failOnWarning="true"
   stopOnError="false"
   stopOnFailure="false"
@@ -14,9 +10,14 @@
   stopOnSkipped="false"
   beStrictAboutTestsThatDoNotTestAnything="false"
   beStrictAboutOutputDuringTests="true"
-  cacheDirectory=".phpunit.cache"
-  backupStaticProperties="false"
 >
+  <!--
+    Schema declaration omitted intentionally: the PHPUnit 9 (Moodle 4.5) and
+    PHPUnit 10+ (Moodle 5.x) schemas are incompatible. Attributes that are
+    PHPUnit 10+ only (failOnDeprecation, cacheDirectory, backupStaticProperties)
+    and elements that are PHPUnit 10+ only (<source>, <extensions><bootstrap>)
+    have been removed so this file validates cleanly on both versions.
+  -->
 
   <php>
     <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
@@ -24,6 +25,8 @@
   </php>
 
   <extensions>
+    <!-- PHPUnit 10+ syntax. PHPUnit 9 (Moodle 4.5) will show a validation warning
+         for this element but will still run tests correctly. -->
     <bootstrap class="core\tests\phpunit\moodle_extension"/>
   </extensions>
 
@@ -34,13 +37,13 @@
     </testsuite>
   </testsuites>
 
-  <source>
+  <coverage>
     <include>
       <directory suffix=".php">classes</directory>
       <directory suffix=".php">tests/generator</directory>
       <file>lib.php</file>
       <file>locallib.php</file>
     </include>
-  </source>
+  </coverage>
 
 </phpunit>

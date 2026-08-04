@@ -78,6 +78,27 @@ final class turnitin_forum_test extends \advanced_testcase {
     }
 
     /**
+     * Moodle stores forum post content as HTML, so special characters are encoded as entities
+     * (e.g. "&" becomes "&amp;"). Verify that html_to_text() — used in the forum submission
+     * pipeline — decodes these entities, preventing literal "&amp;" from appearing in the
+     * Turnitin Document Viewer.
+     */
+    public function test_forum_post_html_entities_are_decoded_for_submission(): void {
+        $this->resetAfterTest();
+
+        // Moodle's TinyMCE/Atto editor stores "&" as "&amp;" in forum_posts.message.
+        $htmlmessage = '<p>Cats &amp; dogs are great. 2 &lt; 3 and 4 &gt; 1.</p>';
+        $plaintextcontent = html_to_text($htmlmessage);
+
+        $this->assertStringContainsString('&', $plaintextcontent);
+        $this->assertStringNotContainsString('&amp;', $plaintextcontent);
+        $this->assertStringNotContainsString('&lt;', $plaintextcontent);
+        $this->assertStringNotContainsString('&gt;', $plaintextcontent);
+        $this->assertStringContainsString('<', $plaintextcontent);
+        $this->assertStringContainsString('>', $plaintextcontent);
+    }
+
+    /**
      * Test to check that content returned by set content is the same as passed in array.
      */
     public function test_to_check_content_in_array_is_returned_by_set_content(): void {

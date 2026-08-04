@@ -52,13 +52,13 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$plugindefaults = $plagiarismpluginturnitin->get_settings();
+$plugindefaults = \plagiarism_turnitin\turnitin_settings::for_cm();
 
 // Save Settings.
 if (!empty($action)) {
     switch ($action) {
         case "defaults":
-            $fields = $plagiarismpluginturnitin->get_settings_fields();
+            $fields = \plagiarism_turnitin\turnitin_settings::fields();
 
             $settingsfields = [];
             foreach ($fields as $field) {

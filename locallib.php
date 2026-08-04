@@ -29,7 +29,7 @@
  * @return $submitpapersto int - The repository to submit to.
  */
 function plagiarism_turnitin_override_repository($submitpapersto) {
-    $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+    $config = \plagiarism_turnitin\turnitin_settings::admin_config();
 
     switch ($config->plagiarism_turnitin_repositoryoption) {
         case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD: // Force Standard Repository.

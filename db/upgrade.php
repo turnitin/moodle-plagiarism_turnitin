@@ -312,7 +312,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon", ];
 
             foreach ($properties as $property) {
-                plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);
+                \plagiarism_turnitin\turnitin_settings::set_config($data, $property);
             }
         }
 

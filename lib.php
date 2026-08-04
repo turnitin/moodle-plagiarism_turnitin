@@ -84,72 +84,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     private static $amdcomponentsloaded = false;
 
     /**
-     * Get the fields to be used in the form to configure each activities Turnitin settings.
-     *
-     * @return array of settings fields.
-     */
-    public function get_settings_fields() {
-        return ['use_turnitin', 'plagiarism_show_student_report', 'plagiarism_draft_submit',
-            'plagiarism_allow_non_or_submissions', 'plagiarism_submitpapersto', 'plagiarism_compare_student_papers',
-            'plagiarism_compare_internet', 'plagiarism_compare_journals', 'plagiarism_report_gen',
-            'plagiarism_compare_institution', 'plagiarism_exclude_biblio', 'plagiarism_exclude_quoted',
-            'plagiarism_exclude_matches', 'plagiarism_exclude_matches_value', 'plagiarism_rubric', 'plagiarism_transmatch', ];
-    }
-
-    /**
-     * Get the configuration settings for the plagiarism plugin
-     *
-     * @param string $modulename the name of the module
-     * @return mixed if plugin is enabled then an array of config settings is returned or false if not
-     */
-    public static function get_config_settings($modulename) {
-        $pluginconfig = get_config('plagiarism_turnitin', 'plagiarism_turnitin_' . $modulename);
-
-        return $pluginconfig;
-    }
-
-    /**
-     * Return the admin config settings for the plugin
-     *
-     * @return mixed the admin config settings for the plugin
-     */
-    public static function plagiarism_turnitin_admin_config() {
-        return get_config('plagiarism_turnitin');
-    }
-
-    /**
-     * Get the Turnitin settings for a module
-     *
-     * @param int $cmid - the course module id, if this is 0 the default settings will be retrieved
-     * @param bool $uselockedvalues - use locked values in place of saved values
-     * @return array of Turnitin settings for a module
-     */
-    public function get_settings($cmid = null, $uselockedvalues = true) {
-        global $DB;
-        $defaults = $DB->get_records_menu('plagiarism_turnitin_config', ['cm' => null], '', 'name,value');
-        $settings = $DB->get_records_menu('plagiarism_turnitin_config', ['cm' => $cmid], '', 'name,value');
-
-        // Don't overwrite settings with locked values (only relevant on inital module creation).
-        if ($uselockedvalues == false) {
-            return $settings;
-        }
-
-        // Enforce site wide config locking.
-        foreach ($defaults as $key => $value) {
-            if (substr($key, -5) !== '_lock') {
-                continue;
-            }
-            if ($value != 1) {
-                continue;
-            }
-            $setting = substr($key, 0, -5);
-            $settings[$setting] = $defaults[$setting];
-        }
-
-        return $settings;
-    }
-
-    /**
      * Get a list of the file upload errors.
      *
      * @param int $offset Number of records to skip.
@@ -201,7 +135,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean whether the plugin is configured for Turnitin.
      **/
     public function is_plugin_configured() {
-        $config = $this->plagiarism_turnitin_admin_config();
+        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
 
         if (
             empty($config->plagiarism_turnitin_accountid) ||
@@ -222,14 +156,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function save_form_data($data) {
         global $DB;
 
-        $moduletiienabled = $this->get_config_settings('mod_' . $data->modulename);
+        $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $data->modulename);
         if (empty($moduletiienabled)) {
             return;
         }
 
-        $settingsfields = $this->get_settings_fields();
+        $settingsfields = \plagiarism_turnitin\turnitin_settings::fields();
         // Get current values.
-        $plagiarismvalues = $this->get_settings($data->coursemodule, false);
+        $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm($data->coursemodule, false);
 
         foreach ($settingsfields as $field) {
             if (isset($data->$field)) {
@@ -298,14 +232,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Check if plagiarism plugin is enabled for this module if provided.
             if (!empty($modulename)) {
-                $moduletiienabled = $this->get_config_settings($modulename);
+                $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled($modulename);
                 if (empty($moduletiienabled)) {
                     return;
                 }
             }
 
             // Get assignment settings, use default settings on assignment creation.
-            $plagiarismvalues = $this->get_settings($cmid);
+            $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm($cmid);
 
             /* If Turnitin is disabled and we don't have settings (we're editing an existing assignment
              * that was created without Turnitin enabled)
@@ -313,7 +247,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
              */
             if (empty($plagiarismvalues["use_turnitin"]) && count($plagiarismvalues) <= 2) {
                 $savedvalues = $plagiarismvalues;
-                $plagiarismvalues = $this->get_settings(null);
+                $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm(null);
 
                 // Ensure we reuse the saved setting for use Turnitin.
                 if (isset($savedvalues["use_turnitin"])) {
@@ -321,7 +255,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 }
             }
 
-            $plagiarismelements = $this->get_settings_fields();
+            $plagiarismelements = \plagiarism_turnitin\turnitin_settings::fields();
 
             $turnitinview = new \turnitin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ?
@@ -473,19 +407,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function print_disclosure($cmid) {
         global $OUTPUT, $PAGE, $USER, $DB, $CFG;
 
-        $config = $this->plagiarism_turnitin_admin_config();
+        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
         $output = '';
 
         // Get course details.
         $cm = get_coursemodule_from_id('', $cmid);
 
-        $moduletiienabled = $this->get_config_settings('mod_' . $cm->modname);
+        $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $cm->modname);
         // Exit if Turnitin is not being used for this activity type.
         if (empty($moduletiienabled)) {
             return '';
         }
 
-        $plagiarismsettings = $this->get_settings($cmid);
+        $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cmid);
         // Check Turnitin is enabled for this current module.
         if (empty($plagiarismsettings['use_turnitin'])) {
             return '';
@@ -621,7 +555,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        $config = $this->plagiarism_turnitin_admin_config();
+        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
         if ($config->plagiarism_turnitin_usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
             // Update assignment in case rubric is not stored in Turnitin yet.
             $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
@@ -732,7 +666,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
 
         // Exit if this is a quiz and quizzes are disabled.
-        if ($component == "qtype_essay" && empty($this->get_config_settings('mod_quiz'))) {
+        if ($component == "qtype_essay" && empty(\plagiarism_turnitin\turnitin_settings::module_enabled('mod_quiz'))) {
             return $output;
         }
 
@@ -762,19 +696,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         static $config;
         if (empty($config)) {
-            $config = $this->plagiarism_turnitin_admin_config();
+            $config = \plagiarism_turnitin\turnitin_settings::admin_config();
         }
 
         // Retrieve the plugin settings for this module.
         static $plagiarismsettings = null;
         if (is_null($plagiarismsettings)) {
-            $plagiarismsettings = $this->get_settings($linkarray["cmid"]);
+            $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($linkarray["cmid"]);
         }
 
         // Is this plugin enabled for this activity type.
         static $moduletiienabled;
         if (empty($moduletiienabled)) {
-            $moduletiienabled = $this->get_config_settings('mod_' . $cm->modname);
+            $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $cm->modname);
         }
 
         // Exit if Turnitin is not being used for this module or activity type.
@@ -1454,7 +1388,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // This comment is here as it is useful for product support.
-        $plagiarismsettings = $this->get_settings($cm->id);
+        $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
         $turnitinassignid = (empty($plagiarismsettings['turnitin_assignid'])) ? '' : $plagiarismsettings['turnitin_assignid'];
         $output .= html_writer::tag(
             'span',
@@ -1477,7 +1411,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return false
      */
     public function fetch_updated_paper_ids_from_turnitin($cm) {
-        $plagiarismvalues = $this->get_settings($cm->id);
+        $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
 
         // Initialise Comms Object.
         $turnitincomms = new \turnitin_comms();
@@ -2086,8 +2020,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site", $submittoturnitin = false) {
         global $DB;
 
-        $config = $this->plagiarism_turnitin_admin_config();
-        $modulepluginsettings = $this->get_settings($cm->id);
+        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
+        $modulepluginsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
         $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
 
         // Configure assignment object to send to Turnitin.
@@ -2403,7 +2337,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $modulesettings = [];
         foreach ($submissions as $tiisubmission) {
             if (!array_key_exists($tiisubmission->cm, $modulesettings)) {
-                $modulesettings[$tiisubmission->cm] = $this->get_settings($tiisubmission->cm);
+                $modulesettings[$tiisubmission->cm] = \plagiarism_turnitin\turnitin_settings::for_cm($tiisubmission->cm);
             }
         }
 
@@ -2761,7 +2695,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             return true;
         }
 
-        $settings = $this->get_settings($cm->id);
+        $settings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
 
         if (
             (!isset($settings["plagiarism_compare_student_papers"]) || !$settings["plagiarism_compare_student_papers"]) &&
@@ -3008,8 +2942,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $context = context_module::instance($cm->id);
 
         // Initialise module settings.
-        $plagiarismsettings = $this->get_settings($cm->id);
-        $moduletiienabled = $this->get_config_settings('mod_' . $cm->modname);
+        $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
+        $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $cm->modname);
         if ($cm->modname == 'assign') {
             $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ?
                 $plagiarismsettings["plagiarism_draft_submit"] : 0;
@@ -3485,25 +3419,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         return $genparams;
     }
-
-    /**
-     * Set a config value for the admin settings.
-     *
-     * @param object $data The data to set.
-     * @param string $property The property to set.
-     */
-    public static function plagiarism_set_config($data, $property) {
-        // Scenario when performing the upgrade script to copy settings from V2 to PP.
-        if (strpos($property, 'plagiarism_turnitin') === false) {
-            $field = "plagiarism_turnitin_" . $property;
-        } else {
-            $field = $property;
-        }
-
-        if (isset($data->$property)) {
-            set_config($field, $data->$property, 'plagiarism_turnitin');
-        }
-    }
 }
 
 /**
@@ -3589,7 +3504,7 @@ function plagiarism_turnitin_send_queued_submissions() {
 function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem) {
     global $CFG, $DB, $turnitinacceptedfiles;
 
-    $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+    $config = \plagiarism_turnitin\turnitin_settings::admin_config();
 
     // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
     if (!$pluginturnitin->test_turnitin_connection()) {
@@ -3614,7 +3529,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Get various settings that we need.
     $errorcode = 0;
-    $settings = $pluginturnitin->get_settings($cm->id);
+    $settings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
 
     // Create module object.
     if (empty($cm->modname)) {

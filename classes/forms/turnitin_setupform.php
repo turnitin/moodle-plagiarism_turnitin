@@ -46,7 +46,7 @@ class turnitin_setupform extends \moodleform {
     public function definition() {
         global $DB, $CFG;
 
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $ynoptions = [0 => get_string('no'), 1 => get_string('yes')];
 
         $mform = $this->_form;
@@ -383,7 +383,7 @@ class turnitin_setupform extends \moodleform {
             "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "enableadhocsubmissions"];
 
         foreach ($properties as $property) {
-            \plagiarism_plugin_turnitin::plagiarism_set_config($data, "plagiarism_turnitin_" . $property);
+            turnitin_settings::set_config($data, "plagiarism_turnitin_" . $property);
         }
     }
 }

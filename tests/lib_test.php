@@ -208,17 +208,15 @@ final class lib_test extends \advanced_testcase {
     public function test_plagiarism_set_config(): void {
         $this->resetAfterTest();
 
-        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
-
         // Check that we can set config value when a full property name is given.
         $data = new \stdClass();
         $data->plagiarism_turnitin_accountid = 123456789;
         $property = "plagiarism_turnitin_accountid";
 
-        $plagiarismturnitin->plagiarism_set_config($data, $property);
+        turnitin_settings::set_config($data, $property);
 
         // Get the config.
-        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         $this->assertEquals(123456789, $config->plagiarism_turnitin_accountid);
 
@@ -226,10 +224,10 @@ final class lib_test extends \advanced_testcase {
         $data = new \stdClass();
         $data->secretkey = "Test";
         $property = "secretkey";
-        $plagiarismturnitin->plagiarism_set_config($data, $property);
+        turnitin_settings::set_config($data, $property);
 
         // Get the config.
-        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         $this->assertEquals("Test", $config->plagiarism_turnitin_secretkey);
 
@@ -237,10 +235,10 @@ final class lib_test extends \advanced_testcase {
         $data = new \stdClass();
         $data->test = "Test";
         $property = "NotTest";
-        $plagiarismturnitin->plagiarism_set_config($data, $property);
+        turnitin_settings::set_config($data, $property);
 
         // Get the config.
-        $config = $plagiarismturnitin->plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         if (method_exists($this, 'assertObjectNotHasProperty')) {
             $this->assertObjectNotHasProperty("plagiarism_turnitin_test", $config);

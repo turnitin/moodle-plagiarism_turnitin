@@ -74,7 +74,7 @@ class turnitin_comms {
      * @throws moodle_exception
      */
     public function __construct($accountid = null, $accountshared = null, $url = null) {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         if (!is_null($url)) {
             $this->tiiapiurl = $url;

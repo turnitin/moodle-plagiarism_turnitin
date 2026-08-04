@@ -158,7 +158,7 @@ class turnitin_user {
      * @return string The pseudo domain
      */
     public static function get_pseudo_domain() {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ?
             PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
 
@@ -171,7 +171,7 @@ class turnitin_user {
      * @return string A pseudo firstname address
      */
     public function get_pseudo_firstname() {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         return !empty($config->plagiarism_turnitin_pseudofirstname) ?
             $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
@@ -184,7 +184,7 @@ class turnitin_user {
      */
     public function get_pseudo_lastname() {
         global $DB;
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id,
             'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
 
@@ -250,7 +250,7 @@ class turnitin_user {
      * @throws TurnitinApiException
      */
     private function find_tii_user_id() {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
         $turnitincomms = new turnitin_comms();
@@ -289,7 +289,7 @@ class turnitin_user {
      * @return var Turnitin user id
      */
     private function create_tii_user() {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
         $turnitincomms = new turnitin_comms();
@@ -333,7 +333,7 @@ class turnitin_user {
      * @return boolean
      */
     public function edit_tii_user() {
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
@@ -426,7 +426,7 @@ class turnitin_user {
 
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
-            $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            $config = turnitin_settings::admin_config();
         }
         if (isset($config->plagiarism_turnitin_enablediagnostic) && $config->plagiarism_turnitin_enablediagnostic != 2) {
             $turnitincomms->set_diagnostic(0);
@@ -609,7 +609,7 @@ class turnitin_user {
     public static function plagiarism_turnitin_getusers() {
         global $DB;
 
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         parse_str($_SERVER["REQUEST_URI"], $params);
 
         $return = [];

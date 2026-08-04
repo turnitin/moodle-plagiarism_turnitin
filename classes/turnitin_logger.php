@@ -62,7 +62,7 @@ class turnitin_logger {
         global $CFG;
 
         if (self::$config === null) {
-            self::$config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            self::$config = turnitin_settings::admin_config();
         }
 
         if (empty(self::$config->plagiarism_turnitin_enablediagnostic)) {

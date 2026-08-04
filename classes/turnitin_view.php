@@ -132,7 +132,7 @@ class turnitin_view {
         $PAGE->requires->string_for_js('changerubricwarning', 'plagiarism_turnitin');
         $PAGE->requires->string_for_js('closebutton', 'plagiarism_turnitin');
 
-        $config = \plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $configwarning = '';
         $rubrics = [];
 

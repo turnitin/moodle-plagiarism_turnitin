@@ -308,7 +308,7 @@ switch ($action) {
 
             // We only want an API log entry for this if diagnostic mode is set to Debugging.
             if (empty($config)) {
-                $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+                $config = \plagiarism_turnitin\turnitin_settings::admin_config();
             }
             if (empty($config->plagiarism_turnitin_enablediagnostic)) {
                 $turnitincomms->set_diagnostic(0);
@@ -374,7 +374,7 @@ switch ($action) {
             // Get assignment details.
             if (!empty($assignmentid)) {
                 $cm = get_coursemodule_from_instance($modulename, $assignmentid);
-                $plagiarismsettings = $pluginturnitin->get_settings($cm->id);
+                $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
             }
 
             // Add in selected rubric if it belongs to another instructor.

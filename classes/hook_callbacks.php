@@ -53,14 +53,14 @@ class hook_callbacks {
         require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $pluginturnitin = new \plagiarism_plugin_turnitin();
 
-        $moduletiienabled = $pluginturnitin->get_config_settings('mod_' . $PAGE->cm->modname);
+        $moduletiienabled = turnitin_settings::module_enabled('mod_' . $PAGE->cm->modname);
         // Exit if Turnitin is not being used for this activity type.
         if (empty($moduletiienabled)) {
             return;
         }
 
         // Check that turnitin is enabled for this quiz.
-        $plagiarismsettings = $pluginturnitin->get_settings($PAGE->cm->id);
+        $plagiarismsettings = turnitin_settings::for_cm($PAGE->cm->id);
         if (empty($plagiarismsettings['use_turnitin']) || $plagiarismsettings['use_turnitin'] != '1') {
             return;
         }

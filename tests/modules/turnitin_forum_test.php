@@ -136,4 +136,115 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->assertEquals($content, $this->post->message);
     }
 
+    /**
+     * Test that get_submission_content returns the post text, title, filename and createSubmission
+     * api method for a first-time submission (no externalid yet).
+     */
+    public function test_get_submission_content_returns_content_for_new_submission(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $expectedtitle = 'forumpost_' . $this->post->userid . '_' . $cm->id . '_' . $cm->instance
+            . '_' . $this->post->id . '.txt';
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+        $this->assertEquals(html_to_text($this->post->message), $result['textcontent']);
+        $this->assertEquals($expectedtitle, $result['title']);
+        $this->assertEquals($result['title'], $result['filename']);
+    }
+
+    /**
+     * Test that HTML entities in the forum post message are decoded to plain text before
+     * submission to Turnitin. Moodle's editor stores "&" as "&amp;" — Turnitin should receive
+     * the literal character, not the entity.
+     */
+    public function test_get_submission_content_decodes_html_entities(): void {
+        $this->resetAfterTest();
+
+        global $DB;
+        $DB->set_field('forum_posts', 'message', '<p>Cats &amp; dogs. 2 &lt; 3.</p>', ['id' => $this->post->id]);
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertStringContainsString('&', $result['textcontent']);
+        $this->assertStringNotContainsString('&amp;', $result['textcontent']);
+        $this->assertStringContainsString('<', $result['textcontent']);
+        $this->assertStringNotContainsString('&lt;', $result['textcontent']);
+    }
+
+    /**
+     * Test that get_submission_content uses replaceSubmission when the post has already been
+     * submitted to Turnitin (externalid present) and report generation is set to re-check on
+     * resubmission (report_gen > 0).
+     */
+    public function test_get_submission_content_uses_replace_when_resubmitting_with_report_gen(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('replaceSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that get_submission_content falls back to createSubmission when report_gen is 0,
+     * even if an externalid exists. Turnitin requires a fresh submission in this mode.
+     */
+    public function test_get_submission_content_uses_create_when_report_gen_is_zero(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 0);
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that get_submission_content returns errorcode 9 when the forum post cannot be found,
+     * so the submission can be safely marked as errored without crashing the queue.
+     */
+    public function test_get_submission_content_returns_error_when_post_not_found(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, 999999, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new \turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertEquals(9, $result['errorcode']);
+        $this->assertNull($result['textcontent']);
+        $this->assertNull($result['title']);
+        $this->assertNull($result['filename']);
+    }
+
+    /**
+     * Build a minimal queued item stdClass as would be read from plagiarism_turnitin_files.
+     *
+     * @param int $userid
+     * @param int $itemid
+     * @param string|null $externalid
+     */
+    private function make_queued_item(int $userid, int $itemid, ?string $externalid): \stdClass {
+        $item = new \stdClass();
+        $item->userid = $userid;
+        $item->itemid = $itemid;
+        $item->externalid = $externalid;
+        $item->identifier = '';
+        return $item;
+    }
+
 }

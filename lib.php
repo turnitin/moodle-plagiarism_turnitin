@@ -3513,24 +3513,15 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
             break;
 
         case 'forum_post':
-            if (!is_null($queueditem->externalid)) {
-                $apimethod = ($settings["plagiarism_report_gen"] == 0) ? "createSubmission" : "replaceSubmission";
+            $forumcontent = $moduleobject->get_submission_content($queueditem, $cm, $settings["plagiarism_report_gen"]);
+            $apimethod    = $forumcontent['apimethod'];
+            $textcontent  = $forumcontent['textcontent'];
+            $title        = $forumcontent['title'];
+            $filename     = $forumcontent['filename'];
+            $errorcode    = $forumcontent['errorcode'];
+            if ($errorcode !== 0) {
+                mtrace('File content not found on submission. Identifier: ' . $queueditem->identifier);
             }
-
-            $forumpost = $DB->get_record_select('forum_posts', " userid = ? AND id = ? ", [$user->id, $queueditem->itemid]);
-
-            if ($forumpost) {
-                // html_to_text() strips tags and decodes HTML entities (e.g. &amp; becomes &), matching
-                // the behaviour used for assign/workshop text_content submissions.
-                $textcontent = html_to_text($forumpost->message);
-                $title = 'forumpost_'.$user->id."_".$cm->id."_".$cm->instance."_".$queueditem->itemid.'.txt';
-                $filename = $title;
-            } else {
-                plagiarism_turnitin_activitylog('File content not found on submission: '.$queueditem->identifier, 'PP_NO_FILE');
-                mtrace('File content not found on submission. Identifier: '.$queueditem->identifier);
-                $errorcode = 9;
-            }
-
             break;
 
         case 'quiz_answer':

@@ -109,6 +109,61 @@ class turnitin_forum {
     }
 
     /**
+     * Retrieve the text content, title and API method for a forum post submission to Turnitin.
+     *
+     * Returns an array with keys:
+     *   - textcontent: plain text of the post (HTML entities decoded)
+     *   - title:       filename used in Turnitin, e.g. forumpost_<userid>_<cmid>_<instance>_<itemid>.txt
+     *   - filename:    same as title
+     *   - apimethod:   'createSubmission' or 'replaceSubmission'
+     *   - errorcode:   0 on success, 9 if the post cannot be found
+     *
+     * The API method selection mirrors Turnitin's resubmission rules: when a submission
+     * already exists (externalid set) and report_gen > 0 we replace it so the similarity
+     * score is recalculated; when report_gen == 0 Turnitin requires a fresh submission.
+     *
+     * @param stdClass $queueditem Row from plagiarism_turnitin_files
+     * @param stdClass $cm         Course module record
+     * @param int      $reportgen  Value of the plagiarism_report_gen setting for this CM
+     * @return array
+     * @throws dml_exception
+     */
+    public function get_submission_content(\stdClass $queueditem, \stdClass $cm, int $reportgen): array {
+        global $DB;
+
+        $apimethod = 'createSubmission';
+        if (!is_null($queueditem->externalid)) {
+            $apimethod = ($reportgen == 0) ? 'createSubmission' : 'replaceSubmission';
+        }
+
+        $forumpost = $DB->get_record_select('forum_posts', 'userid = ? AND id = ?',
+            [$queueditem->userid, $queueditem->itemid]);
+
+        if (!$forumpost) {
+            plagiarism_turnitin_activitylog(
+                'File content not found on submission: ' . ($queueditem->identifier ?? ''),
+                'PP_NO_FILE'
+            );
+            return ['errorcode' => 9, 'apimethod' => $apimethod, 'textcontent' => null,
+                    'title' => null, 'filename' => null];
+        }
+
+        // html_to_text() strips tags and decodes HTML entities (e.g. &amp; becomes &), matching
+        // the behaviour used for assign/workshop text_content submissions.
+        $textcontent = html_to_text($forumpost->message);
+        $title = 'forumpost_' . $queueditem->userid . '_' . $cm->id . '_' . $cm->instance
+            . '_' . $queueditem->itemid . '.txt';
+
+        return [
+            'errorcode'   => 0,
+            'apimethod'   => $apimethod,
+            'textcontent' => $textcontent,
+            'title'       => $title,
+            'filename'    => $title,
+        ];
+    }
+
+    /**
      * Create a file event
      *
      * @param array $params The params

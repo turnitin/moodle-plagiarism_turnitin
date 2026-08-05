@@ -792,4 +792,52 @@ class turnitin_submission {
 
         return 0;
     }
+
+    /**
+     * Compute the SHA1 identifier for a text_content or forum_post submission.
+     *
+     * The hash encodes different fields depending on the module type to ensure
+     * identifiers are stable and unique across users, activities, and attempts:
+     *   - forum:  user + cm + content  (per-user per-activity per-message)
+     *   - assign: cm + itemid + content (per-activity per-attempt)
+     *   - other:  content only
+     *
+     * @param \stdClass $cm      Course module record.
+     * @param int       $author  Moodle user id of the submission author.
+     * @param string    $content Raw text content of the submission.
+     * @param int       $itemid  Submission/post id (used for assign).
+     * @return string 40-character hex SHA1 hash.
+     */
+    public static function calculate_content_identifier(\stdClass $cm, int $author, string $content, int $itemid): string {
+        switch ($cm->modname) {
+            case 'forum':
+                return sha1('forum_post user' . $author . ' cm' . $cm->id . ' ' . $content);
+            case 'assign':
+                return sha1('text_content cm' . $cm->id . ' itemid' . $itemid . ' ' . $content);
+            default:
+                return sha1($content);
+        }
+    }
+
+    /**
+     * Delete queued submission records for a specific submission.
+     *
+     * Called when a submission is removed from Moodle (submission_removed event)
+     * to prevent the cron from attempting to send a submission that no longer exists.
+     * Only removes records with statuscode='queued' — already-processed records are preserved.
+     *
+     * @param int $cmid   Course module id.
+     * @param int $userid Moodle user id.
+     * @param int $itemid The submission item id.
+     */
+    public static function remove_queued_for_submission(int $cmid, int $userid, int $itemid): void {
+        global $DB;
+
+        $DB->delete_records('plagiarism_turnitin_files', [
+            'cm'         => $cmid,
+            'userid'     => $userid,
+            'itemid'     => $itemid,
+            'statuscode' => 'queued',
+        ]);
+    }
 }

@@ -491,4 +491,52 @@ final class turnitin_settings_test extends \advanced_testcase {
     public function test_has_comparison_options_returns_false_when_keys_absent(): void {
         $this->assertFalse(turnitin_settings::has_comparison_options([]));
     }
+
+    // Should_skip_draft tests.
+
+    /**
+     * Test that should_skip_draft returns true when draft submissions are on,
+     * the draft submit setting is 1, and the event is a file upload — meaning
+     * the submission should be held back from Turnitin until final submission.
+     */
+    public function test_should_skip_draft_returns_true_when_draft_upload(): void {
+        $moduledata = (object)['submissiondrafts' => 1];
+        $settings   = ['plagiarism_draft_submit' => 1];
+
+        $this->assertTrue(turnitin_settings::should_skip_draft($moduledata, $settings, 'file_uploaded'));
+        $this->assertTrue(turnitin_settings::should_skip_draft($moduledata, $settings, 'content_uploaded'));
+    }
+
+    /**
+     * Test that should_skip_draft returns false when submissiondrafts is off,
+     * even if the draft submit setting and event type would otherwise match.
+     */
+    public function test_should_skip_draft_returns_false_when_drafts_disabled(): void {
+        $moduledata = (object)['submissiondrafts' => 0];
+        $settings   = ['plagiarism_draft_submit' => 1];
+
+        $this->assertFalse(turnitin_settings::should_skip_draft($moduledata, $settings, 'file_uploaded'));
+    }
+
+    /**
+     * Test that should_skip_draft returns false when plagiarism_draft_submit is 0,
+     * meaning drafts should be submitted immediately to Turnitin.
+     */
+    public function test_should_skip_draft_returns_false_when_draft_submit_is_zero(): void {
+        $moduledata = (object)['submissiondrafts' => 1];
+        $settings   = ['plagiarism_draft_submit' => 0];
+
+        $this->assertFalse(turnitin_settings::should_skip_draft($moduledata, $settings, 'file_uploaded'));
+    }
+
+    /**
+     * Test that should_skip_draft returns false for the assessable_submitted
+     * event even when draft mode is on — final submissions always go through.
+     */
+    public function test_should_skip_draft_returns_false_for_final_submission_event(): void {
+        $moduledata = (object)['submissiondrafts' => 1];
+        $settings   = ['plagiarism_draft_submit' => 1];
+
+        $this->assertFalse(turnitin_settings::should_skip_draft($moduledata, $settings, 'assessable_submitted'));
+    }
 }

@@ -173,6 +173,25 @@ class turnitin_settings {
     }
 
     /**
+     * Check whether a submission event should be held back due to draft mode.
+     *
+     * Returns true when the activity has draft submissions enabled AND the
+     * plagiarism_draft_submit setting is 1 (hold back until final submission)
+     * AND the current event is an intermediate file or content upload rather
+     * than the final assessable_submitted event.
+     *
+     * @param \stdClass $moduledata Module record (must have submissiondrafts property).
+     * @param array     $settings   Per-CM plagiarism settings.
+     * @param string    $eventtype  The Moodle event type string.
+     * @return bool True when the submission should be skipped.
+     */
+    public static function should_skip_draft(\stdClass $moduledata, array $settings, string $eventtype): bool {
+        return !empty($moduledata->submissiondrafts)
+            && ($settings['plagiarism_draft_submit'] ?? 0) == 1
+            && in_array($eventtype, ['file_uploaded', 'content_uploaded']);
+    }
+
+    /**
      * Persist the Turnitin settings submitted from an activity edit form.
      *
      * Iterates over the canonical field list and upserts each field that is

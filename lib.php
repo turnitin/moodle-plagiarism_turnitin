@@ -2297,10 +2297,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // If draft submissions are turned on then only send to Turnitin if the draft submit setting is set.
-        if (
-            $moduledata->submissiondrafts && $plagiarismsettings["plagiarism_draft_submit"] == 1 &&
-            ($eventdata['eventtype'] == 'file_uploaded' || $eventdata['eventtype'] == 'content_uploaded')
-        ) {
+        if (\plagiarism_turnitin\turnitin_settings::should_skip_draft($moduledata, $plagiarismsettings, $eventdata['eventtype'])) {
             return true;
         }
 
@@ -2350,13 +2347,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Remove submission from Turnitin queue if it is removed from Moodle.
         if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "submission_removed") {
-            $params = [
-                'cm' => $eventdata['contextinstanceid'],
-                'userid' => $eventdata['relateduserid'],
-                'itemid' => $eventdata['objectid'],
-                'statuscode' => 'queued',
-            ];
-            $DB->delete_records('plagiarism_turnitin_files', $params);
+            \plagiarism_turnitin\turnitin_submission::remove_queued_for_submission(
+                $eventdata['contextinstanceid'],
+                $eventdata['relateduserid'],
+                $eventdata['objectid']
+            );
         }
 
         // Queue every question submitted in a quiz attempt.
@@ -2420,14 +2415,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eventdata['other']['content'] = $moodlesubmission->message;
             }
 
-            if ($cm->modname == 'forum') {
-                $identifier = sha1('forum_post user' . $author . ' cm' . $cm->id . ' ' . $eventdata['other']['content']);
-            } else if ($cm->modname == 'assign') {
-                $identifier = sha1('text_content cm' . $cm->id . ' itemid' . $eventdata['objectid'] . ' ' .
-                    $eventdata['other']['content']);
-            } else {
-                $identifier = sha1($eventdata['other']['content']);
-            }
+            $identifier = \plagiarism_turnitin\turnitin_submission::calculate_content_identifier(
+                $cm,
+                $author,
+                $eventdata['other']['content'],
+                $eventdata['objectid']
+            );
 
             // Check if content has been submitted before and return if so.
             $result = $this->queue_submission_to_turnitin(

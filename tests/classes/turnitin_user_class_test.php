@@ -435,7 +435,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'search'   => ['value' => ''],
             'order'    => [],
             'columns'  => array_fill(0, 5, ['searchable' => '0']),
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 
@@ -480,7 +480,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
                 ['searchable' => '1'],
                 ['searchable' => '0'],
             ],
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 
@@ -507,7 +507,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'search'   => ['value' => ''],
             'order'    => [['column' => 2, 'dir' => 'asc']],
             'columns'  => array_fill(0, 5, ['searchable' => '0']),
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 
@@ -536,7 +536,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'search'   => ['value' => ''],
             'order'    => [],
             'columns'  => array_fill(0, 5, ['searchable' => '0']),
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 
@@ -563,7 +563,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'search'   => ['value' => ''],
             'order'    => [],
             'columns'  => array_fill(0, 5, ['searchable' => '0']),
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 
@@ -680,7 +680,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
                 ['searchable' => '0'],
                 ['searchable' => '0'],
             ],
-        ]);
+        ], '', '&');
 
         $result = turnitin_user::plagiarism_turnitin_getusers();
 

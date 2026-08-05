@@ -248,4 +248,130 @@ final class turnitin_forum_test extends \advanced_testcase {
         $item->identifier = '';
         return $item;
     }
+
+    // Tests for methods not yet covered.
+
+    /**
+     * Test that get_tutor_capability returns the correct capability string.
+     */
+    public function test_get_tutor_capability(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertEquals('plagiarism/turnitin:viewfullreport', $forum->get_tutor_capability());
+    }
+
+    /**
+     * Test that is_tutor returns true for a user with the viewfullreport capability.
+     */
+    public function test_is_tutor_returns_true_for_capable_user(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $this->setAdminUser();
+
+        $forum = new turnitin_forum();
+        $this->assertTrue($forum->is_tutor($context));
+    }
+
+    /**
+     * Test that is_tutor returns false for a student.
+     */
+    public function test_is_tutor_returns_false_for_student(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->setUser($student);
+
+        $forum = new turnitin_forum();
+        $this->assertFalse($forum->is_tutor($context));
+    }
+
+    /**
+     * Test that user_enrolled_on_course returns true for an enrolled user with replypost.
+     */
+    public function test_user_enrolled_on_course_returns_true_for_enrolled_student(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $forum   = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm      = get_coursemodule_from_instance('forum', $forum->id);
+        $context = \context_module::instance($cm->id);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $tiimodule = new turnitin_forum();
+        $this->assertTrue($tiimodule->user_enrolled_on_course($context, $student->id));
+    }
+
+    /**
+     * Test that get_author returns null (the method is a stub).
+     */
+    public function test_get_author_returns_null(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertNull($forum->get_author(1));
+    }
+
+    /**
+     * Test that get_current_gradequery returns false when no matching grade exists.
+     */
+    public function test_get_current_gradequery_returns_false_when_no_record(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertFalse($forum->get_current_gradequery(9999, 9999));
+    }
+
+    /**
+     * Test that initialise_post_date always returns 0.
+     */
+    public function test_initialise_post_date_returns_zero(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertEquals(0, $forum->initialise_post_date(new \stdClass()));
+    }
+
+    /**
+     * Test that create_file_event returns a mod_forum assessable_uploaded event.
+     */
+    public function test_create_file_event_returns_forum_event(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $mod    = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $mod->id);
+
+        $params = [
+            'context'  => \context_module::instance($cm->id),
+            'objectid' => 1,
+            'other'    => [
+                'pathnamehashes' => [],
+                'content'        => '',
+                'discussionid'   => 1,
+                'triggeredfrom'  => 'test',
+            ],
+        ];
+
+        $forum = new turnitin_forum();
+        $event = $forum->create_file_event($params);
+
+        $this->assertInstanceOf(\mod_forum\event\assessable_uploaded::class, $event);
+    }
+
+    /**
+     * Test get_discussionid extracts the discussion id from a forumdata string with a direct id.
+     */
+    public function test_get_discussionid_returns_discussion_id_when_present(): void {
+        $this->resetAfterTest();
+
+        // Format: querystrid_discussionid_reply_edit_delete.
+        $forumdata = '0_42_0_0_0';
+        $forum = new turnitin_forum();
+        $result = $forum->get_discussionid($forumdata);
+
+        $this->assertEquals('42', $result);
+    }
 }

@@ -577,4 +577,147 @@ class turnitin_submission {
 
         return false;
     }
+
+    /**
+     * Determine the submission id and Turnitin external id for a queued submission.
+     *
+     * Encapsulates the routing logic that decides whether to create a new row,
+     * reset an existing row, or return early (no re-queue needed). The result is
+     * an associative array:
+     *   - earlyreturn   (bool)       — true when no further processing is needed
+     *   - submissionid  (int)        — the plagiarism_turnitin_files row id to use
+     *   - tiisubmissionid (string|null) — Turnitin UUID to carry forward, or null
+     *   - attempt       (int)        — current attempt count from the existing row
+     *
+     * $timemodified is accepted as a parameter (rather than read from the file
+     * storage directly) to keep the method independently testable.
+     *
+     * @param \stdClass $cm             Course module record.
+     * @param int       $author         Moodle user id of the submission author.
+     * @param string    $submissiontype One of 'file', 'text_content', 'forum_post', 'quiz_answer'.
+     * @param string    $identifier     Pathnamehash or content SHA1.
+     * @param array     $settings       Per-CM plagiarism settings from turnitin_settings::for_cm().
+     * @param \stdClass $moduledata     Module record augmented with resubmission_allowed flag.
+     * @param int|null  $timemodified   Last-modified timestamp of the content; defaults to time().
+     * @return array{earlyreturn: bool, submissionid: int, tiisubmissionid: string|null, attempt: int}
+     */
+    public static function resolve_submission_id(
+        \stdClass $cm,
+        int $author,
+        string $submissiontype,
+        string $identifier,
+        array $settings,
+        \stdClass $moduledata,
+        ?int $timemodified = null
+    ): array {
+        global $CFG, $DB;
+
+        $timemodified    = $timemodified ?? time();
+        $submissionid    = 0;
+        $tiisubmissionid = null;
+        $attempt         = 0;
+
+        $submissionfields = 'id, cm, externalid, identifier, statuscode, lastmodified, attempt';
+        $typefield        = ($CFG->dbtype === 'oci') ? ' to_char(submissiontype) ' : ' submissiontype ';
+
+        switch ($submissiontype) {
+            case 'file':
+            case 'text_content':
+                // Check if this exact content/file has been submitted previously.
+                $previoussubmissions = $DB->get_records_select(
+                    'plagiarism_turnitin_files',
+                    ' cm = ? AND userid = ? AND ' . $typefield . ' = ? AND identifier = ?',
+                    [$cm->id, $author, $submissiontype, $identifier],
+                    'id',
+                    $submissionfields
+                );
+                $previoussubmission = end($previoussubmissions);
+
+                if ($previoussubmission) {
+                    // Skip requeue when content has not changed since last submission.
+                    if ($timemodified <= $previoussubmission->lastmodified) {
+                        return ['earlyreturn' => true, 'submissionid' => 0, 'tiisubmissionid' => null, 'attempt' => 0];
+                    }
+
+                    if ($moduledata->resubmission_allowed) {
+                        $submissionid    = $previoussubmission->id;
+                        $tiisubmissionid = $previoussubmission->externalid;
+                        self::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                    } else if ($previoussubmission->statuscode !== 'success') {
+                        $submissionid = $previoussubmission->id;
+                        self::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                    } else {
+                        // Successful previous submission — create a fresh row so the new content gets its own record.
+                        $submissionid    = self::create_new($cm, $author, $identifier, $submissiontype);
+                        $tiisubmissionid = $previoussubmission->externalid;
+                    }
+                    $attempt = $previoussubmission->attempt;
+                } else {
+                    // No previous submission for this identifier — check for a different-content previous submission.
+                    $previoussubmission = $DB->get_record_select(
+                        'plagiarism_turnitin_files',
+                        ' cm = ? AND userid = ? AND ' . $typefield . ' = ?',
+                        [$cm->id, $author, $submissiontype],
+                        'id, cm, externalid, identifier, statuscode, lastmodified, attempt'
+                    );
+
+                    if ($previoussubmission) {
+                        $submissionid = $previoussubmission->id;
+                        $attempt      = $previoussubmission->attempt;
+
+                        // Delete old text_content from Turnitin when report_gen=0 (no resubmission mode).
+                        if (
+                            $submissiontype === 'text_content' &&
+                            $settings['plagiarism_report_gen'] == 0 &&
+                            !is_null($previoussubmission->externalid)
+                        ) {
+                            self::delete($cm, $previoussubmission->externalid, $author);
+                        }
+
+                        if ($moduledata->resubmission_allowed || $submissiontype === 'text_content') {
+                            self::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                            $tiisubmissionid = $previoussubmission->externalid;
+                        } else {
+                            $submissionid = self::create_new($cm, $author, $identifier, $submissiontype);
+                        }
+                    } else {
+                        $submissionid = self::create_new($cm, $author, $identifier, $submissiontype);
+                    }
+                }
+                break;
+
+            case 'forum_post':
+            case 'quiz_answer':
+                $previoussubmissions = $DB->get_records_select(
+                    'plagiarism_turnitin_files',
+                    ' cm = ? AND userid = ? AND identifier = ? ',
+                    [$cm->id, $author, $identifier],
+                    'id DESC',
+                    'id, cm, externalid, identifier, statuscode, attempt',
+                    0,
+                    1
+                );
+
+                if ($previoussubmissions) {
+                    $previoussubmission = current($previoussubmissions);
+                    if ($previoussubmission->statuscode === 'success') {
+                        return ['earlyreturn' => true, 'submissionid' => 0, 'tiisubmissionid' => null, 'attempt' => 0];
+                    }
+                    $submissionid    = $previoussubmission->id;
+                    $attempt         = $previoussubmission->attempt;
+                    $tiisubmissionid = $previoussubmission->externalid;
+                    self::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                } else {
+                    $submissionid = self::create_new($cm, $author, $identifier, $submissiontype);
+                }
+                break;
+        }
+
+        return [
+            'earlyreturn'     => false,
+            'submissionid'    => $submissionid,
+            'tiisubmissionid' => $tiisubmissionid,
+            'attempt'         => $attempt,
+        ];
+    }
 }

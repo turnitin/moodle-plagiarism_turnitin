@@ -774,4 +774,224 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertFalse($result);
     }
+
+    // Resolve_submission_id tests.
+
+    /**
+     * Test that a brand-new file submission with no previous record creates a new row.
+     */
+    public function test_resolve_creates_new_when_no_previous_submission(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'file',
+            'newhash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false)
+        );
+
+        $this->assertFalse($result['earlyreturn']);
+        $this->assertGreaterThan(0, $result['submissionid']);
+        $this->assertNull($result['tiisubmissionid']);
+        $this->assertEquals(0, $result['attempt']);
+        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id]));
+    }
+
+    /**
+     * Test that a file submission returns early (no requeue) when the content
+     * has not changed since the previous submission — timemodified <= lastmodified.
+     */
+    public function test_resolve_returns_early_when_content_unchanged(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm  = $this->make_cm();
+        $now = time();
+
+        $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => 1, 'identifier' => 'samehash',
+            'statuscode' => 'success', 'submissiontype' => 'file',
+            'lastmodified' => $now,
+        ]);
+
+        // Provide a file mock whose timemodified <= lastmodified.
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'file',
+            'samehash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false),
+            $now - 10  // Timemodified is before lastmodified.
+        );
+
+        $this->assertTrue($result['earlyreturn']);
+    }
+
+    /**
+     * Test that when resubmission is allowed and the same identifier was previously
+     * submitted, the existing row is reset (not a new row created).
+     */
+    public function test_resolve_resets_existing_when_resubmission_allowed(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm  = $this->make_cm();
+        $now = time();
+
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => 1, 'identifier' => 'samehash',
+            'statuscode' => 'success', 'submissiontype' => 'file',
+            'externalid' => 'tii-old', 'lastmodified' => $now - 100,
+        ]);
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'file',
+            'samehash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, true),
+            $now  // Timemodified is after lastmodified.
+        );
+
+        $this->assertFalse($result['earlyreturn']);
+        $this->assertEquals($id, $result['submissionid']);
+        $this->assertEquals('tii-old', $result['tiisubmissionid']);
+
+        // The row should have been reset to pending.
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals('pending', $row->statuscode);
+    }
+
+    /**
+     * Test that a successful previous submission with no resubmission allowed creates
+     * a new row (preserving the old externalid for Turnitin's replace logic).
+     */
+    public function test_resolve_creates_new_row_when_success_and_no_resubmission(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm  = $this->make_cm();
+        $now = time();
+
+        $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => 1, 'identifier' => 'samehash',
+            'statuscode' => 'success', 'submissiontype' => 'file',
+            'externalid' => 'tii-old', 'lastmodified' => $now - 100,
+        ]);
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'file',
+            'samehash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false),
+            $now
+        );
+
+        $this->assertFalse($result['earlyreturn']);
+        $this->assertEquals('tii-old', $result['tiisubmissionid']);
+        $this->assertEquals(2, $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id]));
+    }
+
+    /**
+     * Test that a forum_post with a previous success record returns early.
+     */
+    public function test_resolve_forum_post_returns_early_when_previously_successful(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => 1, 'identifier' => 'forumhash',
+            'statuscode' => 'success', 'submissiontype' => 'forum_post',
+        ]);
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'forum_post',
+            'forumhash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false)
+        );
+
+        $this->assertTrue($result['earlyreturn']);
+    }
+
+    /**
+     * Test that a forum_post with a previous errored record is reset for reprocessing.
+     */
+    public function test_resolve_forum_post_resets_errored_previous_submission(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => 1, 'identifier' => 'forumhash',
+            'statuscode' => 'error', 'submissiontype' => 'forum_post',
+            'externalid' => 'tii-forum', 'attempt' => 2,
+        ]);
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'forum_post',
+            'forumhash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false)
+        );
+
+        $this->assertFalse($result['earlyreturn']);
+        $this->assertEquals($id, $result['submissionid']);
+        $this->assertEquals('tii-forum', $result['tiisubmissionid']);
+        $this->assertEquals(2, $result['attempt']);
+
+        $row = $DB->get_record('plagiarism_turnitin_files', ['id' => $id]);
+        $this->assertEquals('pending', $row->statuscode);
+    }
+
+    /**
+     * Test that a quiz_answer with no previous record creates a new row.
+     */
+    public function test_resolve_quiz_answer_creates_new_when_no_previous(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $result = turnitin_submission::resolve_submission_id(
+            $cm,
+            1,
+            'quiz_answer',
+            'quizhash',
+            ['plagiarism_report_gen' => 1],
+            $this->make_moduledata(false, false)
+        );
+
+        $this->assertFalse($result['earlyreturn']);
+        $this->assertGreaterThan(0, $result['submissionid']);
+        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id]));
+    }
+
+    // Helpers.
+
+    /**
+     * Build a minimal module data object with teamsubmission and resubmission flags.
+     */
+    private function make_moduledata(bool $teamsubmission, bool $resubmissionallowed): \stdClass {
+        return (object)[
+            'teamsubmission'      => $teamsubmission ? 1 : 0,
+            'resubmission_allowed' => $resubmissionallowed,
+        ];
+    }
 }

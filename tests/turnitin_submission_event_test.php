@@ -153,4 +153,130 @@ final class turnitin_submission_event_test extends \advanced_testcase {
 
         $this->assertTrue($DB->record_exists('plagiarism_turnitin_files', ['id' => $idsuccess]));
     }
+
+    // Resolve_author tests.
+
+    /**
+     * Test that resolve_author returns relateduserid when it is set — the normal
+     * case where a student submits their own work.
+     */
+    public function test_resolve_author_returns_relateduserid_when_set(): void {
+        $this->resetAfterTest();
+
+        $eventdata = [
+            'userid'        => 10,
+            'relateduserid' => 20,
+            'objectid'      => 0,
+        ];
+        $cm = (object)['modname' => 'assign', 'id' => 1, 'course' => 1];
+
+        $author = turnitin_submission::resolve_author($eventdata, $cm);
+
+        $this->assertEquals(20, $author);
+    }
+
+    /**
+     * Test that resolve_author falls back to userid when relateduserid is empty
+     * (e.g. the event was triggered by the user themselves on a non-group activity).
+     */
+    public function test_resolve_author_falls_back_to_userid_when_no_relateduserid(): void {
+        $this->resetAfterTest();
+
+        $eventdata = [
+            'userid'        => 10,
+            'relateduserid' => 0,
+            'objectid'      => 0,
+        ];
+        $cm = (object)['modname' => 'forum', 'id' => 1, 'course' => 1];
+
+        $author = turnitin_submission::resolve_author($eventdata, $cm);
+
+        $this->assertEquals(10, $author);
+    }
+
+    // Enrich_assessable_submitted tests.
+
+    /**
+     * Test that enrich_assessable_submitted populates content from the
+     * assignsubmission_onlinetext table when text was submitted.
+     */
+    public function test_enrich_assessable_submitted_adds_online_text_content(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $assign  = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user    = $this->getDataGenerator()->create_user();
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id, 'userid' => $user->id, 'status' => 'submitted',
+            'timemodified'  => time(), 'timecreated' => time(),
+            'attemptnumber' => 0, 'latest' => 1, 'groupid' => 0,
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'submission'   => $submissionid,
+            'assignment'   => $assign->id,
+            'onlinetext'   => '<p>My essay</p>',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        $eventdata = ['other' => ['modulename' => 'assign', 'content' => '', 'pathnamehashes' => []],
+            'objectid' => $submissionid];
+
+        $result = turnitin_submission::enrich_assessable_submitted($eventdata, $user->id);
+
+        $this->assertEquals('<p>My essay</p>', $result['other']['content']);
+    }
+
+    /**
+     * Test that enrich_assessable_submitted returns unchanged eventdata when
+     * no online text submission exists for the given submission.
+     */
+    public function test_enrich_assessable_submitted_leaves_content_unchanged_when_no_text(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course       = $this->getDataGenerator()->create_course();
+        $assign       = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user         = $this->getDataGenerator()->create_user();
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id, 'userid' => $user->id, 'status' => 'submitted',
+            'timemodified'  => time(), 'timecreated' => time(),
+            'attemptnumber' => 0, 'latest' => 1, 'groupid' => 0,
+        ]);
+
+        $eventdata = ['other' => ['modulename' => 'assign', 'content' => 'original', 'pathnamehashes' => []],
+            'objectid' => $submissionid];
+
+        $result = turnitin_submission::enrich_assessable_submitted($eventdata, $user->id);
+
+        // No text submission exists, so content should be unchanged.
+        $this->assertEquals('original', $result['other']['content']);
+    }
+
+    /**
+     * Test that enrich_assessable_submitted initialises pathnamehashes as an
+     * empty array when there are no file submissions.
+     */
+    public function test_enrich_assessable_submitted_initialises_pathnamehashes(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course       = $this->getDataGenerator()->create_course();
+        $assign       = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user         = $this->getDataGenerator()->create_user();
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id, 'userid' => $user->id, 'status' => 'submitted',
+            'timemodified'  => time(), 'timecreated' => time(),
+            'attemptnumber' => 0, 'latest' => 1, 'groupid' => 0,
+        ]);
+
+        $eventdata = ['other' => ['modulename' => 'assign', 'content' => '', 'pathnamehashes' => []],
+            'objectid' => $submissionid];
+
+        $result = turnitin_submission::enrich_assessable_submitted($eventdata, $user->id);
+
+        $this->assertIsArray($result['other']['pathnamehashes']);
+        $this->assertEmpty($result['other']['pathnamehashes']);
+    }
 }

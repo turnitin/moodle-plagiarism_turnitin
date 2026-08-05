@@ -840,4 +840,70 @@ class turnitin_submission {
             'statuscode' => 'queued',
         ]);
     }
+
+    /**
+     * Determine the submission author from event data.
+     *
+     * Normally the author is the relateduserid (the student whose work is being
+     * submitted). When relateduserid is absent the submitter is the author —
+     * this covers self-submissions and non-assign modules.
+     *
+     * Note: the group-submission edge case (instructor submitting on behalf of a
+     * group member) requires capability checks and DB access so is handled by
+     * the caller after this method returns.
+     *
+     * @param array     $eventdata Event data array from the plagiarism event.
+     * @param \stdClass $cm        Course module record (used to determine module type).
+     * @return int Moodle user id of the submission author.
+     */
+    public static function resolve_author(array $eventdata, \stdClass $cm): int {
+        return (!empty($eventdata['relateduserid']))
+            ? (int)$eventdata['relateduserid']
+            : (int)$eventdata['userid'];
+    }
+
+    /**
+     * Enrich event data for an assessable_submitted event with the actual
+     * text content and file pathnamehashes from the database.
+     *
+     * For assessable_submitted events the content and file list are not included
+     * in the event data itself — they must be fetched from the assignment submission
+     * tables. Returns the modified $eventdata array with 'content' and
+     * 'pathnamehashes' populated under the 'other' key.
+     *
+     * @param array $eventdata The event data array (passed by value — caller receives enriched copy).
+     * @param int   $author    Moodle user id of the submission author.
+     * @return array The enriched event data array.
+     */
+    public static function enrich_assessable_submitted(array $eventdata, int $author): array {
+        global $DB;
+
+        $moodlesubmission = $DB->get_record('assign_submission', ['id' => $eventdata['objectid']], 'id');
+
+        // Populate online text content when present.
+        if (
+            $moodletextsubmission = $DB->get_record(
+                'assignsubmission_onlinetext',
+                ['submission' => $moodlesubmission->id],
+                'onlinetext'
+            )
+        ) {
+            $eventdata['other']['content'] = $moodletextsubmission->onlinetext;
+        }
+
+        // Collect pathnamehashes for any files attached to this submission.
+        $eventdata['other']['pathnamehashes'] = [];
+        $filesconditions = [
+            'component' => 'assignsubmission_file',
+            'itemid'    => $moodlesubmission->id,
+            'userid'    => $author,
+        ];
+        if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
+            foreach ($moodlefiles as $moodlefile) {
+                $eventdata['other']['pathnamehashes'][] = $moodlefile->pathnamehash;
+            }
+        }
+
+        return $eventdata;
+    }
 }

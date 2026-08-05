@@ -539,4 +539,36 @@ final class turnitin_settings_test extends \advanced_testcase {
 
         $this->assertFalse(turnitin_settings::should_skip_draft($moduledata, $settings, 'assessable_submitted'));
     }
+
+    // Should_process_event tests.
+
+    /**
+     * Test that should_process_event returns false when use_turnitin is disabled
+     * for the activity, preventing the event from being processed.
+     */
+    public function test_should_process_event_returns_false_when_turnitin_disabled(): void {
+        $settings = ['use_turnitin' => 0];
+
+        $this->assertFalse(turnitin_settings::should_process_event($settings, '1'));
+    }
+
+    /**
+     * Test that should_process_event returns false when the module type is not
+     * enabled for Turnitin, even if the individual activity has it turned on.
+     */
+    public function test_should_process_event_returns_false_when_module_not_enabled(): void {
+        $settings = ['use_turnitin' => 1];
+
+        $this->assertFalse(turnitin_settings::should_process_event($settings, ''));
+    }
+
+    /**
+     * Test that should_process_event returns true when both use_turnitin is on
+     * and the module type is enabled.
+     */
+    public function test_should_process_event_returns_true_when_both_enabled(): void {
+        $settings = ['use_turnitin' => 1];
+
+        $this->assertTrue(turnitin_settings::should_process_event($settings, '1'));
+    }
 }

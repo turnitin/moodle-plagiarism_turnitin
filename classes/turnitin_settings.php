@@ -192,6 +192,21 @@ class turnitin_settings {
     }
 
     /**
+     * Check whether a submission event should be processed by Turnitin.
+     *
+     * Returns false when either Turnitin is not enabled for this specific activity
+     * (use_turnitin = 0) or the module type is not globally enabled — in both
+     * cases the event should be silently discarded rather than processed.
+     *
+     * @param array  $plagiarismsettings Per-CM settings from turnitin_settings::for_cm().
+     * @param mixed  $moduletiienabled   Result of turnitin_settings::module_enabled() — truthy when enabled.
+     * @return bool True when the event should proceed to submission queueing.
+     */
+    public static function should_process_event(array $plagiarismsettings, $moduletiienabled): bool {
+        return !empty($plagiarismsettings['use_turnitin']) && !empty($moduletiienabled);
+    }
+
+    /**
      * Persist the Turnitin settings submitted from an activity edit form.
      *
      * Iterates over the canonical field list and upserts each field that is

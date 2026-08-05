@@ -2286,7 +2286,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
-        if (empty($plagiarismsettings['use_turnitin']) || empty($moduletiienabled)) {
+        if (!\plagiarism_turnitin\turnitin_settings::should_process_event($plagiarismsettings, $moduletiienabled)) {
             return true;
         }
 
@@ -2303,7 +2303,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Set the author and submitter.
         $submitter = $eventdata['userid'];
-        $author = (!empty($eventdata['relateduserid'])) ? $eventdata['relateduserid'] : $eventdata['userid'];
+        $author = \plagiarism_turnitin\turnitin_submission::resolve_author($eventdata, $cm);
 
         /*
            Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
@@ -2319,30 +2319,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        // Get actual text content and files to be submitted for draft submissions.
-        // As this won't be present in eventdata for certain event types.
+        // Get actual text content and files for assessable_submitted events.
+        // As this won't be present in eventdata for this event type.
         if ($eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
-            // Get content.
-            $moodlesubmission = $DB->get_record('assign_submission', ['id' => $eventdata['objectid']], 'id');
-            if (
-                $moodletextsubmission = $DB->get_record(
-                    'assignsubmission_onlinetext',
-                    ['submission' => $moodlesubmission->id],
-                    'onlinetext'
-                )
-            ) {
-                $eventdata['other']['content'] = $moodletextsubmission->onlinetext;
-            }
-
-            // Get Files.
-            $eventdata['other']['pathnamehashes'] = [];
-            $filesconditions = ['component' => 'assignsubmission_file',
-                                    'itemid' => $moodlesubmission->id, 'userid' => $author, ];
-            if ($moodlefiles = $DB->get_records('files', $filesconditions)) {
-                foreach ($moodlefiles as $moodlefile) {
-                    $eventdata['other']['pathnamehashes'][] = $moodlefile->pathnamehash;
-                }
-            }
+            $eventdata = \plagiarism_turnitin\turnitin_submission::enrich_assessable_submitted($eventdata, $author);
         }
 
         // Remove submission from Turnitin queue if it is removed from Moodle.

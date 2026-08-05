@@ -122,7 +122,10 @@ an HTML report, then copy it out of the container to view in a browser:
 ```bash
 docker exec moodle502-moodle-1 bash -c "
   cd /usr/share/nginx/html/public &&
-  /usr/share/nginx/html/vendor/bin/phpunit \
+  php \
+    -d pcov.enabled=1 \
+    -d pcov.directory=/usr/share/nginx/html/public/plagiarism/turnitin \
+    /usr/share/nginx/html/vendor/bin/phpunit \
     --configuration plagiarism/turnitin/phpunit.xml \
     --coverage-html /tmp/turnitin-coverage
 " && \
@@ -131,9 +134,8 @@ docker cp moodle502-moodle-1:/tmp/turnitin-coverage /tmp/turnitin-coverage && \
 open /tmp/turnitin-coverage/index.html
 ```
 
-The report is scoped to the plugin's own code (`classes/`, `lib.php`, `locallib.php`) and
-excludes Moodle core. This is configured via the `<source>` block in
-`phpunit.xml` and the `pcov.directory` setting baked into the Docker image.
+The report is scoped to `classes/`, `lib.php`, and `locallib.php` via the `<source>` block
+in `phpunit.xml`. `pcov.directory` ensures Moodle core is not instrumented.
 
 Code Style
 =====================================

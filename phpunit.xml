@@ -25,4 +25,18 @@
     </testsuite>
   </testsuites>
 
+  <source>
+    <include>
+      <directory suffix=".php">classes</directory>
+      <file>lib.php</file>
+      <file>locallib.php</file>
+    </include>
+    <exclude>
+      <directory>vendor</directory>
+      <directory>lang</directory>
+      <directory>tests</directory>
+      <directory>db</directory>
+    </exclude>
+  </source>
+
 </phpunit>

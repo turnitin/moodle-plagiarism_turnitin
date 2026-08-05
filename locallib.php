@@ -171,3 +171,56 @@ function plagiarism_turnitin_print_error(
 
     throw new \moodle_exception($input, 'plagiarism_turnitin', $link, $message);
 }
+
+/**
+ * Creates a temp file for submission to Turnitin.
+ *
+ * Builds a sanitised, length-capped filename from an array of name parts and a
+ * file extension suffix, creates the file in Moodle's plagiarism_turnitin temp
+ * directory, and returns the full path.
+ *
+ * @param array  $filename Parts joined with underscores to form the base filename.
+ * @param string $suffix   The original filename; used only to extract the file extension.
+ * @return string Full path of the created temp file.
+ * @throws \invalid_dataroot_permissions When the file cannot be created after 10 attempts.
+ */
+function plagiarism_turnitin_tempfile(array $filename, string $suffix): string {
+    $filename = implode('_', $filename);
+    $filename = str_replace(' ', '_', $filename);
+    $filename = clean_param(strip_tags($filename), PARAM_FILE);
+
+    $tempdir = make_temp_directory('plagiarism_turnitin');
+
+    // Get the file extension (if there is one).
+    $pathparts = explode('.', $suffix);
+    $ext = '';
+    if (count($pathparts) > 1) {
+        $ext = '.' . array_pop($pathparts);
+    }
+
+    $permittedstrlength = PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH - mb_strlen($tempdir . DIRECTORY_SEPARATOR, 'UTF-8');
+    $extlength = mb_strlen('_' . mt_getrandmax() . $ext, 'UTF-8');
+    if ($extlength > $permittedstrlength) {
+        // Someone has likely used a long filename or the tempdir path is huge, so preserve the extension if possible.
+        $extlength = $permittedstrlength;
+    }
+
+    // Shorten the filename as needed, taking the extension into consideration.
+    $permittedstrlength -= $extlength;
+    $filename = mb_substr($filename, 0, $permittedstrlength, 'UTF-8');
+
+    // Ensure the filename doesn't have any characters that are invalid for the fs.
+    $filename = clean_param($filename . mb_substr('_' . mt_rand() . $ext, 0, $extlength, 'UTF-8'), PARAM_FILE);
+
+    $tries = 0;
+    do {
+        if ($tries == 10) {
+            throw new \invalid_dataroot_permissions("Turnitin plagiarism plugin temporary file cannot be created.");
+        }
+        $tries++;
+
+        $file = $tempdir . DIRECTORY_SEPARATOR . $filename;
+    } while (!touch($file));
+
+    return $file;
+}

@@ -44,6 +44,7 @@ use PHPUnit\Framework\Attributes\CoversFunction;
 #[CoversFunction('\plagiarism_turnitin_lock_anonymous_marking')]
 #[CoversFunction('\plagiarism_turnitin_is_eula_accepted')]
 #[CoversFunction('\plagiarism_turnitin_print_error')]
+#[CoversFunction('\plagiarism_turnitin_tempfile')]
 final class locallib_test extends \advanced_testcase {
     /**
      * Test that we have the correct repository depending on the config settings.
@@ -389,5 +390,143 @@ final class locallib_test extends \advanced_testcase {
             $this->assertStringNotContainsString('lib.php', $e->a);
             $this->assertStringNotContainsString('99', $e->a);
         }
+    }
+
+    // Tests for plagiarism_turnitin_tempfile().
+
+    /**
+     * Test that plagiarism_turnitin_tempfile returns a path to a file that exists on disk.
+     */
+    public function test_tempfile_creates_file_on_disk(): void {
+        $this->resetAfterTest();
+
+        $path = plagiarism_turnitin_tempfile(['essay', '42'], 'submission.docx');
+
+        $this->assertFileExists($path);
+        // Clean up.
+        unlink($path);
+    }
+
+    /**
+     * Test that the returned path is within Moodle's plagiarism_turnitin temp directory.
+     */
+    public function test_tempfile_is_in_turnitin_temp_directory(): void {
+        $this->resetAfterTest();
+
+        $tempdir = make_temp_directory('plagiarism_turnitin');
+        $path    = plagiarism_turnitin_tempfile(['test'], 'file.txt');
+
+        $this->assertStringStartsWith($tempdir, $path);
+        unlink($path);
+    }
+
+    /**
+     * Test that spaces in filename parts are replaced with underscores.
+     */
+    public function test_tempfile_replaces_spaces_with_underscores(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['My Essay', 'Part Two'], 'file.txt');
+        $basename = basename($path);
+
+        $this->assertStringNotContainsString(' ', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that HTML tags in filename parts are stripped.
+     */
+    public function test_tempfile_strips_html_tags(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['<b>Essay</b>'], 'file.txt');
+        $basename = basename($path);
+
+        $this->assertStringNotContainsString('<', $basename);
+        $this->assertStringNotContainsString('>', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that the file extension from the suffix is preserved in the filename.
+     */
+    public function test_tempfile_preserves_extension(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['essay'], 'document.docx');
+        $basename = basename($path);
+
+        $this->assertStringEndsWith('.docx', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that a suffix with no dot produces a filename with no extension.
+     */
+    public function test_tempfile_no_extension_when_suffix_has_no_dot(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['essay'], 'nodot');
+        $basename = basename($path);
+
+        // A file without a dot in the suffix should have no dot-extension in the basename.
+        $this->assertStringNotContainsString('.', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that for a multi-dot suffix only the last segment becomes the extension.
+     */
+    public function test_tempfile_uses_last_segment_as_extension_for_multi_dot_suffix(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['archive'], 'backup.tar.gz');
+        $basename = basename($path);
+
+        $this->assertStringEndsWith('.gz', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that multiple filename parts are joined with underscores.
+     */
+    public function test_tempfile_joins_array_parts_with_underscores(): void {
+        $this->resetAfterTest();
+
+        $path     = plagiarism_turnitin_tempfile(['title', '99', 'Smith', 'John'], 'file.txt');
+        $basename = basename($path);
+
+        // All four parts should appear somewhere in the basename.
+        $this->assertStringContainsString('title', $basename);
+        $this->assertStringContainsString('99', $basename);
+        unlink($path);
+    }
+
+    /**
+     * Test that an excessively long filename is truncated to stay within the max path length.
+     */
+    public function test_tempfile_truncates_long_filename(): void {
+        $this->resetAfterTest();
+
+        $longname = str_repeat('a', 500);
+        $path     = plagiarism_turnitin_tempfile([$longname], 'file.txt');
+
+        $this->assertLessThanOrEqual(PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH, strlen($path));
+        $this->assertFileExists($path);
+        unlink($path);
+    }
+
+    /**
+     * Test that two calls with the same parts produce different paths (random suffix).
+     */
+    public function test_tempfile_produces_unique_paths(): void {
+        $this->resetAfterTest();
+
+        $path1 = plagiarism_turnitin_tempfile(['essay', '1'], 'file.txt');
+        $path2 = plagiarism_turnitin_tempfile(['essay', '1'], 'file.txt');
+
+        $this->assertNotEquals($path1, $path2);
+        unlink($path1);
+        unlink($path2);
     }
 }

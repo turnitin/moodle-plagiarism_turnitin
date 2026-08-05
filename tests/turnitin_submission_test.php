@@ -1764,4 +1764,462 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertNull($result);
     }
+
+    // Tests for should_skip_non_submitting_filearea().
+
+    /**
+     * Test returns false for a submittable file area.
+     */
+    public function test_should_skip_non_submitting_filearea_returns_false_for_normal_area(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'assignsubmission_file',
+            'filearea'  => 'submission_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'essay.txt',
+        ], 'content');
+
+        $this->assertFalse(turnitin_submission::should_skip_non_submitting_filearea($file));
+        $fs->delete_area_files(\context_system::instance()->id, 'assignsubmission_file', 'submission_files');
+    }
+
+    /**
+     * Test returns true for feedback_files area.
+     */
+    public function test_should_skip_non_submitting_filearea_returns_true_for_feedback_files(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'assignfeedback_file',
+            'filearea'  => 'feedback_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'feedback.txt',
+        ], 'feedback');
+
+        $this->assertTrue(turnitin_submission::should_skip_non_submitting_filearea($file));
+        $fs->delete_area_files(\context_system::instance()->id, 'assignfeedback_file', 'feedback_files');
+    }
+
+    /**
+     * Test returns true for introattachment area.
+     */
+    public function test_should_skip_non_submitting_filearea_returns_true_for_introattachment(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'mod_assign',
+            'filearea'  => 'introattachment',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'intro.pdf',
+        ], 'intro');
+
+        $this->assertTrue(turnitin_submission::should_skip_non_submitting_filearea($file));
+        $fs->delete_area_files(\context_system::instance()->id, 'mod_assign', 'introattachment');
+    }
+
+    // Tests for should_skip_quiz_disabled().
+
+    /**
+     * Test returns false when component is not qtype_essay.
+     */
+    public function test_should_skip_quiz_disabled_returns_false_for_non_quiz(): void {
+        $this->resetAfterTest();
+
+        $this->assertFalse(turnitin_submission::should_skip_quiz_disabled(''));
+        $this->assertFalse(turnitin_submission::should_skip_quiz_disabled('mod_assign'));
+    }
+
+    /**
+     * Test returns false when quiz is enabled in Turnitin config.
+     */
+    public function test_should_skip_quiz_disabled_returns_false_when_quiz_enabled(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_quiz', 1, 'plagiarism_turnitin');
+
+        $this->assertFalse(turnitin_submission::should_skip_quiz_disabled('qtype_essay'));
+    }
+
+    /**
+     * Test returns true when quiz component is present but Turnitin quiz support is disabled.
+     */
+    public function test_should_skip_quiz_disabled_returns_true_when_quiz_disabled(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_quiz', 0, 'plagiarism_turnitin');
+
+        $this->assertTrue(turnitin_submission::should_skip_quiz_disabled('qtype_essay'));
+    }
+
+    // Tests for resolve_grades_released().
+
+    /**
+     * Test returns true when no grade item exists.
+     */
+    public function test_resolve_grades_released_returns_true_when_no_grade_item(): void {
+        $this->resetAfterTest();
+
+        $cm      = (object)['modname' => 'assign', 'instance' => 1];
+        $moddata = (object)[];
+
+        $this->assertTrue(turnitin_submission::resolve_grades_released($cm, $moddata, 1, null));
+    }
+
+    /**
+     * Test returns false when grade item hidden=1.
+     */
+    public function test_resolve_grades_released_returns_false_when_hidden(): void {
+        $this->resetAfterTest();
+
+        $cm        = (object)['modname' => 'assign', 'instance' => 1];
+        $moddata   = (object)[];
+        $gradeitem = (object)['hidden' => 1];
+
+        $this->assertFalse(turnitin_submission::resolve_grades_released($cm, $moddata, 1, $gradeitem));
+    }
+
+    /**
+     * Test returns true when grade item hidden=0 and no marking workflow.
+     */
+    public function test_resolve_grades_released_returns_true_when_hidden_zero(): void {
+        $this->resetAfterTest();
+
+        $cm        = (object)['modname' => 'forum', 'instance' => 1];
+        $moddata   = (object)[];
+        $gradeitem = (object)['hidden' => 0];
+
+        $this->assertTrue(turnitin_submission::resolve_grades_released($cm, $moddata, 1, $gradeitem));
+    }
+
+    /**
+     * Test returns false when grade item hidden is a future timestamp (hidden until).
+     */
+    public function test_resolve_grades_released_returns_false_when_hidden_until_future(): void {
+        $this->resetAfterTest();
+
+        $cm        = (object)['modname' => 'assign', 'instance' => 1];
+        $moddata   = (object)[];
+        $gradeitem = (object)['hidden' => strtotime('+1 month')];
+
+        $this->assertFalse(turnitin_submission::resolve_grades_released($cm, $moddata, 1, $gradeitem));
+    }
+
+    /**
+     * Test returns true when hidden timestamp is in the past (hidden-until has passed).
+     */
+    public function test_resolve_grades_released_returns_true_when_hidden_until_passed(): void {
+        $this->resetAfterTest();
+
+        $cm        = (object)['modname' => 'assign', 'instance' => 1];
+        $moddata   = (object)[];
+        $gradeitem = (object)['hidden' => strtotime('-1 month')];
+
+        $this->assertTrue(turnitin_submission::resolve_grades_released($cm, $moddata, 1, $gradeitem));
+    }
+
+    /**
+     * Test marking workflow overrides hidden=0 when no grade is released for the user.
+     */
+    public function test_resolve_grades_released_marking_workflow_not_released(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $assign  = $this->getDataGenerator()->create_module('assign', ['course' => $course->id, 'markingworkflow' => 1]);
+        $cm      = (object)['modname' => 'assign', 'instance' => $assign->id];
+        $moddata = (object)['markingworkflow' => 1];
+        $gradeitem = (object)['hidden' => 0];
+        $user    = $this->getDataGenerator()->create_user();
+
+        // No assign_user_flags row → not released.
+        $result = turnitin_submission::resolve_grades_released($cm, $moddata, $user->id, $gradeitem);
+
+        $this->assertFalse($result);
+    }
+
+    // Tests for resolve_submitter_eula_accepted().
+
+    /**
+     * Test returns true when plagiarism file exists (no EULA check needed).
+     */
+    public function test_resolve_submitter_eula_accepted_returns_true_when_file_exists(): void {
+        $this->resetAfterTest();
+
+        $course   = $this->getDataGenerator()->create_course();
+        $context  = \context_course::instance($course->id);
+        $module   = $this->getMockBuilder(\plagiarism_turnitin\modules\turnitin_assign::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            true,
+            1,
+            2,
+            1,
+            1,
+            true,
+            $context,
+            $module
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test returns true when viewing own submission (viewer == submitter).
+     */
+    public function test_resolve_submitter_eula_accepted_returns_true_for_own_submission(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $module  = $this->getMockBuilder(\plagiarism_turnitin\modules\turnitin_assign::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            false,
+            5,
+            5,
+            5,
+            5,
+            false,
+            $context,
+            $module
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test returns true when viewer is not a tutor.
+     */
+    public function test_resolve_submitter_eula_accepted_returns_true_when_not_tutor(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $module  = $this->getMockBuilder(\plagiarism_turnitin\modules\turnitin_assign::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            false,
+            3,
+            1,
+            3,
+            3,
+            false,
+            $context,
+            $module
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test returns true reflecting injected user's EULA acceptance status.
+     */
+    public function test_resolve_submitter_eula_accepted_uses_injected_user(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $context = \context_course::instance($course->id);
+
+        $module = $this->getMockBuilder(\plagiarism_turnitin\modules\turnitin_assign::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['user_enrolled_on_course'])
+            ->getMock();
+        $module->method('user_enrolled_on_course')->willReturn(true);
+
+        // Inject a mock turnitin_user with useragreementaccepted=1.
+        $tiiuser = $this->getMockBuilder(turnitin_user::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $tiiuser->useragreementaccepted = 1;
+
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            false,
+            (int)$student->id,
+            1,
+            (int)$student->id,
+            (int)$student->id,
+            true,
+            $context,
+            $module,
+            $tiiuser
+        );
+
+        $this->assertTrue($result);
+    }
+
+    // Tests for build_submission_link_context().
+
+    /**
+     * Test build_submission_link_context populates all fields correctly.
+     */
+    public function test_build_submission_link_context_populates_all_fields(): void {
+        $this->resetAfterTest();
+
+        $cm     = (object)['id' => 5, 'modname' => 'assign', 'instance' => 3, 'course' => 2];
+        $config = (object)[
+            'plagiarism_turnitin_usegrademark'   => 1,
+            'plagiarism_turnitin_enablepeermark' => 0,
+        ];
+        $settings = [
+            'plagiarism_show_student_report' => '1',
+            'plagiarism_rubric'              => '42',
+        ];
+        $gradeitem = (object)['id' => 7, 'hidden' => 0];
+        $pfile     = (object)['id' => 11, 'statuscode' => 'success'];
+
+        $ctx = turnitin_submission::build_submission_link_context(
+            ['cmid' => 5, 'userid' => 10, 'content' => 'some text'],
+            $cm,
+            $config,
+            $settings,
+            $pfile,
+            'text_content',
+            [10, 20],
+            false,
+            false,
+            true,
+            true,
+            false,
+            $gradeitem,
+            [],
+            true,
+            'https://example.com',
+            0
+        );
+
+        $this->assertInstanceOf(submission_link_context::class, $ctx);
+        $this->assertSame($pfile, $ctx->plagiarismfile);
+        $this->assertFalse($ctx->istutor);
+        $this->assertEquals(10, $ctx->submissionuserid);
+        $this->assertEquals('text_content', $ctx->submissiontype);
+        $this->assertEquals(5, $ctx->cmid);
+        $this->assertEquals('assign', $ctx->cmmodname);
+        $this->assertEquals(2, $ctx->cmcourse);
+        $this->assertEquals('https://example.com', $ctx->wwwroot);
+        $this->assertTrue($ctx->usegrademark);
+        $this->assertFalse($ctx->enablepeermark);
+        $this->assertTrue($ctx->showstudentreport);
+        $this->assertEquals('42', $ctx->rubric);
+        $this->assertTrue($ctx->gradesreleased);
+        $this->assertTrue($ctx->gradeexists);
+        $this->assertFalse($ctx->blindon);
+        $this->assertSame($gradeitem, $ctx->gradeitem);
+        $this->assertTrue($ctx->submittereulaccepted);
+    }
+
+    /**
+     * Test build_submission_link_context with null gradeitem and null plagiarismfile.
+     */
+    public function test_build_submission_link_context_handles_null_optionals(): void {
+        $this->resetAfterTest();
+
+        $cm     = (object)['id' => 1, 'modname' => 'forum', 'instance' => 1, 'course' => 1];
+        $config = (object)['plagiarism_turnitin_usegrademark' => 0, 'plagiarism_turnitin_enablepeermark' => 0];
+
+        $ctx = turnitin_submission::build_submission_link_context(
+            ['cmid' => 1, 'userid' => 5],
+            $cm,
+            $config,
+            [],
+            null,
+            'forum_post',
+            [5],
+            false,
+            false,
+            true,
+            false,
+            false,
+            null,
+            [],
+            true,
+            'https://moodle.local',
+            0
+        );
+
+        $this->assertNull($ctx->plagiarismfile);
+        $this->assertNull($ctx->gradeitem);
+        $this->assertFalse($ctx->gradeexists);
+    }
+
+    // End-to-end test for get_links early-return paths.
+
+    /**
+     * Test get_links returns empty string for feedback_files filearea.
+     *
+     * This exercises the should_skip_non_submitting_filearea guard in get_links
+     * without needing a full Turnitin-connected course setup.
+     */
+    public function test_get_links_returns_empty_for_feedback_files_filearea(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'assignfeedback_file',
+            'filearea'  => 'feedback_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'feedback.txt',
+        ], 'feedback content');
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links(['file' => $file, 'cmid' => 1, 'userid' => 1]);
+
+        $this->assertSame('', $result);
+        $fs->delete_area_files(\context_system::instance()->id, 'assignfeedback_file', 'feedback_files');
+    }
+
+    /**
+     * Test get_links returns empty string when quiz module is disabled in Turnitin.
+     */
+    public function test_get_links_returns_empty_when_quiz_disabled(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_quiz', 0, 'plagiarism_turnitin');
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links(['component' => 'qtype_essay', 'cmid' => 1, 'userid' => 1]);
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Test get_links returns empty string when use_turnitin is disabled for the module.
+     */
+    public function test_get_links_returns_empty_when_turnitin_disabled_for_cm(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+
+        // No plagiarism_turnitin_config row → use_turnitin is absent → early return.
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links([
+            'cmid'    => $cm->id,
+            'userid'  => 1,
+            'content' => 'some text',
+        ]);
+
+        $this->assertSame('', $result);
+    }
 }

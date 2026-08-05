@@ -205,9 +205,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Don't show links for certain file types as they won't have been submitted to Turnitin.
         if (!empty($linkarray["file"])) {
             $file = $linkarray["file"];
-            $filearea = $file->get_filearea();
-            $nonsubmittingareas = ["feedback_files", "introattachment"];
-            if (in_array($filearea, $nonsubmittingareas)) {
+            if (\plagiarism_turnitin\turnitin_submission::should_skip_non_submitting_filearea($file)) {
                 return $output;
             }
         }
@@ -215,7 +213,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
 
         // Exit if this is a quiz and quizzes are disabled.
-        if ($component == "qtype_essay" && empty(\plagiarism_turnitin\turnitin_settings::module_enabled('mod_quiz'))) {
+        if (\plagiarism_turnitin\turnitin_submission::should_skip_quiz_disabled($component)) {
             return $output;
         }
 
@@ -310,6 +308,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $submittinguser = $linkarray['userid'];
 
+            // Group submissions where all students have to submit sets userid to 0.
+            if ($linkarray['userid'] == 0 && !$istutor) {
+                $linkarray['userid'] = $USER->id;
+            }
+
             // Resolve identifier, old identifier, itemid, and submission type.
             $contentinfo    = \plagiarism_turnitin\turnitin_submission::resolve_content_identifier(
                 $linkarray,
@@ -322,39 +325,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $itemid         = $contentinfo->itemid;
             $submissiontype = $contentinfo->submissiontype;
 
-            // Group submissions where all students have to submit sets userid to 0.
-            if ($linkarray['userid'] == 0 && !$istutor) {
-                $linkarray['userid'] = $USER->id;
-            }
-
-            /*
-               The author will be incorrect if an instructor submits on behalf of a student who is in a group.
-               To get around this, we get the group ID, get the group members and set the author as the first student in the group.
-            */
-            $plagiarismfile = null;
-            $moodlesubmission = $DB->get_record('assign_submission', ['id' => $itemid], 'id, groupid');
-            if ((!empty($moodlesubmission->groupid)) && ($cm->modname == "assign")) {
-                $plagiarismfiles = $DB->get_records(
-                    'plagiarism_turnitin_files',
-                    ['itemid' => $itemid, 'cm' => $cm->id,
-                    'identifier' => $identifier],
-                    'lastmodified DESC',
-                    '*',
-                    0,
-                    1
-                );
-                $plagiarismfile = reset($plagiarismfiles);
-                $author = $plagiarismfile->userid ?? null;
-                $linkarray['userid'] = $author;
-            } else {
-                // Get correct user id that submission is for rather than who submitted, this only affects file submissions
-                // post Moodle 2.7 which is problematic as teachers can submit on behalf of students.
-                $author = $linkarray['userid'];
-                if ($itemid != 0) {
-                    $author = $moduleobject->get_author($itemid);
-                    $linkarray['userid'] = (!empty($author)) ? $author : $linkarray['userid'];
-                }
-            }
+            // Resolve the correct author and plagiarism file for group submissions.
+            $authorinfo     = \plagiarism_turnitin\turnitin_submission::resolve_get_links_author(
+                $linkarray,
+                $cm,
+                $itemid,
+                $identifier,
+                $moduleobject
+            );
+            $plagiarismfile      = $authorinfo->plagiarismfile;
+            $author              = $authorinfo->author;
+            $linkarray['userid'] = $authorinfo->userid;
 
             // Show the EULA for a student if necessary.
             if ($linkarray["userid"] == $USER->id) {
@@ -445,86 +426,58 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $plagiarismfile = current($plagiarismfiles);
                 }
 
-                // Populate gradeitem query.
-                $gradeitemqueryarray = [
-                                    'iteminstance' => $cm->instance,
-                                    'itemmodule' => $cm->modname,
-                                    'courseid' => $cm->course,
-                                    'itemnumber' => 0,
-                                ];
+                // Fetch grade item for this CM.
+                $gradeitem = $DB->get_record(
+                    'grade_items',
+                    ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
+                     'courseid' => $cm->course, 'itemnumber' => 0]
+                ) ?: null;
 
-                // Get grade item and work out whether grades have been released for viewing.
-                $gradesreleased = true;
-                if ($gradeitem = $DB->get_record('grade_items', $gradeitemqueryarray)) {
-                    switch ($gradeitem->hidden) {
-                        case 1:
-                            $gradesreleased = false;
-                            break;
-                        default:
-                            $gradesreleased = ($gradeitem->hidden >= time()) ? false : true;
-                            break;
-                    }
+                $gradesreleased = \plagiarism_turnitin\turnitin_submission::resolve_grades_released(
+                    $cm,
+                    $moduledata,
+                    $linkarray['userid'],
+                    $gradeitem
+                );
 
-                    // Give Marking workflow higher priority than gradebook hidden date.
-                    if ($cm->modname == 'assign' && !empty($moduledata->markingworkflow)) {
-                        $gradesreleased = $DB->record_exists(
-                            'assign_user_flags',
-                            [
-                                                        'userid' => $linkarray["userid"],
-                                                        'assignment' => $cm->instance,
-                                                        'workflowstate' => 'released',
-                            ]
-                        );
-                    }
-                }
+                $currentgradequery = $gradeitem
+                    ? $moduleobject->get_current_gradequery($linkarray["userid"], $cm->instance, $gradeitem->id)
+                    : false;
 
-                $currentgradequery = false;
-                if ($gradeitem) {
-                    $currentgradequery = $moduleobject->get_current_gradequery($linkarray["userid"], $cm->instance, $gradeitem->id);
-                }
-
-                // Build rendering context and delegate to the renderer.
-                $submittereulaccepted = true;
-                if (!$plagiarismfile) {
-                    // Check EULA acceptance for the no-submission branch (tutor viewing student).
-                    if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {
-                        if ($DB->get_record('user', ['id' => $linkarray["userid"]])) {
-                            if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
-                                $user = new \plagiarism_turnitin\turnitin_user($linkarray["userid"], "Learner");
-                                $submittereulaccepted = ($user->useragreementaccepted == 1);
-                            }
-                        }
-                    }
-                }
-
-                // Determine grade release context.
                 $gradeexists = isset($currentgradequery->grade) && $currentgradequery->grade >= 0;
                 $blindon     = !empty($moduledata->blindmarking) && empty($moduledata->revealidentities);
 
-                $ctx = new \plagiarism_turnitin\submission_link_context();
-                $ctx->plagiarismfile              = $plagiarismfile ?: null;
-                $ctx->istutor                     = $istutor;
-                $ctx->vieweruserid                = $USER->id;
-                $ctx->submissionuserid            = $linkarray["userid"];
-                $ctx->submissionusers             = $submissionusers;
-                $ctx->isnonsubmitterforgroupassign = $isnonsubmitterforgroupassign;
-                $ctx->submissiontype              = $submissiontype;
-                $ctx->cmid                        = $linkarray["cmid"];
-                $ctx->cmmodname                   = $cm->modname;
-                $ctx->cmcourse                    = $cm->course;
-                $ctx->wwwroot                     = $CFG->wwwroot;
-                $ctx->submissioncontent           = $linkarray["content"] ?? null;
-                $ctx->filesize                    = !empty($linkarray["file"]) ? $file->get_filesize() : 0;
-                $ctx->usegrademark                = !empty($config->plagiarism_turnitin_usegrademark);
-                $ctx->enablepeermark              = !empty($config->plagiarism_turnitin_enablepeermark);
-                $ctx->showstudentreport           = !empty($plagiarismsettings["plagiarism_show_student_report"]);
-                $ctx->rubric                      = $plagiarismsettings["plagiarism_rubric"] ?? null;
-                $ctx->gradesreleased              = $gradesreleased;
-                $ctx->blindon                     = $blindon;
-                $ctx->gradeexists                 = $gradeexists;
-                $ctx->gradeitem                   = $gradeitem ?? null;
-                $ctx->peermarkassignments         = $_SESSION["peermark_assignments"][$cm->id] ?? [];
-                $ctx->submittereulaccepted        = $submittereulaccepted;
+                $submittereulaccepted = \plagiarism_turnitin\turnitin_submission::resolve_submitter_eula_accepted(
+                    $plagiarismfile !== null,
+                    (int)$linkarray['userid'],
+                    (int)$USER->id,
+                    (int)$submittinguser,
+                    isset($author) ? (int)$author : null,
+                    $istutor,
+                    $context,
+                    $moduleobject
+                );
+
+                $ctx = \plagiarism_turnitin\turnitin_submission::build_submission_link_context(
+                    $linkarray,
+                    $cm,
+                    $config,
+                    $plagiarismsettings,
+                    $plagiarismfile ?: null,
+                    $submissiontype,
+                    $submissionusers,
+                    $istutor,
+                    $isnonsubmitterforgroupassign,
+                    $gradesreleased,
+                    $gradeexists,
+                    $blindon,
+                    $gradeitem,
+                    $_SESSION["peermark_assignments"][$cm->id] ?? [],
+                    $submittereulaccepted,
+                    $CFG->wwwroot,
+                    !empty($linkarray["file"]) ? $file->get_filesize() : 0
+                );
+                $ctx->vieweruserid = $USER->id;
 
                 $output .= \plagiarism_turnitin\turnitin_submission_display::render($ctx);
                 $output .= html_writer::tag('div', '', ['class' => 'clear']);

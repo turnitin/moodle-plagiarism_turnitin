@@ -40,7 +40,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package plagiarism_turnitin
  */
 #[CoversClass(hook_callbacks::class)]
-class hook_callbacks_test extends \advanced_testcase {
+final class hook_callbacks_test extends \advanced_testcase {
     /**
      * Build the hook object passed to before_footer_html_generation().
      */

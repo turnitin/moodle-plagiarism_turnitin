@@ -43,7 +43,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package plagiarism_turnitin
  */
 #[CoversClass(turnitin_view::class)]
-class turnitin_view_test extends \advanced_testcase {
+final class turnitin_view_test extends \advanced_testcase {
     // Tests for output_header().
 
     /**

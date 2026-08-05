@@ -172,7 +172,8 @@ switch ($do) {
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
 
-        $mform = new \plagiarism_turnitin\turnitin_defaultsettingsform($CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults');
+        $defaultsurl = $CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults';
+        $mform = new \plagiarism_turnitin\turnitin_defaultsettingsform($defaultsurl);
         $mform->set_data($plugindefaults);
         $mform->display();
         break;

@@ -39,7 +39,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package plagiarism_turnitin
  */
 #[CoversClass(\plagiarism_turnitin_observer::class)]
-class observer_test extends \advanced_testcase {
+final class observer_test extends \advanced_testcase {
     /**
      * Build a mock of plagiarism_plugin_turnitin that captures the $eventdata
      * passed to event_handler() so tests can assert on eventtype and modulename.

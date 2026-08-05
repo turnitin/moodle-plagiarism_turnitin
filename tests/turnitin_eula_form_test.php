@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/classes/forms/turnitin_form.php');
 
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -249,5 +250,197 @@ final class turnitin_eula_form_test extends \advanced_testcase {
         $result = $mock->render_eula_form($cm);
 
         $this->assertSame('', $result);
+    }
+
+    /**
+     * Build a mock turnitin_user with get_accepted_user_agreement() returning false
+     * so the EULA HTML path in render() is exercised.
+     *
+     * @param int $tiiuserid Turnitin user id to set on the mock.
+     * @return turnitin_user
+     */
+    private function make_unagreed_user(int $tiiuserid = 0): turnitin_user {
+        $mock = $this->getMockBuilder(turnitin_user::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['join_user_to_class', 'get_accepted_user_agreement'])
+            ->getMock();
+
+        // With useragreementaccepted=0 the ternary calls get_accepted_user_agreement().
+        $mock->useragreementaccepted = 0;
+        $mock->tiiuserid             = $tiiuserid;
+        $mock->id                    = 1;
+
+        // Return false so !empty($eulaaccepted) is false → HTML block executes.
+        $mock->method('join_user_to_class')->willReturn(false);
+        $mock->method('get_accepted_user_agreement')->willReturn(false);
+
+        return $mock;
+    }
+
+    /**
+     * Build a connected mock plugin with a seeded course (turnitin_cid already set).
+     *
+     * @param string $modtype
+     * @return array{0: \plagiarism_plugin_turnitin, 1: \stdClass}
+     */
+    private function make_connected_plugin_and_cm(string $modtype = 'assign'): array {
+        global $DB;
+
+        $course = $this->getDataGenerator()->create_course();
+        $mod    = $this->getDataGenerator()->create_module($modtype, ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance($modtype, $mod->id);
+
+        $DB->insert_record('plagiarism_turnitin_courses', (object)[
+            'courseid' => $course->id, 'turnitin_cid' => 42, 'turnitin_ctl' => 'Test',
+        ]);
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection', 'create_tii_course'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+
+        $cmobj = (object)['id' => $cm->id, 'course' => $course->id, 'modname' => $modtype];
+        return [$mock, $cmobj];
+    }
+
+    /**
+     * Test that the EULA prompt HTML is built when the user has not accepted.
+     *
+     * We inject a mock turnitin_user whose get_accepted_user_agreement() returns false
+     * so the HTML-building block (lines 104–134) executes.
+     */
+    public function test_eula_html_contains_prompt_when_not_accepted(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('assign');
+
+        $result = turnitin_eula_form::render(
+            $cm,
+            $plugin,
+            fn() => '<form></form>',
+            $this->make_unagreed_user()
+        );
+
+        $this->assertStringContainsString('pp_turnitin_eula', $result);
+        $this->assertStringContainsString('pp_turnitin_eula_ignored', $result);
+    }
+
+    /**
+     * Test that the noscript ULA text is appended for non-forum modules.
+     */
+    public function test_noscript_ula_text_appended_for_non_forum(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('assign');
+
+        $result = turnitin_eula_form::render(
+            $cm,
+            $plugin,
+            fn() => '',
+            $this->make_unagreed_user()
+        );
+
+        $this->assertStringContainsString(get_string('noscriptula', 'plagiarism_turnitin'), $result);
+    }
+
+    /**
+     * Test that the noscript ULA text is NOT appended for forum modules.
+     */
+    public function test_noscript_ula_text_absent_for_forum(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('forum');
+
+        $result = turnitin_eula_form::render(
+            $cm,
+            $plugin,
+            fn() => '',
+            $this->make_unagreed_user()
+        );
+
+        $this->assertStringNotContainsString(get_string('noscriptula', 'plagiarism_turnitin'), $result);
+    }
+
+    /**
+     * Test that the launchformcallback is invoked when the user has not accepted.
+     */
+    public function test_launchform_callback_is_invoked_when_eula_not_accepted(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('assign');
+
+        $callbackinvoked = false;
+        $callback = function () use (&$callbackinvoked): string {
+            $callbackinvoked = true;
+            return '<form id="eula_launch_form"></form>';
+        };
+
+        turnitin_eula_form::render($cm, $plugin, $callback, $this->make_unagreed_user());
+
+        $this->assertTrue($callbackinvoked);
+    }
+
+    /**
+     * Test that the EULA form box is included in the output when the user has not accepted.
+     *
+     * The turnitin_comms/turnitin_form block (lines 137–152) runs when credentials are set.
+     */
+    public function test_output_contains_eula_form_box(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('assign');
+
+        $result = turnitin_eula_form::render(
+            $cm,
+            $plugin,
+            fn() => '',
+            $this->make_unagreed_user()
+        );
+
+        $this->assertStringContainsString('useragreement_form', $result);
+    }
+
+    /**
+     * Test that the launchformcallback receives the correct arguments.
+     *
+     * Verifies the callback is called with type='useragreement' and
+     * the user's tiiuserid.
+     */
+    public function test_launchform_callback_receives_correct_arguments(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $this->set_credentials();
+
+        [$plugin, $cm] = $this->make_connected_plugin_and_cm('assign');
+
+        $capturedtype   = null;
+        $captureduserid = null;
+        $callback = function (
+            string $type,
+            int $submissionid,
+            int $userid
+        ) use (
+            &$capturedtype,
+            &$captureduserid
+): string {
+            $capturedtype   = $type;
+            $captureduserid = $userid;
+            return '';
+        };
+
+        turnitin_eula_form::render($cm, $plugin, $callback, $this->make_unagreed_user(12345));
+
+        $this->assertEquals('useragreement', $capturedtype);
+        $this->assertEquals(12345, $captureduserid);
     }
 }

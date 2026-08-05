@@ -66,9 +66,19 @@ class turnitin_eula_form {
      * @param \stdClass $cm     Course module record (needs ->id, ->course, ->modname).
      * @param \plagiarism_plugin_turnitin $plugin Plugin instance; injected in tests to
      *     avoid real API calls in test_turnitin_connection() and create_tii_course().
+     * @param callable|null $launchformcallback Optional override for the LTI launch form;
+     *     defaults to turnitin_view::output_launch_form(). Injected in tests to avoid
+     *     the SDK network call.
+     * @param turnitin_user|null $user Pre-built user object; when null the method constructs
+     *     one from $USER->id. Injected in tests to control EULA acceptance state.
      * @return string HTML for the EULA widget, or '' when not needed.
      */
-    public static function render(\stdClass $cm, \plagiarism_plugin_turnitin $plugin): string {
+    public static function render(
+        \stdClass $cm,
+        \plagiarism_plugin_turnitin $plugin,
+        ?callable $launchformcallback = null,
+        ?turnitin_user $user = null
+    ): string {
         global $OUTPUT, $USER;
 
         $output = '';
@@ -84,11 +94,11 @@ class turnitin_eula_form {
 
         $coursedata = turnitin_course::get_course_data($cm->id, $cm->course, 'site', $plugin);
 
-        $user = new turnitin_user($USER->id, 'Learner');
-        $user->join_user_to_class($coursedata->turnitin_cid);
-        $eulaaccepted = ($user->useragreementaccepted == 0)
-            ? $user->get_accepted_user_agreement()
-            : $user->useragreementaccepted;
+        $tiiuser = $user ?? new turnitin_user($USER->id, 'Learner');
+        $tiiuser->join_user_to_class($coursedata->turnitin_cid);
+        $eulaaccepted = ($tiiuser->useragreementaccepted == 0)
+            ? $tiiuser->get_accepted_user_agreement()
+            : $tiiuser->useragreementaccepted;
 
         if (!empty($eulaaccepted)) {
             return '';
@@ -104,14 +114,15 @@ class turnitin_eula_form {
         $eula = \html_writer::tag(
             'div',
             $eulalink,
-            ['class' => 'pp_turnitin_eula' . $eulaignoredclass, 'data-userid' => $user->id]
+            ['class' => 'pp_turnitin_eula' . $eulaignoredclass, 'data-userid' => $tiiuser->id]
         );
 
         // Build the noscript fallback LTI launch form.
-        $form = turnitin_view::output_launch_form(
+        $callback = $launchformcallback ?? [turnitin_view::class, 'output_launch_form'];
+        $form = $callback(
             'useragreement',
             0,
-            $user->tiiuserid,
+            $tiiuser->tiiuserid,
             'Learner',
             get_string('turnitinppulapre', 'plagiarism_turnitin'),
             false

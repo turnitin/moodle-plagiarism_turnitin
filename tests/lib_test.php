@@ -718,6 +718,278 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue($result);
     }
 
+    // Tests for migrate_previous_course().
+
+    /**
+     * Test migrate_previous_course inserts a new plagiarism_turnitin_courses row when
+     * coursedata has no tii_rel_id — exercises the insert_record branch (lines 1402-1412).
+     */
+    public function test_migrate_previous_course_inserts_new_row(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $coursedata = (object)[
+            'id'           => $course->id,
+            'fullname'     => 'Test Course',
+            'turnitin_cid' => 0,
+            // No tii_rel_id — triggers insert_record path.
+        ];
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        // edit_tii_course makes an API call; wrap in try/catch so the DB work
+        // (which happens before the API call) is still verifiable.
+        try {
+            $result = $plugin->migrate_previous_course($coursedata, 999);
+        } catch (\Exception $e) {
+            // Expected — API not available in test environment.
+        }
+
+        $row = $DB->get_record('plagiarism_turnitin_courses', ['courseid' => $course->id]);
+        $this->assertNotFalse($row);
+        $this->assertEquals(999, $row->turnitin_cid);
+        $this->assertStringContainsString('Moodle PP', $row->turnitin_ctl);
+    }
+
+    /**
+     * Test migrate_previous_course updates an existing plagiarism_turnitin_courses row
+     * when coursedata has a tii_rel_id — exercises the update_record branch (lines 1409-1412).
+     */
+    public function test_migrate_previous_course_updates_existing_row(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+
+        // Pre-seed an existing courses row.
+        $existingid = $DB->insert_record('plagiarism_turnitin_courses', (object)[
+            'courseid'     => $course->id,
+            'turnitin_cid' => 100,
+            'turnitin_ctl' => 'Old Title (Moodle PP)',
+        ]);
+
+        $coursedata = (object)[
+            'id'         => $course->id,
+            'fullname'   => 'Updated Course',
+            'tii_rel_id' => $existingid,
+            'turnitin_cid' => 100,
+        ];
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        try {
+            $plugin->migrate_previous_course($coursedata, 200);
+        } catch (\Exception $e) {
+            // Expected — API not available.
+        }
+
+        $row = $DB->get_record('plagiarism_turnitin_courses', ['id' => $existingid]);
+        $this->assertEquals(200, $row->turnitin_cid);
+        $this->assertStringContainsString('Moodle PP', $row->turnitin_ctl);
+    }
+
+    // Tests for send_single_submission() extra paths.
+
+    /**
+     * Test send_single_submission saves errorcode 10 when the Turnitin course
+     * cannot be found or created (turnitin_cid is empty) — exercises lines 1923-1926.
+     *
+     * This is a duplicate guard description block kept for documentation clarity.
+     * The actual tests are below.
+     */
+
+    // Tests for sync_tii_assignment() duedate side-effect.
+
+    /**
+     * Test sync_tii_assignment resets duedate_report_refresh flags to 1 for any
+     * submissions with flag=2 when the assignment due date is in the future —
+     * exercises lines 1059-1065 in lib.php (now delegated via build_tii_assignment).
+     */
+    public function test_sync_tii_assignment_resets_duedate_refresh_flags_when_future_due(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'  => $course->id,
+            'duedate' => time() + WEEKSECS, // future due date
+        ]);
+        $cm = get_coursemodule_from_instance('assign', $assign->id);
+
+        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
+                  'plagiarism_report_gen' => 0, 'plagiarism_compare_student_papers' => 0,
+                  'plagiarism_compare_journals' => 0, 'plagiarism_show_student_report' => 0,
+                  'plagiarism_exclude_biblio' => 0, 'plagiarism_exclude_quoted' => 0,
+                  'plagiarism_exclude_matches' => 0] as $name => $val) {
+            $DB->insert_record('plagiarism_turnitin_config', (object)[
+                'cm' => $cm->id, 'name' => $name, 'value' => $val,
+                'config_hash' => $cm->id . '_' . $name,
+            ]);
+        }
+
+        // Seed a submission with duedate_report_refresh = 2.
+        $id = $this->insert_submission_row([
+            'cm'                     => $cm->id,
+            'userid'                 => 2,
+            'statuscode'             => 'success',
+            'duedate_report_refresh' => 2,
+        ]);
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['sync_tii_assignment'])
+            ->getMock();
+
+        // Call build_tii_assignment directly — it contains the duedate_refresh side-effect
+        // (set_field call at the extracted lines). Then call sync_tii_assignment on the real
+        // plugin to trigger it indirectly.
+        $plugin = new \plagiarism_plugin_turnitin();
+        // build_tii_assignment is the extracted method; calling it triggers the set_field.
+        turnitin_submission::build_tii_assignment($cm, 99, false);
+
+        // The duedate is in the future so build_tii_assignment does NOT touch the flags
+        // (that's done in sync_tii_assignment itself). Call sync_tii_assignment with a mock
+        // that stubs the API portions.
+        $mock2 = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['sync_tii_assignment'])
+            ->getMock();
+        $mock2->method('sync_tii_assignment')
+            ->willReturnCallback(function($cm) use ($plugin) {
+                return $plugin->sync_tii_assignment($cm, 99);
+            });
+
+        // Directly call sync_tii_assignment — it will attempt the API but the set_field
+        // happens before the API call. Suppress API exception output.
+        ob_start();
+        try {
+            $plugin->sync_tii_assignment($cm, 99);
+        } catch (\Exception $e) {
+            // Expected — API not available.
+        }
+        ob_end_clean();
+
+        // The flag should have been reset from 2 to 1.
+        $this->assertEquals(1, $DB->get_field('plagiarism_turnitin_files', 'duedate_report_refresh', ['id' => $id]));
+    }
+
+    /**
+     * Test send_single_submission saves errorcode 10 and returns when the Turnitin
+     * course cannot be created (empty turnitin_cid) — exercises lines 1923-1926.
+     */
+    public function test_send_single_submission_errors_when_course_not_created(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $id = $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => $user->id,
+            'submissiontype' => 'file', 'externalid' => null,
+        ]);
+
+        // Seed a turnitin_courses row with turnitin_cid = 0 (empty) so get_course_data
+        // returns it but with no valid cid — triggers the errorcode 10 guard.
+        $DB->insert_record('plagiarism_turnitin_courses', (object)[
+            'courseid'     => $course->id,
+            'turnitin_cid' => 0,
+            'turnitin_ctl' => '',
+        ]);
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+
+        $queued = (object)[
+            'id' => $id, 'cm' => $cm->id, 'userid' => $user->id,
+            'attempt' => 0, 'submissiontype' => 'file', 'itemid' => 0,
+            'identifier' => 'hash', 'externalid' => null, 'submitter' => $user->id,
+        ];
+
+        ob_start();
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+        ob_end_clean();
+
+        $this->assertEquals(10, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
+    }
+
+    // Tests for queue_submission_to_turnitin() — assign with file_uploaded event.
+
+    /**
+     * Test queue_submission_to_turnitin reads the assign_submission status when
+     * eventtype is file_uploaded — exercises lines 1504-1514 (the SESSION status read).
+     */
+    public function test_queue_submission_reads_submission_status_for_file_uploaded(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $DB->insert_record('plagiarism_turnitin_users', (object)[
+            'userid' => $user->id, 'user_agreement_accepted' => 1,
+        ]);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1, 'plagiarism_report_gen' => 0] as $name => $val) {
+            $DB->insert_record('plagiarism_turnitin_config', (object)[
+                'cm' => $cm->id, 'name' => $name, 'value' => $val,
+                'config_hash' => $cm->id . '_' . $name,
+            ]);
+        }
+
+        // Create a real assign_submission row matching the itemid we'll pass.
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->queue_submission_to_turnitin(
+            $cm, $user->id, $user->id, 'text-file-hash', 'text_content', $submissionid, 'file_uploaded'
+        );
+
+        $this->assertTrue($result);
+        $row = $DB->get_record('plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'text-file-hash']);
+        $this->assertNotFalse($row);
+        $this->assertEquals('queued', $row->statuscode);
+    }
+
     // Tests for print_disclosure().
 
     /**

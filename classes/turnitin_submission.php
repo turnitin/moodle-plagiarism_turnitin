@@ -1756,4 +1756,104 @@ class turnitin_submission {
 
         return $result;
     }
+
+    /**
+     * Build a TiiAssignment object populated with all CM-level settings and dates.
+     *
+     * Extracted from sync_tii_assignment so the configuration logic can be tested
+     * independently of the Turnitin API calls that follow it.
+     *
+     * Returns an array with:
+     *   - 'assignment' => TiiAssignment  populated object ready to send to the API
+     *   - 'dtdue'      => int            Unix timestamp of the due date (used by callers
+     *                                    to decide whether to refresh duedate flags)
+     *
+     * @param \stdClass $cm               Course module record.
+     * @param int       $coursetiiid      Turnitin course ID.
+     * @param bool      $submittoturnitin Whether this is a submit-to-Turnitin context
+     *                                    (affects due-date calculation).
+     * @return array{assignment: TiiAssignment, dtdue: int}
+     */
+    public static function build_tii_assignment(\stdClass $cm, int $coursetiiid, bool $submittoturnitin = false): array {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/plagiarism/turnitin/locallib.php');
+
+        $config               = turnitin_settings::admin_config();
+        $modulepluginsettings = turnitin_settings::for_cm($cm->id);
+        $moduledata           = $DB->get_record($cm->modname, ['id' => $cm->instance]);
+
+        $assignment = new \TiiAssignment();
+        $assignment->setClassId($coursetiiid);
+
+        // Truncate to 80 chars + ellipsis to stay within Turnitin's 99-char title limit
+        // while leaving room for multibyte characters to expand.
+        $title = $moduledata->name;
+        if (mb_strlen($moduledata->name, 'UTF-8') > 80) {
+            $title = mb_substr($moduledata->name, 0, 80, 'UTF-8') . '...';
+        }
+        $assignment->setTitle($title);
+
+        $reposetting = $modulepluginsettings['plagiarism_submitpapersto'] ?? 1;
+        $reposetting = plagiarism_turnitin_override_repository($reposetting);
+        $assignment->setSubmitPapersTo($reposetting);
+        $assignment->setSubmittedDocumentsCheck($modulepluginsettings['plagiarism_compare_student_papers']);
+        $assignment->setInternetCheck($modulepluginsettings['plagiarism_compare_internet']);
+        $assignment->setPublicationsCheck($modulepluginsettings['plagiarism_compare_journals']);
+
+        if (
+            $config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED ||
+            $config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL
+        ) {
+            $institutioncheck = $modulepluginsettings['plagiarism_compare_institution'] ?? 0;
+            $assignment->setInstitutionCheck($institutioncheck);
+        }
+
+        $assignment->setAuthorOriginalityAccess($modulepluginsettings['plagiarism_show_student_report']);
+        $assignment->setResubmissionRule((int)$modulepluginsettings['plagiarism_report_gen']);
+        $assignment->setBibliographyExcluded($modulepluginsettings['plagiarism_exclude_biblio']);
+        $assignment->setQuotedExcluded($modulepluginsettings['plagiarism_exclude_quoted']);
+        $assignment->setSmallMatchExclusionType($modulepluginsettings['plagiarism_exclude_matches']);
+
+        if (empty($modulepluginsettings['plagiarism_exclude_matches_value'])) {
+            $modulepluginsettings['plagiarism_exclude_matches_value'] = 0;
+        }
+        $assignment->setSmallMatchExclusionThreshold($modulepluginsettings['plagiarism_exclude_matches_value']);
+
+        $previoussubmissions = $DB->record_exists('plagiarism_turnitin_files', ['cm' => $cm->id, 'statuscode' => 'success']);
+        if (isset($config->plagiarism_turnitin_useanon) && $config->plagiarism_turnitin_useanon && !$previoussubmissions) {
+            $anonmarking = (!empty($moduledata->blindmarking)) ? 1 : 0;
+            $assignment->setAnonymousMarking($anonmarking);
+        }
+
+        $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings['plagiarism_allow_non_or_submissions']) ? 1 : 0);
+        $assignment->setTranslatedMatching(!empty($modulepluginsettings['plagiarism_transmatch']) ? 1 : 0);
+        $assignment->setLateSubmissionsAllowed(1);
+        $assignment->setMaxGrade(0);
+        $assignment->setRubricId(!empty($modulepluginsettings['plagiarism_rubric']) ? $modulepluginsettings['plagiarism_rubric'] : '');
+
+        if (!empty($moduledata->grade)) {
+            $assignment->setMaxGrade(($moduledata->grade < 0) ? 100 : (int)$moduledata->grade);
+        }
+
+        $dtstart = turnitin_date_utils::start_date($moduledata, $cm);
+        $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
+
+        $gradeitem = $DB->get_record(
+            'grade_items',
+            ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname, 'courseid' => $cm->course, 'itemnumber' => 0]
+        ) ?: null;
+
+        $gradesreleased = ($cm->modname === 'assign' && !empty($moduledata->markingworkflow))
+            ? $DB->record_exists('assign_user_flags', ['assignment' => $cm->instance, 'workflowstate' => 'released'])
+            : false;
+
+        $dtpost = turnitin_date_utils::post_date($cm, $moduledata, $dtstart, $gradeitem, $gradesreleased);
+        $dtdue  = turnitin_date_utils::due_date($moduledata, $dtstart, $submittoturnitin);
+
+        $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
+        $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
+
+        return ['assignment' => $assignment, 'dtdue' => $dtdue];
+    }
 }

@@ -953,106 +953,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function sync_tii_assignment($cm, $coursetiiid, $workflowcontext = "site", $submittoturnitin = false) {
         global $DB;
 
-        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
-        $modulepluginsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
-        $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
-
-        // Configure assignment object to send to Turnitin.
-        $assignment = new TiiAssignment();
-        $assignment->setClassId($coursetiiid);
-
-        // We need to truncate the moodle assignment title to be compatible with a Turnitin
-        // assignment title (max length 99) and account for non English multibyte strings.
-        $title = $moduledata->name;
-        if (mb_strlen($moduledata->name, 'UTF-8') > 80) {
-            $title = mb_substr($moduledata->name, 0, 80, 'UTF-8') . "...";
-        }
-        $assignment->setTitle($title);
-
-        // Configure repository setting.
-        $reposetting = (isset($modulepluginsettings["plagiarism_submitpapersto"])) ?
-            $modulepluginsettings["plagiarism_submitpapersto"] : 1;
-
-        // Override if necessary when admin is forcing standard/no repository.
-        $reposetting = plagiarism_turnitin_override_repository($reposetting);
-
-        $assignment->setSubmitPapersTo($reposetting);
-        $assignment->setSubmittedDocumentsCheck($modulepluginsettings["plagiarism_compare_student_papers"]);
-        $assignment->setInternetCheck($modulepluginsettings["plagiarism_compare_internet"]);
-        $assignment->setPublicationsCheck($modulepluginsettings["plagiarism_compare_journals"]);
-        if (
-            $config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED ||
-            $config->plagiarism_turnitin_repositoryoption == PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL
-        ) {
-            $institutioncheck = (isset($modulepluginsettings["plagiarism_compare_institution"])) ?
-                $modulepluginsettings["plagiarism_compare_institution"] : 0;
-            $assignment->setInstitutionCheck($institutioncheck);
-        }
-
-        $assignment->setAuthorOriginalityAccess($modulepluginsettings["plagiarism_show_student_report"]);
-        $assignment->setResubmissionRule((int)$modulepluginsettings["plagiarism_report_gen"]);
-        $assignment->setBibliographyExcluded($modulepluginsettings["plagiarism_exclude_biblio"]);
-        $assignment->setQuotedExcluded($modulepluginsettings["plagiarism_exclude_quoted"]);
-        $assignment->setSmallMatchExclusionType($modulepluginsettings["plagiarism_exclude_matches"]);
-
-        if (empty($modulepluginsettings["plagiarism_exclude_matches_value"])) {
-            $modulepluginsettings["plagiarism_exclude_matches_value"] = 0;
-        }
-        $assignment->setSmallMatchExclusionThreshold($modulepluginsettings["plagiarism_exclude_matches_value"]);
-
-        // Don't set anonymous marking if there have been submissions.
-        $previoussubmissions = $DB->record_exists(
-            'plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'statuscode' => 'success']
-        );
-
-        // Use Moodle's blind marking setting for anonymous marking.
-        if (isset($config->plagiarism_turnitin_useanon) && $config->plagiarism_turnitin_useanon && !$previoussubmissions) {
-            $anonmarking = (!empty($moduledata->blindmarking)) ? 1 : 0;
-            $assignment->setAnonymousMarking($anonmarking);
-        }
-
-        $assignment->setAllowNonOrSubmissions(!empty($modulepluginsettings["plagiarism_allow_non_or_submissions"]) ? 1 : 0);
-        $assignment->setTranslatedMatching(!empty($modulepluginsettings["plagiarism_transmatch"]) ? 1 : 0);
-
-        // Moodle handles submissions and whether they are allowed so this should always be true.
-        // Otherwise, the Turnitin setting is incompatible with Moodle due to multiple files and resubmission rules.
-        $assignment->setLateSubmissionsAllowed(1);
-        $assignment->setMaxGrade(0);
-        $assignment->setRubricId((!empty($modulepluginsettings["plagiarism_rubric"])) ?
-            $modulepluginsettings["plagiarism_rubric"] : '');
-
-        if (!empty($moduledata->grade)) {
-            $assignment->setMaxGrade(($moduledata->grade < 0) ? 100 : (int)$moduledata->grade);
-        }
-
-        $dtstart = \plagiarism_turnitin\turnitin_date_utils::start_date($moduledata, $cm);
-        $assignment->setStartDate(gmdate("Y-m-d\TH:i:s\Z", $dtstart));
-
-        $gradeitem = $DB->get_record(
-            'grade_items',
-            ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
-             'courseid' => $cm->course, 'itemnumber' => 0]
-        ) ?: null;
-
-        $gradesreleased = ($cm->modname === 'assign' && !empty($moduledata->markingworkflow))
-            ? $DB->record_exists(
-                'assign_user_flags',
-                ['assignment' => $cm->instance, 'workflowstate' => 'released']
-            )
-            : false;
-
-        $dtpost = \plagiarism_turnitin\turnitin_date_utils::post_date(
-            $cm,
-            $moduledata,
-            $dtstart,
-            $gradeitem,
-            $gradesreleased
-        );
-
-        $dtdue = \plagiarism_turnitin\turnitin_date_utils::due_date($moduledata, $dtstart, $submittoturnitin);
-
-        $assignment->setDueDate(gmdate("Y-m-d\TH:i:s\Z", $dtdue));
+        $built     = \plagiarism_turnitin\turnitin_submission::build_tii_assignment($cm, $coursetiiid, $submittoturnitin);
+        $assignment = $built['assignment'];
+        $dtdue      = $built['dtdue'];
 
         // If the duedate is in the future then set any submission duedate_report_refresh flags that
         // are 2 to 1 to make sure they are re-examined in the next cron run.
@@ -1064,8 +967,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 ['cm' => $cm->id, 'duedate_report_refresh' => 2]
             );
         }
-
-        $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         // If we have a turnitin id then edit the assignment otherwise create it.
         if (

@@ -628,7 +628,8 @@ class turnitin_user {
         global $DB;
 
         $config = turnitin_settings::admin_config();
-        $querystring = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY) ?? $_SERVER["REQUEST_URI"];
+        $requesturi = $_SERVER["REQUEST_URI"] ?? '';
+        $querystring = parse_url($requesturi, PHP_URL_QUERY) ?? $requesturi;
         parse_str($querystring, $params);
 
         $return = [];

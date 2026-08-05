@@ -43,8 +43,10 @@ jobs:
           - php: '8.4'
             moodle-branch: 'MOODLE_501_STABLE'
           # Moodle 5.2 — supports PHP 8.3–8.4. Matches the local Docker environment.
+          # Coverage is only collected on the 8.3 cell (PCOV installed below).
           - php: '8.3'
             moodle-branch: 'MOODLE_502_STABLE'
+            coverage: true
           - php: '8.4'
             moodle-branch: 'MOODLE_502_STABLE'
 
@@ -79,6 +81,13 @@ jobs:
 
           sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
           echo "max_input_vars=5000" | sudo tee /etc/php/${{ matrix.php }}/cli/conf.d/99-moodle.ini
+
+          # Install PCOV on the coverage cell only. It is faster than Xdebug and
+          # has no effect on non-coverage runs so we only pay the install cost once.
+          if [ "${{ matrix.coverage }}" = "true" ]; then
+            sudo apt-get install -y php${{ matrix.php }}-pcov
+          fi
+
           php --version
 
       - name: Initialise moodle-plugin-ci
@@ -121,6 +130,31 @@ jobs:
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
+
+      - name: Coverage gate
+        # Only runs on the PHP 8.3 / Moodle 5.2 cell where PCOV is installed.
+        # Threshold is intentionally low (20%) to act as a regression floor on the
+        # current state — raise it as more of the legacy code gets test coverage.
+        if: ${{ !cancelled() && matrix.coverage == 'true' }}
+        run: |
+          # Resolve Moodle root — 5.x uses moodle/public/, earlier uses moodle/.
+          # The composer vendor dir is always at moodle/vendor.
+          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
+            MOODLE_ROOT=moodle/public
+          else
+            MOODLE_ROOT=moodle
+          fi
+
+          PLUGIN_DIR=$MOODLE_ROOT/plagiarism/turnitin
+
+          php \
+            -d pcov.enabled=1 \
+            -d pcov.directory=$PLUGIN_DIR \
+            moodle/vendor/bin/phpunit \
+            --configuration $PLUGIN_DIR/phpunit.xml \
+            --coverage-clover /tmp/coverage.xml
+
+          php plugin/.github/scripts/check_coverage.php /tmp/coverage.xml 80
 
       - name: Mark cancelled jobs as failed
         if: ${{ cancelled() }}

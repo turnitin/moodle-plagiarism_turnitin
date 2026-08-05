@@ -126,6 +126,7 @@ docker exec moodle502-moodle-1 bash -c "
     --configuration plagiarism/turnitin/phpunit.xml \
     --coverage-html /tmp/turnitin-coverage
 " && \
+rm -rf /tmp/turnitin-coverage && \
 docker cp moodle502-moodle-1:/tmp/turnitin-coverage /tmp/turnitin-coverage && \
 open /tmp/turnitin-coverage/index.html
 ```

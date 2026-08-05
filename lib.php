@@ -131,63 +131,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Save the form data associated with the plugin
-     *
-     * @param object $data the form data to save
-     */
-    public function save_form_data($data) {
-        global $DB;
-
-        $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $data->modulename);
-        if (empty($moduletiienabled)) {
-            return;
-        }
-
-        $settingsfields = \plagiarism_turnitin\turnitin_settings::fields();
-        // Get current values.
-        $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm($data->coursemodule, false);
-
-        foreach ($settingsfields as $field) {
-            if (isset($data->$field)) {
-                $optionfield = new stdClass();
-                $optionfield->cm = $data->coursemodule;
-                $optionfield->name = $field;
-                $optionfield->value = $data->$field;
-
-                if (isset($plagiarismvalues[$field])) {
-                    $optionfield->id = $DB->get_field(
-                        'plagiarism_turnitin_config',
-                        'id',
-                        (['cm' => $data->coursemodule, 'name' => $field])
-                    );
-                    if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
-                        plagiarism_turnitin_print_error(
-                            'defaultupdateerror',
-                            'plagiarism_turnitin',
-                            null,
-                            null,
-                            __FILE__,
-                            __LINE__
-                        );
-                    }
-                } else {
-                    $optionfield->config_hash = $optionfield->cm . "_" . $optionfield->name;
-                    if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
-                        plagiarism_turnitin_print_error(
-                            'defaultinserterror',
-                            'plagiarism_turnitin',
-                            null,
-                            null,
-                            __FILE__,
-                            __LINE__
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Add the Turnitin settings form to an add/edit activity page
      *
      * @param moodleform $mform The form object
@@ -3189,9 +3132,7 @@ function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform
  * @param stdClass $course
  */
 function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-
-    $pluginturnitin->save_form_data($data);
+    \plagiarism_turnitin\turnitin_settings::save_for_cm($data);
 
     return $data;
 }

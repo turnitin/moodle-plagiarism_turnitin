@@ -154,4 +154,68 @@ class turnitin_settings {
             && !empty($config->plagiarism_turnitin_apiurl)
             && !empty($config->plagiarism_turnitin_secretkey);
     }
+
+    /**
+     * Persist the Turnitin settings submitted from an activity edit form.
+     *
+     * Iterates over the canonical field list and upserts each field that is
+     * present in $data into plagiarism_turnitin_config. Fields absent from $data
+     * are silently skipped so partial form submissions don't overwrite unrelated
+     * settings.
+     *
+     * Does nothing when Turnitin is not enabled for the module type, so this
+     * method is safe to call for any module without a prior enablement check.
+     *
+     * @param \stdClass $data Form data object — must contain modulename and coursemodule.
+     */
+    public static function save_for_cm(\stdClass $data): void {
+        global $DB;
+
+        if (empty(self::module_enabled('mod_' . $data->modulename))) {
+            return;
+        }
+
+        $currentvalues = self::for_cm($data->coursemodule, false);
+
+        foreach (self::fields() as $field) {
+            if (!isset($data->$field)) {
+                continue;
+            }
+
+            $optionfield = new \stdClass();
+            $optionfield->cm    = $data->coursemodule;
+            $optionfield->name  = $field;
+            $optionfield->value = $data->$field;
+
+            if (isset($currentvalues[$field])) {
+                $optionfield->id = $DB->get_field(
+                    'plagiarism_turnitin_config',
+                    'id',
+                    ['cm' => $data->coursemodule, 'name' => $field]
+                );
+                if (!$DB->update_record('plagiarism_turnitin_config', $optionfield)) {
+                    plagiarism_turnitin_print_error(
+                        'defaultupdateerror',
+                        'plagiarism_turnitin',
+                        null,
+                        null,
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+            } else {
+                $optionfield->config_hash = $optionfield->cm . '_' . $optionfield->name;
+                if (!$DB->insert_record('plagiarism_turnitin_config', $optionfield)) {
+                    plagiarism_turnitin_print_error(
+                        'defaultinserterror',
+                        'plagiarism_turnitin',
+                        null,
+                        null,
+                        __FILE__,
+                        __LINE__
+                    );
+                }
+            }
+        }
+    }
 }

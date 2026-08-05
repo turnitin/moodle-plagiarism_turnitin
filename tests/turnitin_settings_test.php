@@ -330,4 +330,126 @@ final class turnitin_settings_test extends \advanced_testcase {
 
         $this->assertTrue(turnitin_settings::is_plugin_configured());
     }
+
+    // Save_for_cm tests.
+
+    /**
+     * Test that save_for_cm does nothing when the module type has Turnitin disabled,
+     * so no config rows are written for activities on unsupported module types.
+     */
+    public function test_save_for_cm_does_nothing_when_module_not_enabled(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        // Intentionally not setting plagiarism_turnitin_mod_assign — module is disabled.
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        $data = (object)[
+            'modulename'   => 'assign',
+            'coursemodule' => $cm->cmid,
+            'use_turnitin' => 1,
+        ];
+
+        turnitin_settings::save_for_cm($data);
+
+        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_config', ['cm' => $cm->cmid]));
+    }
+
+    /**
+     * Test that save_for_cm inserts a new config row when no row exists yet for
+     * this cm/field combination.
+     */
+    public function test_save_for_cm_inserts_new_row_when_field_not_set(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_assign', '1', 'plagiarism_turnitin');
+
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        $data = (object)[
+            'modulename'   => 'assign',
+            'coursemodule' => $cm->cmid,
+            'use_turnitin' => 1,
+        ];
+
+        turnitin_settings::save_for_cm($data);
+
+        $row = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->cmid, 'name' => 'use_turnitin']);
+        $this->assertNotFalse($row);
+        $this->assertEquals(1, $row->value);
+    }
+
+    /**
+     * Test that save_for_cm updates an existing config row rather than inserting
+     * a duplicate when the field already has a value.
+     */
+    public function test_save_for_cm_updates_existing_row(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_assign', '1', 'plagiarism_turnitin');
+
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        // Pre-insert a row so save_for_cm should update, not insert.
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->cmid,
+            'name'        => 'use_turnitin',
+            'value'       => 0,
+            'config_hash' => $cm->cmid . '_use_turnitin',
+        ]);
+
+        $data = (object)[
+            'modulename'   => 'assign',
+            'coursemodule' => $cm->cmid,
+            'use_turnitin' => 1,
+        ];
+
+        turnitin_settings::save_for_cm($data);
+
+        // Should still be exactly one row, with the updated value.
+        $this->assertEquals(1, $DB->count_records(
+            'plagiarism_turnitin_config',
+            ['cm' => $cm->cmid, 'name' => 'use_turnitin']
+        ));
+        $row = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->cmid, 'name' => 'use_turnitin']);
+        $this->assertEquals(1, $row->value);
+    }
+
+    /**
+     * Test that save_for_cm skips fields that are not present in $data, so
+     * partially-submitted forms don't wipe unrelated settings.
+     */
+    public function test_save_for_cm_skips_fields_absent_from_data(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_assign', '1', 'plagiarism_turnitin');
+
+        $cm = $this->getDataGenerator()->create_module('assign', [
+            'course' => $this->getDataGenerator()->create_course()->id,
+        ]);
+
+        // Data only contains use_turnitin — other fields like plagiarism_report_gen are absent.
+        $data = (object)[
+            'modulename'   => 'assign',
+            'coursemodule' => $cm->cmid,
+            'use_turnitin' => 1,
+        ];
+
+        turnitin_settings::save_for_cm($data);
+
+        // Only use_turnitin should have been written.
+        $this->assertFalse($DB->record_exists(
+            'plagiarism_turnitin_config',
+            ['cm' => $cm->cmid, 'name' => 'plagiarism_report_gen']
+        ));
+    }
 }

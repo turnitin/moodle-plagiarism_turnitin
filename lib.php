@@ -2284,14 +2284,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     } else if ($moduledata->resubmission_allowed) {
                         // Replace submission in the specific circumstance where Turnitin can accommodate resubmissions.
                         $submissionid = $previoussubmission->id;
-                        $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                        \plagiarism_turnitin\turnitin_submission::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
                         $tiisubmissionid = $previoussubmission->externalid;
                     } else {
                         if ($previoussubmission->statuscode != "success") {
                             $submissionid = $previoussubmission->id;
-                            $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                            \plagiarism_turnitin\turnitin_submission::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
                         } else {
-                            $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
+                            $submissionid = \plagiarism_turnitin\turnitin_submission::create_new($cm, $author, $identifier, $submissiontype);
                             $tiisubmissionid = $previoussubmission->externalid;
                         }
                     }
@@ -2314,18 +2314,18 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                             $submissiontype == 'text_content' && $settings["plagiarism_report_gen"] == 0 &&
                             !is_null($previoussubmission->externalid)
                         ) {
-                            $this->delete_tii_submission($cm, $previoussubmission->externalid, $author);
+                            \plagiarism_turnitin\turnitin_submission::delete($cm, $previoussubmission->externalid, $author);
                         }
 
                         // Replace submission in the specific circumstance where Turnitin can accomodate resubmissions.
                         if ($moduledata->resubmission_allowed || $submissiontype == 'text_content') {
-                            $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                            \plagiarism_turnitin\turnitin_submission::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
                             $tiisubmissionid = $previoussubmission->externalid;
                         } else {
-                            $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
+                            $submissionid = \plagiarism_turnitin\turnitin_submission::create_new($cm, $author, $identifier, $submissiontype);
                         }
                     } else {
-                        $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
+                        $submissionid = \plagiarism_turnitin\turnitin_submission::create_new($cm, $author, $identifier, $submissiontype);
                     }
                 }
 
@@ -2351,10 +2351,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $submissionid = $previoussubmission->id;
                         $attempt = $previoussubmission->attempt;
                         $tiisubmissionid = $previoussubmission->externalid;
-                        $this->reset_tii_submission($cm, $author, $identifier, $previoussubmission, $submissiontype);
+                        \plagiarism_turnitin\turnitin_submission::reset($cm, $author, $identifier, $previoussubmission, $submissiontype);
                     }
                 } else {
-                    $submissionid = $this->create_new_tii_submission($cm, $author, $identifier, $submissiontype);
+                    $submissionid = \plagiarism_turnitin\turnitin_submission::create_new($cm, $author, $identifier, $submissiontype);
                 }
                 break;
         }
@@ -2623,31 +2623,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Initialise submission values
-     *
-     * @param object $cm The course module.
-     * @param int $userid The user id.
-     * @param string $identifier The identifier.
-     * @param string $submissiontype The submission type.
-     **/
-    private function create_new_tii_submission($cm, $userid, $identifier, $submissiontype) {
-        return \plagiarism_turnitin\turnitin_submission::create_new($cm, $userid, $identifier, $submissiontype);
-    }
-
-    /**
-     * Reset submission values
-     *
-     * @param object $cm The course module.
-     * @param int $userid The user id.
-     * @param string $identifier The identifier.
-     * @param object $currentsubmission The current submission.
-     * @param string $submissiontype The submission type.
-     **/
-    private function reset_tii_submission($cm, $userid, $identifier, $currentsubmission, $submissiontype) {
-        \plagiarism_turnitin\turnitin_submission::reset($cm, $userid, $identifier, $currentsubmission, $submissiontype);
-    }
-
-    /**
      * Clean up previous file submissions.
      * Moodle will remove any old files or drafts during cron execution and file submission.
      *
@@ -2703,7 +2678,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     foreach ($oldfiles as $oldfile) {
                         // Delete submission from Turnitin if we have an external id.
                         if (!is_null($oldfile->externalid)) {
-                            $this->delete_tii_submission($cm, $oldfile->externalid, $userid);
+                            \plagiarism_turnitin\turnitin_submission::delete($cm, $oldfile->externalid, $userid);
                         }
                         $deletestr .= $oldfile->id . ', ';
                     }
@@ -2722,17 +2697,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!empty($deletestr)) {
             $DB->delete_records_select('plagiarism_turnitin_files', $deletestr, $deleteparams);
         }
-    }
-
-    /**
-     * Delete a submission from Turnitin
-     *
-     * @param object $cm The course module.
-     * @param int $submissionid The submission id.
-     * @param int $userid The user id.
-     */
-    public function delete_tii_submission($cm, $submissionid, $userid) {
-        \plagiarism_turnitin\turnitin_submission::delete($cm, $submissionid, $userid);
     }
 
     /**
@@ -2995,7 +2959,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
             if ($errorcode === 0) {
                 // Delete old text content submissions from Turnitin if not replacing.
                 if (!is_null($queueditem->externalid) && $settings["plagiarism_report_gen"] == 0) {
-                    $pluginturnitin->delete_tii_submission($cm, $queueditem->externalid, $queueditem->userid);
+                    \plagiarism_turnitin\turnitin_submission::delete($cm, $queueditem->externalid, $queueditem->userid);
                 }
 
                 // Remove any old text submissions from Moodle DB — only one text submission per user is kept.

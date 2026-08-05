@@ -3141,7 +3141,7 @@ final class lib_test extends \advanced_testcase {
             ->getMock();
         $mock->method('fetch_updated_paper_ids_from_turnitin')->willReturn(['sub-id-1', 'sub-id-2']);
 
-        // readSubmissions will throw because the fake credentials cannot reach the API.
+        // ReadSubmissions will throw because the fake credentials cannot reach the API.
         ob_start();
         $result = $mock->update_grades_from_tii($cm);
         ob_end_clean();

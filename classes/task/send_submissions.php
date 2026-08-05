@@ -88,7 +88,27 @@ class send_submissions extends \core\task\scheduled_task {
             mtrace('Done.');
         } else {
             mtrace('Sending submissions using scheduled task...');
-            plagiarism_turnitin_send_queued_submissions();
+
+            // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
+            if (!$plugin->test_turnitin_connection()) {
+                mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
+                return;
+            }
+
+            $queueditems = $DB->get_records_select(
+                "plagiarism_turnitin_files",
+                "statuscode = 'queued' OR statuscode = 'pending'",
+                null,
+                'lastmodified',
+                '*',
+                0,
+                PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT
+            );
+
+            foreach ($queueditems as $queueditem) {
+                \plagiarism_turnitin_send_single_submission($plugin, $queueditem);
+            }
+
             mtrace('Done.');
         }
     }

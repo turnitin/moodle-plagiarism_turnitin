@@ -2789,36 +2789,6 @@ function plagiarism_turnitin_update_reports() {
 }
 
 /**
- * Handle Scheduled Task to Send Queued Submissions to Turnitin.
- */
-function plagiarism_turnitin_send_queued_submissions() {
-    global $DB;
-
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-
-    // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
-    if (!$pluginturnitin->test_turnitin_connection()) {
-        mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
-        return;
-    }
-
-    $queueditems = $DB->get_records_select(
-        "plagiarism_turnitin_files",
-        "statuscode = 'queued' OR statuscode = 'pending'",
-        null,
-        'lastmodified',
-        '*',
-        0,
-        PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT
-    );
-
-    // Submit each file individually to Turnitin.
-    foreach ($queueditems as $queueditem) {
-        plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem);
-    }
-}
-
-/**
  * Send a single queued submission to Turnitin.
  *
  * Called by both the scheduled task (send_submissions) and the ad-hoc task

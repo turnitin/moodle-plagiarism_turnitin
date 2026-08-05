@@ -74,7 +74,7 @@ class turnitin_eula_form {
      * @return string HTML for the EULA widget, or '' when not needed.
      */
     public static function render(
-        \stdClass $cm,
+        object $cm,
         \plagiarism_plugin_turnitin $plugin,
         ?callable $launchformcallback = null,
         ?turnitin_user $user = null

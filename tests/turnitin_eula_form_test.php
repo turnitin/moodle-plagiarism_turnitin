@@ -229,7 +229,10 @@ final class turnitin_eula_form_test extends \advanced_testcase {
     }
 
     /**
-     * Test that render_eula_form() on plagiarism_plugin_turnitin delegates to render().
+     * Test that render_eula_form() on plagiarism_plugin_turnitin has been removed —
+     * the class no longer has this method. turnitin_eula_form::render() is called
+     * directly by all callers. This test verifies the eula form render works correctly
+     * when test_turnitin_connection returns true and the user has already accepted.
      */
     public function test_render_eula_form_stub_delegates_to_renderer(): void {
         global $USER;
@@ -247,7 +250,7 @@ final class turnitin_eula_form_test extends \advanced_testcase {
         $mock->method('create_tii_course')->willReturn((object)['turnitin_cid' => null, 'turnitin_ctl' => '']);
 
         $cm     = $this->make_cm();
-        $result = $mock->render_eula_form($cm);
+        $result = turnitin_eula_form::render($cm, $mock);
 
         $this->assertSame('', $result);
     }

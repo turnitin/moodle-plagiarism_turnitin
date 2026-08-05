@@ -71,7 +71,7 @@ class hook_callbacks {
 
         // This function checks whether the user has accepted the EULA.
         // If they haven't, it will return the EULA form. If they have, it will return an empty string.
-        $eulaform = $pluginturnitin->render_eula_form($PAGE->cm);
+        $eulaform = turnitin_eula_form::render($PAGE->cm, $pluginturnitin);
         if ($eulaform == '') {
             return;
         }

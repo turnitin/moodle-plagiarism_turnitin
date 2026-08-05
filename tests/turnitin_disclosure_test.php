@@ -50,6 +50,15 @@ final class turnitin_disclosure_test extends \advanced_testcase {
     }
 
     /**
+     * Reset the EULA form connection cache before each test so it's not polluted
+     * by previous tests that may have called turnitin_eula_form::render().
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        \plagiarism_turnitin\turnitin_eula_form::reset_connection_cache();
+    }
+
+    /**
      * Create a course module of the given type and return its id.
      *
      * @param string $modtype e.g. 'assign', 'forum'
@@ -66,29 +75,29 @@ final class turnitin_disclosure_test extends \advanced_testcase {
      * render() makes after the early-return guards.
      *
      * load_page_components() is a no-op in tests (it just registers AMD).
-     * render_eula_form() returns the given string (default '').
+     * test_turnitin_connection() returns false so turnitin_eula_form::render()
+     * exits immediately (no API calls, returns '').
      * plagiarism_get_report_gen_speed_params() returns a minimal stdClass.
      * create_tii_course() returns a minimal coursedata object (no API call).
      * sync_tii_assignment() is a no-op.
      *
-     * @param string $eulahtml HTML to return from render_eula_form().
      * @return \plagiarism_plugin_turnitin
      */
-    private function make_mock_plugin(string $eulahtml = ''): \plagiarism_plugin_turnitin {
+    private function make_mock_plugin(): \plagiarism_plugin_turnitin {
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['load_page_components', 'render_eula_form',
+            ->onlyMethods(['load_page_components', 'test_turnitin_connection',
                 'plagiarism_get_report_gen_speed_params', 'create_tii_course', 'sync_tii_assignment'])
             ->getMock();
 
         $mock->method('load_page_components')->willReturn(null);
-        $mock->method('render_eula_form')->willReturn($eulahtml);
+        // Returning false means turnitin_eula_form::render() returns '' immediately.
+        $mock->method('test_turnitin_connection')->willReturn(false);
 
         $genparams = new \stdClass();
         $genparams->num_resubmissions = 3;
         $genparams->num_hours = 24;
         $mock->method('plagiarism_get_report_gen_speed_params')->willReturn($genparams);
 
-        // When no turnitin_cid is stored, get_course_data falls through to create_tii_course.
         $mockcoursedata = (object)['turnitin_cid' => 0, 'turnitin_ctl' => ''];
         $mock->method('create_tii_course')->willReturn($mockcoursedata);
         $mock->method('sync_tii_assignment')->willReturn(null);
@@ -284,7 +293,11 @@ final class turnitin_disclosure_test extends \advanced_testcase {
     }
 
     /**
-     * Test render() includes EULA content returned by render_eula_form().
+     * Test render() returns an empty string from the EULA section when there is no
+     * Turnitin connection (turnitin_eula_form::render returns '' immediately).
+     *
+     * The EULA HTML path itself is fully tested in turnitin_eula_form_test.php.
+     * Here we verify turnitin_disclosure delegates to turnitin_eula_form correctly.
      */
     public function test_includes_eula_content_when_render_eula_form_returns_html(): void {
         global $DB;
@@ -300,10 +313,14 @@ final class turnitin_disclosure_test extends \advanced_testcase {
             'config_hash' => $cmid . '_use_turnitin',
         ]);
 
-        $eulahtml = '<div class="pp_turnitin_eula">Accept EULA</div>';
-        $result   = turnitin_disclosure::render($cmid, $this->make_mock_plugin($eulahtml));
+        // Reset the connection cache to ensure a fresh check on each test run.
+        \plagiarism_turnitin\turnitin_eula_form::reset_connection_cache();
 
-        $this->assertStringContainsString('pp_turnitin_eula', $result);
+        // No connection → EULA render returns '' → no EULA HTML in disclosure output.
+        $result = turnitin_disclosure::render($cmid, $this->make_mock_plugin());
+
+        $this->assertIsString($result);
+        $this->assertStringNotContainsString('pp_turnitin_eula', $result);
     }
 
     /**

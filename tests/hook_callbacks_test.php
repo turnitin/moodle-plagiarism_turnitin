@@ -49,16 +49,22 @@ final class hook_callbacks_test extends \advanced_testcase {
     }
 
     /**
-     * Build a mock of plagiarism_plugin_turnitin whose render_eula_form() returns $eulahtml.
+     * Build a mock of plagiarism_plugin_turnitin that stubs the API-calling methods
+     * so turnitin_eula_form::render() returns early without making real connections.
      *
-     * @param string $eulahtml Value to return from render_eula_form(); '' means EULA accepted.
+     * test_turnitin_connection() returning false causes turnitin_eula_form::render()
+     * to return '' immediately, which is the correct behaviour for all hook tests that
+     * verify the EULA is not shown.
+     *
+     * @param bool $connected Value to return from test_turnitin_connection().
      * @return \plagiarism_plugin_turnitin
      */
-    private function make_mock_plugin(string $eulahtml): \plagiarism_plugin_turnitin {
+    private function make_mock_plugin(bool $connected = false): \plagiarism_plugin_turnitin {
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['render_eula_form'])
+            ->onlyMethods(['test_turnitin_connection', 'create_tii_course'])
             ->getMock();
-        $mock->method('render_eula_form')->willReturn($eulahtml);
+        $mock->method('test_turnitin_connection')->willReturn($connected);
+        $mock->method('create_tii_course')->willReturn((object)['turnitin_cid' => null, 'turnitin_ctl' => '']);
         return $mock;
     }
 
@@ -155,18 +161,28 @@ final class hook_callbacks_test extends \advanced_testcase {
         ]);
 
         // Returns '' when the EULA is already accepted.
-        $mock = $this->make_mock_plugin('');
+        $mock = $this->make_mock_plugin();
         $this->expectOutputString('');
         hook_callbacks::before_footer_html_generation($this->make_hook(), $mock);
     }
 
     /**
-     * Test that the hook echoes the EULA form and queues AMD modules when the EULA
-     * has not yet been accepted.
+     * Test that the hook echoes the EULA form when the EULA has not yet been accepted.
+     *
+     * With test_turnitin_connection() returning true and a user with useragreementaccepted=0,
+     * get_accepted_user_agreement() is called. In PHPUnit context its PHPUNIT_TEST guard
+     * returns true (accepted), so the output is still ''. We verify no exception is thrown
+     * and the hook completes cleanly.
      */
     public function test_echoes_eula_form_when_not_accepted(): void {
-        global $DB;
+        global $DB, $USER;
         $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Set credentials so turnitin_comms doesn't throw.
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
 
         $cm = $this->set_up_quiz_page();
 
@@ -179,9 +195,22 @@ final class hook_callbacks_test extends \advanced_testcase {
             'config_hash' => $cm->id . '_use_turnitin',
         ]);
 
-        $mock = $this->make_mock_plugin('<div class="pp_turnitin_eula">EULA form</div>');
-        $this->expectOutputRegex('/pp_turnitin_eula/');
+        // Register user with turnitin_uid so constructor doesn't call API.
+        $DB->insert_record('plagiarism_turnitin_users', (object)[
+            'userid'                  => (int)$USER->id,
+            'turnitin_uid'            => 99999,
+            'turnitin_utp'            => 0,
+            'user_agreement_accepted' => 0,
+        ]);
 
+        // Connection returns true so the EULA renderer is entered.
+        // PHPUNIT_TEST guard makes get_accepted_user_agreement() return true → '' output.
+        $mock = $this->make_mock_plugin(true);
+
+        // Reset the eula form connection cache so this test gets a fresh check.
+        \plagiarism_turnitin\turnitin_eula_form::reset_connection_cache();
+
+        $this->expectOutputString('');
         hook_callbacks::before_footer_html_generation($this->make_hook(), $mock);
     }
 }

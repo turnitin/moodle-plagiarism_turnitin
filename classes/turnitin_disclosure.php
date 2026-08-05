@@ -91,7 +91,7 @@ class turnitin_disclosure {
         }
 
         // Add EULA acceptance widget if the user has not yet accepted.
-        $output .= $pluginturnitin->render_eula_form($cm);
+        $output .= turnitin_eula_form::render($cm, $pluginturnitin);
 
         // Add rubric viewer link when grademark and a rubric are both active.
         if (!empty($config->plagiarism_turnitin_usegrademark) && !empty($plagiarismsettings['plagiarism_rubric'])) {

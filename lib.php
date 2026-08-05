@@ -165,16 +165,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Render the EULA form for a given course module.
-     *
-     * @param stdClass $cm Course module record
-     * @return string HTML for the EULA form, or empty string if not needed
-     */
-    public function render_eula_form($cm) {
-        return \plagiarism_turnitin\turnitin_eula_form::render($cm, $this);
-    }
-
-    /**
      * Load JS needed by the page.
      */
     public function load_page_components() {

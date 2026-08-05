@@ -1565,4 +1565,133 @@ final class turnitin_submission_test extends \advanced_testcase {
         // The exception confirms the quiz_answer branch (line 1144) was entered.
         $this->assertTrue($threwexception, 'Expected create_from_usage_id to throw without a real attempt.');
     }
+
+    // Tests for resolve_submission_users().
+
+    /**
+     * Test resolve_submission_users returns just the submitting user for a non-group module.
+     */
+    public function test_resolve_submission_users_returns_single_user_for_forum(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $forum   = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm      = get_coursemodule_from_instance('forum', $forum->id);
+        $context = \context_course::instance($course->id);
+        $user    = $this->getDataGenerator()->create_user();
+
+        $cmobj   = (object)['id' => $cm->id, 'modname' => 'forum', 'instance' => $forum->id, 'course' => $course->id];
+        $moddata = (object)[];
+
+        $result = turnitin_submission::resolve_submission_users($cmobj, $moddata, $user->id, $context);
+
+        $this->assertEquals([(int)$user->id], $result);
+    }
+
+    /**
+     * Test resolve_submission_users returns just the submitting user for assign with teamsubmission=0.
+     */
+    public function test_resolve_submission_users_returns_single_user_when_no_team_submission(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $assign  = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm      = get_coursemodule_from_instance('assign', $assign->id);
+        $context = \context_course::instance($course->id);
+        $user    = $this->getDataGenerator()->create_user();
+
+        $cmobj   = (object)['id' => $cm->id, 'modname' => 'assign', 'instance' => $assign->id, 'course' => $course->id];
+        $moddata = (object)['teamsubmission' => 0];
+
+        $result = turnitin_submission::resolve_submission_users($cmobj, $moddata, $user->id, $context);
+
+        $this->assertEquals([(int)$user->id], $result);
+    }
+
+    /**
+     * Test resolve_submission_users returns just the submitting user for assign team submission
+     * when the user is not in any group.
+     */
+    public function test_resolve_submission_users_returns_single_user_when_not_in_group(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $assign  = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'teamsubmission' => 1,
+        ]);
+        $cm      = get_coursemodule_from_instance('assign', $assign->id);
+        $context = \context_course::instance($course->id);
+        $user    = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+
+        $cmobj   = (object)['id' => $cm->id, 'modname' => 'assign', 'instance' => $assign->id, 'course' => $course->id];
+        $moddata = (object)['teamsubmission' => 1];
+
+        $result = turnitin_submission::resolve_submission_users($cmobj, $moddata, $user->id, $context);
+
+        $this->assertEquals([(int)$user->id], $result);
+    }
+
+    /**
+     * Test resolve_submission_users returns all group members for a team submission
+     * when the submitting user is part of a group.
+     */
+    public function test_resolve_submission_users_returns_all_group_members_for_team_submission(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'teamsubmission' => 1,
+        ]);
+        $cm      = get_coursemodule_from_instance('assign', $assign->id);
+        $context = \context_course::instance($course->id);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, 'student');
+
+        $group = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $user1->id]);
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $user2->id]);
+
+        $cmobj   = (object)['id' => $cm->id, 'modname' => 'assign', 'instance' => $assign->id, 'course' => $course->id];
+        $moddata = (object)['teamsubmission' => 1];
+
+        $result = turnitin_submission::resolve_submission_users($cmobj, $moddata, $user1->id, $context);
+
+        sort($result);
+        $expected = [$user1->id, $user2->id];
+        sort($expected);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test resolve_submission_users skips coursework group expansion when mod_coursework is absent.
+     */
+    public function test_resolve_submission_users_skips_coursework_when_not_installed(): void {
+        $this->resetAfterTest();
+
+        if (class_exists(\mod_coursework\models\coursework::class)) {
+            $this->markTestSkipped('mod_coursework is installed; skipping not-installed path.');
+        }
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $user    = $this->getDataGenerator()->create_user();
+
+        $cmobj   = (object)['id' => 1, 'modname' => 'coursework', 'instance' => 1, 'course' => $course->id];
+        $moddata = (object)['id' => 1, 'use_groups' => 0];
+
+        $result = turnitin_submission::resolve_submission_users($cmobj, $moddata, $user->id, $context);
+
+        $this->assertEquals([(int)$user->id], $result);
+    }
 }

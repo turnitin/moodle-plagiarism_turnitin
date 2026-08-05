@@ -1167,4 +1167,54 @@ class turnitin_submission {
 
         return $result;
     }
+
+    /**
+     * Resolve the set of user IDs who are allowed to view a submission's originality links.
+     *
+     * For individual submissions this is just [$userid]. For group submissions on assign
+     * (teamsubmission=1) or coursework (use_groups=1) it expands to all group members so
+     * every member can see the score even though only one person submitted.
+     *
+     * @param \stdClass $cm         Course module record (needs ->modname, ->id).
+     * @param \stdClass $moduledata Module record (e.g. assign, coursework).
+     * @param int       $userid     The submitting user's Moodle id.
+     * @param \context  $context    Course context (used by assign::get_submission_group).
+     * @return int[] Array of Moodle user IDs who may view the submission links.
+     */
+    public static function resolve_submission_users(
+        \stdClass $cm,
+        \stdClass $moduledata,
+        int $userid,
+        \context $context
+    ): array {
+        global $DB;
+
+        $submissionusers = [$userid];
+
+        switch ($cm->modname) {
+            case 'assign':
+                if (!empty($moduledata->teamsubmission)) {
+                    $assignment = new \assign($context, $cm, null);
+                    if ($group = $assignment->get_submission_group($userid)) {
+                        $users           = groups_get_members($group->id);
+                        $submissionusers = array_keys($users);
+                    }
+                }
+                break;
+
+            case 'coursework':
+                if (!empty($moduledata->use_groups)) {
+                    $coursework = new \mod_coursework\models\coursework($moduledata->id);
+                    $user       = $DB->get_record('user', ['id' => $userid]);
+                    $user       = \mod_coursework\models\user::find($user);
+                    if ($group = $coursework->get_student_group($user)) {
+                        $users           = groups_get_members($group->id);
+                        $submissionusers = array_keys($users);
+                    }
+                }
+                break;
+        }
+
+        return $submissionusers;
+    }
 }

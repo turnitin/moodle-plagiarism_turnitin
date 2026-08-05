@@ -1830,7 +1830,8 @@ class turnitin_submission {
         $assignment->setTranslatedMatching(!empty($modulepluginsettings['plagiarism_transmatch']) ? 1 : 0);
         $assignment->setLateSubmissionsAllowed(1);
         $assignment->setMaxGrade(0);
-        $assignment->setRubricId(!empty($modulepluginsettings['plagiarism_rubric']) ? $modulepluginsettings['plagiarism_rubric'] : '');
+        $rubricid = !empty($modulepluginsettings['plagiarism_rubric']) ? $modulepluginsettings['plagiarism_rubric'] : '';
+        $assignment->setRubricId($rubricid);
 
         if (!empty($moduledata->grade)) {
             $assignment->setMaxGrade(($moduledata->grade < 0) ? 100 : (int)$moduledata->grade);
@@ -1896,7 +1897,11 @@ class turnitin_submission {
             case 'file':
                 $acceptanyfiletype = !empty($settings['plagiarism_allow_non_or_submissions']);
                 $assigncontent = $moduleobject->get_submission_content(
-                    $queueditem, $cm, $moduledata, $acceptanyfiletype, $turnitinacceptedfiles
+                    $queueditem,
+                    $cm,
+                    $moduledata,
+                    $acceptanyfiletype,
+                    $turnitinacceptedfiles
                 );
                 $apimethod   = $assigncontent['apimethod'];
                 $textcontent = $assigncontent['textcontent'];
@@ -1919,7 +1924,9 @@ class turnitin_submission {
                     $errorcode   = $assigncontent['errorcode'];
                 } else if ($cm->modname === 'workshop') {
                     $moodlesubmission = $DB->get_record(
-                        'workshop_submissions', ['id' => $queueditem->itemid], 'content'
+                        'workshop_submissions',
+                        ['id' => $queueditem->itemid],
+                        'content'
                     );
                     $textcontent = html_to_text($moodlesubmission->content);
                     $title    = 'onlinetext_' . $user->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
@@ -1937,8 +1944,11 @@ class turnitin_submission {
 
                     if (!empty($queueditem->itemid)) {
                         $pluginturnitin->clean_old_turnitin_submissions(
-                            $cm, $user->id, $queueditem->itemid,
-                            $queueditem->submissiontype, $queueditem->identifier
+                            $cm,
+                            $user->id,
+                            $queueditem->itemid,
+                            $queueditem->submissiontype,
+                            $queueditem->identifier
                         );
                     }
                 }
@@ -1946,7 +1956,9 @@ class turnitin_submission {
 
             case 'forum_post':
                 $forumcontent = $moduleobject->get_submission_content(
-                    $queueditem, $cm, $settings['plagiarism_report_gen']
+                    $queueditem,
+                    $cm,
+                    $settings['plagiarism_report_gen']
                 );
                 $apimethod   = $forumcontent['apimethod'];
                 $textcontent = $forumcontent['textcontent'];
@@ -1960,7 +1972,10 @@ class turnitin_submission {
 
             case 'quiz_answer':
                 $quizcontent = $moduleobject->get_submission_content(
-                    $queueditem, $cm, $user->id, $settings['plagiarism_report_gen']
+                    $queueditem,
+                    $cm,
+                    $user->id,
+                    $settings['plagiarism_report_gen']
                 );
                 $apimethod   = $quizcontent['apimethod'];
                 $textcontent = $quizcontent['textcontent'];

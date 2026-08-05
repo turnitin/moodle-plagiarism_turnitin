@@ -528,7 +528,11 @@ final class turnitin_submission_event_test extends \advanced_testcase {
         $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
 
         $result = turnitin_submission::resolve_get_links_author(
-            $linkarray, $cm, $submissionid, 'somehash', $moduleobject
+            $linkarray,
+            $cm,
+            $submissionid,
+            'somehash',
+            $moduleobject
         );
 
         $this->assertEquals($user->id, $result->author);

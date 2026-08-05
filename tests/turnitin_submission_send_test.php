@@ -43,7 +43,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_send_test extends \advanced_testcase {
-
     /**
      * Build the minimal stubs needed to call build_submission_content.
      *
@@ -136,11 +135,17 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $f['queueditem']->submissiontype = 'file';
 
         $moduleobject = new modules\turnitin_assign();
-        $global_turnitinacceptedfiles = ['.doc', '.docx', '.pdf', '.txt'];
+        $acceptedfiles = ['.doc', '.docx', '.pdf', '.txt'];
 
         $result = turnitin_submission::build_submission_content(
-            $f['queueditem'], $f['cm'], $f['moduledata'], $moduleobject,
-            $f['settings'], $f['user'], $f['plugin'], $global_turnitinacceptedfiles
+            $f['queueditem'],
+            $f['cm'],
+            $f['moduledata'],
+            $moduleobject,
+            $f['settings'],
+            $f['user'],
+            $f['plugin'],
+            $acceptedfiles
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -180,8 +185,14 @@ final class turnitin_submission_send_test extends \advanced_testcase {
 
         ob_start();
         $result = turnitin_submission::build_submission_content(
-            $f['queueditem'], $f['cm'], $f['moduledata'], $moduleobject,
-            $f['settings'], $f['user'], $f['plugin'], ['.doc', '.docx']
+            $f['queueditem'],
+            $f['cm'],
+            $f['moduledata'],
+            $moduleobject,
+            $f['settings'],
+            $f['user'],
+            $f['plugin'],
+            ['.doc', '.docx']
         );
         ob_end_clean();
 
@@ -222,8 +233,14 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $moduleobject = new modules\turnitin_assign();
 
         $result = turnitin_submission::build_submission_content(
-            $f['queueditem'], $f['cm'], $f['moduledata'], $moduleobject,
-            $f['settings'], $f['user'], $f['plugin'], []
+            $f['queueditem'],
+            $f['cm'],
+            $f['moduledata'],
+            $moduleobject,
+            $f['settings'],
+            $f['user'],
+            $f['plugin'],
+            []
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -281,7 +298,14 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $plugin       = new \plagiarism_plugin_turnitin();
 
         $result = turnitin_submission::build_submission_content(
-            $queueditem, $cm, $moduledata, $moduleobject, $settings, $user, $plugin, []
+            $queueditem,
+            $cm,
+            $moduledata,
+            $moduleobject,
+            $settings,
+            $user,
+            $plugin,
+            []
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -339,8 +363,14 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $moduleobject = new modules\turnitin_forum();
 
         $result = turnitin_submission::build_submission_content(
-            $f['queueditem'], $f['cm'], $f['moduledata'], $moduleobject,
-            $f['settings'], $f['user'], $f['plugin'], []
+            $f['queueditem'],
+            $f['cm'],
+            $f['moduledata'],
+            $moduleobject,
+            $f['settings'],
+            $f['user'],
+            $f['plugin'],
+            []
         );
 
         $this->assertEquals(0, $result['errorcode']);
@@ -362,8 +392,14 @@ final class turnitin_submission_send_test extends \advanced_testcase {
 
         ob_start();
         $result = turnitin_submission::build_submission_content(
-            $f['queueditem'], $f['cm'], $f['moduledata'], $moduleobject,
-            $f['settings'], $f['user'], $f['plugin'], []
+            $f['queueditem'],
+            $f['cm'],
+            $f['moduledata'],
+            $moduleobject,
+            $f['settings'],
+            $f['user'],
+            $f['plugin'],
+            []
         );
         ob_end_clean();
 
@@ -383,7 +419,7 @@ final class turnitin_submission_send_test extends \advanced_testcase {
 
         // Credentials so turnitin_comms doesn't throw if delete() is called.
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $course   = $this->getDataGenerator()->create_course();
@@ -415,13 +451,19 @@ final class turnitin_submission_send_test extends \advanced_testcase {
 
         $user = (object)['id' => $muser->id, 'tiiuserid' => 0];
         $moduleobject = new modules\turnitin_workshop();
-        // report_gen=1 so the delete() branch (which needs API) is skipped.
+        // Report_gen=1 so the delete() branch (which needs API) is skipped.
         $settings = ['plagiarism_report_gen' => 1, 'plagiarism_allow_non_or_submissions' => 0];
 
         ob_start();
         $result = turnitin_submission::build_submission_content(
-            $queueditem, $cm, $moduledata, $moduleobject, $settings, $user,
-            new \plagiarism_plugin_turnitin(), []
+            $queueditem,
+            $cm,
+            $moduledata,
+            $moduleobject,
+            $settings,
+            $user,
+            new \plagiarism_plugin_turnitin(),
+            []
         );
         ob_end_clean();
 
@@ -439,7 +481,7 @@ final class turnitin_submission_send_test extends \advanced_testcase {
 
         $queueditem = (object)[
             'userid'         => 5,
-            'submitter'      => 5, // same as userid
+            'submitter'      => 5, // Same as userid.
             'externalid'     => null,
             'itemid'         => 0,
         ];
@@ -452,7 +494,13 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $tempfile          = '/tmp/test.txt';
 
         $result = turnitin_submission::build_tii_submission_object(
-            $queueditem, 'createSubmission', 'My Title', $tempfile, $syncassignment, $user, $coursedata
+            $queueditem,
+            'createSubmission',
+            'My Title',
+            $tempfile,
+            $syncassignment,
+            $user,
+            $coursedata
         );
 
         $this->assertInstanceOf(\TiiSubmission::class, $result);
@@ -483,11 +531,16 @@ final class turnitin_submission_send_test extends \advanced_testcase {
         $user->tiiuserid = 'tii-456';
 
         $result = turnitin_submission::build_tii_submission_object(
-            $queueditem, 'replaceSubmission', 'Updated Essay', '/tmp/update.txt',
-            ['tiiassignmentid' => 'assign-789'], $user, (object)['turnitin_cid' => 0]
+            $queueditem,
+            'replaceSubmission',
+            'Updated Essay',
+            '/tmp/update.txt',
+            ['tiiassignmentid' => 'assign-789'],
+            $user,
+            (object)['turnitin_cid' => 0]
         );
 
-        // replaceSubmission → setSubmissionId is called with the externalid.
+        // ReplaceSubmission triggers setSubmissionId with the externalid.
         $this->assertEquals('existing-tii-id', $result->getSubmissionId());
         $this->assertEquals('assign-789', $result->getAssignmentId());
     }

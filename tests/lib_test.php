@@ -734,7 +734,7 @@ final class lib_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $course = $this->getDataGenerator()->create_course();
@@ -746,12 +746,13 @@ final class lib_test extends \advanced_testcase {
         ];
 
         $plugin = new \plagiarism_plugin_turnitin();
-        // edit_tii_course makes an API call; wrap in try/catch so the DB work
+        // Edit_tii_course makes an API call; wrap in try/catch so the DB work
         // (which happens before the API call) is still verifiable.
         try {
             $result = $plugin->migrate_previous_course($coursedata, 999);
         } catch (\Exception $e) {
             // Expected — API not available in test environment.
+            unset($e);
         }
 
         $row = $DB->get_record('plagiarism_turnitin_courses', ['courseid' => $course->id]);
@@ -770,7 +771,7 @@ final class lib_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $course = $this->getDataGenerator()->create_course();
@@ -794,6 +795,7 @@ final class lib_test extends \advanced_testcase {
             $plugin->migrate_previous_course($coursedata, 200);
         } catch (\Exception $e) {
             // Expected — API not available.
+            unset($e);
         }
 
         $row = $DB->get_record('plagiarism_turnitin_courses', ['id' => $existingid]);
@@ -824,7 +826,7 @@ final class lib_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/mod/assign/lib.php');
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
 
@@ -832,12 +834,14 @@ final class lib_test extends \advanced_testcase {
         $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
         $cm     = get_coursemodule_from_instance('assign', $assign->id);
 
-        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
+        foreach (
+            ['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
                   'plagiarism_report_gen' => 0, 'plagiarism_compare_student_papers' => 0,
                   'plagiarism_compare_journals' => 0, 'plagiarism_show_student_report' => 0,
                   'plagiarism_exclude_biblio' => 0, 'plagiarism_exclude_quoted' => 0,
                   'plagiarism_exclude_matches' => 0,
-                  'turnitin_assignid' => 'existing-tii-assign-123'] as $name => $val) {
+                  'turnitin_assignid' => 'existing-tii-assign-123'] as $name => $val
+        ) {
             $DB->insert_record('plagiarism_turnitin_config', (object)[
                 'cm' => $cm->id, 'name' => $name, 'value' => $val,
                 'config_hash' => $cm->id . '_' . $name,
@@ -868,7 +872,7 @@ final class lib_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/mod/assign/lib.php');
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
 
@@ -876,11 +880,13 @@ final class lib_test extends \advanced_testcase {
         $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
         $cm     = get_coursemodule_from_instance('assign', $assign->id);
 
-        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
+        foreach (
+            ['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
                   'plagiarism_report_gen' => 0, 'plagiarism_compare_student_papers' => 0,
                   'plagiarism_compare_journals' => 0, 'plagiarism_show_student_report' => 0,
                   'plagiarism_exclude_biblio' => 0, 'plagiarism_exclude_quoted' => 0,
-                  'plagiarism_exclude_matches' => 0] as $name => $val) {
+                  'plagiarism_exclude_matches' => 0] as $name => $val
+        ) {
             $DB->insert_record('plagiarism_turnitin_config', (object)[
                 'cm' => $cm->id, 'name' => $name, 'value' => $val,
                 'config_hash' => $cm->id . '_' . $name,
@@ -914,22 +920,24 @@ final class lib_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/mod/assign/lib.php');
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
 
         $course = $this->getDataGenerator()->create_course();
         $assign = $this->getDataGenerator()->create_module('assign', [
             'course'  => $course->id,
-            'duedate' => time() + WEEKSECS, // future due date
+            'duedate' => time() + WEEKSECS, // Future due date.
         ]);
         $cm = get_coursemodule_from_instance('assign', $assign->id);
 
-        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
+        foreach (
+            ['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
                   'plagiarism_report_gen' => 0, 'plagiarism_compare_student_papers' => 0,
                   'plagiarism_compare_journals' => 0, 'plagiarism_show_student_report' => 0,
                   'plagiarism_exclude_biblio' => 0, 'plagiarism_exclude_quoted' => 0,
-                  'plagiarism_exclude_matches' => 0] as $name => $val) {
+                  'plagiarism_exclude_matches' => 0] as $name => $val
+        ) {
             $DB->insert_record('plagiarism_turnitin_config', (object)[
                 'cm' => $cm->id, 'name' => $name, 'value' => $val,
                 'config_hash' => $cm->id . '_' . $name,
@@ -952,27 +960,18 @@ final class lib_test extends \advanced_testcase {
         // (set_field call at the extracted lines). Then call sync_tii_assignment on the real
         // plugin to trigger it indirectly.
         $plugin = new \plagiarism_plugin_turnitin();
-        // build_tii_assignment is the extracted method; calling it triggers the set_field.
+        // Build_tii_assignment is the extracted method; calling it triggers the set_field.
         turnitin_submission::build_tii_assignment($cm, 99, false);
 
         // The duedate is in the future so build_tii_assignment does NOT touch the flags
-        // (that's done in sync_tii_assignment itself). Call sync_tii_assignment with a mock
-        // that stubs the API portions.
-        $mock2 = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['sync_tii_assignment'])
-            ->getMock();
-        $mock2->method('sync_tii_assignment')
-            ->willReturnCallback(function($cm) use ($plugin) {
-                return $plugin->sync_tii_assignment($cm, 99);
-            });
-
-        // Directly call sync_tii_assignment — it will attempt the API but the set_field
-        // happens before the API call. Suppress API exception output.
+        // (that's done in sync_tii_assignment itself). Call sync_tii_assignment on the real
+        // plugin which will attempt the API but set_field happens first.
         ob_start();
         try {
             $plugin->sync_tii_assignment($cm, 99);
         } catch (\Exception $e) {
             // Expected — API not available.
+            unset($e);
         }
         ob_end_clean();
 
@@ -1009,7 +1008,7 @@ final class lib_test extends \advanced_testcase {
         ]);
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
@@ -1073,12 +1072,20 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->queue_submission_to_turnitin(
-            $cm, $user->id, $user->id, 'text-file-hash', 'text_content', $submissionid, 'file_uploaded'
+            $cm,
+            $user->id,
+            $user->id,
+            'text-file-hash',
+            'text_content',
+            $submissionid,
+            'file_uploaded'
         );
 
         $this->assertTrue($result);
-        $row = $DB->get_record('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'text-file-hash']);
+        $row = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'text-file-hash']
+        );
         $this->assertNotFalse($row);
         $this->assertEquals('queued', $row->statuscode);
     }
@@ -1112,13 +1119,22 @@ final class lib_test extends \advanced_testcase {
 
         $linkarray = [
             'cmid'    => $cm->id,
-            'userid'  => 1,   // admin
+            'userid'  => 1, // Admin user.
             'content' => '',
             'file'    => null,
         ];
 
-        return compact('course', 'assign', 'cm', 'config', 'plagiarismsettings',
-                       'moduledata', 'context', 'coursedata', 'linkarray');
+        return compact(
+            'course',
+            'assign',
+            'cm',
+            'config',
+            'plagiarismsettings',
+            'moduledata',
+            'context',
+            'coursedata',
+            'linkarray'
+        );
     }
 
     /**
@@ -1134,8 +1150,15 @@ final class lib_test extends \advanced_testcase {
         $plugin = new \plagiarism_plugin_turnitin();
 
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         $this->assertStringContainsString('Turnitin Plagiarism plugin Version', $result);
@@ -1156,8 +1179,15 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         // Early return means no version comment either — empty string.
@@ -1182,7 +1212,7 @@ final class lib_test extends \advanced_testcase {
         // test_turnitin_connection() will fail (fake creds) and cache false, causing
         // turnitin_eula_form::render to return '' immediately.
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         // Reset the static connection cache so a previous test's cached 'true' doesn't bleed through.
@@ -1201,8 +1231,17 @@ final class lib_test extends \advanced_testcase {
             'file'    => null,
         ];
 
-        return compact('course', 'forum', 'cm', 'config', 'plagiarismsettings',
-                       'moduledata', 'context', 'coursedata', 'linkarray');
+        return compact(
+            'course',
+            'forum',
+            'cm',
+            'config',
+            'plagiarismsettings',
+            'moduledata',
+            'context',
+            'coursedata',
+            'linkarray'
+        );
     }
 
     /**
@@ -1236,8 +1275,15 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         $this->assertStringContainsString('tii_links_container', $result);
@@ -1258,14 +1304,21 @@ final class lib_test extends \advanced_testcase {
         $student = $this->getDataGenerator()->create_user();
         $this->getDataGenerator()->enrol_user($student->id, $f['course']->id);
 
-        $f['linkarray']['userid']  = $student->id; // different from $USER->id (admin)
+        $f['linkarray']['userid']  = $student->id; // Different from $USER->id (admin).
         $f['linkarray']['content'] = 'student content';
         $contentdisplayed          = null;
 
         $plugin = new \plagiarism_plugin_turnitin();
         $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         $this->assertNull($contentdisplayed);
@@ -1284,17 +1337,22 @@ final class lib_test extends \advanced_testcase {
         $this->setUser($student);
 
         $f = $this->make_forum_get_links_fixtures();
-        // userid=0 — non-tutor viewer should have it replaced with $USER->id.
+        // Userid=0 — non-tutor viewer should have it replaced with $USER->id.
         // Since USER->id == student->id, the EULA block would fire, so set a different cmid
-        // or avoid content to skip the display block.  Use no content so we just get the version comment.
+        // or avoid content to skip the display block. Use no content so we just get the version comment.
         $f['linkarray']['userid']  = 0;
         $f['linkarray']['content'] = '';
         $contentdisplayed          = null;
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'],
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
             false,
             $contentdisplayed
         );
@@ -1334,11 +1392,18 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
-        // queued status → render_queued → 'turnitin_status' in output.
+        // Queued status triggers render_queued, which produces 'turnitin_status' in output.
         $this->assertStringContainsString('turnitin_status', $result);
     }
 
@@ -1353,7 +1418,7 @@ final class lib_test extends \advanced_testcase {
 
         // Need API credentials so turnitin_eula_form::render doesn't throw.
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $f = $this->make_forum_get_links_fixtures();
@@ -1361,11 +1426,18 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
-        // tii_links_container proves the forum path ran (it's always wrapped).
+        // The tii_links_container proves the forum path ran (it's always wrapped).
         $this->assertStringContainsString('tii_links_container', $result);
     }
 
@@ -1388,8 +1460,15 @@ final class lib_test extends \advanced_testcase {
         $contentdisplayed = null;
         $plugin = new \plagiarism_plugin_turnitin();
         $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         $this->assertArrayHasKey($f['cm']->id, $_SESSION['updated_pm'] ?? []);
@@ -1412,7 +1491,7 @@ final class lib_test extends \advanced_testcase {
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->print_disclosure($cm->id);
 
-        // turnitin_disclosure::render returns a string (empty when Turnitin is not configured).
+        // Turnitin_disclosure::render returns a string (empty when Turnitin is not configured).
         $this->assertIsString($result);
     }
 
@@ -1450,7 +1529,7 @@ final class lib_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $plugin = new \plagiarism_plugin_turnitin();
@@ -1531,8 +1610,11 @@ final class lib_test extends \advanced_testcase {
         $result = plagiarism_turnitin_coursemodule_edit_post_actions($data, (object)['id' => $course->id]);
 
         $this->assertSame($data, $result);
-        $saved = $DB->get_field('plagiarism_turnitin_config', 'value',
-            ['cm' => $cm->id, 'name' => 'plagiarism_compare_internet']);
+        $saved = $DB->get_field(
+            'plagiarism_turnitin_config',
+            'value',
+            ['cm' => $cm->id, 'name' => 'plagiarism_compare_internet']
+        );
         $this->assertEquals(1, (int) $saved);
     }
 
@@ -1572,8 +1654,10 @@ final class lib_test extends \advanced_testcase {
         $result = $plugin->queue_submission_to_turnitin($cm, $user->id, $user->id, 'forum-hash', 'forum_post');
 
         $this->assertTrue($result);
-        $row = $DB->get_record('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'forum-hash']);
+        $row = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'forum-hash']
+        );
         $this->assertNotFalse($row);
     }
 
@@ -1608,12 +1692,12 @@ final class lib_test extends \advanced_testcase {
             'cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'stale-text-hash',
             'statuscode' => 'queued', 'submissiontype' => 'text_content',
             'attempt' => 0, 'itemid' => 0, 'submitter' => $user->id,
-            'lastmodified' => time() + 100, // future — ensures timemodified <= lastmodified
+            'lastmodified' => time() + 100, // Future — ensures timemodified <= lastmodified.
             'transmatch' => 0,
         ]);
 
         $plugin = new \plagiarism_plugin_turnitin();
-        // timemodified=0 < lastmodified → earlyreturn=true in resolve_submission_id.
+        // Timemodified=0 < lastmodified triggers earlyreturn=true in resolve_submission_id.
         $result = $plugin->queue_submission_to_turnitin($cm, $user->id, $user->id, 'stale-text-hash', 'text_content');
 
         $this->assertTrue($result);
@@ -1675,8 +1759,15 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->get_links_body(
-            $f['linkarray'], $f['cm'], $f['config'], $f['plagiarismsettings'],
-            $f['moduledata'], $f['context'], $f['coursedata'], true, $contentdisplayed
+            $f['linkarray'],
+            $f['cm'],
+            $f['config'],
+            $f['plagiarismsettings'],
+            $f['moduledata'],
+            $f['context'],
+            $f['coursedata'],
+            true,
+            $contentdisplayed
         );
 
         $this->assertStringContainsString('Turnitin Plagiarism plugin Version', $result);
@@ -1698,7 +1789,7 @@ final class lib_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
 
@@ -1707,7 +1798,7 @@ final class lib_test extends \advanced_testcase {
         $cm     = get_coursemodule_from_instance('assign', $assign->id);
         $user   = $this->getDataGenerator()->create_user();
 
-        // turnitin_uid=1 so constructor skips find_tii_user_id(); user_agreement_accepted=0 → EULA not accepted.
+        // Turnitin_uid=1 so constructor skips find_tii_user_id(); user_agreement_accepted=0 means EULA not accepted.
         $DB->insert_record('plagiarism_turnitin_users', (object)[
             'userid'                  => $user->id,
             'turnitin_uid'            => 1,
@@ -1789,8 +1880,10 @@ final class lib_test extends \advanced_testcase {
 
         // Enable plugin for assign, but set all comparison sources to 0.
         set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
-        foreach (['use_turnitin', 'plagiarism_compare_internet', 'plagiarism_compare_student_papers',
-                  'plagiarism_compare_journals', 'plagiarism_compare_institution'] as $name) {
+        foreach (
+            ['use_turnitin', 'plagiarism_compare_internet', 'plagiarism_compare_student_papers',
+                  'plagiarism_compare_journals', 'plagiarism_compare_institution'] as $name
+        ) {
             $DB->insert_record('plagiarism_turnitin_config', (object)[
                 'cm' => $cm->id, 'name' => $name, 'value' => 0,
                 'config_hash' => $cm->id . '_' . $name,
@@ -1801,8 +1894,10 @@ final class lib_test extends \advanced_testcase {
         $result = $plugin->queue_submission_to_turnitin($cm, $user->id, $user->id, 'noopts-hash', 'text_content');
 
         $this->assertTrue($result);
-        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id]));
+        $this->assertEquals(0, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id]
+        ));
     }
 
     /**
@@ -1835,7 +1930,7 @@ final class lib_test extends \advanced_testcase {
             'cm' => $cm->id, 'name' => 'plagiarism_compare_internet', 'value' => 1,
             'config_hash' => $cm->id . '_plagiarism_compare_internet',
         ]);
-        // plagiarism_report_gen is needed by is_resubmission_allowed.
+        // Plagiarism_report_gen is needed by is_resubmission_allowed.
         $DB->insert_record('plagiarism_turnitin_config', (object)[
             'cm' => $cm->id, 'name' => 'plagiarism_report_gen', 'value' => 0,
             'config_hash' => $cm->id . '_plagiarism_report_gen',
@@ -1845,8 +1940,10 @@ final class lib_test extends \advanced_testcase {
         $result = $plugin->queue_submission_to_turnitin($cm, $user->id, $user->id, 'text-hash-new', 'text_content');
 
         $this->assertTrue($result);
-        $row = $DB->get_record('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'text-hash-new']);
+        $row = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'text-hash-new']
+        );
         $this->assertNotFalse($row);
         $this->assertEquals('queued', $row->statuscode);
     }
@@ -1878,8 +1975,10 @@ final class lib_test extends \advanced_testcase {
         $plugin = new \plagiarism_plugin_turnitin();
         $plugin->clean_old_turnitin_submissions($cm, $user->id, 0, 'text_content', 'new-text-hash');
 
-        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'old-text-hash']));
+        $this->assertEquals(0, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'old-text-hash']
+        ));
     }
 
     /**
@@ -1905,8 +2004,10 @@ final class lib_test extends \advanced_testcase {
         $plugin = new \plagiarism_plugin_turnitin();
         $plugin->clean_old_turnitin_submissions($cm, $user->id, 0, 'text_content', 'current-text-hash');
 
-        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'current-text-hash']));
+        $this->assertEquals(1, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'current-text-hash']
+        ));
     }
 
     /**
@@ -1935,8 +2036,10 @@ final class lib_test extends \advanced_testcase {
         $plugin->clean_old_turnitin_submissions($cm, $user->id, 0, 'file', 'file-hash');
 
         // Row must still exist — the method returned early.
-        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id]));
+        $this->assertEquals(1, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id]
+        ));
     }
 
     /**
@@ -1989,10 +2092,14 @@ final class lib_test extends \advanced_testcase {
         $plugin->clean_old_turnitin_submissions($cm, $user->id, 1, 'file', $file->get_pathnamehash());
 
         // Old row deleted, current row kept.
-        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'old-orphan-hash']));
-        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]));
+        $this->assertEquals(0, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'old-orphan-hash']
+        ));
+        $this->assertEquals(1, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]
+        ));
     }
 
     // Further event_handler tests (past the early-return guards).
@@ -2038,8 +2145,10 @@ final class lib_test extends \advanced_testcase {
         $result = $plugin->event_handler($eventdata);
 
         $this->assertTrue($result);
-        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'statuscode' => 'queued']));
+        $this->assertEquals(0, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'statuscode' => 'queued']
+        ));
     }
 
     /**
@@ -2091,9 +2200,9 @@ final class lib_test extends \advanced_testcase {
 
         // Minimal credentials so turnitin_comms doesn't throw on construction
         // (check_local_submission_state always instantiates it even with empty input).
-        set_config('plagiarism_turnitin_accountid',  '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',     'https://api.turnitin.com', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_secretkey',  'TESTKEY', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->cron_update_scores();
@@ -2118,7 +2227,7 @@ final class lib_test extends \advanced_testcase {
 
         // Minimal credentials so turnitin_comms constructor does not throw.
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $course = $this->getDataGenerator()->create_course();
@@ -2138,7 +2247,7 @@ final class lib_test extends \advanced_testcase {
             'similarityscore'        => null,
         ]);
 
-        // turnitin_assignid needed so the submission is added to the API request.
+        // Turnitin_assignid needed so the submission is added to the API request.
         $DB->insert_record('plagiarism_turnitin_config', (object)[
             'cm' => $cm->id, 'name' => 'turnitin_assignid', 'value' => '99',
             'config_hash' => $cm->id . '_turnitin_assignid',
@@ -2219,18 +2328,28 @@ final class lib_test extends \advanced_testcase {
             /** @var string */
             private $submissionid;
 
-            /** @param int|null $grade @param string $submissionid */
+            /**
+             * Construct the stub with grade and submission id values.
+             * @param int|null $grade
+             * @param string $submissionid
+             */
             public function __construct(?int $grade, string $submissionid) {
                 $this->grade        = $grade;
                 $this->submissionid = $submissionid;
             }
 
-            /** @return int|null */
+            /**
+             * Return the grade value.
+             * @return int|null
+             */
             public function getGrade(): ?int {
                 return $this->grade;
             }
 
-            /** @return string */
+            /**
+             * Return the submission id.
+             * @return string
+             */
             public function getSubmissionId(): string {
                 return $this->submissionid;
             }
@@ -2517,10 +2636,14 @@ final class lib_test extends \advanced_testcase {
 
         $this->assertTrue($result);
         // Both group members should have an assign_grades row.
-        $this->assertNotFalse($DB->get_record('assign_grades',
-            ['assignment' => $assign->id, 'userid' => $student1->id]));
-        $this->assertNotFalse($DB->get_record('assign_grades',
-            ['assignment' => $assign->id, 'userid' => $student2->id]));
+        $this->assertNotFalse($DB->get_record(
+            'assign_grades',
+            ['assignment' => $assign->id, 'userid' => $student1->id]
+        ));
+        $this->assertNotFalse($DB->get_record(
+            'assign_grades',
+            ['assignment' => $assign->id, 'userid' => $student2->id]
+        ));
     }
 
     /**
@@ -2569,12 +2692,20 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->queue_submission_to_turnitin(
-            $cm, $user->id, $user->id, $file->get_pathnamehash(), 'file', 1, null
+            $cm,
+            $user->id,
+            $user->id,
+            $file->get_pathnamehash(),
+            'file',
+            1,
+            null
         );
 
         $this->assertTrue($result);
-        $row = $DB->get_record('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]);
+        $row = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]
+        );
         $this->assertNotFalse($row);
         $this->assertEquals('queued', $row->statuscode);
         $this->assertEquals(0, $row->errorcode);
@@ -2603,8 +2734,10 @@ final class lib_test extends \advanced_testcase {
 
         // Enable plugin + comparison source; non-or-submissions NOT allowed.
         set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
-        foreach (['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
-                  'plagiarism_report_gen' => 0, 'plagiarism_allow_non_or_submissions' => 0] as $name => $val) {
+        foreach (
+            ['use_turnitin' => 1, 'plagiarism_compare_internet' => 1,
+                  'plagiarism_report_gen' => 0, 'plagiarism_allow_non_or_submissions' => 0] as $name => $val
+        ) {
             $DB->insert_record('plagiarism_turnitin_config', (object)[
                 'cm' => $cm->id, 'name' => $name, 'value' => $val,
                 'config_hash' => $cm->id . '_' . $name,
@@ -2627,13 +2760,21 @@ final class lib_test extends \advanced_testcase {
 
         $plugin = new \plagiarism_plugin_turnitin();
         $result = $plugin->queue_submission_to_turnitin(
-            $cm, $user->id, $user->id, $file->get_pathnamehash(), 'file', 2, null
+            $cm,
+            $user->id,
+            $user->id,
+            $file->get_pathnamehash(),
+            'file',
+            2,
+            null
         );
 
         // Still returns true (an error row is saved, not an exception).
         $this->assertTrue($result);
-        $row = $DB->get_record('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]);
+        $row = $DB->get_record(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]
+        );
         $this->assertNotFalse($row);
         $this->assertEquals('error', $row->statuscode);
         $this->assertGreaterThan(0, $row->errorcode);
@@ -2702,10 +2843,14 @@ final class lib_test extends \advanced_testcase {
         $plugin = new \plagiarism_plugin_turnitin();
         $plugin->clean_old_turnitin_submissions($cm, $user->id, $submissionid, 'file', $file->get_pathnamehash());
 
-        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'stale-hash-assign']));
-        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]));
+        $this->assertEquals(0, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => 'stale-hash-assign']
+        ));
+        $this->assertEquals(1, $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $file->get_pathnamehash()]
+        ));
     }
 
     /**

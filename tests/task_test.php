@@ -440,7 +440,7 @@ final class task_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $course = $this->getDataGenerator()->create_course();
@@ -461,7 +461,7 @@ final class task_test extends \advanced_testcase {
 
         $task = adhoc_send_submission::instance($submission);
 
-        // execute() calls plagiarism_turnitin_send_single_submission which does mtrace() on
+        // Execute() calls plagiarism_turnitin_send_single_submission which does mtrace() on
         // connection failure — suppress output.
         ob_start();
         $task->execute();

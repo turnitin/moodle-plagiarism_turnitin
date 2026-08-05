@@ -406,7 +406,7 @@ final class turnitin_submission_display_test extends \advanced_testcase {
         $ctx->plagiarismfile = null;
         $ctx->submittereulaccepted = true;
 
-        // render_no_submission returns '' when eula accepted.
+        // Render_no_submission returns '' when eula accepted.
         $result = turnitin_submission_display::render($ctx);
 
         $this->assertSame('', $result);
@@ -541,7 +541,7 @@ final class turnitin_submission_display_test extends \advanced_testcase {
         $ctx->istutor           = true;
         $ctx->enablepeermark    = true;
         $ctx->peermarkassignments = [
-            (object)['dtstart' => time() - HOURSECS], // started in the past
+            (object)['dtstart' => time() - HOURSECS], // Started in the past.
         ];
         $ctx->plagiarismfile = $this->make_file([
             'statuscode' => 'success',
@@ -590,7 +590,7 @@ final class turnitin_submission_display_test extends \advanced_testcase {
         $result = turnitin_submission_display::render_deleted($ctx);
 
         $this->assertStringContainsString(get_string('deleted', 'plagiarism_turnitin'), $result);
-        // errorcode 3 → 'errorcode3' lang string content should appear.
+        // Errorcode 3 should produce the errorcode3 lang string.
         $this->assertStringContainsString(get_string('errorcode3', 'plagiarism_turnitin'), $result);
     }
 
@@ -611,7 +611,7 @@ final class turnitin_submission_display_test extends \advanced_testcase {
         $ctx->plagiarismfile = $this->make_file([
             'statuscode'      => 'pending',
             'externalid'      => 1,
-            'similarityscore' => 0, // non-null so hasorscore=true; score value unused in pending branch
+            'similarityscore' => 0, // Non-null so hasorscore=true; score value unused in pending branch.
             'orcapable'       => null,
         ]);
 

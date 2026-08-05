@@ -40,7 +40,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_assignment::class)]
 final class turnitin_assignment_test extends \advanced_testcase {
-
     // Constructor tests.
 
     /**
@@ -53,7 +52,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $assignment = new turnitin_assignment(0, null);
@@ -70,7 +69,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockcomms = $this->getMockBuilder(turnitin_comms::class)
@@ -96,7 +95,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
 
@@ -113,14 +112,15 @@ final class turnitin_assignment_test extends \advanced_testcase {
 
         $assignment = new turnitin_assignment(0);
 
-        // edit_tii_course will throw when the API call fails; the enddate branch
+        // Edit_tii_course will throw when the API call fails; the enddate branch
         // (lines 159-160) runs before the try block, so just verify no earlier exception.
         $course->turnitin_cid = 99;
         ob_start();
         try {
             $assignment->edit_tii_course($course);
         } catch (\Exception $e) {
-            // Expected — API unavailable. enddate code ran before the try block.
+            // Expected — API unavailable. Enddate code ran before the try block.
+            unset($e);
         }
         ob_end_clean();
 
@@ -137,7 +137,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_create_class_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi   = $this->getMockBuilder(\stdClass::class)->addMethods(['createClass'])->getMock();
@@ -157,7 +157,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_update_class_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi   = $this->getMockBuilder(\stdClass::class)->addMethods(['updateClass'])->getMock();
@@ -176,7 +176,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_get_class_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockobj = $this->getMockBuilder(\stdClass::class)->addMethods(['getClass'])->getMock();
@@ -192,7 +192,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_get_class_id_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $class = new \TiiClass();
@@ -208,7 +208,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_set_class_id_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $class      = new \TiiClass();
@@ -224,7 +224,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_create_assignment_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi        = $this->getMockBuilder(\stdClass::class)->addMethods(['createAssignment'])->getMock();
@@ -241,7 +241,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_update_assignment_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi        = $this->getMockBuilder(\stdClass::class)->addMethods(['updateAssignment'])->getMock();
@@ -258,7 +258,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_get_assignment_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockobj = $this->getMockBuilder(\stdClass::class)->addMethods(['getAssignment'])->getMock();
@@ -274,7 +274,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_get_assignment_id_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $tiiassignment = new \TiiAssignment();
@@ -290,7 +290,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
     public function test_api_get_title_delegates(): void {
         $this->resetAfterTest();
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $tiiassignment = new \TiiAssignment();

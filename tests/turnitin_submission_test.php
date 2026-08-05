@@ -2772,14 +2772,14 @@ final class turnitin_submission_test extends \advanced_testcase {
             'cm'             => $cm->id,
             'userid'         => 2,
             'statuscode'     => 'success',
-            'similarityscore' => null, // will change
+            'similarityscore' => null, // Will change on update.
             'externalid'     => 'ext-score-change',
         ]);
 
         $tiisubmission = $this->make_tii_submission(['similarity' => 42, 'translated' => 0]);
 
         $gradeupdatecalled = false;
-        $gradeupdate = function($cm, $tii, $userid) use (&$gradeupdatecalled) {
+        $gradeupdate = function ($cm, $tii, $userid) use (&$gradeupdatecalled) {
             $gradeupdatecalled = true;
             return true;
         };
@@ -2807,14 +2807,14 @@ final class turnitin_submission_test extends \advanced_testcase {
             'cm'              => $cm->id,
             'userid'          => 2,
             'statuscode'      => 'success',
-            'similarityscore' => 50, // same as tiisubmission
+            'similarityscore' => 50, // Same as tiisubmission — no change expected.
             'orcapable'       => 1,
         ]);
 
         $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'translated' => 0, 'orcapable' => 1]);
 
         $gradeupdatecalled = false;
-        $gradeupdate = function() use (&$gradeupdatecalled) {
+        $gradeupdate = function () use (&$gradeupdatecalled) {
             $gradeupdatecalled = true;
             return true;
         };
@@ -2872,11 +2872,17 @@ final class turnitin_submission_test extends \advanced_testcase {
             'externalid'     => 'ext-resubmit',
         ]);
 
-        $settings  = ['plagiarism_report_gen' => 1]; // resubmission mode
+        $settings  = ['plagiarism_report_gen' => 1]; // Resubmission mode.
         $moduledata = (object)['resubmission_allowed' => true];
 
         $routing = turnitin_submission::resolve_submission_id(
-            $cm, $user->id, 'text_content', $identifier, $settings, $moduledata, 0
+            $cm,
+            $user->id,
+            'text_content',
+            $identifier,
+            $settings,
+            $moduledata,
+            0
         );
 
         $this->assertFalse($routing['earlyreturn']);
@@ -2909,21 +2915,29 @@ final class turnitin_submission_test extends \advanced_testcase {
             'submissiontype' => 'text_content',
             'statuscode'     => 'success',
             'externalid'     => 'ext-success',
-            'lastmodified'   => time() - HOURSECS, // older than the new content
+            'lastmodified'   => time() - HOURSECS, // Older than the new content.
         ]);
 
-        $settings  = ['plagiarism_report_gen' => 0]; // no resubmission
+        $settings  = ['plagiarism_report_gen' => 0]; // No resubmission.
         $moduledata = (object)['resubmission_allowed' => false];
 
         // Pass timemodified > lastmodified so the "content unchanged" early-return is skipped.
         $routing = turnitin_submission::resolve_submission_id(
-            $cm, $user->id, 'text_content', $identifier, $settings, $moduledata, time()
+            $cm,
+            $user->id,
+            'text_content',
+            $identifier,
+            $settings,
+            $moduledata,
+            time()
         );
 
         $this->assertFalse($routing['earlyreturn']);
         // A new row should have been created alongside the original.
-        $count = $DB->count_records('plagiarism_turnitin_files',
-            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $identifier]);
+        $count = $DB->count_records(
+            'plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $identifier]
+        );
         $this->assertEquals(2, $count);
     }
 
@@ -2954,7 +2968,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         // Create a group assign_submission row.
         $submissionid = $DB->insert_record('assign_submission', (object)[
             'assignment'    => $assign->id,
-            'userid'        => 0, // group submission
+            'userid'        => 0, // Group submission.
             'groupid'       => $group->id,
             'status'        => 'submitted',
             'attemptnumber' => 0,
@@ -2978,7 +2992,11 @@ final class turnitin_submission_test extends \advanced_testcase {
         $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
 
         $result = turnitin_submission::resolve_get_links_author(
-            $linkarray, $cm, $submissionid, $identifier, $moduleobject
+            $linkarray,
+            $cm,
+            $submissionid,
+            $identifier,
+            $moduleobject
         );
 
         // The group plagiarismfile was found and the author extracted.
@@ -3005,7 +3023,14 @@ final class turnitin_submission_test extends \advanced_testcase {
         $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
 
         $result = turnitin_submission::resolve_submitter_eula_accepted(
-            true, $user->id, 2, $user->id, $user->id, true, $context, $moduleobject
+            true,
+            $user->id,
+            2,
+            $user->id,
+            $user->id,
+            true,
+            $context,
+            $moduleobject
         );
 
         $this->assertTrue($result);
@@ -3028,7 +3053,14 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         // Use a non-existent userid.
         $result = turnitin_submission::resolve_submitter_eula_accepted(
-            true, 99999, 2, 99999, 99999, true, $context, $moduleobject
+            true,
+            99999,
+            2,
+            99999,
+            99999,
+            true,
+            $context,
+            $moduleobject
         );
 
         $this->assertTrue($result);
@@ -3130,7 +3162,13 @@ final class turnitin_submission_test extends \advanced_testcase {
         $moduledata = (object)['resubmission_allowed' => false];
 
         $routing = turnitin_submission::resolve_submission_id(
-            $cm, $user->id, 'text_content', $newidentifier, $settings, $moduledata, time()
+            $cm,
+            $user->id,
+            'text_content',
+            $newidentifier,
+            $settings,
+            $moduledata,
+            time()
         );
 
         $this->assertFalse($routing['earlyreturn']);
@@ -3158,13 +3196,21 @@ final class turnitin_submission_test extends \advanced_testcase {
         $moduledata = (object)['resubmission_allowed' => false];
 
         $routing = turnitin_submission::resolve_submission_id(
-            $cm, $user->id, 'text_content', sha1('brand-new'), $settings, $moduledata, time()
+            $cm,
+            $user->id,
+            'text_content',
+            sha1('brand-new'),
+            $settings,
+            $moduledata,
+            time()
         );
 
         $this->assertFalse($routing['earlyreturn']);
         $this->assertGreaterThan(0, $routing['submissionid']);
-        $this->assertGreaterThan($countbefore,
-            $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id, 'userid' => $user->id]));
+        $this->assertGreaterThan(
+            $countbefore,
+            $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id, 'userid' => $user->id])
+        );
     }
 
     // Tests for update_gradebook() assign text_content stale-content check.
@@ -3219,7 +3265,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         ]);
 
         $gradeupdatecalled = false;
-        $gradeupdate = function() use (&$gradeupdatecalled) {
+        $gradeupdate = function () use (&$gradeupdatecalled) {
             $gradeupdatecalled = true;
             return true;
         };
@@ -3228,7 +3274,7 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         turnitin_submission::update_gradebook($cm, $fileid, $tiisubmission, $user->id, $gradeupdate);
 
-        // gbupdaterequired was set to false because the identifier is stale — no gradebook update.
+        // GbupdateRequired was set to false because the identifier is stale — no gradebook update.
         $this->assertFalse($gradeupdatecalled);
     }
 
@@ -3248,7 +3294,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         ]);
 
         $gradeupdatecalled = false;
-        $gradeupdate = function() use (&$gradeupdatecalled) {
+        $gradeupdate = function () use (&$gradeupdatecalled) {
             $gradeupdatecalled = true;
         };
 
@@ -3273,7 +3319,7 @@ final class turnitin_submission_test extends \advanced_testcase {
         $cm     = get_coursemodule_from_instance('assign', $assign->id);
 
         $queuedcount = 0;
-        $queuefn = function() use (&$queuedcount) {
+        $queuefn = function () use (&$queuedcount) {
             $queuedcount++;
             return true;
         };
@@ -3293,4 +3339,3 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertEquals(0, $queuedcount);
     }
 }
-

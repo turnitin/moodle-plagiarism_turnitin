@@ -40,7 +40,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_submission::class)]
 final class turnitin_submission_builder_test extends \advanced_testcase {
-
     /**
      * Seed all the CM-level settings that build_tii_assignment reads, using
      * sensible defaults that can be overridden per-test.
@@ -204,7 +203,7 @@ final class turnitin_submission_builder_test extends \advanced_testcase {
 
         $result = turnitin_submission::build_tii_assignment($cm, 1);
 
-        // setAnonymousMarking was never called, so getAnonymousMarking returns null.
+        // SetAnonymousMarking was never called, so getAnonymousMarking returns null.
         $this->assertNull($result['assignment']->getAnonymousMarking());
     }
 
@@ -251,14 +250,16 @@ final class turnitin_submission_builder_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        set_config('plagiarism_turnitin_repositoryoption',
+        set_config(
+            'plagiarism_turnitin_repositoryoption',
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD,
-            'plagiarism_turnitin');
+            'plagiarism_turnitin'
+        );
 
         $course = $this->getDataGenerator()->create_course();
         $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
         $cm     = get_coursemodule_from_instance('assign', $assign->id);
-        $this->seed_cm_settings($cm->id, ['plagiarism_submitpapersto' => 0]); // would be 0 without override.
+        $this->seed_cm_settings($cm->id, ['plagiarism_submitpapersto' => 0]); // Would be 0 without override.
 
         $result = turnitin_submission::build_tii_assignment($cm, 1);
 
@@ -275,9 +276,11 @@ final class turnitin_submission_builder_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        set_config('plagiarism_turnitin_repositoryoption',
+        set_config(
+            'plagiarism_turnitin_repositoryoption',
             PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_EXPANDED,
-            'plagiarism_turnitin');
+            'plagiarism_turnitin'
+        );
 
         $course = $this->getDataGenerator()->create_course();
         $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);

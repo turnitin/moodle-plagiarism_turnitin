@@ -1937,7 +1937,14 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Build content payload for this submission type.
     $content = \plagiarism_turnitin\turnitin_submission::build_submission_content(
-        $queueditem, $cm, $moduledata, $moduleobject, $settings, $user, $pluginturnitin, $turnitinacceptedfiles
+        $queueditem,
+        $cm,
+        $moduledata,
+        $moduleobject,
+        $settings,
+        $user,
+        $pluginturnitin,
+        $turnitinacceptedfiles
     );
     $apimethod   = $content['apimethod'];
     $textcontent = $content['textcontent'];
@@ -1974,7 +1981,13 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Build the TiiSubmission object and make the API call.
     $submission = \plagiarism_turnitin\turnitin_submission::build_tii_submission_object(
-        $queueditem, $apimethod, $title, $tempfile, $syncassignment, $user, $coursedata
+        $queueditem,
+        $apimethod,
+        $title,
+        $tempfile,
+        $syncassignment,
+        $user,
+        $coursedata
     );
 
     // Initialise Comms Object.

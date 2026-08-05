@@ -311,7 +311,7 @@ final class turnitin_settings_actions_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
-        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mdluser = $this->getDataGenerator()->create_user();
@@ -322,13 +322,14 @@ final class turnitin_settings_actions_test extends \advanced_testcase {
             'user_agreement_accepted' => 1,
         ]);
 
-        // $relink=true, no factory — hits line 154: new turnitin_user($muser->id).
+        // Relink=true with no factory hits line 154: new turnitin_user($muser->id).
         // The constructor will fail to reach the API (fake creds) but catches the exception.
         ob_start();
         try {
             turnitin_settings_actions::process_user_links([$tiiid], true);
         } catch (\Exception $e) {
             // Acceptable if the API throws — the line was still executed.
+            unset($e);
         }
         ob_end_clean();
 

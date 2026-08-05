@@ -354,7 +354,7 @@ final class lib_test extends \advanced_testcase {
         $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
         $user   = $this->getDataGenerator()->create_user();
 
-        // course_reset only processes CMs that have a turnitin_assignid config row.
+        // Course_reset only processes CMs that have a turnitin_assignid config row.
         $DB->insert_record('plagiarism_turnitin_config', (object)[
             'cm' => $assign->cmid, 'name' => 'turnitin_assignid',
             'value' => 99, 'config_hash' => $assign->cmid . '_turnitin_assignid',

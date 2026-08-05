@@ -901,407 +901,50 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $currentgradequery = $moduleobject->get_current_gradequery($linkarray["userid"], $cm->instance, $gradeitem->id);
                 }
 
-                // Display links to OR, GradeMark and show relevant errors.
-                if ($plagiarismfile) {
-                    if (
-                        $plagiarismfile->statuscode == 'success' || ($plagiarismfile->statuscode == 'error' &&
-                            $plagiarismfile->errorcode == 13)
-                    ) {
-                        if ($istutor || $linkarray["userid"] == $USER->id) {
-                            $output .= html_writer::tag(
-                                'div',
-                                $OUTPUT->pix_icon(
-                                    'turnitin-icon',
-                                    get_string('turnitinid', 'plagiarism_turnitin') . ': ' . $plagiarismfile->externalid,
-                                    'plagiarism_turnitin',
-                                    ['class' => 'icon_size']
-                                ) .
-                                                get_string('turnitinid', 'plagiarism_turnitin') . ': ' . $plagiarismfile->externalid,
-                                ['class' => 'turnitin_status']
-                            );
-                        }
-
-                        // Show Originality Report score and link.
-                        if (
-                            ($istutor || (in_array($USER->id, $submissionusers) &&
-                                    $plagiarismsettings["plagiarism_show_student_report"])) &&
-                            ((is_null($plagiarismfile->orcapable) || $plagiarismfile->orcapable == 1) &&
-                                !is_null($plagiarismfile->similarityscore))
-                        ) {
-                            // Show score.
-                            if ($plagiarismfile->statuscode == "pending") {
-                                $orscorehtml = html_writer::tag(
-                                    'div',
-                                    '&nbsp;',
-                                    ['title' => get_string('pending', 'plagiarism_turnitin'),
-                                    'class' => 'tii_tooltip origreport_score score_colour score_colour_',
-                                    ]
-                                );
-                            } else {
-                                // Put EN flag if translated matching is on and that is the score used.
-                                $transmatch = ($plagiarismfile->transmatch == 1) ? ' EN' : '';
-
-                                if (is_null($plagiarismfile->similarityscore)) {
-                                    $score = '&nbsp;';
-                                    $titlescore = get_string('pending', 'plagiarism_turnitin');
-                                    $class = 'score_colour_';
-                                } else {
-                                    $score = $plagiarismfile->similarityscore . '%';
-                                    $titlescore = $plagiarismfile->similarityscore . '% ' . get_string('similarity', 'plagiarism_turnitin');
-                                    $roundup = function ($n, $x = 25) {
-                                        return (ceil($n) % $x === 0) ? ceil($n) : round(($n + $x / 2) / $x) * $x;
-                                    };
-
-                                    $class = 'score_colour_' . $roundup($plagiarismfile->similarityscore);
-                                }
-
-                                $orscorehtml = html_writer::tag(
-                                    'div',
-                                    $score . $transmatch,
-                                    ['title' => $titlescore, 'class' => 'tii_tooltip origreport_score score_colour ' .
-                                    $class]
-                                );
-                            }
-                            // Put in div placeholder for DV launch form.
-                            $orscorehtml .= html_writer::tag('div', '', ['class' => 'launch_form origreport_form_' .
-                                $plagiarismfile->externalid]);
-
-                            // Add url for launching DV from Forum post.
-                            if ($cm->modname == 'forum') {
-                                $orscorehtml .= html_writer::tag(
-                                    'div',
-                                    $CFG->wwwroot . '/plagiarism/turnitin/extras.php?cmid=' . $linkarray["cmid"],
-                                    ['class' => 'origreport_forum_launch origreport_forum_launch_' .
-                                    $plagiarismfile->externalid]
-                                );
-                            }
-
-                            // This class is applied so that only the user who submitted or a tutor can open the DV.
-                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
-
-                            if ($cm->modname === 'assign' && !$istutor && !empty($plagiarismfile)) {
-                                $context = context_course::instance($cm->course);
-                                $assign = new assign($context, $cm, null);
-                                if ($assign->get_instance()->teamsubmission && isset($USER->id) && $plagiarismfile->submitter != $USER->id) {
-                                    $isnonsubmitterforgroupassign = true;
-                                }
-                            }
-
-                            // Output container for OR Score.
-                            if (!$isnonsubmitterforgroupassign) {
-                                $ordivclass = 'row_score pp_origreport ' . $useropenclass . ' origreport_' . $plagiarismfile->externalid . '_' .
-                                    $linkarray["cmid"];
-                                $output .= html_writer::tag('div', $orscorehtml, ['class' => $ordivclass, 'tabindex' => '0',
-                                    'role' => 'link']);
-                            }
-                        }
-
-                        if (($plagiarismfile->orcapable == 0 && !is_null($plagiarismfile->orcapable))) {
-                            $notorlink = html_writer::tag('div', 'x', ['title' => get_string('notorcapable', 'plagiarism_turnitin'),
-                                'class' => 'tii_tooltip score_colour score_colour_ score_no_orcapable', ]);
-                            // This class is applied so that only the user who submitted or a tutor can open the DV.
-                            $useropenclass = ($USER->id == $linkarray["userid"] || $istutor) ? 'pp_origreport_open' : '';
-                            $output .= html_writer::tag('div', $notorlink, ['class' => 'row_score pp_origreport ' . $useropenclass]);
-                        }
-
-                        // Check if blind marking is on and revealidentities is not set yet.
-                        $blindon = (!empty($moduledata->blindmarking) && empty($moduledata->revealidentities));
-
-                        // Check if a grade exists - as $currentgradequery->grade defaults to -1.
-                        $gradeexists = false;
-                        if (isset($currentgradequery->grade)) {
-                            if ($currentgradequery->grade >= 0) {
-                                $gradeexists = true;
-                            }
-                        }
-
-                        // Can grade and feedback be released to this student yet?
-                        $released = ((!$blindon) && ($gradesreleased && (!empty($plagiarismfile->gm_feedback) || $gradeexists)));
-
-                        // Show link to open grademark.
-                        if (
-                            $config->plagiarism_turnitin_usegrademark &&
-                            ($istutor ||
-                            ($linkarray["userid"] == $USER->id &&
-                            $released)) &&
-                                 !empty($gradeitem)
-                        ) {
-                            // Output grademark icon.
-                            $gmicon = html_writer::tag(
-                                'div',
-                                $OUTPUT->pix_icon(
-                                    'icon-edit',
-                                    get_string('grademark', 'plagiarism_turnitin'),
-                                    'plagiarism_turnitin'
-                                ),
-                                ['title' => get_string('grademark', 'plagiarism_turnitin'),
-                                                        'class' => 'pp_grademark_open tii_tooltip grademark_' .
-                                                            $plagiarismfile->externalid .
-                                                                        '_' . $linkarray["cmid"], 'tabindex' => '0', 'role' => 'link',
-                                ]
-                            );
-
-                            // Put in div placeholder for DV launch form.
-                            $gmicon .= html_writer::tag('div', '', ['class' => 'launch_form grademark_form_' .
-                                $plagiarismfile->externalid]);
-                            $output .= html_writer::tag('div', $gmicon, ['class' => 'grade_icon']);
-                        }
-
-                        // Indicate whether student has viewed the feedback.
-                        if ($istutor) {
-                            $readicon = "--";
-                            if (isset($plagiarismfile->externalid)) {
-                                $studentread = (!empty($plagiarismfile->student_read)) ? $plagiarismfile->student_read : 0;
-                                if ($studentread > 0) {
-                                    $readicon = $OUTPUT->pix_icon(
-                                        'icon-student-read',
-                                        get_string('student_read', 'plagiarism_turnitin') .
-                                                        ' ' . userdate($studentread),
-                                        'plagiarism_turnitin'
-                                    );
-                                } else {
-                                    $readicon = $OUTPUT->pix_icon(
-                                        'icon-dot',
-                                        get_string('student_notread', 'plagiarism_turnitin'),
-                                        'plagiarism_turnitin'
-                                    );
-                                }
-                            }
-                            $output .= html_writer::tag('div', $readicon, ['class' => 'student_read_icon']);
-                        }
-
-                        // Show link to view rubric for student.
-                        if (
-                            !$istutor && $config->plagiarism_turnitin_usegrademark &&
-                            !empty($plagiarismsettings["plagiarism_rubric"])
-                        ) {
-                            // Update assignment in case rubric is not stored in Turnitin yet.
-                            $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
-
-                            $rubricviewlink = html_writer::tag(
-                                'span',
-                                '',
-                                ['class' => 'rubric_view rubric_view_pp_launch tii_tooltip',
-                                    'data-courseid' => $cm->course,
-                                    'data-cmid' => $cm->id,
-                                    'title' => get_string(
-                                        'launchrubricview',
-                                        'plagiarism_turnitin'
-                                    ), 'id' => 'rubric_view_launch',
-                                ]
-                            );
-                            $rubricviewlink = html_writer::tag('div', $rubricviewlink, ['class' => 'row_rubric_view']);
-
-                            $output .= $rubricviewlink;
-                        }
-
-                        if ($config->plagiarism_turnitin_enablepeermark) {
-                            // If this module is already on Turnitin then refresh and get Peermark Assignments.
-                            if (!empty($plagiarismsettings['turnitin_assignid'])) {
-                                if ($_SESSION["updated_pm"][$cm->id] <= (time() - (60 * 2))) {
-                                    $this->refresh_peermark_assignments($cm, $plagiarismsettings['turnitin_assignid']);
-                                    $turnitinassignment = new \turnitin_assignment($cm->instance);
-                                    $_SESSION["peermark_assignments"][$cm->id] =
-                                        $turnitinassignment->get_peermark_assignments($plagiarismsettings['turnitin_assignid']);
-                                    $_SESSION["updated_pm"][$cm->id] = time();
-                                }
-
-                                // Determine if we have any active Peermark Assignments.
-                                static $peermarksactive;
-                                if (!isset($peermarksactive)) {
-                                    $peermarksactive = false;
-                                    foreach ($_SESSION["peermark_assignments"][$cm->id] as $peermarkassignment) {
-                                        if (time() > $peermarkassignment->dtstart) {
-                                            $peermarksactive = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                // Show Peermark Reviews link.
-                                if (
-                                    ($istutor && count($_SESSION["peermark_assignments"][$cm->id]) > 0) ||
-                                                            (!$istutor && $peermarksactive)
-                                ) {
-                                    $peermarkreviewslink = html_writer::tag(
-                                        'span',
-                                        '',
-                                        ['title' => get_string('launchpeermarkreviews', 'plagiarism_turnitin'),
-                                            'class' => 'peermark_reviews_pp_launch tii_tooltip', 'id' => 'peermark_reviews_form', ]
-                                    );
-                                    $output .= html_writer::tag('div', $peermarkreviewslink, ['class' => 'row_peermark_reviews']);
-                                }
-                            }
-                        }
-                    } else if ($plagiarismfile->statuscode == 'error') {
-                        // Deal with legacy error issues.
-                        $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
-                        if ($errorcode == 0 && $submissiontype == 'file') {
-                            if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
-                                $errorcode = 2;
-                                $plagiarismfile->errorcode = 2;
-                            }
-                        }
-
-                        // Show error message if there is one.
-                        if ($errorcode == 0) {
-                            $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = empty($plagiarismfile->errormsg) ?
-                                get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
-                        } else {
-                            $errorstring = get_string(
-                                'errorcode' . $plagiarismfile->errorcode,
-                                'plagiarism_turnitin',
-                                [
-                                    'maxfilesize' => display_size(PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE),
-                                    'externalid' => $plagiarismfile->externalid,
-                                ]
-                            );
-                        }
-
-                        $erroricon = html_writer::tag(
-                            'div',
-                            $OUTPUT->pix_icon('x-red', $errorstring, 'plagiarism_turnitin'),
-                            ['title' => $errorstring,
-                            'class' => 'tii_tooltip tii_error_icon',
-                            ]
-                        );
-
-                        // Attach error text or resubmit link after icon depending on whether user is a student/teacher.
-                        // Don't attach resubmit link if the user has not accepted the EULA.
-                        if (!$istutor) {
-                            $output .= html_writer::tag('div', $erroricon . ' ' . $errorstring, ['class' => 'warning clear']);
-                        } else if ($errorcode == 3) {
-                            $output .= html_writer::tag('div', $erroricon, ['class' => 'clear']);
-                        } else {
-                            $output .= html_writer::tag(
-                                'div',
-                                $erroricon . ' ' .
-                                get_string('resubmittoturnitin', 'plagiarism_turnitin'),
-                                ['class' => 'clear plagiarism_turnitin_resubmit_link',
-                                'id' => 'pp_resubmit_' . $plagiarismfile->id,
-                                ]
-                            );
-
-                            $output .= html_writer::tag(
-                                'div',
-                                $OUTPUT->pix_icon('loading', $errorstring, 'plagiarism_turnitin') . ' ' .
-                                                        get_string('resubmitting', 'plagiarism_turnitin'),
-                                ['class' => 'pp_resubmitting hidden']
-                            );
-
-                            // Pending status for after resubmission.
-                            $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin') . ': ' .
-                                get_string('pending', 'plagiarism_turnitin');
-                            $output .= html_writer::tag(
-                                'div',
-                                $OUTPUT->pix_icon(
-                                    'turnitin-icon',
-                                    $statusstr,
-                                    'plagiarism_turnitin',
-                                    ['class' => 'icon_size']
-                                ) . $statusstr,
-                                ['class' => 'turnitin_status hidden']
-                            );
-
-                            // Show hidden data for potential forum post resubmissions.
-                            if ($submissiontype == 'forum_post' && !empty($linkarray["content"])) {
-                                $output .= html_writer::tag(
-                                    'div',
-                                    chunk_split(base64_encode($linkarray["content"]), 64),
-                                    ['class' => 'hidden', 'id' => 'content_' . $plagiarismfile->id]
-                                );
-                            }
-
-                            if ($cm->modname == 'forum') {
-                                // Get forum data from the query string as we'll need this to recreate submission event.
-                                $querystrid = optional_param('id', 0, PARAM_INT);
-                                $discussionid = optional_param('d', 0, PARAM_INT);
-                                $reply   = optional_param('reply', 0, PARAM_INT);
-                                $edit    = optional_param('edit', 0, PARAM_INT);
-                                $delete  = optional_param('delete', 0, PARAM_INT);
-                                $output .= html_writer::tag(
-                                    'div',
-                                    $querystrid . '_' . $discussionid . '_' . $reply . '_' . $edit . '_' . $delete,
-                                    ['class' => 'hidden', 'id' => 'forumdata_' . $plagiarismfile->id]
-                                );
-                            }
-                        }
-                    } else if ($plagiarismfile->statuscode == 'deleted') {
-                        $errorcode = (isset($plagiarismfile->errorcode)) ? $plagiarismfile->errorcode : 0;
-                        if ($errorcode == 0) {
-                            $langstring = ($istutor) ? 'ppsubmissionerrorseelogs' : 'ppsubmissionerrorstudent';
-                            $errorstring = empty($plagiarismfile->errormsg) ?
-                                get_string($langstring, 'plagiarism_turnitin') : $plagiarismfile->errormsg;
-                        } else {
-                            $errorstring = get_string(
-                                'errorcode' . $plagiarismfile->errorcode,
-                                'plagiarism_turnitin',
-                                display_size(PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE)
-                            );
-                        }
-                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin') . ': ' .
-                            get_string('deleted', 'plagiarism_turnitin') . '<br />';
-                        $statusstr .= get_string('because', 'plagiarism_turnitin') . '<br />"' . $errorstring . '"';
-                        $output .= html_writer::tag('div', $OUTPUT->pix_icon(
-                            'turnitin-icon',
-                            $statusstr,
-                            'plagiarism_turnitin',
-                            ['class' => 'icon_size']
-                        ) . $statusstr, ['class' => 'turnitin_status']);
-                    } else if ($plagiarismfile->statuscode == 'queued') {
-                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin') . ': ' .
-                            get_string('queued', 'plagiarism_turnitin');
-                        $output .= html_writer::tag('div', $OUTPUT->pix_icon(
-                            'turnitin-icon',
-                            $statusstr,
-                            'plagiarism_turnitin',
-                            ['class' => 'icon_size']
-                        ) . $statusstr, ['class' => 'turnitin_status']);
-                    } else {
-                        $statusstr = get_string('turnitinstatus', 'plagiarism_turnitin') . ': ' .
-                            get_string('pending', 'plagiarism_turnitin');
-                        $output .= html_writer::tag('div', $OUTPUT->pix_icon(
-                            'turnitin-icon',
-                            $statusstr,
-                            'plagiarism_turnitin',
-                            ['class' => 'icon_size']
-                        ) . $statusstr, ['class' => 'turnitin_status']);
-                    }
-                } else {
-                    // Add Error if the user has not accepted EULA for submissions made before instant submission was removed.
-                    $eulaerror = "";
+                // Build rendering context and delegate to the renderer.
+                $submittereulaccepted = true;
+                if (!$plagiarismfile) {
+                    // Check EULA acceptance for the no-submission branch (tutor viewing student).
                     if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {
-                        // There is a moodle plagiarism bug where get_links is called twice, the first loop is incorrect and is
-                        // killing this functionality. Have to check that user exists here first else there will be a fatal error.
                         if ($DB->get_record('user', ['id' => $linkarray["userid"]])) {
-                            // We need to check for security that the user is actually on the course.
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
                                 $user = new \turnitin_user($linkarray["userid"], "Learner");
-                                if ($user->useragreementaccepted != 1) {
-                                    $erroricon = html_writer::tag(
-                                        'div',
-                                        $OUTPUT->pix_icon(
-                                            'doc-x-grey',
-                                            get_string('errorcode3', 'plagiarism_turnitin'),
-                                            'plagiarism_turnitin'
-                                        ),
-                                        ['title' => get_string('errorcode3', 'plagiarism_turnitin'),
-                                        'class' => 'tii_tooltip tii_error_icon',
-                                        ]
-                                    );
-                                    $eulaerror = html_writer::tag('div', $erroricon, ['class' => 'clear']);
-                                }
+                                $submittereulaccepted = ($user->useragreementaccepted == 1);
                             }
                         }
-                    }
-
-                    // Show EULA error.
-                    if (!empty($eulaerror)) {
-                        $output .= $eulaerror;
                     }
                 }
 
+                // Determine grade release context.
+                $gradeexists = isset($currentgradequery->grade) && $currentgradequery->grade >= 0;
+                $blindon     = !empty($moduledata->blindmarking) && empty($moduledata->revealidentities);
+
+                $ctx = new \plagiarism_turnitin\submission_link_context();
+                $ctx->plagiarismfile              = $plagiarismfile ?: null;
+                $ctx->istutor                     = $istutor;
+                $ctx->vieweruserid                = $USER->id;
+                $ctx->submissionuserid            = $linkarray["userid"];
+                $ctx->submissionusers             = $submissionusers;
+                $ctx->isnonsubmitterforgroupassign = $isnonsubmitterforgroupassign;
+                $ctx->submissiontype              = $submissiontype;
+                $ctx->cmid                        = $linkarray["cmid"];
+                $ctx->cmmodname                   = $cm->modname;
+                $ctx->cmcourse                    = $cm->course;
+                $ctx->wwwroot                     = $CFG->wwwroot;
+                $ctx->submissioncontent           = $linkarray["content"] ?? null;
+                $ctx->filesize                    = !empty($linkarray["file"]) ? $file->get_filesize() : 0;
+                $ctx->usegrademark                = !empty($config->plagiarism_turnitin_usegrademark);
+                $ctx->enablepeermark              = !empty($config->plagiarism_turnitin_enablepeermark);
+                $ctx->showstudentreport           = !empty($plagiarismsettings["plagiarism_show_student_report"]);
+                $ctx->rubric                      = $plagiarismsettings["plagiarism_rubric"] ?? null;
+                $ctx->gradesreleased              = $gradesreleased;
+                $ctx->blindon                     = $blindon;
+                $ctx->gradeexists                 = $gradeexists;
+                $ctx->gradeitem                   = $gradeitem ?? null;
+                $ctx->peermarkassignments         = $_SESSION["peermark_assignments"][$cm->id] ?? [];
+                $ctx->submittereulaccepted        = $submittereulaccepted;
+
+                $output .= \plagiarism_turnitin\turnitin_submission_display::render($ctx);
                 $output .= html_writer::tag('div', '', ['class' => 'clear']);
             }
 

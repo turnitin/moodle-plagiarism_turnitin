@@ -889,29 +889,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
-     * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
-     *
-     * @param int $cmid The course module id.
-     * @param int $groupid The group id.
-     * @return void
-     * @throws coding_exception
-     */
-    private function get_first_group_author($cmid, $groupid) {
-        static $context;
-        if (empty($context)) {
-            $context = context_course::instance($cmid);
-        }
-
-        $groupmembers = groups_get_members($groupid, "u.id");
-        foreach ($groupmembers as $author) {
-            if (!has_capability('mod/assign:grade', $context, $author->id)) {
-                return $author->id;
-            }
-        }
-    }
-
-    /**
      * Create a course within Turnitin
      *
      * @param int $cmid The course module id.
@@ -1719,7 +1696,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         ) {
             $moodlesubmission = $DB->get_record('assign_submission', ['id' => $eventdata['objectid']], 'id, groupid');
             if (!empty($moodlesubmission->groupid)) {
-                $author = $this->get_first_group_author($cm->course, $moodlesubmission->groupid);
+                $author = \plagiarism_turnitin\turnitin_submission::get_first_group_author(
+                    $cm->course,
+                    $moodlesubmission->groupid
+                );
             }
         }
 

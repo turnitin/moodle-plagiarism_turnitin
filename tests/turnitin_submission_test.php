@@ -1694,4 +1694,74 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertEquals([(int)$user->id], $result);
     }
+
+    // Tests for get_first_group_author().
+
+    /**
+     * Test get_first_group_author returns null when the group has no members.
+     */
+    public function test_get_first_group_author_returns_null_for_empty_group(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $group  = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+
+        $result = turnitin_submission::get_first_group_author($course->id, $group->id);
+
+        $this->assertNull($result);
+    }
+
+    /**
+     * Test get_first_group_author returns the first student's id.
+     */
+    public function test_get_first_group_author_returns_first_student(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $group   = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $student->id]);
+
+        $result = turnitin_submission::get_first_group_author($course->id, $group->id);
+
+        $this->assertEquals((int)$student->id, $result);
+    }
+
+    /**
+     * Test get_first_group_author skips graders and returns the first student.
+     */
+    public function test_get_first_group_author_skips_graders(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $group   = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        $teacher = $this->getDataGenerator()->create_user();
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'teacher');
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $teacher->id]);
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $student->id]);
+
+        $result = turnitin_submission::get_first_group_author($course->id, $group->id);
+
+        $this->assertEquals((int)$student->id, $result);
+    }
+
+    /**
+     * Test get_first_group_author returns null when the group contains only graders.
+     */
+    public function test_get_first_group_author_returns_null_when_only_graders(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $group   = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'teacher');
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $teacher->id]);
+
+        $result = turnitin_submission::get_first_group_author($course->id, $group->id);
+
+        $this->assertNull($result);
+    }
 }

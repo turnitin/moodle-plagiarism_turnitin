@@ -1217,4 +1217,29 @@ class turnitin_submission {
 
         return $submissionusers;
     }
+
+    /**
+     * Find the first student (non-grader) in a group for a group assignment submission.
+     *
+     * When an instructor submits on behalf of a group, the relateduserid is absent. This
+     * method resolves the correct author by iterating group members and returning the first
+     * one who does not have the mod/assign:grade capability — i.e. the first student.
+     *
+     * @param int $courseid Moodle course id (used to build the course context).
+     * @param int $groupid  Moodle group id.
+     * @return int|null Moodle user id of the first non-grader group member, or null when
+     *                  the group is empty or contains only graders.
+     */
+    public static function get_first_group_author(int $courseid, int $groupid): ?int {
+        $context      = \context_course::instance($courseid);
+        $groupmembers = groups_get_members($groupid, 'u.id');
+
+        foreach ($groupmembers as $member) {
+            if (!has_capability('mod/assign:grade', $context, $member->id)) {
+                return (int)$member->id;
+            }
+        }
+
+        return null;
+    }
 }

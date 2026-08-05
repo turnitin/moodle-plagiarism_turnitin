@@ -239,7 +239,7 @@ class turnitin_setupform extends \moodleform {
             $enablepseudooptions = ($config->plagiarism_turnitin_enablepseudo == 1) ?
                 [1 => get_string('yes')] : [0 => get_string('no')];
         } else if ($DB->count_records('plagiarism_turnitin_users') > 0) {
-            $enablepseudooptions = [ 0 => get_string('no', 'plagiarism_turnitin')];
+            $enablepseudooptions = [0 => get_string('no')];
         } else {
             $enablepseudooptions = $ynoptions;
         }

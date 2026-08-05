@@ -83,9 +83,16 @@ final class turnitin_coursework_test extends \advanced_testcase {
 
     /**
      * Test is_tutor returns false for a student.
+     *
+     * Skipped when mod_coursework is not installed since the capabilities don't exist
+     * and has_any_capability() triggers debugging() for each missing capability.
      */
     public function test_is_tutor_returns_false_for_student(): void {
         $this->resetAfterTest();
+
+        if (!class_exists(\mod_coursework\event\assessable_uploaded::class)) {
+            $this->markTestSkipped('mod_coursework is not installed.');
+        }
 
         $course  = $this->getDataGenerator()->create_course();
         $context = \context_course::instance($course->id);
@@ -100,11 +107,15 @@ final class turnitin_coursework_test extends \advanced_testcase {
     /**
      * Test user_enrolled_on_course reflects the submit capability.
      *
-     * We use a course context here because mod_coursework is not installed;
-     * the capability check still exercises the method.
+     * Skipped when mod_coursework is not installed since mod/coursework:submit
+     * doesn't exist and has_capability() triggers debugging().
      */
     public function test_user_enrolled_on_course_returns_false_when_capability_absent(): void {
         $this->resetAfterTest();
+
+        if (!class_exists(\mod_coursework\event\assessable_uploaded::class)) {
+            $this->markTestSkipped('mod_coursework is not installed.');
+        }
 
         $course  = $this->getDataGenerator()->create_course();
         $context = \context_course::instance($course->id);

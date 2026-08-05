@@ -678,7 +678,6 @@ final class turnitin_submission_test extends \advanced_testcase {
     }
 
     // Invalidate_missing tests.
-
     /**
      * Test that invalidate_missing sets the statuscode to 'error' and errorcode to 13
      * on the row matching the given externalid, so the cron will attempt reprocessing.
@@ -724,5 +723,55 @@ final class turnitin_submission_test extends \advanced_testcase {
         $row = $DB->get_record('plagiarism_turnitin_files', ['externalid' => 'tii-ext-002']);
         $this->assertEquals($user->id, $row->userid);
         $this->assertEquals('tii-ext-002', $row->externalid);
+    }
+
+    // Check_group_submission tests.
+
+    /**
+     * Test that check_group_submission returns the group id when the assignment
+     * uses team submissions and the student is in a group.
+     */
+    public function test_check_group_submission_returns_group_id_for_team_submission(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $studentrole = get_archetype_roles('student');
+        $studentrole = reset($studentrole);
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, $studentrole->id);
+
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $course->id,
+            'teamsubmission'                      => 1,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
+        $cm    = get_coursemodule_from_instance('assign', $assign->id);
+        $group = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        groups_add_member($group, $student);
+
+        $result = turnitin_submission::check_group_submission($cm, $student->id);
+
+        $this->assertEquals($group->id, $result);
+    }
+
+    /**
+     * Test that check_group_submission returns false for individual (non-team) assignments.
+     */
+    public function test_check_group_submission_returns_false_for_individual_assignment(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'teamsubmission' => 0,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assign->id);
+        $user = $this->getDataGenerator()->create_user();
+
+        $result = turnitin_submission::check_group_submission($cm, $user->id);
+
+        $this->assertFalse($result);
     }
 }

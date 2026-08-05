@@ -40,6 +40,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @package turnitin
  */
 #[CoversClass(\plagiarism_plugin_turnitin::class)]
+#[CoversClass(turnitin_submission::class)]
 final class lib_test extends \advanced_testcase {
     /**
      * Test that group submissions are correctly checked.
@@ -79,8 +80,7 @@ final class lib_test extends \advanced_testcase {
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
-        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
-        $response = $plagiarismturnitin->check_group_submission($cm, $student->id);
+        $response = turnitin_submission::check_group_submission($cm, $student->id);
 
         // Test should pass as we return the correct group ID.
         $this->assertEquals($group->id, $response);
@@ -108,8 +108,7 @@ final class lib_test extends \advanced_testcase {
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
-        $plagiarismturnitin = new \plagiarism_plugin_turnitin();
-        $response = $plagiarismturnitin->check_group_submission($cm, $student->id);
+        $response = turnitin_submission::check_group_submission($cm, $student->id);
 
         // Test should pass as we return false when checking the group ID.
         $this->assertFalse($response);

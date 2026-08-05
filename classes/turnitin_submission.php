@@ -550,4 +550,31 @@ class turnitin_submission {
             mtrace('File updated: ' . $plagiarismfile->id);
         }
     }
+
+    /**
+     * Check whether a submission is a group submission and return the group id if so.
+     *
+     * Only applicable to the assign module when teamsubmission is enabled. In all
+     * other cases (non-assign module, or assign with individual submissions) returns false.
+     *
+     * @param \stdClass $cm     Course module record.
+     * @param int       $userid Moodle user id of the submitting student.
+     * @return int|false The group id when this is a group submission, false otherwise.
+     */
+    public static function check_group_submission(\stdClass $cm, int $userid) {
+        global $CFG, $DB;
+
+        $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
+        if (!empty($moduledata->teamsubmission)) {
+            require_once($CFG->dirroot . '/mod/assign/locallib.php');
+            $context = \context_course::instance($cm->course);
+
+            $assignment = new \assign($context, $cm, null);
+            $group = $assignment->get_submission_group($userid);
+
+            return $group->id;
+        }
+
+        return false;
+    }
 }

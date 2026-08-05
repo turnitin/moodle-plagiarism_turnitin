@@ -1124,7 +1124,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
                             $itemid = $file->get_itemid();
                             $assignmentdata = ["assignment" => $cm->instance];
-                            $groupid = $this->check_group_submission($cm, $submissiondata->userid);
+                            $groupid = \plagiarism_turnitin\turnitin_submission::check_group_submission($cm, $submissiondata->userid);
                             if ($groupid) {
                                 $assignmentdata['groupid'] = $groupid;
                             } else {
@@ -1388,29 +1388,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         return $return;
-    }
-
-    /**
-     * Check if this is a group submission.
-     *
-     * @param object $cm The course module.
-     * @param int $userid The user id.
-     */
-    public function check_group_submission($cm, $userid) {
-        global $CFG, $DB;
-
-        $moduledata = $DB->get_record($cm->modname, ['id' => $cm->instance]);
-        if (!empty($moduledata->teamsubmission)) {
-            require_once($CFG->dirroot . '/mod/assign/locallib.php');
-            $context = context_course::instance($cm->course);
-
-            $assignment = new assign($context, $cm, null);
-            $group = $assignment->get_submission_group($userid);
-
-            return $group->id;
-        }
-
-        return false;
     }
 
     /**

@@ -48,6 +48,13 @@ class turnitin_class {
     public $sharedrubrics;
 
     /**
+     * Turnitin API communications object. Injected in tests to avoid real API calls.
+     *
+     * @var turnitin_comms|null
+     */
+    public $comms;
+
+    /**
      * turnitin_class constructor.
      *
      * @param int $id
@@ -70,8 +77,7 @@ class turnitin_class {
      * @return void
      */
     public function read_class_from_tii() {
-        // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $tiiclass = new TiiClass();

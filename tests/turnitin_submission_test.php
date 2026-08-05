@@ -2636,4 +2636,103 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $fs->delete_area_files(\context_system::instance()->id, 'assignsubmission_file', 'submission_files');
     }
+
+    // Tests for is_file_submittable().
+
+    /**
+     * Test is_file_submittable returns false for Moodle's directory placeholder (filename='.').
+     * Exercises line 966.
+     *
+     * Moodle's file storage rejects '.' as a filename in Moodle 5.x+, so we use a mock
+     * stored_file that returns '.' from get_filename() to reach the guard without creating
+     * a real file.
+     */
+    public function test_is_file_submittable_returns_false_for_dot_file(): void {
+        $this->resetAfterTest();
+
+        $mockfile = $this->getMockBuilder(\stored_file::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_filename'])
+            ->getMock();
+        $mockfile->method('get_filename')->willReturn('.');
+
+        $this->assertFalse(turnitin_submission::is_file_submittable($mockfile));
+    }
+
+    /**
+     * Test is_file_submittable returns true for a normal readable file.
+     * Confirms the happy path for is_file_submittable.
+     */
+    public function test_is_file_submittable_returns_true_for_valid_file(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'user',
+            'filearea'  => 'draft',
+            'itemid'    => 2,
+            'filepath'  => '/',
+            'filename'  => 'essay.txt',
+        ], 'some content');
+
+        $this->assertTrue(turnitin_submission::is_file_submittable($file));
+        $fs->delete_area_files(\context_system::instance()->id, 'user', 'draft');
+    }
+
+    // Tests for enrich_assessable_submitted() with files.
+
+    /**
+     * Test enrich_assessable_submitted populates pathnamehashes when the assign_submission
+     * has associated file records. Exercises lines 902-903.
+     */
+    public function test_enrich_assessable_submitted_collects_file_pathnamehashes(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm        = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user      = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Create a real assign_submission row.
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        // Upload a file linked to that submission with the correct component/filearea.
+        $fs      = get_file_storage();
+        $context = \context_module::instance($cm->id);
+        $file    = $fs->create_file_from_string([
+            'contextid' => $context->id,
+            'component' => 'assignsubmission_file',
+            'filearea'  => 'submission_files',
+            'itemid'    => $submissionid,
+            'filepath'  => '/',
+            'filename'  => 'essay.docx',
+            'userid'    => $user->id,
+        ], 'content');
+
+        $eventdata = [
+            'other'             => ['modulename' => 'assign', 'content' => '', 'pathnamehashes' => []],
+            'contextinstanceid' => $cm->id,
+            'userid'            => $user->id,
+            'relateduserid'     => $user->id,
+            'eventtype'         => 'assessable_submitted',
+            'objectid'          => $submissionid,
+        ];
+
+        $enriched = turnitin_submission::enrich_assessable_submitted($eventdata, $user->id);
+
+        $this->assertContains($file->get_pathnamehash(), $enriched['other']['pathnamehashes']);
+    }
 }

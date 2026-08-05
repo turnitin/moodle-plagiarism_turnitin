@@ -426,4 +426,190 @@ final class turnitin_assign_test extends \advanced_testcase {
         $data->resubmission_allowed = $resubmissionallowed;
         return $data;
     }
+
+    // Tests for uncovered methods.
+
+    /**
+     * Test get_tutor_capability returns the correct capability string for assign.
+     * Exercises line 77.
+     */
+    public function test_get_tutor_capability_returns_assign_grade(): void {
+        $this->resetAfterTest();
+        $assign = new turnitin_assign();
+        $this->assertEquals('mod/assign:grade', $assign->get_tutor_capability());
+    }
+
+    /**
+     * Test get_author returns the userid from assign_submission when the row exists.
+     * Exercises lines 90-91.
+     */
+    public function test_get_author_returns_userid_when_submission_exists(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $assign = new turnitin_assign();
+        $this->assertEquals($user->id, $assign->get_author($submissionid));
+    }
+
+    /**
+     * Test get_author returns 0 when no assign_submission row exists for the itemid.
+     * Exercises lines 92-93.
+     */
+    public function test_get_author_returns_zero_when_no_submission(): void {
+        $this->resetAfterTest();
+
+        $assign = new turnitin_assign();
+        $this->assertEquals(0, $assign->get_author(99999));
+    }
+
+    /**
+     * Test get_onlinetext returns a stdClass with itemid and onlinetext when
+     * an online text submission exists. Exercises lines 178-204.
+     */
+    public function test_get_onlinetext_returns_data_when_submission_exists(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                               => $course->id,
+            'assignsubmission_onlinetext_enabled'  => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment' => $assignmod->id,
+            'submission' => $submissionid,
+            'onlinetext' => 'Hello world',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_onlinetext($user->id, $cm);
+
+        $this->assertNotEmpty($result);
+        $this->assertEquals($submissionid, $result->itemid);
+        $this->assertEquals('Hello world', $result->onlinetext);
+    }
+
+    /**
+     * Test get_current_gradequery returns the latest assign_grades row for a user.
+     * Exercises lines 241-246.
+     */
+    public function test_get_current_gradequery_returns_latest_grade(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user      = $this->getDataGenerator()->create_user();
+
+        $DB->insert_record('assign_grades', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'attemptnumber' => 0,
+            'grade'         => 70.0,
+            'grader'        => 2,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_current_gradequery($user->id, $assignmod->id);
+
+        $this->assertNotFalse($result);
+        $this->assertEquals(70.0, (float) $result->grade);
+    }
+
+    /**
+     * Test get_current_gradequery returns false when no grade exists for the user.
+     */
+    public function test_get_current_gradequery_returns_false_when_no_grade(): void {
+        $this->resetAfterTest();
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_current_gradequery(99999, 99999);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test initialise_post_date always returns 0. Exercises line 256.
+     */
+    public function test_initialise_post_date_returns_zero(): void {
+        $this->resetAfterTest();
+        $assign = new turnitin_assign();
+        $this->assertSame(0, $assign->initialise_post_date(new \stdClass()));
+    }
+
+    /**
+     * Test set_content returns the online text when a submission exists.
+     * Exercises line 117-119.
+     */
+    public function test_set_content_returns_online_text(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $course->id,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment'   => $assignmod->id,
+            'submission'   => $submissionid,
+            'onlinetext'   => 'Test submission text',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->set_content(['userid' => $user->id], $cm);
+
+        $this->assertEquals('Test submission text', $result);
+    }
 }

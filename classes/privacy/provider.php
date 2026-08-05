@@ -274,24 +274,15 @@ class provider implements
 
         [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
-        $sql1 = "SELECT pts.id
-                   FROM {plagiarism_turnitin_files} ptf
-                   JOIN {course_modules} c
-                     ON ptf.cm = c.id
-                   JOIN {modules} m
-                     ON m.id = c.module AND m.name = :modname
-                  WHERE pts.userid $insql
-                    AND c.id = :cmid";
+        $params = array_merge(['cmid' => $context->instanceid], $inparams);
 
-        $params = [
-            'modname' => 'plagiarism_turnitin',
-            'cmid' => $context->instanceid,
-        ];
+        $attempt = $DB->get_fieldset_select(
+            'plagiarism_turnitin_files',
+            'id',
+            "cm = :cmid AND userid $insql",
+            $params
+        );
 
-        $params = array_merge($params, $inparams);
-
-        $attempt = $DB->get_fieldset_sql($sql1, $params);
-
-        $DB->delete_records_list('plagiarism_turnitin', 'id', array_values($attempt));
+        $DB->delete_records_list('plagiarism_turnitin_files', 'id', array_values($attempt));
     }
 }

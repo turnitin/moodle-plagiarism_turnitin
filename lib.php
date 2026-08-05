@@ -129,18 +129,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Add the Turnitin settings form to an add/edit activity page
-     *
-     * @param moodleform $mform The form object
-     * @param context $context The context of the form
-     * @param string $modulename The name of the module
-     * @return void
-     */
-    public function add_settings_form_to_activity_page($mform, $context, $modulename = "") {
-        \plagiarism_turnitin\turnitin_activitysettingsform::add_to_form($mform, $context, $modulename);
-    }
-
-    /**
      * Remove Turnitin class and assignment links from database
      * so that new classes and assignments will be created.
      *
@@ -2468,15 +2456,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
  * @return void
  */
 function plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform) {
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-
     $context = context_course::instance($formwrapper->get_course()->id);
+    $modulename = isset($formwrapper->get_current()->modulename) ? 'mod_' . $formwrapper->get_current()->modulename : '';
 
-    $pluginturnitin->add_settings_form_to_activity_page(
-        $mform,
-        $context,
-        isset($formwrapper->get_current()->modulename) ? 'mod_' . $formwrapper->get_current()->modulename : ''
-    );
+    \plagiarism_turnitin\turnitin_activitysettingsform::add_to_form($mform, $context, $modulename);
 }
 
 /**

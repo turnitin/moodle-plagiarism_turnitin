@@ -28,8 +28,8 @@ namespace plagiarism_turnitin;
  * Injects Turnitin plagiarism settings into a Moodle activity add/edit form.
  *
  * This class extracts the form-building logic that was previously on
- * plagiarism_plugin_turnitin::add_settings_form_to_activity_page(), placing it
- * alongside the analogous turnitin_defaultsettingsform.
+ * plagiarism_plugin_turnitin in lib.php, placing it alongside the analogous
+ * turnitin_defaultsettingsform.
  *
  * @package plagiarism_turnitin
  */

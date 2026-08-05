@@ -413,4 +413,125 @@ final class turnitin_submission_event_test extends \advanced_testcase {
         // A normal named file is submittable.
         $this->assertTrue(turnitin_submission::is_file_submittable($file));
     }
+
+    // Tests for resolve_content_identifier() content branches.
+
+    /**
+     * Test resolve_content_identifier builds a forum_post identifier from content
+     * when submissiontype is forum_post. Exercises lines 1151-1155.
+     */
+    public function test_resolve_content_identifier_forum_post_branch(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $forum  = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $forum->id);
+
+        $linkarray = [
+            'cmid'    => $cm->id,
+            'userid'  => 1,
+            'content' => 'forum post body',
+            'file'    => null,
+        ];
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_forum();
+
+        $result = turnitin_submission::resolve_content_identifier($linkarray, $cm, null, $moduleobject);
+
+        $expected = sha1('forum_post user1 cm' . $cm->id . ' forum post body');
+        $this->assertEquals($expected, $result->identifier);
+        $this->assertEquals(sha1('forum post body'), $result->oldidentifier);
+        $this->assertEquals('forum_post', $result->submissiontype);
+    }
+
+    /**
+     * Test resolve_content_identifier builds a text_content identifier for a non-assign,
+     * non-forum module using sha1(content). Exercises the else branch (line 1162).
+     */
+    public function test_resolve_content_identifier_generic_content_branch(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course   = $this->getDataGenerator()->create_course();
+        $workshop = $this->getDataGenerator()->create_module('workshop', ['course' => $course->id]);
+        $cm       = get_coursemodule_from_instance('workshop', $workshop->id);
+
+        $linkarray = [
+            'cmid'    => $cm->id,
+            'userid'  => 1,
+            'content' => 'workshop submission',
+            'file'    => null,
+        ];
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_workshop();
+
+        $result = turnitin_submission::resolve_content_identifier($linkarray, $cm, null, $moduleobject);
+
+        $this->assertEquals(sha1('workshop submission'), $result->identifier);
+        $this->assertEquals('text_content', $result->submissiontype);
+    }
+
+    // Tests for resolve_cm_from_event() quiz branch.
+
+    /**
+     * Test resolve_cm_from_event returns the quiz CM when modulename is 'quiz'.
+     * Exercises line 1601.
+     */
+    public function test_resolve_cm_from_event_returns_cm_for_quiz(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $quiz   = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('quiz', $quiz->id);
+
+        $eventdata = [
+            'other'             => ['modulename' => 'quiz', 'quizid' => $quiz->id],
+            'contextinstanceid' => $cm->id,
+        ];
+
+        $result = turnitin_submission::resolve_cm_from_event($eventdata);
+
+        $this->assertNotFalse($result);
+        $this->assertEquals($cm->id, $result->id);
+    }
+
+    // Tests for resolve_get_links_author() non-group path with itemid > 0.
+
+    /**
+     * Test resolve_get_links_author uses get_author() when itemid > 0 and there
+     * is no group submission. Exercises lines 1319-1322.
+     */
+    public function test_resolve_get_links_author_uses_get_author_for_nonzero_itemid(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Create an individual (non-group) assign_submission.
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => $user->id,
+            'groupid'       => 0,
+            'status'        => 'submitted',
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $linkarray    = ['userid' => $user->id, 'cmid' => $cm->id];
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
+
+        $result = turnitin_submission::resolve_get_links_author(
+            $linkarray, $cm, $submissionid, 'somehash', $moduleobject
+        );
+
+        $this->assertEquals($user->id, $result->author);
+        $this->assertEquals($user->id, $result->userid);
+    }
 }

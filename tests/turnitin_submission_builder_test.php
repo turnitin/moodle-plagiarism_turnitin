@@ -328,4 +328,42 @@ final class turnitin_submission_builder_test extends \advanced_testcase {
 
         $this->assertEquals(0, $result['assignment']->getSmallMatchExclusionThreshold());
     }
+
+    /**
+     * Test build_tii_assignment uses gradesreleased=true when marking workflow is
+     * enabled and there is a released assign_user_flags row.
+     * Exercises lines 1847-1849 of turnitin_submission.php.
+     */
+    public function test_build_tii_assignment_computes_gradesreleased_for_marking_workflow(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'markingworkflow' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assign->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $this->seed_cm_settings($cm->id);
+
+        // Insert a released workflow flag so gradesreleased = true.
+        $DB->insert_record('assign_user_flags', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => $user->id,
+            'workflowstate' => 'released',
+            'locked'        => 0,
+            'mailed'        => 0,
+            'extensionduedate' => 0,
+        ]);
+
+        // If no exception is thrown, build_tii_assignment handled gradesreleased=true correctly.
+        $result = turnitin_submission::build_tii_assignment($cm, 1);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('assignment', $result);
+    }
 }

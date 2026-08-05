@@ -89,7 +89,7 @@ class turnitin_submission {
 
                 // Collate data and trigger new event for the cron to process.
                 $params = [
-                    'context' => context_module::instance($this->cm->id),
+                    'context' => \context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $file->get_itemid(),
                     'userid' => $this->submissiondata->userid,
@@ -119,7 +119,7 @@ class turnitin_submission {
 
                 // Collate data and trigger new event for the cron to process.
                 $params = [
-                    'context' => context_module::instance($this->cm->id),
+                    'context' => \context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $onlinetextdata->itemid,
                     'userid' => $this->submissiondata->userid,
@@ -163,7 +163,7 @@ class turnitin_submission {
 
                 // Collate data and trigger new event for the cron to process.
                 $params = [
-                    'context' => context_module::instance($this->cm->id),
+                    'context' => \context_module::instance($this->cm->id),
                     'courseid' => $this->cm->course,
                     'objectid' => $submission->id,
                     'userid' => $this->submissiondata->userid,
@@ -1855,5 +1855,174 @@ class turnitin_submission {
         $assignment->setFeedbackReleaseDate(gmdate("Y-m-d\TH:i:s\Z", $dtpost));
 
         return ['assignment' => $assignment, 'dtdue' => $dtdue];
+    }
+
+    /**
+     * Build the content payload for a queued submission.
+     *
+     * Resolves the API method, text content, title, filename, and any errorcode
+     * for a given submission type. Extracted from plagiarism_turnitin_send_single_submission
+     * so this pure-logic block can be tested without a live Turnitin connection.
+     *
+     * @param \stdClass  $queueditem            Row from plagiarism_turnitin_files.
+     * @param \stdClass  $cm                    Course module record.
+     * @param \stdClass  $moduledata            Module DB record (assign/forum/etc).
+     * @param object     $moduleobject          Module helper (turnitin_assign etc).
+     * @param array      $settings              Per-CM plagiarism settings.
+     * @param \stdClass  $user                  Resolved turnitin_user for the submitter.
+     * @param object     $pluginturnitin         Plugin instance (for clean_old_turnitin_submissions).
+     * @param array      $turnitinacceptedfiles  Accepted file extensions.
+     * @return array{apimethod: string, textcontent: string, title: string, filename: string, errorcode: int}
+     */
+    public static function build_submission_content(
+        \stdClass $queueditem,
+        \stdClass $cm,
+        \stdClass $moduledata,
+        object $moduleobject,
+        array $settings,
+        \stdClass $user,
+        object $pluginturnitin,
+        array $turnitinacceptedfiles
+    ): array {
+        global $DB;
+
+        $apimethod   = 'createSubmission';
+        $textcontent = '';
+        $title       = '';
+        $filename    = '';
+        $errorcode   = 0;
+
+        switch ($queueditem->submissiontype) {
+            case 'file':
+                $acceptanyfiletype = !empty($settings['plagiarism_allow_non_or_submissions']);
+                $assigncontent = $moduleobject->get_submission_content(
+                    $queueditem, $cm, $moduledata, $acceptanyfiletype, $turnitinacceptedfiles
+                );
+                $apimethod   = $assigncontent['apimethod'];
+                $textcontent = $assigncontent['textcontent'];
+                $title       = $assigncontent['title'];
+                $filename    = $assigncontent['filename'];
+                $errorcode   = $assigncontent['errorcode'];
+
+                if ($errorcode !== 0) {
+                    mtrace('File submission error for identifier: ' . $queueditem->identifier);
+                }
+                break;
+
+            case 'text_content':
+                if ($cm->modname === 'assign') {
+                    $assigncontent = $moduleobject->get_submission_content($queueditem, $cm, $moduledata, false, []);
+                    $apimethod   = $assigncontent['apimethod'];
+                    $textcontent = $assigncontent['textcontent'];
+                    $title       = $assigncontent['title'];
+                    $filename    = $assigncontent['filename'];
+                    $errorcode   = $assigncontent['errorcode'];
+                } else if ($cm->modname === 'workshop') {
+                    $moodlesubmission = $DB->get_record(
+                        'workshop_submissions', ['id' => $queueditem->itemid], 'content'
+                    );
+                    $textcontent = html_to_text($moodlesubmission->content);
+                    $title    = 'onlinetext_' . $user->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
+                    $filename = $title;
+
+                    if (!is_null($queueditem->externalid)) {
+                        $apimethod = ($moduledata->resubmission_allowed) ? 'replaceSubmission' : 'createSubmission';
+                    }
+                }
+
+                if ($errorcode === 0) {
+                    if (!is_null($queueditem->externalid) && $settings['plagiarism_report_gen'] == 0) {
+                        self::delete($cm, $queueditem->externalid, $queueditem->userid);
+                    }
+
+                    if (!empty($queueditem->itemid)) {
+                        $pluginturnitin->clean_old_turnitin_submissions(
+                            $cm, $user->id, $queueditem->itemid,
+                            $queueditem->submissiontype, $queueditem->identifier
+                        );
+                    }
+                }
+                break;
+
+            case 'forum_post':
+                $forumcontent = $moduleobject->get_submission_content(
+                    $queueditem, $cm, $settings['plagiarism_report_gen']
+                );
+                $apimethod   = $forumcontent['apimethod'];
+                $textcontent = $forumcontent['textcontent'];
+                $title       = $forumcontent['title'];
+                $filename    = $forumcontent['filename'];
+                $errorcode   = $forumcontent['errorcode'];
+                if ($errorcode !== 0) {
+                    mtrace('File content not found on submission. Identifier: ' . $queueditem->identifier);
+                }
+                break;
+
+            case 'quiz_answer':
+                $quizcontent = $moduleobject->get_submission_content(
+                    $queueditem, $cm, $user->id, $settings['plagiarism_report_gen']
+                );
+                $apimethod   = $quizcontent['apimethod'];
+                $textcontent = $quizcontent['textcontent'];
+                $title       = $quizcontent['title'];
+                $filename    = $quizcontent['filename'];
+                $errorcode   = $quizcontent['errorcode'];
+                if ($errorcode !== 0) {
+                    mtrace('Quiz answer content not found on submission. Identifier: ' . $queueditem->identifier);
+                }
+                break;
+        }
+
+        return compact('apimethod', 'textcontent', 'title', 'filename', 'errorcode');
+    }
+
+    /**
+     * Build a TiiSubmission object ready to pass to the Turnitin API.
+     *
+     * Handles both the normal (author == submitter) and instructor-submitting-on-behalf
+     * (author != submitter) cases. Extracted from plagiarism_turnitin_send_single_submission
+     * so the object-construction logic can be tested without a live API.
+     *
+     * @param \stdClass  $queueditem      Row from plagiarism_turnitin_files.
+     * @param string     $apimethod       'createSubmission' or 'replaceSubmission'.
+     * @param string     $title           Submission title.
+     * @param string     $tempfile        Path to the temporary file containing content.
+     * @param \stdClass  $syncassignment  Return value of sync_tii_assignment (needs tiiassignmentid).
+     * @param object     $user            Resolved turnitin_user (needs ->tiiuserid).
+     * @param object     $coursedata      Turnitin course record (needs ->turnitin_cid).
+     * @return \TiiSubmission
+     */
+    public static function build_tii_submission_object(
+        \stdClass $queueditem,
+        string $apimethod,
+        string $title,
+        string $tempfile,
+        array $syncassignment,
+        object $user,
+        object $coursedata
+    ): \TiiSubmission {
+        $submission = new \TiiSubmission();
+        $submission->setAssignmentId($syncassignment['tiiassignmentid']);
+        if ($apimethod === 'replaceSubmission') {
+            $submission->setSubmissionId($queueditem->externalid);
+        }
+        $submission->setTitle($title);
+        $submission->setAuthorUserId($user->tiiuserid);
+        $submission->setSubmitterUserId($user->tiiuserid);
+        $submission->setRole('Learner');
+
+        // When an instructor submits on behalf of a student, promote them to submitter.
+        if ($queueditem->userid != $queueditem->submitter) {
+            $instructor = new turnitin_user($queueditem->submitter, 'Instructor');
+
+            if ($instructor->edit_tii_user() && $instructor->join_user_to_class($coursedata->turnitin_cid)) {
+                $submission->setSubmitterUserId($instructor->tiiuserid);
+                $submission->setRole('Instructor');
+            }
+        }
+
+        $submission->setSubmissionDataPath($tempfile);
+
+        return $submission;
     }
 }

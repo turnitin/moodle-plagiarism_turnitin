@@ -2989,8 +2989,7 @@ final class turnitin_submission_test extends \advanced_testcase {
 
     /**
      * Test resolve_submitter_eula_accepted returns true when user is not enrolled —
-     * the method returns true (accepted) to avoid blocking display when enrollment
-     * cannot be confirmed. Exercises line 1423.
+     * exercises line 1423.
      */
     public function test_resolve_submitter_eula_accepted_returns_true_when_not_enrolled(): void {
         $this->resetAfterTest();
@@ -3005,19 +3004,293 @@ final class turnitin_submission_test extends \advanced_testcase {
         $context      = \context_module::instance($cm->id);
         $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
 
-        // submittinguser == author (same) and istutor = true triggers the enrolled check.
         $result = turnitin_submission::resolve_submitter_eula_accepted(
-            true,          // plagiarismfile exists
-            $user->id,     // submissionuserid
-            2,             // vieweruserid (admin, different)
-            $user->id,     // submittinguser
-            $user->id,     // author (same as submitter → triggers check)
-            true,          // istutor
-            $context,
-            $moduleobject
+            true, $user->id, 2, $user->id, $user->id, true, $context, $moduleobject
         );
 
         $this->assertTrue($result);
+    }
+
+    /**
+     * Test resolve_submitter_eula_accepted returns true when the submissionuserid
+     * does not exist in the users table. Exercises line 1422.
+     */
+    public function test_resolve_submitter_eula_accepted_returns_true_when_user_not_found(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $context      = \context_module::instance($cm->id);
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
+
+        // Use a non-existent userid.
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            true, 99999, 2, 99999, 99999, true, $context, $moduleobject
+        );
+
+        $this->assertTrue($result);
+    }
+
+    // Tests for recreate_submission_event() text_content path.
+
+    /**
+     * Test recreate_submission_event re-queues a text_content submission by
+     * fetching online text and triggering an assessable_uploaded event.
+     * Exercises lines 116-136 (the text_content case).
+     */
+    public function test_recreate_submission_event_requeues_text_content(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $course->id,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Create an assign_submission row.
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment'   => $assignmod->id,
+            'submission'   => $submissionid,
+            'onlinetext'   => 'My essay text',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        // Create the turnitin_files row that recreate_submission_event reads.
+        $identifier = sha1('text_content cm' . $cm->id . ' itemid' . $submissionid . ' My essay text');
+        $fileid = $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $identifier,
+            'statuscode'     => 'error',
+            'attempt'        => 1,
+            'submissiontype' => 'text_content',
+            'itemid'         => $submissionid,
+            'submitter'      => $user->id,
+            'lastmodified'   => time(),
+            'transmatch'     => 0,
+        ]);
+
+        $submission = new turnitin_submission($fileid, []);
+        $result = $submission->recreate_submission_event();
+
+        $this->assertTrue($result);
+        $this->assertEquals('queued', $DB->get_field('plagiarism_turnitin_files', 'statuscode', ['id' => $fileid]));
+    }
+
+    // Tests for resolve_submission_id() "no previous by identifier" paths.
+
+    /**
+     * Test resolve_submission_id resets and reuses an existing different-identifier
+     * row when text_content submission type always allows reset.
+     * Exercises lines 714-717 (the text_content reset path in the else branch).
+     */
+    public function test_resolve_submission_id_resets_different_identifier_for_text_content(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $oldidentifier = sha1('old text');
+        $newidentifier = sha1('new text');
+
+        // Existing row with different identifier.
+        $existingid = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $oldidentifier,
+            'submissiontype' => 'text_content',
+            'statuscode'     => 'queued',
+            'externalid'     => 'ext-old',
+        ]);
+
+        $settings   = ['plagiarism_report_gen' => 1];
+        $moduledata = (object)['resubmission_allowed' => false];
+
+        $routing = turnitin_submission::resolve_submission_id(
+            $cm, $user->id, 'text_content', $newidentifier, $settings, $moduledata, time()
+        );
+
+        $this->assertFalse($routing['earlyreturn']);
+        $this->assertEquals($existingid, $routing['submissionid']);
+    }
+
+    /**
+     * Test resolve_submission_id creates a new row when there is no previous
+     * submission at all for this user/cm/type combination.
+     * Exercises line 724 (the final create_new in the else branch).
+     */
+    public function test_resolve_submission_id_creates_new_when_no_previous(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $countbefore = $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id, 'userid' => $user->id]);
+
+        $settings   = ['plagiarism_report_gen' => 0];
+        $moduledata = (object)['resubmission_allowed' => false];
+
+        $routing = turnitin_submission::resolve_submission_id(
+            $cm, $user->id, 'text_content', sha1('brand-new'), $settings, $moduledata, time()
+        );
+
+        $this->assertFalse($routing['earlyreturn']);
+        $this->assertGreaterThan(0, $routing['submissionid']);
+        $this->assertGreaterThan($countbefore,
+            $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id, 'userid' => $user->id]));
+    }
+
+    // Tests for update_gradebook() assign text_content stale-content check.
+
+    /**
+     * Test update_gradebook sets gbupdaterequired=false when the stored identifier
+     * no longer matches the current online text — stale submission guard.
+     * Exercises lines 1050-1063 (the text_content staleness check).
+     */
+    public function test_update_gradebook_sets_gb_not_required_for_stale_text_content(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $course->id,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment'   => $assignmod->id,
+            'submission'   => $submissionid,
+            'onlinetext'   => 'current text',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        // Store a STALE identifier (based on old text) so staleness check fires.
+        $staleidentifier = sha1('old stale text');
+        $fileid = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $staleidentifier,
+            'submissiontype' => 'text_content',
+            'statuscode'     => 'success',
+            'externalid'     => 'ext-stale',
+            'grade'          => 50,
+        ]);
+
+        $gradeupdatecalled = false;
+        $gradeupdate = function() use (&$gradeupdatecalled) {
+            $gradeupdatecalled = true;
+            return true;
+        };
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'grade' => 50]);
+
+        turnitin_submission::update_gradebook($cm, $fileid, $tiisubmission, $user->id, $gradeupdate);
+
+        // gbupdaterequired was set to false because the identifier is stale — no gradebook update.
+        $this->assertFalse($gradeupdatecalled);
+    }
+
+    /**
+     * Test update_gradebook returns early for coursework module without calling
+     * the gradeupdater. Exercises line 1070 (the `if coursework return true` guard).
+     */
+    public function test_update_gradebook_returns_early_for_coursework(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $cm     = (object)['id' => 1, 'modname' => 'coursework', 'instance' => 1, 'course' => $course->id];
+
+        $fileid = $this->insert_submission_row([
+            'cm' => 1, 'userid' => 2, 'statuscode' => 'success', 'grade' => 70, 'externalid' => 'ext-cw',
+        ]);
+
+        $gradeupdatecalled = false;
+        $gradeupdate = function() use (&$gradeupdatecalled) {
+            $gradeupdatecalled = true;
+        };
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'grade' => 70]);
+        turnitin_submission::update_gradebook($cm, $fileid, $tiisubmission, 2, $gradeupdate);
+
+        $this->assertFalse($gradeupdatecalled);
+    }
+
+    // Tests for queue_file_submissions() non-submittable file skip.
+
+    /**
+     * Test queue_file_submissions skips a pathnamehash that resolves to no file
+     * in the file store (file not found path). Exercises lines 1733-1735.
+     */
+    public function test_queue_file_submissions_skips_missing_file(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $queuedcount = 0;
+        $queuefn = function() use (&$queuedcount) {
+            $queuedcount++;
+            return true;
+        };
+
+        $eventdata = [
+            'other'             => ['modulename' => 'assign', 'pathnamehashes' => ['nonexistenthash']],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 2,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => 1,
+        ];
+
+        $result = turnitin_submission::queue_file_submissions($eventdata, $cm, 2, 2, $queuefn);
+
+        $this->assertTrue($result);
+        // Missing file was skipped — queue function not called.
+        $this->assertEquals(0, $queuedcount);
     }
 }
 

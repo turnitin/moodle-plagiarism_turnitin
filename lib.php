@@ -1935,109 +1935,15 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         );
     }
 
-    // Get more Submission Details as required.
-    $apimethod = "createSubmission";
-    switch ($queueditem->submissiontype) {
-        case 'file':
-            $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? true : false;
-            $assigncontent = $moduleobject->get_submission_content(
-                $queueditem,
-                $cm,
-                $moduledata,
-                $acceptanyfiletype,
-                $turnitinacceptedfiles
-            );
-            $apimethod   = $assigncontent['apimethod'];
-            $textcontent = $assigncontent['textcontent'];
-            $title       = $assigncontent['title'];
-            $filename    = $assigncontent['filename'];
-            $errorcode   = $assigncontent['errorcode'];
-
-            if ($errorcode !== 0) {
-                mtrace('File submission error for identifier: ' . $queueditem->identifier);
-            }
-
-            break;
-
-        case 'text_content':
-            if ($cm->modname === 'assign') {
-                $assigncontent = $moduleobject->get_submission_content(
-                    $queueditem,
-                    $cm,
-                    $moduledata,
-                    false,
-                    []
-                );
-                $apimethod   = $assigncontent['apimethod'];
-                $textcontent = $assigncontent['textcontent'];
-                $title       = $assigncontent['title'];
-                $filename    = $assigncontent['filename'];
-                $errorcode   = $assigncontent['errorcode'];
-            } else if ($cm->modname === 'workshop') {
-                // Workshop text content remains inline pending extraction into turnitin_workshop::get_submission_content().
-                $moodlesubmission = $DB->get_record(
-                    'workshop_submissions',
-                    ['id' => $queueditem->itemid],
-                    'content'
-                );
-                $textcontent = html_to_text($moodlesubmission->content);
-                $title = 'onlinetext_' . $user->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
-                $filename = $title;
-
-                if (!is_null($queueditem->externalid)) {
-                    $apimethod = ($moduledata->resubmission_allowed) ? 'replaceSubmission' : 'createSubmission';
-                }
-            }
-
-            if ($errorcode === 0) {
-                // Delete old text content submissions from Turnitin if not replacing.
-                if (!is_null($queueditem->externalid) && $settings["plagiarism_report_gen"] == 0) {
-                    \plagiarism_turnitin\turnitin_submission::delete($cm, $queueditem->externalid, $queueditem->userid);
-                }
-
-                // Remove any old text submissions from Moodle DB — only one text submission per user is kept.
-                if (!empty($queueditem->itemid)) {
-                    $pluginturnitin->clean_old_turnitin_submissions(
-                        $cm,
-                        $user->id,
-                        $queueditem->itemid,
-                        $queueditem->submissiontype,
-                        $queueditem->identifier
-                    );
-                }
-            }
-
-            break;
-
-        case 'forum_post':
-            $forumcontent = $moduleobject->get_submission_content($queueditem, $cm, $settings["plagiarism_report_gen"]);
-            $apimethod    = $forumcontent['apimethod'];
-            $textcontent  = $forumcontent['textcontent'];
-            $title        = $forumcontent['title'];
-            $filename     = $forumcontent['filename'];
-            $errorcode    = $forumcontent['errorcode'];
-            if ($errorcode !== 0) {
-                mtrace('File content not found on submission. Identifier: ' . $queueditem->identifier);
-            }
-            break;
-
-        case 'quiz_answer':
-            $quizcontent = $moduleobject->get_submission_content(
-                $queueditem,
-                $cm,
-                $user->id,
-                $settings["plagiarism_report_gen"]
-            );
-            $apimethod   = $quizcontent['apimethod'];
-            $textcontent = $quizcontent['textcontent'];
-            $title       = $quizcontent['title'];
-            $filename    = $quizcontent['filename'];
-            $errorcode   = $quizcontent['errorcode'];
-            if ($errorcode !== 0) {
-                mtrace('Quiz answer content not found on submission. Identifier: ' . $queueditem->identifier);
-            }
-            break;
-    }
+    // Build content payload for this submission type.
+    $content = \plagiarism_turnitin\turnitin_submission::build_submission_content(
+        $queueditem, $cm, $moduledata, $moduleobject, $settings, $user, $pluginturnitin, $turnitinacceptedfiles
+    );
+    $apimethod   = $content['apimethod'];
+    $textcontent = $content['textcontent'];
+    $title       = $content['title'];
+    $filename    = $content['filename'];
+    $errorcode   = $content['errorcode'];
 
     // Save failed submission and don't process any further.
     if ($errorcode != 0) {
@@ -2066,30 +1972,10 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     fwrite($fh, $textcontent);
     fclose($fh);
 
-    // Create submission object.
-    $submission = new TiiSubmission();
-    $submission->setAssignmentId($syncassignment['tiiassignmentid']);
-    if ($apimethod == "replaceSubmission") {
-        $submission->setSubmissionId($queueditem->externalid);
-    }
-    $submission->setTitle($title);
-    $submission->setAuthorUserId($user->tiiuserid);
-
-    // Account for submission by teacher in assignment module.
-    $submission->setSubmitterUserId($user->tiiuserid);
-    $submission->setRole('Learner');
-
-    if ($queueditem->userid != $queueditem->submitter) {
-        $instructor = new \plagiarism_turnitin\turnitin_user($queueditem->submitter, 'Instructor');
-
-        // These should be true but in case of an edge case where a user has been deleted in Tii.
-        if ($instructor->edit_tii_user() && $instructor->join_user_to_class($coursedata->turnitin_cid)) {
-            $submission->setSubmitterUserId($instructor->tiiuserid);
-            $submission->setRole('Instructor');
-        }
-    }
-
-    $submission->setSubmissionDataPath($tempfile);
+    // Build the TiiSubmission object and make the API call.
+    $submission = \plagiarism_turnitin\turnitin_submission::build_tii_submission_object(
+        $queueditem, $apimethod, $title, $tempfile, $syncassignment, $user, $coursedata
+    );
 
     // Initialise Comms Object.
     $turnitincomms = new \plagiarism_turnitin\turnitin_comms();

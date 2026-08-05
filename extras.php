@@ -81,7 +81,7 @@ switch ($cmd) {
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
 
-        $user = new \turnitin_user($USER->id, "Learner");
+        $user = new \plagiarism_turnitin\turnitin_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
         $output .= \plagiarism_turnitin\turnitin_view::output_launch_form(

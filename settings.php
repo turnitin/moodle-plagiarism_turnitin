@@ -153,7 +153,7 @@ switch ($do) {
         $turnitinview->draw_settings_tab_menu('turnitinsettings', $notice);
 
 
-        $tiisetupform = new \turnitin_setupform();
+        $tiisetupform = new \plagiarism_turnitin\turnitin_setupform();
 
         // Save posted form data.
         if (($data = $tiisetupform->get_data()) && confirm_sesskey()) {
@@ -172,7 +172,7 @@ switch ($do) {
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
 
 
-        $mform = new \turnitin_defaultsettingsform($CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults');
+        $mform = new \plagiarism_turnitin\turnitin_defaultsettingsform($CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults');
         $mform->set_data($plugindefaults);
         $mform->display();
         break;
@@ -263,7 +263,7 @@ switch ($do) {
                     }
 
                     // Unlink user from Turnitin.
-                    $user = new \turnitin_user(
+                    $user = new \plagiarism_turnitin\turnitin_user(
                         $muser->id,
                         $role = null,
                         $enrol = null,
@@ -275,7 +275,7 @@ switch ($do) {
                     // Relink user.
                     if (!is_null($relink)) {
                         // The user object will create user in Turnitin.
-                        $user = new \turnitin_user($muser->id);
+                        $user = new \plagiarism_turnitin\turnitin_user($muser->id);
                     }
                 } else {
                     $DB->delete_records('plagiarism_turnitin_users', ['id' => $tiiid]);
@@ -317,7 +317,7 @@ switch ($do) {
             ['relink', get_string('relinkusers', 'plagiarism_turnitin')], ];
         $customdata["multi_submit_buttons"] = $multisubmitbuttons;
 
-        $optionsform = new \turnitin_form(
+        $optionsform = new \plagiarism_turnitin\turnitin_form(
             $CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=unlinkusers',
             $customdata
         );

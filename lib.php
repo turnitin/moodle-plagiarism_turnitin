@@ -426,7 +426,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ($tiiconnection) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
 
-            $user = new \turnitin_user($USER->id, "Learner");
+            $user = new \plagiarism_turnitin\turnitin_user($USER->id, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ?
                 $user->get_accepted_user_agreement() : $user->useragreementaccepted;
@@ -467,7 +467,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $customdata = ["disable_form_change_checker" => true,
                                     "elements" => [['html', $OUTPUT->box('', '', 'useragreement_inputs')]], ];
 
-                $eulaform = new \turnitin_form(
+                $eulaform = new \plagiarism_turnitin\turnitin_form(
                     $turnitincall->getApiBaseUrl() . TiiLTI::EULAENDPOINT,
                     $customdata,
                     'POST',
@@ -769,7 +769,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $eulashown = false;
                     }
 
-                    $user = new \turnitin_user($USER->id, "Learner");
+                    $user = new \plagiarism_turnitin\turnitin_user($USER->id, "Learner");
                     $success = $user->join_user_to_class($coursedata->turnitin_cid);
 
                     // Variable $success is false if there is no Turnitin connection and null if user has previously been enrolled.
@@ -797,7 +797,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
                             $customdata = ["disable_form_change_checker" => true,
                                     "elements" => [['html', $OUTPUT->box('', '', 'useragreement_inputs')]], ];
-                            $eulaform = new \turnitin_form(
+                            $eulaform = new \plagiarism_turnitin\turnitin_form(
                                 $turnitincall->getApiBaseUrl() . TiiLTI::EULAENDPOINT,
                                 $customdata,
                                 'POST',
@@ -906,7 +906,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     if ($linkarray["userid"] != $USER->id && $submittinguser == $author && $istutor) {
                         if ($DB->get_record('user', ['id' => $linkarray["userid"]])) {
                             if ($moduleobject->user_enrolled_on_course($context, $linkarray["userid"])) {
-                                $user = new \turnitin_user($linkarray["userid"], "Learner");
+                                $user = new \plagiarism_turnitin\turnitin_user($linkarray["userid"], "Learner");
                                 $submittereulaccepted = ($user->useragreementaccepted == 1);
                             }
                         }
@@ -1445,7 +1445,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $allinstructors = array_merge($admins, $tutorids);
             foreach ($allinstructors as $instructor) {
                 // Create the admin as a user within Turnitin.
-                $user = new \turnitin_user($instructor, 'Instructor');
+                $user = new \plagiarism_turnitin\turnitin_user($instructor, 'Instructor');
                 $user->join_user_to_class($turnitincourse->turnitin_cid);
             }
         }
@@ -2036,7 +2036,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cmid,
                                                     'name' => 'turnitin_assignid', ])
         ) {
-            $tiicourseid = (new \turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
+            $tiicourseid = (new \plagiarism_turnitin\turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
         } else {
             $coursemods = get_course_mods($courseid);
             foreach ($coursemods as $coursemod) {
@@ -2045,7 +2045,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $coursemod->id,
                                                                                         'name' => 'turnitin_assignid', ])
                     ) {
-                        $tiicourseid = (new \turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
+                        $tiicourseid = (new \plagiarism_turnitin\turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
                     }
                 }
             }
@@ -2122,7 +2122,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // If the EULA hasn't been accepted, don't save submission and don't submit to Tii.
         if (!plagiarism_turnitin_is_eula_accepted($author)) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
-            $user = new \turnitin_user($author, "Learner");
+            $user = new \plagiarism_turnitin\turnitin_user($author, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
             if ($eulaaccepted != 1) {
@@ -2148,7 +2148,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         if (!\plagiarism_turnitin\turnitin_settings::has_comparison_options($settings)) {
             // All comparison sources are disabled — no point sending to Turnitin.
-            \turnitin_logger::log(
+            \plagiarism_turnitin\turnitin_logger::log(
                 'No comparison options selected for assignment with cmid: ' . $cm->id . ' not sending to Turnitin',
                 'NO_COMPARISON_OPTIONS_SELECTED'
             );
@@ -2602,7 +2602,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         $outputvars->cm = $queueditem->cm;
         $outputvars->userid = $queueditem->userid;
 
-        \turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
+        \plagiarism_turnitin\turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
         return;
     }
 
@@ -2620,7 +2620,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         $outputvars->cm = $queueditem->cm;
         $outputvars->userid = $queueditem->userid;
 
-        \turnitin_logger::log(get_string('errorcode15', 'plagiarism_turnitin', $outputvars), "PP_NO_ACTIVITY_MODULE");
+        \plagiarism_turnitin\turnitin_logger::log(get_string('errorcode15', 'plagiarism_turnitin', $outputvars), "PP_NO_ACTIVITY_MODULE");
         return;
     }
 
@@ -2678,11 +2678,11 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
     // Join User to course.
     try {
-        $user = new \turnitin_user($queueditem->userid, 'Learner', true, 'cron');
+        $user = new \plagiarism_turnitin\turnitin_user($queueditem->userid, 'Learner', true, 'cron');
         $user->edit_tii_user();
         $user->join_user_to_class($coursedata->turnitin_cid);
     } catch (Exception $e) {
-        $user = new \turnitin_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
+        $user = new \plagiarism_turnitin\turnitin_user($queueditem->userid, 'Learner', 'false', 'cron', 'false');
         $errorcode = 7;
     }
 
@@ -2874,7 +2874,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     $submission->setRole('Learner');
 
     if ($queueditem->userid != $queueditem->submitter) {
-        $instructor = new \turnitin_user($queueditem->submitter, 'Instructor');
+        $instructor = new \plagiarism_turnitin\turnitin_user($queueditem->submitter, 'Instructor');
 
         // These should be true but in case of an edge case where a user has been deleted in Tii.
         if ($instructor->edit_tii_user() && $instructor->join_user_to_class($coursedata->turnitin_cid)) {

@@ -79,7 +79,7 @@ class turnitin_submission {
         global $DB;
 
         // Create module object.
-        $moduleclass = "turnitin_" . $this->cm->modname;
+        $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $this->cm->modname;
         $moduleobject = new $moduleclass();
 
         // Some data depends on submission type.

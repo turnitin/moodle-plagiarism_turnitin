@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile -- Standalone CLI script; not a Moodle plugin file.
 /**
  * Parses a PHPUnit Clover XML coverage report and fails if total line coverage
  * is below the given threshold.
@@ -13,15 +14,15 @@ if ($argc !== 3) {
     exit(1);
 }
 
-$cloverFile = $argv[1];
+$cloverfile = $argv[1];
 $threshold  = (float) $argv[2];
 
-if (!file_exists($cloverFile)) {
-    fwrite(STDERR, "ERROR: Coverage file not found: {$cloverFile}\n");
+if (!file_exists($cloverfile)) {
+    fwrite(STDERR, "ERROR: Coverage file not found: {$cloverfile}\n");
     exit(1);
 }
 
-$xml     = simplexml_load_file($cloverFile);
+$xml     = simplexml_load_file($cloverfile);
 $metrics = $xml->project->metrics;
 $covered = (int) $metrics['coveredstatements'];
 $total   = (int) $metrics['statements'];

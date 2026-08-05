@@ -84,6 +84,14 @@ class turnitin_user {
     private $usermessages;
 
     /**
+     * Turnitin API communications object. Injected in tests to avoid real API calls;
+     * each API method falls back to constructing a fresh instance when this is null.
+     *
+     * @var turnitin_comms|null
+     */
+    public $comms;
+
+    /**
      * Constructor for the Turnitin User class
      *
      * @param int $id The id
@@ -91,18 +99,28 @@ class turnitin_user {
      * @param bool $enrol Whether to enrol the user
      * @param string $workflowcontext The workflow context
      * @param bool $finduser Whether to find the user
+     * @param turnitin_comms|null $comms Optional comms instance for testing.
      */
-    public function __construct($id, $role = "Learner", $enrol = true, $workflowcontext = "site", $finduser = true) {
+    public function __construct(
+        $id,
+        $role = "Learner",
+        $enrol = true,
+        $workflowcontext = "site",
+        $finduser = true,
+        ?turnitin_comms $comms = null
+    ) {
         $this->id = $id;
         $this->set_user_role($role);
         $this->enrol = $enrol;
         $this->workflowcontext = $workflowcontext;
+        $this->comms = $comms;
 
         $this->firstname = "";
         $this->lastname = "";
         $this->fullname = "";
         $this->email = "";
         $this->username = "";
+        $this->instructorrubrics = [];
 
         if ($id != 0) {
             $this->get_moodle_user($this->id);
@@ -253,7 +271,7 @@ class turnitin_user {
         $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
@@ -292,7 +310,7 @@ class turnitin_user {
         $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Convert the email, firstname and lastname to pseudos for students if the option is set in config
@@ -335,7 +353,7 @@ class turnitin_user {
     public function edit_tii_user() {
         $config = turnitin_settings::admin_config();
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Only update if pseudo is not enabled.
@@ -422,7 +440,7 @@ class turnitin_user {
      * @return boolean
      */
     public function join_user_to_class($tiicourseid) {
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
 
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
@@ -465,7 +483,7 @@ class turnitin_user {
     public function get_accepted_user_agreement() {
         global $DB;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new TiiUser();
@@ -502,7 +520,7 @@ class turnitin_user {
      * Set the number of user messages and any instructor rubrics from Turnitin
      */
     public function set_user_values_from_tii() {
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new TiiUser();

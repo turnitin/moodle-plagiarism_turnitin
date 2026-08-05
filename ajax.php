@@ -106,26 +106,7 @@ switch ($action) {
         if ($userrole == 'Instructor') {
             $pluginturnitin->update_rubric_from_tii($cm);
             $return["status"] = $pluginturnitin->update_grades_from_tii($cm);
-
-            $moduleconfigvalue = new stdClass();
-            $moduleconfigvalue->value = time();
-
-            // If we have a turnitin timestamp stored then update it, otherwise create it.
-            if (
-                $timestampid = $DB->get_record(
-                    'plagiarism_turnitin_config',
-                    ['cm' => $cm->id, 'name' => 'grades_last_synced'],
-                    'id'
-                )
-            ) {
-                $moduleconfigvalue->id = $timestampid->id;
-                $DB->update_record('plagiarism_turnitin_config', $moduleconfigvalue);
-            } else {
-                $moduleconfigvalue->cm = $cm->id;
-                $moduleconfigvalue->name = 'grades_last_synced';
-                $moduleconfigvalue->config_hash = $moduleconfigvalue->cm . "_" . $moduleconfigvalue->name;
-                $DB->insert_record('plagiarism_turnitin_config', $moduleconfigvalue);
-            }
+            \plagiarism_turnitin\turnitin_ajax_handler::record_grade_sync_timestamp($cm->id);
         } else {
             $return["status"] = $pluginturnitin->update_grade_from_tii($cm, $submissionid);
         }
@@ -232,45 +213,18 @@ switch ($action) {
         if (!confirm_sesskey()) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
-
         $message = optional_param('message', '', PARAM_ALPHAEXT);
-
-        // Get the id from the plagiarism_turnitin_users table so we can update.
-        $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $USER->id]);
-
-        // Build user object for update.
-        $eulauser = new stdClass();
-        $eulauser->id = $turnitinuser->id;
-        $eulauser->user_agreement_accepted = 0;
-        if ($message == 'turnitin_eula_accepted') {
-            $eulauser->user_agreement_accepted = 1;
-            $logstring = "User " . $USER->id . " (" . $turnitinuser->turnitin_uid . ") accepted the EULA.";
-            \plagiarism_turnitin\turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
-        } else if ($message == 'turnitin_eula_declined') {
-            $eulauser->user_agreement_accepted = -1;
-            $logstring = "User " . $USER->id . " (" . $turnitinuser->turnitin_uid . ") declined the EULA.";
-            \plagiarism_turnitin\turnitin_logger::log($logstring, "PP_EULA_ACCEPTANCE");
-        }
-
-        // Update the user using the above object.
-        $DB->update_record('plagiarism_turnitin_users', $eulauser, $bulk = false);
+        \plagiarism_turnitin\turnitin_ajax_handler::action_user_agreement($USER->id, $message);
         break;
 
     case "resubmit_event":
         if (!confirm_sesskey()) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
-
-        $forumdata = optional_param('forumdata', '', PARAM_ALPHANUMEXT);
-        $forumpost = optional_param('forumpost', '', PARAM_BASE64);
+        $forumdata    = optional_param('forumdata', '', PARAM_ALPHANUMEXT);
+        $forumpost    = optional_param('forumpost', '', PARAM_BASE64);
         $submissionid = required_param('submissionid', PARAM_INT);
-
-        $tiisubmission = new \plagiarism_turnitin\turnitin_submission(
-            $submissionid,
-            ['forumdata' => $forumdata, 'forumpost' => $forumpost]
-        );
-
-        if ($tiisubmission->recreate_submission_event()) {
+        if (\plagiarism_turnitin\turnitin_ajax_handler::resubmit_event($submissionid, $forumdata, $forumpost)) {
             $return = ['success' => true];
         }
         break;
@@ -279,62 +233,29 @@ switch ($action) {
         if (!confirm_sesskey()) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
-
         $submissionids = optional_param_array('submission_ids', [], PARAM_INT);
-
-        $submissionids = optional_param_array('submission_ids', [], PARAM_INT);
-        $errors = [];
-        $return['success'] = true;
-        foreach ($submissionids as $submissionid) {
-            $tiisubmission = new \plagiarism_turnitin\turnitin_submission($submissionid);
-            if (!$tiisubmission->recreate_submission_event()) {
-                $return['success'] = false;
-                $errors[] = $submissionid;
-            }
-        }
-        $return['errors'] = $errors;
+        $return        = \plagiarism_turnitin\turnitin_ajax_handler::resubmit_events($submissionids);
         break;
 
     case "test_connection":
         if (!confirm_sesskey()) {
             throw new \moodle_exception('invalidsesskey', 'error');
         }
-        $data = ["connection_status" => "fail", "msg" => get_string('connecttestcommerror', 'plagiarism_turnitin')];
-
         $PAGE->set_context(context_system::instance());
         if (is_siteadmin()) {
-            // Initialise API connection.
-
-            $accountid = required_param('accountid', PARAM_RAW);
+            $accountid     = required_param('accountid', PARAM_RAW);
             $accountshared = required_param('accountshared', PARAM_RAW);
-            $url = required_param('url', PARAM_RAW);
-
-            $turnitincomms = new \plagiarism_turnitin\turnitin_comms($accountid, $accountshared, $url);
-
-            // We only want an API log entry for this if diagnostic mode is set to Debugging.
-            if (empty($config)) {
-                $config = \plagiarism_turnitin\turnitin_settings::admin_config();
-            }
-            if (empty($config->plagiarism_turnitin_enablediagnostic)) {
-                $turnitincomms->set_diagnostic(0);
-            } else {
-                if ($config->plagiarism_turnitin_enablediagnostic != 2) {
-                    $turnitincomms->set_diagnostic(0);
-                }
-            }
-
-            $tiiapi = $turnitincomms->initialise_api(true);
-
-            $class = new TiiClass();
-            $class->setTitle('Test finding a class to see if connection works');
-
-            try {
-                $response = $tiiapi->findClasses($class);
-                $data["connection_status"] = 200;
-                $data["msg"] = get_string('connecttestsuccess', 'plagiarism_turnitin');
-            } catch (Exception $e) {
-                $turnitincomms->handle_exceptions($e, 'connecttesterror', false);
-            }
+            $url           = required_param('url', PARAM_RAW);
+            $data          = \plagiarism_turnitin\turnitin_ajax_handler::test_connection(
+                $accountid,
+                $accountshared,
+                $url
+            );
+        } else {
+            $data = [
+                'connection_status' => 'fail',
+                'msg' => get_string('connecttestcommerror', 'plagiarism_turnitin'),
+            ];
         }
         echo json_encode($data);
         break;

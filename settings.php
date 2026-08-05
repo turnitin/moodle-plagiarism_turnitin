@@ -58,55 +58,24 @@ $plugindefaults = \plagiarism_turnitin\turnitin_settings::for_cm();
 if (!empty($action)) {
     switch ($action) {
         case "defaults":
-            $fields = \plagiarism_turnitin\turnitin_settings::fields();
-
+            $fields        = \plagiarism_turnitin\turnitin_settings::fields();
             $settingsfields = [];
             foreach ($fields as $field) {
-                array_push($settingsfields, $field);
-                array_push($settingsfields, $field . '_lock');
+                $settingsfields[] = $field;
+                $settingsfields[] = $field . '_lock';
             }
-            array_push($settingsfields, 'plagiarism_locked_message');
+            $settingsfields[] = 'plagiarism_locked_message';
 
+            $formvalues = [];
             foreach ($settingsfields as $field) {
-                $defaultfield = new stdClass();
-                $defaultfield->cm = null;
-                $defaultfield->name = $field;
                 if ($field == 'plagiarism_locked_message') {
-                    $defaultfield->value = optional_param($field, '', PARAM_TEXT);
+                    $formvalues[$field] = optional_param($field, '', PARAM_TEXT);
                 } else {
-                    $defaultfield->value = optional_param($field, '', PARAM_ALPHANUMEXT);
-                }
-
-                if (isset($plugindefaults[$field])) {
-                    $defaultfield->id = $DB->get_field(
-                        'plagiarism_turnitin_config',
-                        'id',
-                        (['cm' => null, 'name' => $field])
-                    );
-                    if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
-                        plagiarism_turnitin_print_error(
-                            'defaultupdateerror',
-                            'plagiarism_turnitin',
-                            null,
-                            null,
-                            __FILE__,
-                            __LINE__
-                        );
-                    }
-                } else {
-                    $defaultfield->config_hash = $defaultfield->cm . "_" . $defaultfield->name;
-                    if (!$DB->insert_record('plagiarism_turnitin_config', $defaultfield)) {
-                        plagiarism_turnitin_print_error(
-                            'defaultinserterror',
-                            'plagiarism_turnitin',
-                            null,
-                            null,
-                            __FILE__,
-                            __LINE__
-                        );
-                    }
+                    $formvalues[$field] = optional_param($field, '', PARAM_ALPHANUMEXT);
                 }
             }
+
+            \plagiarism_turnitin\turnitin_settings_actions::save_defaults($plugindefaults, $formvalues);
 
             $_SESSION['notice']['message'] = get_string('defaultupdated', 'plagiarism_turnitin');
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'defaults']));
@@ -115,7 +84,7 @@ if (!empty($action)) {
 
         case "deletefile":
             $id = optional_param('id', 0, PARAM_INT);
-            $DB->update_record('plagiarism_turnitin_files', ['id' => $id, 'statuscode' => "deleted"]);
+            \plagiarism_turnitin\turnitin_settings_actions::delete_file($id);
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'errors']));
             exit;
             break;
@@ -210,33 +179,20 @@ switch ($do) {
             );
             $inactive = [$do];
             $selected = $do;
-            $output .= "";
-            // Get tabs output.
             ob_start();
             print_tabs([$tabs], $selected, $inactive);
             $output .= ob_get_contents();
             ob_end_clean();
 
-            if (file_exists($logsdir) && $readdir = opendir($logsdir)) {
-                $i = 0;
-                while (false !== ($entry = readdir($readdir))) {
-                    if (substr_count($entry, $do) > 0) {
-                        $i++;
-                        $split = preg_split("/_/", $entry);
-                        $date = array_pop($split);
-                        $date = str_replace('.txt', '', $date);
-                        $output .= $OUTPUT->box(html_writer::link(
-                            $CFG->wwwroot . '/plagiarism/turnitin/settings.php?' .
-                            'do=' . $do . '&filedate=' . $date,
-                            ucfirst($do) . ' (' .
-                            userdate(strtotime($date), '%d/%m/%Y') . ')'
-                        ), '');
-                    }
-                }
-                if ($i == 0) {
-                    $output .= get_string("nologsfound");
-                }
-            } else {
+            $dates = \plagiarism_turnitin\turnitin_settings_actions::list_log_dates($do, $logsdir);
+            foreach ($dates as $date) {
+                $output .= $OUTPUT->box(html_writer::link(
+                    $CFG->wwwroot . '/plagiarism/turnitin/settings.php?' .
+                    'do=' . $do . '&filedate=' . $date,
+                    ucfirst($do) . ' (' . userdate(strtotime($date), '%d/%m/%Y') . ')'
+                ), '');
+            }
+            if (empty($dates)) {
                 $output .= get_string("nologsfound");
             }
 
@@ -250,38 +206,8 @@ switch ($do) {
         $userids = (isset($_REQUEST['userids'])) ? $_REQUEST["userids"] : [];
         $userids = clean_param_array($userids, PARAM_INT);
 
-        // Relink users if form has been submitted.
         if ((!is_null($relink) || !is_null($unlink)) && isset($userids) && count($userids) > 0) {
-            foreach ($userids as $tiiid) {
-                $tuser = $DB->get_record('plagiarism_turnitin_users', ['id' => $tiiid]);
-
-                if ($muser = $DB->get_record('user', ['id' => $tuser->userid])) {
-                    // Get the email address if the user has been deleted.
-                    if (empty($muser->email) || strpos($muser->email, '@') === false) {
-                        $split = explode('.', $muser->username);
-                        array_pop($split);
-                        $muser->email = join('.', $split);
-                    }
-
-                    // Unlink user from Turnitin.
-                    $user = new \plagiarism_turnitin\turnitin_user(
-                        $muser->id,
-                        $role = null,
-                        $enrol = null,
-                        $workflowcontext = null,
-                        $finduser = false
-                    );
-                    $user->unlink_user($tiiid);
-
-                    // Relink user.
-                    if (!is_null($relink)) {
-                        // The user object will create user in Turnitin.
-                        $user = new \plagiarism_turnitin\turnitin_user($muser->id);
-                    }
-                } else {
-                    $DB->delete_records('plagiarism_turnitin_users', ['id' => $tiiid]);
-                }
-            }
+            \plagiarism_turnitin\turnitin_settings_actions::process_user_links($userids, !is_null($relink));
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'unlinkusers']));
             exit;
         }

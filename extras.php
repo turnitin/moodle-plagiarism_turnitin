@@ -53,50 +53,17 @@ switch ($cmd) {
     case "rubricmanager":
         $PAGE->set_pagelayout('embedded');
         $courseid = optional_param('courseid', 0, PARAM_INT);
-        $tiicourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $courseid]);
-        $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
-
-        echo html_writer::tag(
-            "div",
-            $turnitinview->output_lti_form_launch('rubric_manager', 'Instructor', 0, $tiicourseid),
-            ["class" => "launch_form"]
-        );
-        echo html_writer::script("<!--
-                                    window.document.forms[0].submit();
-                                    //-->");
+        echo \plagiarism_turnitin\turnitin_extras_handler::render_rubric_manager($courseid);
         break;
 
     case "quickmarkmanager":
         $PAGE->set_pagelayout('embedded');
-
-        echo html_writer::tag(
-            "div",
-            $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
-            ["class" => "launch_form"]
-        );
-        echo html_writer::script("<!--
-                                    window.document.forms[0].submit();
-                                    //-->");
+        echo \plagiarism_turnitin\turnitin_extras_handler::render_quickmark_manager();
         break;
+
     case "useragreement":
         $PAGE->set_pagelayout('embedded');
-
-        $user = new \plagiarism_turnitin\turnitin_user($USER->id, "Learner");
-
-        $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= \plagiarism_turnitin\turnitin_view::output_launch_form(
-            "useragreement",
-            0,
-            $user->tiiuserid,
-            "Learner",
-            ''
-        );
-        $output .= $OUTPUT->box_end(true);
-        echo $output;
-
-        echo html_writer::script("<!--
-                                    window.document.forms[0].submit();
-                                    //-->");
+        echo \plagiarism_turnitin\turnitin_extras_handler::render_user_agreement($USER->id);
         exit;
         break;
 }

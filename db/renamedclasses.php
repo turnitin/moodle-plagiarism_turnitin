@@ -36,6 +36,7 @@ $renamedclasses = [
     'turnitin_coursework'             => 'plagiarism_turnitin\\modules\\turnitin_coursework',
     'turnitin_defaultsettingsform'    => 'plagiarism_turnitin\\turnitin_defaultsettingsform',
     'turnitin_disclosure'             => 'plagiarism_turnitin\\turnitin_disclosure',
+    'turnitin_eula_form'          => 'plagiarism_turnitin\\turnitin_eula_form',
     'turnitin_form'                   => 'plagiarism_turnitin\\turnitin_form',
     'turnitin_forum'                  => 'plagiarism_turnitin\\modules\\turnitin_forum',
     'turnitin_logger'                 => 'plagiarism_turnitin\\turnitin_logger',

@@ -246,94 +246,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return string HTML for the EULA form, or empty string if not needed
      */
     public function render_eula_form($cm) {
-        global $OUTPUT, $PAGE, $USER;
-
-        $output = '';
-
-        static $tiiconnection;
-
-        // Show EULA if necessary and we have a connection to Turnitin.
-        if (empty($tiiconnection)) {
-            $tiiconnection = $this->test_turnitin_connection();
-        }
-        if ($tiiconnection) {
-            $coursedata = $this->get_course_data($cm->id, $cm->course);
-
-            $user = new \plagiarism_turnitin\turnitin_user($USER->id, "Learner");
-            $user->join_user_to_class($coursedata->turnitin_cid);
-            $eulaaccepted = ($user->useragreementaccepted == 0) ?
-                $user->get_accepted_user_agreement() : $user->useragreementaccepted;
-
-            if (empty($eulaaccepted)) {
-                $eulalink = html_writer::tag(
-                    'span',
-                    get_string('turnitinppulapre', 'plagiarism_turnitin'),
-                    ['class' => 'pp_turnitin_eula_link tii_tooltip', 'id' => 'rubric_manager_form']
-                );
-                $eulaignoredclass = ($eulaaccepted == 0) ? ' pp_turnitin_eula_ignored' : '';
-                $eula = html_writer::tag('div', $eulalink, ['class' => 'pp_turnitin_eula' . $eulaignoredclass,
-                                            'data-userid' => $user->id, ]);
-
-                $form = \plagiarism_turnitin\turnitin_view::output_launch_form(
-                    "useragreement",
-                    0,
-                    $user->tiiuserid,
-                    "Learner",
-                    get_string('turnitinppulapre', 'plagiarism_turnitin'),
-                    false
-                );
-
-                if ($cm->modname !== 'forum') {
-                    $form .= " " . get_string('noscriptula', 'plagiarism_turnitin');
-                }
-
-                $noscripteula = html_writer::tag('noscript', $form, ['class' => 'warning turnitin_ula_noscript']);
-            }
-
-            // Show EULA launcher and form placeholder.
-            if (!empty($eula)) {
-                $output .= $eula . $noscripteula;
-
-                $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
-                $turnitincall = $turnitincomms->initialise_api();
-
-                $customdata = ["disable_form_change_checker" => true,
-                                    "elements" => [['html', $OUTPUT->box('', '', 'useragreement_inputs')]], ];
-
-                $eulaform = new \plagiarism_turnitin\turnitin_form(
-                    $turnitincall->getApiBaseUrl() . TiiLTI::EULAENDPOINT,
-                    $customdata,
-                    'POST',
-                    $target = 'eulaWindow',
-                    ['id' => 'eula_launch']
-                );
-                $output .= $OUTPUT->box($eulaform->display(), 'tii_useragreement_form', 'useragreement_form');
-            }
-        }
-
-        $config = \plagiarism_turnitin\turnitin_settings::admin_config();
-        if ($config->plagiarism_turnitin_usegrademark && !empty($plagiarismsettings["plagiarism_rubric"])) {
-            // Update assignment in case rubric is not stored in Turnitin yet.
-            $this->sync_tii_assignment($cm, $coursedata->turnitin_cid);
-
-            $rubricviewlink = html_writer::tag(
-                'span',
-                get_string('launchrubricview', 'plagiarism_turnitin'),
-                ['class' => 'rubric_view rubric_view_pp_launch_upload tii_tooltip',
-                    'data-courseid' => $cm->course,
-                    'data-cmid' => $cm->id,
-                    'title' => get_string(
-                        'launchrubricview',
-                        'plagiarism_turnitin'
-                    ), 'id' => 'rubric_manager_form',
-                ]
-            );
-            $rubricviewlink = html_writer::tag('div', $rubricviewlink, ['class' => 'row_rubric_view']);
-
-            $output .= html_writer::tag('div', $rubricviewlink, ['class' => 'tii_links_container tii_disclosure_links']);
-        }
-
-        return $output;
+        return \plagiarism_turnitin\turnitin_eula_form::render($cm, $this);
     }
 
     /**
@@ -780,7 +693,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
 
             if ($cm->modname == 'forum') {
-                $output .= $this->render_eula_form($cm);
+                $output .= \plagiarism_turnitin\turnitin_eula_form::render($cm, $this);
             }
 
             $output = html_writer::tag('div', $output, ['class' => 'tii_links_container']);

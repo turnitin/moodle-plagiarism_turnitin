@@ -44,8 +44,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  */
 #[CoversClass(turnitin_view::class)]
 class turnitin_view_test extends \advanced_testcase {
-
-    // output_header tests.
+    // Tests for output_header().
 
     /**
      * Test output_header sets PAGE properties and returns the header string when $return=true.
@@ -74,7 +73,7 @@ class turnitin_view_test extends \advanced_testcase {
         $this->assertNull($result);
     }
 
-    // draw_settings_tab_menu tests.
+    // Tests for draw_settings_tab_menu().
 
     /**
      * Test draw_settings_tab_menu renders tab markup without a notice.
@@ -98,7 +97,7 @@ class turnitin_view_test extends \advanced_testcase {
         $view->draw_settings_tab_menu('turnitinsettings', ['message' => 'Settings saved', 'type' => 'success']);
     }
 
-    // lock tests.
+    // Tests for lock().
 
     /**
      * Test lock adds an advcheckbox element when on the defaults page.
@@ -176,7 +175,7 @@ class turnitin_view_test extends \advanced_testcase {
         $this->assertTrue($mform->elementExists('use_turnitin_why'));
     }
 
-    // add_elements_to_settings_form tests (defaults location only — the
+    // Tests for add_elements_to_settings_form() (defaults location only — the
     // activity location triggers Turnitin API calls via turnitin_user).
 
     /**
@@ -547,7 +546,7 @@ class turnitin_view_test extends \advanced_testcase {
             $cm->id
         );
 
-        // usegrademark=0 → hidden rubric element.
+        // With usegrademark=0 the rubric element should be hidden.
         $el = $mform->getElement('plagiarism_rubric');
         $this->assertEquals('hidden', $el->getType());
     }
@@ -584,7 +583,7 @@ class turnitin_view_test extends \advanced_testcase {
             $cm->id
         );
 
-        // usegrademark=1 → rubric selectgroups.
+        // With usegrademark=1 the rubric element should be a selectgroups.
         $el = $mform->getElement('plagiarism_rubric');
         $this->assertEquals('selectgroups', $el->getType());
     }
@@ -628,7 +627,7 @@ class turnitin_view_test extends \advanced_testcase {
         $this->assertEquals('selectgroups', $el->getType());
     }
 
-    // show_file_errors_table tests.
+    // Tests for show_file_errors_table().
 
     /**
      * Inserts a user, course, module, and plagiarism_turnitin_files error record,
@@ -828,7 +827,7 @@ class turnitin_view_test extends \advanced_testcase {
     public function test_show_file_errors_table_null_errorcode_file_type_falls_back_to_zero(): void {
         $this->resetAfterTest();
 
-        // identifier is an arbitrary hash that won't exist in the Moodle file store.
+        // Identifier is an arbitrary hash that won't exist in the Moodle file store.
         $this->insert_error_file('file', null, null);
 
         $view   = new turnitin_view();

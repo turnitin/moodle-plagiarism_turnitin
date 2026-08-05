@@ -16,6 +16,11 @@
 
 namespace plagiarism_turnitin;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
+
+use Integrations\PhpSdk\TiiAssignment;
 use Integrations\PhpSdk\TiiClass;
 
 /**
@@ -404,7 +409,7 @@ class turnitin_assignment {
         $turnitincall = $this->turnitincomms->initialise_api();
 
         try {
-            $assignment = new \TiiAssignment();
+            $assignment = new TiiAssignment();
             $assignment->setAssignmentId($assignmentid);
 
             $response = $turnitincall->readAssignment($assignment);

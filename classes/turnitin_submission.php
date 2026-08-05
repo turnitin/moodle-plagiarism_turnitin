@@ -24,6 +24,12 @@
 
 namespace plagiarism_turnitin;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
+
+use Integrations\PhpSdk\TiiSubmission;
+
 /**
  * Class turnitin_submission
  *
@@ -494,7 +500,7 @@ class turnitin_submission {
         $turnitincomms = $comms ?? new turnitin_comms();
         $turnitincall  = $turnitincomms->initialise_api();
 
-        $submission = new \TiiSubmission();
+        $submission = new TiiSubmission();
         $submission->setSubmissionId($submissionid);
 
         try {

@@ -218,4 +218,223 @@ final class lib_test extends \advanced_testcase {
             $this->assertObjectNotHasAttribute("plagiarism_turnitin_test", $config);
         }
     }
+
+    // Get_file_upload_errors tests.
+
+    /**
+     * Test that get_file_upload_errors returns only rows with statuscode 'error',
+     * excluding queued, pending and success records.
+     */
+    public function test_get_file_upload_errors_returns_only_error_rows(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        foreach (['error', 'success', 'queued'] as $status) {
+            $DB->insert_record('plagiarism_turnitin_files', (object)[
+                'cm' => $assign->cmid, 'userid' => $user->id, 'identifier' => $status,
+                'statuscode' => $status, 'attempt' => 0, 'submissiontype' => 'file',
+                'itemid' => 0, 'submitter' => $user->id, 'lastmodified' => time(), 'transmatch' => 0,
+            ]);
+        }
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $results = $plugin->get_file_upload_errors();
+
+        $this->assertCount(1, $results);
+        $row = reset($results);
+        $this->assertEquals($user->firstname, $row->firstname);
+        $this->assertEquals($course->fullname, $row->coursename);
+    }
+
+    /**
+     * Test that get_file_upload_errors returns a count when $count is true.
+     */
+    public function test_get_file_upload_errors_returns_count_when_requested(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        for ($i = 0; $i < 3; $i++) {
+            $DB->insert_record('plagiarism_turnitin_files', (object)[
+                'cm' => $assign->cmid, 'userid' => $user->id, 'identifier' => "hash$i",
+                'statuscode' => 'error', 'attempt' => 0, 'submissiontype' => 'file',
+                'itemid' => 0, 'submitter' => $user->id, 'lastmodified' => time(), 'transmatch' => 0,
+            ]);
+        }
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $this->assertEquals(3, $plugin->get_file_upload_errors(0, 0, true));
+    }
+
+    /**
+     * Test that get_file_upload_errors respects the $limit parameter.
+     */
+    public function test_get_file_upload_errors_respects_limit(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        for ($i = 0; $i < 5; $i++) {
+            $DB->insert_record('plagiarism_turnitin_files', (object)[
+                'cm' => $assign->cmid, 'userid' => $user->id, 'identifier' => "hash$i",
+                'statuscode' => 'error', 'attempt' => 0, 'submissiontype' => 'file',
+                'itemid' => 0, 'submitter' => $user->id, 'lastmodified' => time(), 'transmatch' => 0,
+            ]);
+        }
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $this->assertCount(2, $plugin->get_file_upload_errors(0, 2));
+    }
+
+    // Update_status tests.
+
+    /**
+     * Test that update_status returns a div with the expected id and CSS class.
+     */
+    public function test_update_status_returns_expected_html(): void {
+        $this->resetAfterTest();
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $output = $plugin->update_status(new \stdClass(), new \stdClass());
+
+        $this->assertStringContainsString('turnitin_score_refresh_alert', $output);
+        $this->assertStringContainsString('id="turnitin_score_refresh_alert"', $output);
+    }
+
+    // Set_duedate_report_refresh tests.
+
+    /**
+     * Test that set_duedate_report_refresh updates the duedate_report_refresh field
+     * on the specified row without affecting other rows.
+     */
+    public function test_set_duedate_report_refresh_updates_correct_row(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $id1 = $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm' => 1, 'userid' => 1, 'identifier' => 'hash1', 'statuscode' => 'queued',
+            'attempt' => 0, 'submissiontype' => 'file', 'itemid' => 0,
+            'submitter' => 1, 'lastmodified' => time(), 'transmatch' => 0,
+        ]);
+        $id2 = $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm' => 1, 'userid' => 1, 'identifier' => 'hash2', 'statuscode' => 'queued',
+            'attempt' => 0, 'submissiontype' => 'file', 'itemid' => 0,
+            'submitter' => 1, 'lastmodified' => time(), 'transmatch' => 0,
+        ]);
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $plugin->set_duedate_report_refresh($id1, 1);
+
+        $this->assertEquals(1, $DB->get_field('plagiarism_turnitin_files', 'duedate_report_refresh', ['id' => $id1]));
+        // Second row should be unaffected.
+        $this->assertNotEquals(1, $DB->get_field('plagiarism_turnitin_files', 'duedate_report_refresh', ['id' => $id2]));
+    }
+
+    // Course_reset tests.
+
+    /**
+     * Test that course_reset deletes plagiarism_turnitin_files records for assign
+     * submissions when reset_assign_submissions is set.
+     */
+    public function test_course_reset_deletes_files_when_assign_reset(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        // course_reset only processes CMs that have a turnitin_assignid config row.
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $assign->cmid, 'name' => 'turnitin_assignid',
+            'value' => 99, 'config_hash' => $assign->cmid . '_turnitin_assignid',
+        ]);
+        $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm' => $assign->cmid, 'userid' => $user->id, 'identifier' => 'hash1',
+            'statuscode' => 'success', 'attempt' => 1, 'submissiontype' => 'file',
+            'itemid' => 1, 'submitter' => $user->id, 'lastmodified' => time(), 'transmatch' => 0,
+        ]);
+
+        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
+
+        $eventdata = $this->make_course_reset_event($course->id, ['reset_assign_submissions' => 1]);
+        \plagiarism_plugin_turnitin::course_reset($eventdata);
+
+        $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
+    }
+
+    /**
+     * Test that course_reset does not delete plagiarism_turnitin_files records
+     * when reset_assign_submissions is not set.
+     */
+    public function test_course_reset_preserves_files_when_no_reset_flags_set(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $assign->cmid, 'name' => 'turnitin_assignid',
+            'value' => 99, 'config_hash' => $assign->cmid . '_turnitin_assignid',
+        ]);
+        $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm' => $assign->cmid, 'userid' => $user->id, 'identifier' => 'hash1',
+            'statuscode' => 'success', 'attempt' => 1, 'submissiontype' => 'file',
+            'itemid' => 1, 'submitter' => $user->id, 'lastmodified' => time(), 'transmatch' => 0,
+        ]);
+
+        $eventdata = $this->make_course_reset_event($course->id, []);
+        \plagiarism_plugin_turnitin::course_reset($eventdata);
+
+        $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
+    }
+
+    /**
+     * Build a minimal event data stub for course_reset tests.
+     *
+     * @param int   $courseid
+     * @param array $resetoptions
+     * @return object
+     */
+    private function make_course_reset_event(int $courseid, array $resetoptions): object {
+        return new class ($courseid, $resetoptions) {
+            /** @var int */
+            private $courseid;
+            /** @var array */
+            private $options;
+
+            /**
+             * Constructor.
+             * @param int   $courseid
+             * @param array $options
+             */
+            public function __construct(int $courseid, array $options) {
+                $this->courseid = $courseid;
+                $this->options  = $options;
+            }
+
+            /**
+             * Get event data array.
+             * @return array
+             */
+            public function get_data(): array {
+                return ['other' => ['reset_options' => array_merge(
+                    ['courseid' => $this->courseid],
+                    $this->options
+                )]];
+            }
+        };
+    }
 }

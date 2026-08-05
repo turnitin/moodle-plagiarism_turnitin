@@ -279,27 +279,76 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $coursedata = \plagiarism_turnitin\turnitin_course::get_course_data($cm->id, $cm->course, 'site', $this);
         }
 
-        $isnonsubmitterforgroupassign = false;
-
-        // Create module object.
-        $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
-        $moduleobject = new $moduleclass();
-
-        // Work out if logged in user is a tutor on this activity module.
         static $istutor;
         if (empty($istutor)) {
             $ctxmodule = context_module::instance($cm->id);
+            $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
+            $moduleobject = new $moduleclass();
             $istutor = $moduleobject->is_tutor($ctxmodule);
         }
+
+        static $contentdisplayed;
+
+        return $this->get_links_body(
+            $linkarray,
+            $cm,
+            $config,
+            $plagiarismsettings,
+            $moduledata,
+            $context,
+            $coursedata,
+            $istutor,
+            $contentdisplayed
+        );
+    }
+
+    /**
+     * Render the Turnitin links block for a single submission row.
+     *
+     * Separated from get_links() so the display logic can be tested without
+     * needing the static-variable initialisation and API-dependent course setup.
+     * get_links() resolves all the statics and then delegates here.
+     *
+     * @param array      $linkarray        The Moodle link-array for this row.
+     * @param object     $cm               Course module record.
+     * @param object     $config           Admin-level plugin config.
+     * @param array      $plagiarismsettings Per-CM plagiarism settings.
+     * @param object     $moduledata       Module record (assign/forum/etc).
+     * @param object     $context          Course context.
+     * @param object     $coursedata       Turnitin course record (needs ->turnitin_cid).
+     * @param bool       $istutor          Whether the current user is a tutor.
+     * @param bool|null  &$contentdisplayed Tracks whether a text-content link has already
+     *                                      been shown this page-load (passed by reference so
+     *                                      the static in get_links() is also updated).
+     * @return string HTML fragment.
+     */
+    public function get_links_body(
+        array $linkarray,
+        object $cm,
+        object $config,
+        array $plagiarismsettings,
+        object $moduledata,
+        object $context,
+        object $coursedata,
+        bool $istutor,
+        ?bool &$contentdisplayed
+    ): string {
+        global $CFG, $DB, $OUTPUT, $USER;
+
+        $output = "";
+
+        $isnonsubmitterforgroupassign = false;
+
+        // Create module object.
+        $moduleclass  = "plagiarism_turnitin\\modules\\turnitin_" . $cm->modname;
+        $moduleobject = new $moduleclass();
 
         // Define the timestamp for updating Peermark Assignments.
         if (empty($_SESSION["updated_pm"][$cm->id]) && $config->plagiarism_turnitin_enablepeermark) {
             $_SESSION["updated_pm"][$cm->id] = (time() - (60 * 5));
         }
 
-        // If a text submission has been made, we can only display links for current attempts so don't show links previous attempts.
-        // This will need to be reworked when linkarray contains submission id.
-        static $contentdisplayed;
+        // If a text submission has been made, only show links for the current attempt.
         if ($cm->modname == 'assign' && !empty($linkarray["content"]) && $contentdisplayed == true) {
             return $output;
         }

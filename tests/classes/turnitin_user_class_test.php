@@ -451,12 +451,16 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         global $DB;
         $this->resetAfterTest();
 
-        $user = $this->getDataGenerator()->create_user(['lastname' => 'UniqueLastName']);
+        // Use a random suffix so the lastname cannot collide with any system user
+        // or record left by a previous test, regardless of Moodle version.
+        $uniquelastname = 'TiiTestLast' . random_string(12);
+
+        $user = $this->getDataGenerator()->create_user(['lastname' => $uniquelastname]);
         $DB->insert_record('plagiarism_turnitin_users', (object)[
             'userid' => $user->id, 'turnitin_uid' => 43,
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
         ]);
-        $other = $this->getDataGenerator()->create_user(['lastname' => 'OtherUser']);
+        $other = $this->getDataGenerator()->create_user(['lastname' => 'OtherUser' . random_string(8)]);
         $DB->insert_record('plagiarism_turnitin_users', (object)[
             'userid' => $other->id, 'turnitin_uid' => 44,
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
@@ -466,7 +470,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
-            'search'   => ['value' => 'UniqueLastName'],
+            'search'   => ['value' => $uniquelastname],
             'order'    => [],
             'columns'  => [
                 ['searchable' => '0'],

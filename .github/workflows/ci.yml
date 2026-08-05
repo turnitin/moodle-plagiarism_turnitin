@@ -128,7 +128,7 @@ jobs:
         run: exit 1
 
   coverage:
-    name: Coverage gate (PHP 8.3 / Moodle 5.2)
+    name: Coverage gate (PHP 8.4 / Moodle 5.2)
     runs-on: ubuntu-22.04
 
     services:
@@ -151,7 +151,7 @@ jobs:
         with:
           path: plugin
 
-      - name: Setup PHP 8.3 with PCOV
+      - name: Setup PHP 8.4 with PCOV
         run: |
           sudo apt-get install -y ca-certificates apt-transport-https software-properties-common
           sudo curl -sSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
@@ -160,12 +160,12 @@ jobs:
           sudo apt-get update -q
 
           sudo apt-get install -y \
-            php8.3 php8.3-cli php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring \
-            php8.3-pgsql php8.3-soap php8.3-xml php8.3-xmlrpc php8.3-zip \
-            php8.3-pcov
+            php8.4 php8.4-cli php8.4-curl php8.4-gd php8.4-intl php8.4-mbstring \
+            php8.4-pgsql php8.4-soap php8.4-xml php8.4-xmlrpc php8.4-zip \
+            php8.4-pcov
 
-          sudo update-alternatives --set php /usr/bin/php8.3
-          echo "max_input_vars=5000" | sudo tee /etc/php/8.3/cli/conf.d/99-moodle.ini
+          sudo update-alternatives --set php /usr/bin/php8.4
+          echo "max_input_vars=5000" | sudo tee /etc/php/8.4/cli/conf.d/99-moodle.ini
           php --version
 
       - name: Initialise moodle-plugin-ci

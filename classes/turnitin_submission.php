@@ -906,4 +906,73 @@ class turnitin_submission {
 
         return $eventdata;
     }
+
+    /**
+     * Determine the Turnitin submission type for a text-based submission.
+     *
+     * Forum posts are a distinct type because they are stored and retrieved
+     * differently from generic text content submissions.
+     *
+     * @param string $modname Moodle module name (e.g. 'forum', 'assign', 'workshop').
+     * @return string 'forum_post' for forum modules, 'text_content' for all others.
+     */
+    public static function get_submission_type(string $modname): string {
+        return $modname === 'forum' ? 'forum_post' : 'text_content';
+    }
+
+    /**
+     * Retrieve the canonical text content for a submission from the database.
+     *
+     * Event data content is not always reliable — for workshop and forum
+     * submissions, URLs may have been rewritten (e.g. @@PLUGINFILE@@) between
+     * the event being fired and this handler running, causing hash mismatches.
+     * This method fetches the authoritative content directly from the DB.
+     *
+     * Returns $content unchanged for module types that don't need a DB lookup.
+     *
+     * @param \stdClass $cm       Course module record.
+     * @param int       $objectid The submission/post id.
+     * @param string    $content  The content from the event data (fallback for unrecognised modules).
+     * @return string The canonical content string.
+     */
+    public static function get_normalised_content(\stdClass $cm, int $objectid, string $content): string {
+        global $DB;
+
+        switch ($cm->modname) {
+            case 'workshop':
+                $record = $DB->get_record('workshop_submissions', ['id' => $objectid]);
+                return $record ? $record->content : $content;
+            case 'forum':
+                $record = $DB->get_record('forum_posts', ['id' => $objectid]);
+                return $record ? $record->message : $content;
+            default:
+                return $content;
+        }
+    }
+
+    /**
+     * Check whether a stored file can be submitted to Turnitin.
+     *
+     * Returns false for Moodle's directory placeholder files (filename = '.')
+     * which represent empty directories rather than real content, and for files
+     * whose content cannot be read (e.g. the file record exists but the data
+     * file is missing from the file store).
+     *
+     * @param \stored_file $file The file to check.
+     * @return bool True when the file is a real, readable file.
+     */
+    public static function is_file_submittable(\stored_file $file): bool {
+        if ($file->get_filename() === '.') {
+            return false;
+        }
+
+        try {
+            $fh = $file->get_content_file_handle();
+            fclose($fh);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
 }

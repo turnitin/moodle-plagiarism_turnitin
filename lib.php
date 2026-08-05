@@ -2382,18 +2382,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             in_array($eventdata['eventtype'], ["content_uploaded", "assessable_submitted"])
                 && !empty($eventdata['other']['content'])
         ) {
-            $submissiontype = ($cm->modname == 'forum') ? 'forum_post' : 'text_content';
+            $submissiontype = \plagiarism_turnitin\turnitin_submission::get_submission_type($cm->modname);
 
-            // The content inside the event data will not always correspond to the content we will look up later, e.g.
-            // because URLs have been converted to use @@PLUGINFILE@@ etc. Therefore to calculate the same hash, we need to
-            // do a lookup to get the file content
-            if ($cm->modname == 'workshop') {
-                $moodlesubmission = $DB->get_record('workshop_submissions', ['id' => $eventdata['objectid']]);
-                $eventdata['other']['content'] = $moodlesubmission->content;
-            } else if ($cm->modname == 'forum') {
-                $moodlesubmission = $DB->get_record('forum_posts', ['id' => $eventdata['objectid']]);
-                $eventdata['other']['content'] = $moodlesubmission->message;
-            }
+            // Fetch canonical content from DB — event data may contain stale/rewritten URLs.
+            $eventdata['other']['content'] = \plagiarism_turnitin\turnitin_submission::get_normalised_content(
+                $cm, $eventdata['objectid'], $eventdata['other']['content']
+            );
 
             $identifier = \plagiarism_turnitin\turnitin_submission::calculate_content_identifier(
                 $cm,
@@ -2422,22 +2416,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $file = $fs->get_file_by_hash($pathnamehash);
 
                 if (!$file) {
-                    \turnitin_logger::log('File not found: ' . $pathnamehash, 'PP_NO_FILE');
+                    \plagiarism_turnitin\turnitin_logger::log('File not found: ' . $pathnamehash, 'PP_NO_FILE');
                     $result = true;
                     continue;
-                } else if ($file->get_filename() === '.') {
-                    continue;
-                } else {
-                    try {
-                        $fh = $file->get_content_file_handle();
-                        fclose($fh);
-                    } catch (Exception $e) {
-                        \turnitin_logger::log('File content not found: ' . $pathnamehash, 'PP_NO_FILE');
-                        mtrace($e);
-                        mtrace('File content not found. pathnamehash: ' . $pathnamehash);
-                        $result = true;
-                        continue;
+                }
+
+                if (!\plagiarism_turnitin\turnitin_submission::is_file_submittable($file)) {
+                    if ($file->get_filename() !== '.') {
+                        \plagiarism_turnitin\turnitin_logger::log(
+                            'File content not found: ' . $pathnamehash, 'PP_NO_FILE'
+                        );
                     }
+                    $result = true;
+                    continue;
                 }
 
                 $result = $result && $this->queue_submission_to_turnitin(

@@ -60,6 +60,15 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     }
 
     /**
+     * Restore $_SERVER['REQUEST_URI'] after tests that modify it, so the next test
+     * gets a clean environment regardless of Moodle version.
+     */
+    public function tearDown(): void {
+        unset($_SERVER['REQUEST_URI']);
+        parent::tearDown();
+    }
+
+    /**
      * Test that we can get a Moodle use.
      *
      * @return void

@@ -102,7 +102,7 @@ switch ($cmd) {
 }
 
 // Build page.
-echo $turnitinview->output_header($_SERVER["REQUEST_URI"]);
+echo $turnitinview->output_header(qualified_me());
 
 echo html_writer::tag("div", $viewcontext, ["id" => "tii_view_context"]);
 

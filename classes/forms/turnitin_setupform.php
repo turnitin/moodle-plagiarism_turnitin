@@ -57,7 +57,7 @@ class turnitin_setupform extends \moodleform {
         $mform->addElement('html', get_string('tiiexplain', 'plagiarism_turnitin') . '</br></br>');
 
         // Loop through all modules that support Plagiarism.
-        $mods = array_keys(core_component::get_plugin_list('mod'));
+        $mods = array_keys(\core_component::get_plugin_list('mod'));
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $mform->addElement(
@@ -358,7 +358,7 @@ class turnitin_setupform extends \moodleform {
         global $CFG;
 
         // Save whether the plugin is enabled for individual modules.
-        $mods = array_keys(core_component::get_plugin_list('mod'));
+        $mods = array_keys(\core_component::get_plugin_list('mod'));
         $pluginenabled = 0;
         foreach ($mods as $mod) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {

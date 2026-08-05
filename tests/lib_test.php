@@ -367,7 +367,7 @@ final class lib_test extends \advanced_testcase {
         $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
 
         $eventdata = $this->make_course_reset_event($course->id, ['reset_assign_submissions' => 1]);
-        \plagiarism_plugin_turnitin::course_reset($eventdata);
+        \plagiarism_turnitin\turnitin_course::course_reset($eventdata);
 
         $this->assertEquals(0, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
     }
@@ -395,7 +395,7 @@ final class lib_test extends \advanced_testcase {
         ]);
 
         $eventdata = $this->make_course_reset_event($course->id, []);
-        \plagiarism_plugin_turnitin::course_reset($eventdata);
+        \plagiarism_turnitin\turnitin_course::course_reset($eventdata);
 
         $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $assign->cmid]));
     }

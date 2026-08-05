@@ -95,7 +95,7 @@ class turnitin_disclosure {
 
         // Add rubric viewer link when grademark and a rubric are both active.
         if (!empty($config->plagiarism_turnitin_usegrademark) && !empty($plagiarismsettings['plagiarism_rubric'])) {
-            $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course);
+            $coursedata = turnitin_course::get_course_data($cm->id, $cm->course, 'site', $pluginturnitin);
             $pluginturnitin->sync_tii_assignment($cm, $coursedata->turnitin_cid);
 
             $PAGE->requires->js_call_amd('plagiarism_turnitin/new_rubric', 'newRubric');

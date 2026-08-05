@@ -68,6 +68,8 @@ final class turnitin_disclosure_test extends \advanced_testcase {
      * load_page_components() is a no-op in tests (it just registers AMD).
      * render_eula_form() returns the given string (default '').
      * plagiarism_get_report_gen_speed_params() returns a minimal stdClass.
+     * create_tii_course() returns a minimal coursedata object (no API call).
+     * sync_tii_assignment() is a no-op.
      *
      * @param string $eulahtml HTML to return from render_eula_form().
      * @return \plagiarism_plugin_turnitin
@@ -75,7 +77,7 @@ final class turnitin_disclosure_test extends \advanced_testcase {
     private function make_mock_plugin(string $eulahtml = ''): \plagiarism_plugin_turnitin {
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
             ->onlyMethods(['load_page_components', 'render_eula_form',
-                'plagiarism_get_report_gen_speed_params', 'get_course_data', 'sync_tii_assignment'])
+                'plagiarism_get_report_gen_speed_params', 'create_tii_course', 'sync_tii_assignment'])
             ->getMock();
 
         $mock->method('load_page_components')->willReturn(null);
@@ -86,9 +88,9 @@ final class turnitin_disclosure_test extends \advanced_testcase {
         $genparams->num_hours = 24;
         $mock->method('plagiarism_get_report_gen_speed_params')->willReturn($genparams);
 
-        $coursedata = new \stdClass();
-        $coursedata->turnitin_cid = 0;
-        $mock->method('get_course_data')->willReturn($coursedata);
+        // When no turnitin_cid is stored, get_course_data falls through to create_tii_course.
+        $mockcoursedata = (object)['turnitin_cid' => 0, 'turnitin_ctl' => ''];
+        $mock->method('create_tii_course')->willReturn($mockcoursedata);
         $mock->method('sync_tii_assignment')->willReturn(null);
 
         return $mock;

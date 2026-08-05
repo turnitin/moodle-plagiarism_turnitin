@@ -65,7 +65,7 @@ class turnitin_eula_form {
      *
      * @param \stdClass $cm     Course module record (needs ->id, ->course, ->modname).
      * @param \plagiarism_plugin_turnitin $plugin Plugin instance; injected in tests to
-     *     avoid real API calls in test_turnitin_connection() and get_course_data().
+     *     avoid real API calls in test_turnitin_connection() and create_tii_course().
      * @return string HTML for the EULA widget, or '' when not needed.
      */
     public static function render(\stdClass $cm, \plagiarism_plugin_turnitin $plugin): string {
@@ -82,7 +82,7 @@ class turnitin_eula_form {
             return '';
         }
 
-        $coursedata = $plugin->get_course_data($cm->id, $cm->course);
+        $coursedata = turnitin_course::get_course_data($cm->id, $cm->course, 'site', $plugin);
 
         $user = new turnitin_user($USER->id, 'Learner');
         $user->join_user_to_class($coursedata->turnitin_cid);

@@ -143,7 +143,12 @@ switch ($action) {
     case "peermarkmanager":
         if ($userrole == 'Instructor') {
             $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-            $coursedata = $plagiarismpluginturnitin->get_course_data($cm->id, $cm->course);
+            $coursedata = \plagiarism_turnitin\turnitin_course::get_course_data(
+                $cm->id,
+                $cm->course,
+                'site',
+                $plagiarismpluginturnitin
+            );
 
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
 

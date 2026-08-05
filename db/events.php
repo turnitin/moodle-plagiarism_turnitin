@@ -72,8 +72,7 @@ $observers = [
     ],
     [
         'eventname' => '\core\event\course_reset_ended',
-        'callback'  => 'plagiarism_plugin_turnitin::course_reset',
-        'includefile' => 'plagiarism/turnitin/lib.php',
+        'callback'  => '\plagiarism_turnitin\turnitin_course::course_reset',
         'internal'  => true,
     ],
 ];

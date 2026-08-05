@@ -129,17 +129,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Remove Turnitin class and assignment links from database
-     * so that new classes and assignments will be created.
-     *
-     * @param object $eventdata
-     * @return boolean
-     */
-    public static function course_reset($eventdata) {
-        return \plagiarism_turnitin\turnitin_course::course_reset($eventdata);
-    }
-
-    /**
      * Test whether we can connect to Turnitin.
      *
      * Initially only being used if a student is logged in before checking whether they have accepted the EULA.
@@ -208,17 +197,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if (!static::$amdcomponentsloaded) {
             static::$amdcomponentsloaded = true;
         }
-    }
-
-    /**
-     * Get Moodle and Turnitin Course data
-     *
-     * @param int $cmid The course module id
-     * @param int $courseid The course id
-     * @param string $workflowcontext The context of the workflow
-     */
-    public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        return \plagiarism_turnitin\turnitin_course::get_course_data((int)$cmid, (int)$courseid, $workflowcontext, $this);
     }
 
     /**
@@ -309,7 +287,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         static $coursedata;
         if (empty($coursedata)) {
-            $coursedata = $this->get_course_data($cm->id, $cm->course);
+            $coursedata = \plagiarism_turnitin\turnitin_course::get_course_data($cm->id, $cm->course, 'site', $this);
         }
 
         $isnonsubmitterforgroupassign = false;
@@ -1680,17 +1658,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Previous incarnations of this plugin did not store the turnitin course id so we have to get this using the assignment id.
-     * If that wasn't linked with turnitin then we have to check all the modules on this course.
-     *
-     * @param int $cmid The course module id.
-     * @param int $courseid The course id.
-     */
-    public function get_previous_course_id($cmid, $courseid) {
-        return \plagiarism_turnitin\turnitin_course::get_previous_course_id((int)$cmid, (int)$courseid);
-    }
-
-    /**
      * Migrate course from previous version of plugin to this
      *
      * @param object $coursedata The course data.
@@ -1757,7 +1724,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // If the EULA hasn't been accepted, don't save submission and don't submit to Tii.
         if (!plagiarism_turnitin_is_eula_accepted($author)) {
-            $coursedata = $this->get_course_data($cm->id, $cm->course);
+            $coursedata = \plagiarism_turnitin\turnitin_course::get_course_data($cm->id, $cm->course, 'site', $this);
             $user = new \plagiarism_turnitin\turnitin_user($author, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
             $eulaaccepted = ($user->useragreementaccepted == 0) ? $user->get_accepted_user_agreement() : $user->useragreementaccepted;
@@ -2285,7 +2252,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // Get course data.
-    $coursedata = $pluginturnitin->get_course_data($cm->id, $cm->course, 'cron');
+    $coursedata = \plagiarism_turnitin\turnitin_course::get_course_data($cm->id, $cm->course, 'cron', $pluginturnitin);
     // Save failed submission if class can not be created.
     if (empty($coursedata->turnitin_cid)) {
         \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 10);

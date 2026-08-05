@@ -60,20 +60,21 @@ final class turnitin_eula_form_test extends \advanced_testcase {
 
     /**
      * Build a mock of plagiarism_plugin_turnitin with test_turnitin_connection()
-     * returning the given value and get_course_data() returning a minimal coursedata object.
+     * returning the given value and create_tii_course() returning a minimal coursedata object.
      *
      * @param bool $connected Value to return from test_turnitin_connection().
      */
     private function make_mock_plugin(bool $connected): \plagiarism_plugin_turnitin {
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['test_turnitin_connection', 'get_course_data'])
+            ->onlyMethods(['test_turnitin_connection', 'create_tii_course'])
             ->getMock();
 
         $mock->method('test_turnitin_connection')->willReturn($connected);
 
         $coursedata = new \stdClass();
-        $coursedata->turnitin_cid = 0;
-        $mock->method('get_course_data')->willReturn($coursedata);
+        $coursedata->turnitin_cid = null;
+        $coursedata->turnitin_ctl = '';
+        $mock->method('create_tii_course')->willReturn($coursedata);
 
         return $mock;
     }
@@ -127,7 +128,7 @@ final class turnitin_eula_form_test extends \advanced_testcase {
         $this->register_fake_tii_user((int)$USER->id, 1);
 
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['test_turnitin_connection', 'get_course_data'])
+            ->onlyMethods(['test_turnitin_connection', 'create_tii_course'])
             ->getMock();
 
         // Verify test_turnitin_connection() is only called once across multiple render() calls.
@@ -136,7 +137,7 @@ final class turnitin_eula_form_test extends \advanced_testcase {
             ->willReturn(false);
 
         $coursedata = (object)['turnitin_cid' => 0];
-        $mock->method('get_course_data')->willReturn($coursedata);
+        $mock->method('create_tii_course')->willReturn($coursedata);
 
         $cm = $this->make_cm();
         turnitin_eula_form::render($cm, $mock);
@@ -239,10 +240,10 @@ final class turnitin_eula_form_test extends \advanced_testcase {
         $this->register_fake_tii_user((int)$USER->id, 1);
 
         $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
-            ->onlyMethods(['test_turnitin_connection', 'get_course_data'])
+            ->onlyMethods(['test_turnitin_connection', 'create_tii_course'])
             ->getMock();
         $mock->method('test_turnitin_connection')->willReturn(true);
-        $mock->method('get_course_data')->willReturn((object)['turnitin_cid' => 0]);
+        $mock->method('create_tii_course')->willReturn((object)['turnitin_cid' => null, 'turnitin_ctl' => '']);
 
         $cm     = $this->make_cm();
         $result = $mock->render_eula_form($cm);

@@ -40,8 +40,12 @@ class hook_callbacks {
      * This function fires on every page, but only does anything if the user is on the quiz page.
      *
      * @param before_footer_html_generation $hook
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
-    public static function before_footer_html_generation(before_footer_html_generation $hook): void {
+    public static function before_footer_html_generation(
+        before_footer_html_generation $hook,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ): void {
         global $CFG, $PAGE;
 
         // Check whether the user is on the quiz page. If not, we don't need to do anything.
@@ -51,7 +55,7 @@ class hook_callbacks {
 
         // Include lib.php so we can access the Turnitin plagiarism plugin class.
         require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
-        $pluginturnitin = new \plagiarism_plugin_turnitin();
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
 
         $moduletiienabled = turnitin_settings::module_enabled('mod_' . $PAGE->cm->modname);
         // Exit if Turnitin is not being used for this activity type.

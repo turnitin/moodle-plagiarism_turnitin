@@ -1105,8 +1105,10 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Test event_handler sets submissiondrafts = 0 for non-assign modules,
-     * then proceeds without draft-skipping — exercises the modname != 'assign' branch.
+     * Test event_handler sets submissiondrafts = 0 for non-assign modules so the
+     * draft-skip guard always passes — exercises the `modname != 'assign'` branch.
+     * The result is true because queue_text_content/queue_file_submissions both
+     * return true when there is no content or files in the event.
      */
     public function test_event_handler_sets_submissiondrafts_zero_for_forum(): void {
         global $DB;
@@ -1326,8 +1328,12 @@ final class lib_test extends \advanced_testcase {
 
     /**
      * Test update_grade uses grade from the submission object when the identifier
-     * does not match a real Moodle file (no file hash hit) — the else branch
-     * calls current() on the DB records and falls through to $submission->getGrade().
+     * does not match a real Moodle file. When no file hash is found, the else-branch
+     * calls current() on the DB records (returning a single object, not an array),
+     * so the averaging path is bypassed and grade = $submission->getGrade().
+     *
+     * Note: this pins an implementation detail of the else-branch — it is by design
+     * that the averaging only applies when a real Moodle file can be resolved.
      */
     public function test_update_grade_uses_submission_grade_when_no_file_hash_match(): void {
         global $DB, $CFG;
@@ -1365,8 +1371,13 @@ final class lib_test extends \advanced_testcase {
 
     /**
      * Test update_grade nulls the rawgrade passed to the gradebook when
-     * marking workflow is enabled and the grade has not yet been released,
-     * but still writes the grade to assign_grades.
+     * marking workflow is enabled and the grade has not yet been released.
+     *
+     * The grade IS written to assign_grades (the module-level record), but
+     * assign_grade_item_update is called with rawgrade=null so the grade is
+     * not surfaced to students. We verify the assign_grades write happened;
+     * the gradebook suppression itself flows through Moodle's grade_update()
+     * internals which are outside the scope of this unit test.
      */
     public function test_update_grade_suppresses_gradebook_when_workflow_unreleased(): void {
         global $DB, $CFG;

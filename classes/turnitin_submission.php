@@ -1586,4 +1586,174 @@ class turnitin_submission {
 
         return $filestring;
     }
+
+    /**
+     * Resolve the course module for an event_handler call.
+     *
+     * Quiz events carry the quiz id in 'other', all other modules use contextinstanceid.
+     *
+     * @param array $eventdata The eventdata array from the observer/event.
+     * @return \stdClass|false The cm record, or false when not found.
+     */
+    public static function resolve_cm_from_event(array $eventdata) {
+        $modname = $eventdata['other']['modulename'];
+        if ($modname === 'quiz') {
+            return get_coursemodule_from_instance($modname, $eventdata['other']['quizid']);
+        }
+        return get_coursemodule_from_id($modname, $eventdata['contextinstanceid']);
+    }
+
+    /**
+     * Ensure the plagiarism_draft_submit setting has a default value for assign modules.
+     *
+     * Modifies the passed array in-place, returning it for convenience.
+     *
+     * @param array  $plagiarismsettings Settings array from turnitin_settings::for_cm().
+     * @param string $modname            Module name (e.g. 'assign').
+     * @return array The (possibly modified) settings array.
+     */
+    public static function ensure_draft_submit_default(array $plagiarismsettings, string $modname): array {
+        if ($modname === 'assign' && !isset($plagiarismsettings['plagiarism_draft_submit'])) {
+            $plagiarismsettings['plagiarism_draft_submit'] = 0;
+        }
+        return $plagiarismsettings;
+    }
+
+    /**
+     * Resolve the real author when an instructor submits on behalf of a group student.
+     *
+     * When relateduserid is absent and the submitter has the editothersubmission capability,
+     * the submission may belong to a group. In that case the first non-grader group member
+     * is returned as the author.
+     *
+     * Returns $currentauthor unchanged when the conditions are not met.
+     *
+     * @param array     $eventdata     The eventdata array.
+     * @param \stdClass $cm            Course module record.
+     * @param \context  $context       Module context (for capability check).
+     * @param int       $submitter     The userid of the person who triggered the event.
+     * @param int|null  $currentauthor The author resolved so far.
+     * @return int|null Resolved author userid, or null when unresolvable.
+     */
+    public static function resolve_instructor_group_author(
+        array $eventdata,
+        \stdClass $cm,
+        \context $context,
+        int $submitter,
+        ?int $currentauthor
+    ): ?int {
+        global $DB;
+
+        if (
+            !empty($eventdata['relateduserid'])
+            || $cm->modname !== 'assign'
+            || !has_capability('mod/assign:editothersubmission', $context, $submitter)
+        ) {
+            return $currentauthor;
+        }
+
+        $moodlesubmission = $DB->get_record('assign_submission', ['id' => $eventdata['objectid']], 'id, groupid');
+        if (!empty($moodlesubmission->groupid)) {
+            $groupauthor = self::get_first_group_author($cm->course, $moodlesubmission->groupid);
+            if ($groupauthor !== null) {
+                return $groupauthor;
+            }
+        }
+
+        return $currentauthor;
+    }
+
+    /**
+     * Queue text content (text_content or forum_post) for submission to Turnitin.
+     *
+     * Only acts when the event type is 'content_uploaded' or 'assessable_submitted'
+     * and there is content in the event data.
+     *
+     * @param array     $eventdata     The eventdata array (needs other.content, objectid, eventtype).
+     * @param \stdClass $cm            Course module record.
+     * @param int       $author        Resolved author userid.
+     * @param int       $submitter     Submitter userid.
+     * @param callable  $queuefn       Callable matching queue_submission_to_turnitin's signature.
+     *                                 Signature: function($cm, $author, $submitter, $identifier,
+     *                                            $submissiontype, $objectid, $eventtype): bool
+     * @return bool True when the item was queued or there was nothing to queue.
+     */
+    public static function queue_text_content(
+        array $eventdata,
+        \stdClass $cm,
+        int $author,
+        int $submitter,
+        callable $queuefn
+    ): bool {
+        if (
+            !in_array($eventdata['eventtype'], ['content_uploaded', 'assessable_submitted'])
+            || empty($eventdata['other']['content'])
+        ) {
+            return true;
+        }
+
+        $submissiontype = self::get_submission_type($cm->modname);
+
+        $content = self::get_normalised_content($cm, $eventdata['objectid'], $eventdata['other']['content']);
+
+        $identifier = self::calculate_content_identifier($cm, $author, $content, $eventdata['objectid']);
+
+        return $queuefn($cm, $author, $submitter, $identifier, $submissiontype, $eventdata['objectid'], $eventdata['eventtype']);
+    }
+
+    /**
+     * Queue file submissions for sending to Turnitin.
+     *
+     * Iterates the pathnamehashes in eventdata, skipping files that do not exist
+     * or are not submittable. Returns false if any queue call returns false.
+     *
+     * @param array     $eventdata The eventdata array (needs other.pathnamehashes, objectid, eventtype).
+     * @param \stdClass $cm        Course module record.
+     * @param int       $author    Resolved author userid.
+     * @param int       $submitter Submitter userid.
+     * @param callable  $queuefn  Callable matching queue_submission_to_turnitin's signature.
+     * @return bool True when all items were queued (or there were none), false on any failure.
+     */
+    public static function queue_file_submissions(
+        array $eventdata,
+        \stdClass $cm,
+        int $author,
+        int $submitter,
+        callable $queuefn
+    ): bool {
+        if (empty($eventdata['other']['pathnamehashes'])) {
+            return true;
+        }
+
+        $result = true;
+        $fs     = get_file_storage();
+
+        foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
+            $file = $fs->get_file_by_hash($pathnamehash);
+
+            if (!$file) {
+                turnitin_logger::log('File not found: ' . $pathnamehash, 'PP_NO_FILE');
+                continue;
+            }
+
+            if (!self::is_file_submittable($file)) {
+                if ($file->get_filename() !== '.') {
+                    turnitin_logger::log('File content not found: ' . $pathnamehash, 'PP_NO_FILE');
+                }
+                continue;
+            }
+
+            $result = $result && $queuefn(
+                $cm,
+                $author,
+                $submitter,
+                $pathnamehash,
+                'file',
+                $eventdata['objectid'],
+                $eventdata['eventtype']
+            );
+        }
+
+        return $result;
+    }
 }

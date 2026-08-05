@@ -2494,4 +2494,427 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertEquals(7, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
     }
+
+    // Tests for resolve_cm_from_event().
+
+    /**
+     * Test returns the cm for a normal module using contextinstanceid.
+     */
+    public function test_resolve_cm_from_event_returns_cm_for_normal_module(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $eventdata = [
+            'other'               => ['modulename' => 'assign'],
+            'contextinstanceid'   => $cm->id,
+        ];
+
+        $result = turnitin_submission::resolve_cm_from_event($eventdata);
+
+        $this->assertNotFalse($result);
+        $this->assertEquals($cm->id, $result->id);
+    }
+
+    /**
+     * Test returns false when the cm does not exist.
+     */
+    public function test_resolve_cm_from_event_returns_false_when_cm_missing(): void {
+        $this->resetAfterTest();
+
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => 99999,
+        ];
+
+        $result = turnitin_submission::resolve_cm_from_event($eventdata);
+
+        $this->assertFalse($result);
+    }
+
+    // Tests for ensure_draft_submit_default().
+
+    /**
+     * Test adds default 0 for assign when key is absent.
+     */
+    public function test_ensure_draft_submit_default_adds_zero_for_assign(): void {
+        $settings = ['use_turnitin' => '1'];
+        $result   = turnitin_submission::ensure_draft_submit_default($settings, 'assign');
+
+        $this->assertEquals(0, $result['plagiarism_draft_submit']);
+    }
+
+    /**
+     * Test does not overwrite an existing value for assign.
+     */
+    public function test_ensure_draft_submit_default_preserves_existing_value(): void {
+        $settings = ['plagiarism_draft_submit' => '1'];
+        $result   = turnitin_submission::ensure_draft_submit_default($settings, 'assign');
+
+        $this->assertEquals('1', $result['plagiarism_draft_submit']);
+    }
+
+    /**
+     * Test does nothing for non-assign modules.
+     */
+    public function test_ensure_draft_submit_default_ignores_non_assign(): void {
+        $settings = ['use_turnitin' => '1'];
+        $result   = turnitin_submission::ensure_draft_submit_default($settings, 'forum');
+
+        $this->assertArrayNotHasKey('plagiarism_draft_submit', $result);
+    }
+
+    // Tests for resolve_instructor_group_author().
+
+    /**
+     * Test returns currentauthor unchanged when relateduserid is set (not an instructor override).
+     */
+    public function test_resolve_instructor_group_author_returns_current_when_relateduserid_set(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $cm      = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => $course->id];
+        $context = \context_course::instance($course->id);
+
+        $eventdata = ['relateduserid' => 5, 'objectid' => 1, 'userid' => 1];
+        $result    = turnitin_submission::resolve_instructor_group_author($eventdata, $cm, $context, 1, 5);
+
+        $this->assertEquals(5, $result);
+    }
+
+    /**
+     * Test returns currentauthor unchanged for non-assign modules.
+     */
+    public function test_resolve_instructor_group_author_returns_current_for_non_assign(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $cm      = (object)['id' => 1, 'modname' => 'forum', 'instance' => 1, 'course' => $course->id];
+        $context = \context_course::instance($course->id);
+
+        $eventdata = ['relateduserid' => null, 'objectid' => 1, 'userid' => 1];
+        $result    = turnitin_submission::resolve_instructor_group_author($eventdata, $cm, $context, 1, 42);
+
+        $this->assertEquals(42, $result);
+    }
+
+    /**
+     * Test returns currentauthor unchanged when submitter lacks editothersubmission capability.
+     */
+    public function test_resolve_instructor_group_author_returns_current_when_no_capability(): void {
+        $this->resetAfterTest();
+
+        $course   = $this->getDataGenerator()->create_course();
+        $assign   = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm       = get_coursemodule_from_instance('assign', $assign->id);
+        $context  = \context_module::instance($cm->id);
+        $student  = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->setUser($student);
+
+        $eventdata = ['relateduserid' => null, 'objectid' => 1, 'userid' => $student->id];
+        $cmobj     = (object)['id' => $cm->id, 'modname' => 'assign', 'instance' => $assign->id, 'course' => $course->id];
+        $result    = turnitin_submission::resolve_instructor_group_author(
+            $eventdata,
+            $cmobj,
+            $context,
+            (int)$student->id,
+            (int)$student->id
+        );
+
+        $this->assertEquals((int)$student->id, $result);
+    }
+
+    // Tests for queue_text_content().
+
+    /**
+     * Test returns true without calling queuefn when event type is not content/submitted.
+     */
+    public function test_queue_text_content_returns_true_for_non_content_event(): void {
+        $this->resetAfterTest();
+
+        $cm        = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => 1];
+        $called    = false;
+        $queuefn   = function () use (&$called) {
+            $called = true;
+            return true;
+        };
+
+        $eventdata = [
+            'eventtype'  => 'submission_removed',
+            'other'      => ['content' => 'some content', 'modulename' => 'assign'],
+            'objectid'   => 1,
+        ];
+
+        $result = turnitin_submission::queue_text_content($eventdata, $cm, 1, 1, $queuefn);
+
+        $this->assertTrue($result);
+        $this->assertFalse($called);
+    }
+
+    /**
+     * Test returns true without calling queuefn when content is empty.
+     */
+    public function test_queue_text_content_returns_true_when_no_content(): void {
+        $this->resetAfterTest();
+
+        $cm      = (object)['id' => 1, 'modname' => 'forum', 'instance' => 1, 'course' => 1];
+        $called  = false;
+        $queuefn = function () use (&$called) {
+            $called = true;
+            return true;
+        };
+
+        $eventdata = [
+            'eventtype' => 'content_uploaded',
+            'other'     => ['content' => '', 'modulename' => 'forum'],
+            'objectid'  => 1,
+        ];
+
+        $result = turnitin_submission::queue_text_content($eventdata, $cm, 1, 1, $queuefn);
+
+        $this->assertTrue($result);
+        $this->assertFalse($called);
+    }
+
+    /**
+     * Test calls queuefn with the correct submissiontype for a forum post.
+     */
+    public function test_queue_text_content_calls_queuefn_with_forum_post_type(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $forum  = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $forum->id);
+        $cmobj  = (object)['id' => $cm->id, 'modname' => 'forum', 'instance' => $forum->id, 'course' => $course->id];
+
+        $capturedtype = null;
+        $queuefn = function ($cm, $author, $submitter, $identifier, $submissiontype, $objectid, $eventtype)
+ use (&$capturedtype) {
+            $capturedtype = $submissiontype;
+            return true;
+        };
+
+        $eventdata = [
+            'eventtype' => 'assessable_submitted',
+            'other'     => ['content' => 'Hello forum world', 'modulename' => 'forum'],
+            'objectid'  => 1,
+            'userid'    => 1,
+        ];
+
+        turnitin_submission::queue_text_content($eventdata, $cmobj, 1, 1, $queuefn);
+
+        $this->assertEquals('forum_post', $capturedtype);
+    }
+
+    // Tests for queue_file_submissions().
+
+    /**
+     * Test returns true when there are no pathnamehashes.
+     */
+    public function test_queue_file_submissions_returns_true_with_no_hashes(): void {
+        $this->resetAfterTest();
+
+        $cm      = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => 1];
+        $called  = false;
+        $queuefn = function () use (&$called) {
+            $called = true;
+            return true;
+        };
+
+        $eventdata = ['other' => [], 'objectid' => 1, 'eventtype' => 'file_uploaded'];
+
+        $result = turnitin_submission::queue_file_submissions($eventdata, $cm, 1, 1, $queuefn);
+
+        $this->assertTrue($result);
+        $this->assertFalse($called);
+    }
+
+    /**
+     * Test skips hashes where the file cannot be found and still returns true.
+     */
+    public function test_queue_file_submissions_skips_missing_files(): void {
+        $this->resetAfterTest();
+
+        $cm      = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => 1];
+        $called  = false;
+        $queuefn = function () use (&$called) {
+            $called = true;
+            return true;
+        };
+
+        $eventdata = [
+            'other'     => ['pathnamehashes' => [sha1('nonexistent_file')]],
+            'objectid'  => 1,
+            'eventtype' => 'file_uploaded',
+        ];
+
+        $result = turnitin_submission::queue_file_submissions($eventdata, $cm, 1, 1, $queuefn);
+
+        $this->assertTrue($result);
+        $this->assertFalse($called);
+    }
+
+    /**
+     * Test calls queuefn for a submittable file and returns its result.
+     */
+    public function test_queue_file_submissions_queues_submittable_file(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'assignsubmission_file',
+            'filearea'  => 'submission_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'essay.txt',
+        ], 'essay content');
+
+        $cm           = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => 1];
+        $queuedcount  = 0;
+        $queuefn      = function () use (&$queuedcount) {
+            $queuedcount++;
+            return true;
+        };
+
+        $eventdata = [
+            'other'     => ['pathnamehashes' => [$file->get_pathnamehash()]],
+            'objectid'  => 1,
+            'eventtype' => 'file_uploaded',
+        ];
+
+        $result = turnitin_submission::queue_file_submissions($eventdata, $cm, 1, 1, $queuefn);
+
+        $this->assertTrue($result);
+        $this->assertEquals(1, $queuedcount);
+
+        $fs->delete_area_files(\context_system::instance()->id, 'assignsubmission_file', 'submission_files');
+    }
+
+    // End-to-end tests for event_handler().
+
+    /**
+     * Test event_handler returns true when the cm does not exist (stale event).
+     */
+    public function test_event_handler_returns_true_when_cm_missing(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => 99999,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => 1,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when Turnitin is not enabled for the module.
+     */
+    public function test_event_handler_returns_true_when_module_disabled(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 0, 'plagiarism_turnitin');
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when use_turnitin is not set for the CM.
+     */
+    public function test_event_handler_returns_true_when_use_turnitin_disabled(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        // No plagiarism_turnitin_config row → use_turnitin absent → should_process_event returns false.
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when draft submit is on and event is not final.
+     */
+    public function test_event_handler_returns_true_when_draft_skipped(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'           => $course->id,
+            'submissiondrafts' => 1,
+        ]);
+        $cm = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'use_turnitin',
+            'value'       => '1',
+            'config_hash' => $cm->id . '_use_turnitin',
+        ]);
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'plagiarism_draft_submit',
+            'value'       => '1',
+            'config_hash' => $cm->id . '_plagiarism_draft_submit',
+        ]);
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
 }

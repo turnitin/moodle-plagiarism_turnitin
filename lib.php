@@ -1600,11 +1600,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $result = true;
 
         // Get the coursemodule, use a different method if in a quiz as we have the quiz id.
-        if ($eventdata['other']['modulename'] == 'quiz') {
-            $cm = get_coursemodule_from_instance($eventdata['other']['modulename'], $eventdata['other']['quizid']);
-        } else {
-            $cm = get_coursemodule_from_id($eventdata['other']['modulename'], $eventdata['contextinstanceid']);
-        }
+        $cm = \plagiarism_turnitin\turnitin_submission::resolve_cm_from_event($eventdata);
 
         // Remove the event if the course module no longer exists.
         if (!$cm) {
@@ -1614,11 +1610,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Initialise module settings.
         $plagiarismsettings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
+        $plagiarismsettings = \plagiarism_turnitin\turnitin_submission::ensure_draft_submit_default(
+            $plagiarismsettings,
+            $cm->modname
+        );
         $moduletiienabled = \plagiarism_turnitin\turnitin_settings::module_enabled('mod_' . $cm->modname);
-        if ($cm->modname == 'assign') {
-            $plagiarismsettings["plagiarism_draft_submit"] = (isset($plagiarismsettings["plagiarism_draft_submit"])) ?
-                $plagiarismsettings["plagiarism_draft_submit"] : 0;
-        }
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
         if (!\plagiarism_turnitin\turnitin_settings::should_process_event($plagiarismsettings, $moduletiienabled)) {
@@ -1640,22 +1636,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $submitter = $eventdata['userid'];
         $author = \plagiarism_turnitin\turnitin_submission::resolve_author($eventdata, $cm);
 
-        /*
-           Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
-           To get around this, we get the group ID, get the group members and set the author as the first student in the group.
-        */
-        if (
-            (empty($eventdata['relateduserid'])) && ($cm->modname == 'assign')
-                && has_capability('mod/assign:editothersubmission', $context, $submitter)
-        ) {
-            $moodlesubmission = $DB->get_record('assign_submission', ['id' => $eventdata['objectid']], 'id, groupid');
-            if (!empty($moodlesubmission->groupid)) {
-                $author = \plagiarism_turnitin\turnitin_submission::get_first_group_author(
-                    $cm->course,
-                    $moodlesubmission->groupid
-                );
-            }
-        }
+        // Resolve the real author when an instructor submits on behalf of a group student.
+        $author = \plagiarism_turnitin\turnitin_submission::resolve_instructor_group_author(
+            $eventdata,
+            $cm,
+            $context,
+            $submitter,
+            $author
+        );
 
         // Get actual text content and files for assessable_submitted events.
         // As this won't be present in eventdata for this event type.
@@ -1715,74 +1703,27 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
+        // Define the queue callable that wraps $this->queue_submission_to_turnitin.
+        $queuefn = fn($cm, $author, $submitter, $identifier, $submissiontype, $objectid, $eventtype) =>
+            $this->queue_submission_to_turnitin($cm, $author, $submitter, $identifier, $submissiontype, $objectid, $eventtype);
+
         // Queue text content and forum posts to send to Turnitin.
-        if (
-            in_array($eventdata['eventtype'], ["content_uploaded", "assessable_submitted"])
-                && !empty($eventdata['other']['content'])
-        ) {
-            $submissiontype = \plagiarism_turnitin\turnitin_submission::get_submission_type($cm->modname);
-
-            // Fetch canonical content from DB — event data may contain stale/rewritten URLs.
-            $eventdata['other']['content'] = \plagiarism_turnitin\turnitin_submission::get_normalised_content(
-                $cm,
-                $eventdata['objectid'],
-                $eventdata['other']['content']
-            );
-
-            $identifier = \plagiarism_turnitin\turnitin_submission::calculate_content_identifier(
-                $cm,
-                $author,
-                $eventdata['other']['content'],
-                $eventdata['objectid']
-            );
-
-            // Check if content has been submitted before and return if so.
-            $result = $this->queue_submission_to_turnitin(
-                $cm,
-                $author,
-                $submitter,
-                $identifier,
-                $submissiontype,
-                $eventdata['objectid'],
-                $eventdata['eventtype']
-            );
-        }
+        $result = \plagiarism_turnitin\turnitin_submission::queue_text_content(
+            $eventdata,
+            $cm,
+            $author,
+            $submitter,
+            $queuefn
+        );
 
         // Queue files to submit to Turnitin.
-        $result = $result && true;
-        if (!empty($eventdata['other']['pathnamehashes'])) {
-            foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
-                $fs = get_file_storage();
-                $file = $fs->get_file_by_hash($pathnamehash);
-
-                if (!$file) {
-                    \plagiarism_turnitin\turnitin_logger::log('File not found: ' . $pathnamehash, 'PP_NO_FILE');
-                    $result = true;
-                    continue;
-                }
-
-                if (!\plagiarism_turnitin\turnitin_submission::is_file_submittable($file)) {
-                    if ($file->get_filename() !== '.') {
-                        \plagiarism_turnitin\turnitin_logger::log(
-                            'File content not found: ' . $pathnamehash,
-                            'PP_NO_FILE'
-                        );
-                    }
-                    $result = true;
-                    continue;
-                }
-
-                $result = $result && $this->queue_submission_to_turnitin(
-                    $cm,
-                    $author,
-                    $submitter,
-                    $pathnamehash,
-                    'file',
-                    $eventdata['objectid'],
-                    $eventdata['eventtype']
-                );
-            }
-        }
+        $result = $result && \plagiarism_turnitin\turnitin_submission::queue_file_submissions(
+            $eventdata,
+            $cm,
+            $author,
+            $submitter,
+            $queuefn
+        );
 
         return $result;
     }

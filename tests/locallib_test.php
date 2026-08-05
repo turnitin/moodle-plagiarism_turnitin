@@ -43,6 +43,7 @@ use PHPUnit\Framework\Attributes\CoversFunction;
 #[CoversFunction('\plagiarism_turnitin_retrieve_successful_submissions')]
 #[CoversFunction('\plagiarism_turnitin_lock_anonymous_marking')]
 #[CoversFunction('\plagiarism_turnitin_is_eula_accepted')]
+#[CoversFunction('\plagiarism_turnitin_print_error')]
 final class locallib_test extends \advanced_testcase {
     /**
      * Test that we have the correct repository depending on the config settings.
@@ -277,5 +278,116 @@ final class locallib_test extends \advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
 
         $this->assertFalse(plagiarism_turnitin_is_eula_accepted($user->id));
+    }
+
+    // Plagiarism_turnitin_print_error tests.
+
+    /**
+     * Test that plagiarism_turnitin_print_error always throws a moodle_exception
+     * with the input string as the errorcode.
+     */
+    public function test_print_error_throws_moodle_exception(): void {
+        $this->resetAfterTest();
+
+        $this->expectException(\moodle_exception::class);
+
+        plagiarism_turnitin_print_error('configureerror', 'plagiarism_turnitin', 'http://example.com');
+    }
+
+    /**
+     * Test that the exception errorcode matches the $input argument so callers
+     * can catch and identify specific error types.
+     */
+    public function test_print_error_exception_errorcode_matches_input(): void {
+        $this->resetAfterTest();
+
+        try {
+            plagiarism_turnitin_print_error('configureerror', 'plagiarism_turnitin', 'http://example.com');
+            $this->fail('Expected moodle_exception was not thrown.');
+        } catch (\moodle_exception $e) {
+            $this->assertEquals('configureerror', $e->errorcode);
+        }
+    }
+
+    /**
+     * Test that when $module is null the raw $input string is used as the
+     * exception message rather than being passed through get_string().
+     */
+    public function test_print_error_uses_raw_input_when_module_is_null(): void {
+        $this->resetAfterTest();
+
+        $rawmessage = 'Something went wrong: raw error text';
+        try {
+            plagiarism_turnitin_print_error($rawmessage, null, 'http://example.com');
+            $this->fail('Expected moodle_exception was not thrown.');
+        } catch (\moodle_exception $e) {
+            // When $module is null, $input is used verbatim as the debug info ($e->a).
+            $this->assertStringContainsString($rawmessage, $e->a);
+        }
+    }
+
+    /**
+     * Test that an explicitly provided $link is passed through to the exception
+     * without modification.
+     */
+    public function test_print_error_uses_explicit_link(): void {
+        $this->resetAfterTest();
+
+        $link = 'https://my.moodle.example/mod/assign/view.php?id=42';
+        try {
+            plagiarism_turnitin_print_error('configureerror', 'plagiarism_turnitin', $link);
+            $this->fail('Expected moodle_exception was not thrown.');
+        } catch (\moodle_exception $e) {
+            $this->assertEquals($link, $e->link);
+        }
+    }
+
+    /**
+     * Test that a non-lib.php $file causes the filename and line number to be
+     * appended to the exception message, to aid debugging.
+     */
+    public function test_print_error_appends_file_and_line_for_non_lib_files(): void {
+        $this->resetAfterTest();
+
+        try {
+            // Pass null as $module so $input is used verbatim — giving a predictable
+            // message string that we can check the suffix was appended to.
+            plagiarism_turnitin_print_error(
+                'rawmessage',
+                null,
+                'http://example.com',
+                null,
+                '/some/path/myfile.php',
+                42
+            );
+            $this->fail('Expected moodle_exception was not thrown.');
+        } catch (\moodle_exception $e) {
+            // The appended file/line lands in $e->a (the debug info passed to moodle_exception).
+            $this->assertStringContainsString('myfile.php', $e->a);
+            $this->assertStringContainsString('42', $e->a);
+        }
+    }
+
+    /**
+     * Test that when $file is lib.php the file/line suffix is NOT appended,
+     * keeping the message clean for the most common caller.
+     */
+    public function test_print_error_does_not_append_file_for_lib_php(): void {
+        $this->resetAfterTest();
+
+        try {
+            plagiarism_turnitin_print_error(
+                'rawmessage',
+                null,
+                'http://example.com',
+                null,
+                '/some/path/lib.php',
+                99
+            );
+            $this->fail('Expected moodle_exception was not thrown.');
+        } catch (\moodle_exception $e) {
+            $this->assertStringNotContainsString('lib.php', $e->a);
+            $this->assertStringNotContainsString('99', $e->a);
+        }
     }
 }

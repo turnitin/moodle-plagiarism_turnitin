@@ -122,3 +122,52 @@ function plagiarism_turnitin_is_eula_accepted(int $userid): bool {
 
     return $tiiuser !== false && $tiiuser->user_agreement_accepted == 1;
 }
+
+/**
+ * Abstracted error handler that logs the error and throws a moodle_exception.
+ *
+ * Constructs a redirect URL from the current page context when $link is not
+ * supplied, falling back to $CFG->wwwroot when no recognised module page is detected.
+ *
+ * @param string $input  Language string key, or raw message when $module is null.
+ * @param string $module Plugin/component name for get_string(); pass null to use $input as-is.
+ * @param string $link   URL to redirect to on error; auto-detected from PHP_SELF if null.
+ * @param mixed  $param  Optional $a object/array passed to get_string().
+ * @param string $file   File where the error occurred (for non-lib.php callers).
+ * @param int    $line   Line number where the error occurred.
+ */
+function plagiarism_turnitin_print_error(
+    $input,
+    $module = 'plagiarism_turnitin',
+    $link = null,
+    $param = null,
+    $file = __FILE__,
+    $line = __LINE__
+) {
+    global $CFG;
+
+    \plagiarism_turnitin\turnitin_logger::log($input, 'PRINT_ERROR');
+
+    $message = is_null($module) ? $input : get_string($input, $module, $param);
+    $linkid  = optional_param('id', 0, PARAM_INT);
+
+    if (is_null($link)) {
+        $mod = '';
+        if (substr_count($_SERVER['PHP_SELF'], 'assign/view.php') > 0) {
+            $mod = 'assign';
+        } else if (substr_count($_SERVER['PHP_SELF'], 'forum/view.php') > 0) {
+            $mod = 'forum';
+        } else if (substr_count($_SERVER['PHP_SELF'], 'workshop/view.php') > 0) {
+            $mod = 'workshop';
+        }
+        $link = (!empty($linkid) && !empty($mod))
+            ? $CFG->wwwroot . '/' . $mod . '/view.php?id=' . $linkid
+            : $CFG->wwwroot;
+    }
+
+    if (basename($file) !== 'lib.php') {
+        $message .= ' (' . basename($file) . ' | ' . $line . ')';
+    }
+
+    throw new \moodle_exception($input, 'plagiarism_turnitin', $link, $message);
+}

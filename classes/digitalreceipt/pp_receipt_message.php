@@ -24,6 +24,13 @@
 
 namespace plagiarism_turnitin\digitalreceipt;
 
+/**
+ * Sends digital receipt messages to submitters and instructors.
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2018 Turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class pp_receipt_message {
     /**
      * Send digital receipt to submitter

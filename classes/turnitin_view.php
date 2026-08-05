@@ -17,6 +17,9 @@
 namespace plagiarism_turnitin;
 
 use Integrations\PhpSdk\TiiLTI;
+use html_table;
+use html_table_cell;
+use html_table_row;
 
 /**
  * Define the turnitin_view class

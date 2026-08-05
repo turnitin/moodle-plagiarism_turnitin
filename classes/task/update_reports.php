@@ -54,6 +54,6 @@ class update_reports extends \core\task\scheduled_task {
         if (!turnitin_settings::is_plugin_configured()) {
             return;
         }
-        plagiarism_turnitin_update_reports();
+        $plagiarismturnitin->cron_update_scores();
     }
 }

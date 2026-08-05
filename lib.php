@@ -2605,14 +2605,6 @@ function plagiarism_turnitin_coursemodule_edit_post_actions($data, $course) {
 }
 
 /**
- * Handle Scheduled Task to Update Report Scores from Turnitin.
- */
-function plagiarism_turnitin_update_reports() {
-    $pluginturnitin = new plagiarism_plugin_turnitin();
-    return $pluginturnitin->cron_update_scores();
-}
-
-/**
  * Send a single queued submission to Turnitin.
  *
  * Called by both the scheduled task (send_submissions) and the ad-hoc task

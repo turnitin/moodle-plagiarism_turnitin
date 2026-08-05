@@ -1522,11 +1522,41 @@ final class lib_test extends \advanced_testcase {
         $mform   = new \MoodleQuickForm('test_form', 'post', '');
         $context = \context_course::instance($course->id);
 
-        // Calls add_to_form which returns early (plugin not configured), but the
-        // function itself must not throw.
-        \plagiarism_turnitin\turnitin_activitysettingsform::add_to_form($mform, $context, '');
+        // Build a minimal formwrapper stub so plagiarism_turnitin_coursemodule_standard_elements
+        // can call get_course() and get_current() without a real moodleform_mod instance.
+        $formwrapper = new class ($course) {
+            /** @var \stdClass */
+            private $course;
 
-        // No exception = pass; we can only assert the mform object is still intact.
+            /**
+             * Construct the stub with the course object.
+             * @param \stdClass $course
+             */
+            public function __construct(\stdClass $course) {
+                $this->course = $course;
+            }
+
+            /**
+             * Return the course object.
+             * @return \stdClass
+             */
+            public function get_course(): \stdClass {
+                return $this->course;
+            }
+
+            /**
+             * Return current form data stub.
+             * @return \stdClass
+             */
+            public function get_current(): \stdClass {
+                return (object)['modulename' => 'assign'];
+            }
+        };
+
+        // Calls plagiarism_turnitin_coursemodule_standard_elements which delegates to add_to_form.
+        // Add_to_form returns early when plugin is not configured.
+        plagiarism_turnitin_coursemodule_standard_elements($formwrapper, $mform);
+
         $this->assertInstanceOf(\MoodleQuickForm::class, $mform);
     }
 
@@ -2199,6 +2229,61 @@ final class lib_test extends \advanced_testcase {
     }
 
     // Tests for cron_update_scores().
+
+    /**
+     * Test cron_update_scores sets reportsexpected[$cm]=0 when all comparison sources
+     * are disabled — exercises lines 1191-1196 (the no-report guard block).
+     * The submission is skipped from the API request; the final reset-to-2 loop runs.
+     */
+    public function test_cron_update_scores_skips_when_all_comparison_sources_disabled(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $id = $this->insert_submission_row([
+            'cm'                     => $cm->id,
+            'userid'                 => 2,
+            'statuscode'             => 'success',
+            'externalid'             => 'ext-nocomp2',
+            'identifier'             => 'hash-nocomp2',
+            'duedate_report_refresh' => 0,
+            'similarityscore'        => null,
+        ]);
+
+        // Turnitin_assignid so the submission enters the reportsexpected loop.
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'turnitin_assignid', 'value' => '99',
+            'config_hash' => $cm->id . '_turnitin_assignid',
+        ]);
+        // All three comparison sources = 0; institution is omitted so line 1185 fires too.
+        foreach (
+            ['plagiarism_compare_student_papers', 'plagiarism_compare_internet',
+                  'plagiarism_compare_journals'] as $name
+        ) {
+            $DB->insert_record('plagiarism_turnitin_config', (object)[
+                'cm' => $cm->id, 'name' => $name, 'value' => 0,
+                'config_hash' => $cm->id . '_' . $name,
+            ]);
+        }
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        ob_start();
+        $result = $plugin->cron_update_scores();
+        ob_end_clean();
+
+        $this->assertTrue($result);
+        // The final reset-to-2 loop ran even though the submission was skipped.
+        $this->assertEquals(2, $DB->get_field('plagiarism_turnitin_files', 'duedate_report_refresh', ['id' => $id]));
+    }
 
     /**
      * Test cron_update_scores returns true immediately when there are no eligible

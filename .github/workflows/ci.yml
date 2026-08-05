@@ -43,10 +43,8 @@ jobs:
           - php: '8.4'
             moodle-branch: 'MOODLE_501_STABLE'
           # Moodle 5.2 — supports PHP 8.3–8.4. Matches the local Docker environment.
-          # Coverage is only collected on the 8.3 cell (PCOV installed below).
           - php: '8.3'
             moodle-branch: 'MOODLE_502_STABLE'
-            coverage: true
           - php: '8.4'
             moodle-branch: 'MOODLE_502_STABLE'
 
@@ -81,12 +79,6 @@ jobs:
 
           sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
           echo "max_input_vars=5000" | sudo tee /etc/php/${{ matrix.php }}/cli/conf.d/99-moodle.ini
-
-          # Install PCOV on the coverage cell only. It is faster than Xdebug and
-          # has no effect on non-coverage runs so we only pay the install cost once.
-          if [ "${{ matrix.coverage }}" = "true" ]; then
-            sudo apt-get install -y php${{ matrix.php }}-pcov
-          fi
 
           php --version
 
@@ -131,14 +123,75 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
-      - name: Coverage gate
-        # Only runs on the PHP 8.3 / Moodle 5.2 cell where PCOV is installed.
-        # Threshold is intentionally low (20%) to act as a regression floor on the
-        # current state — raise it as more of the legacy code gets test coverage.
-        if: ${{ !cancelled() && matrix.coverage == 'true' }}
+      - name: Mark cancelled jobs as failed
+        if: ${{ cancelled() }}
+        run: exit 1
+
+  coverage:
+    name: Coverage gate (PHP 8.3 / Moodle 5.2)
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4.4.0
+        with:
+          path: plugin
+
+      - name: Setup PHP 8.3 with PCOV
         run: |
-          # Resolve Moodle root — 5.x uses moodle/public/, earlier uses moodle/.
-          # The composer vendor dir is always at moodle/vendor.
+          sudo apt-get install -y ca-certificates apt-transport-https software-properties-common
+          sudo curl -sSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
+          echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+            | sudo tee /etc/apt/sources.list.d/sury-php.list
+          sudo apt-get update -q
+
+          sudo apt-get install -y \
+            php8.3 php8.3-cli php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring \
+            php8.3-pgsql php8.3-soap php8.3-xml php8.3-xmlrpc php8.3-zip \
+            php8.3-pcov
+
+          sudo update-alternatives --set php /usr/bin/php8.3
+          echo "max_input_vars=5000" | sudo tee /etc/php/8.3/cli/conf.d/99-moodle.ini
+          php --version
+
+      - name: Initialise moodle-plugin-ci
+        run: |
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
+          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+
+      - name: Install moodle-plugin-ci
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
+        env:
+          DB: pgsql
+          MOODLE_BRANCH: MOODLE_502_STABLE
+
+      - name: Initialise PHPUnit
+        run: |
+          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
+            php moodle/public/admin/tool/phpunit/cli/init.php
+          else
+            php moodle/admin/tool/phpunit/cli/init.php
+          fi
+
+      - name: Run tests with coverage
+        run: |
           if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
             MOODLE_ROOT=moodle/public
           else
@@ -154,8 +207,7 @@ jobs:
             --configuration $PLUGIN_DIR/phpunit.xml \
             --coverage-clover /tmp/coverage.xml
 
-          php plugin/.github/scripts/check_coverage.php /tmp/coverage.xml 80
-
-      - name: Mark cancelled jobs as failed
-        if: ${{ cancelled() }}
-        run: exit 1
+      - name: Check coverage threshold
+        # Threshold is intentionally low (20%) to act as a regression floor on the
+        # current state — raise it as more of the legacy code gets test coverage.
+        run: php plugin/.github/scripts/check_coverage.php /tmp/coverage.xml 80

@@ -2660,6 +2660,23 @@ final class turnitin_submission_test extends \advanced_testcase {
     }
 
     /**
+     * Test is_file_submittable returns false when get_content_file_handle() throws.
+     * Exercises lines 972-973 (the exception catch path).
+     */
+    public function test_is_file_submittable_returns_false_when_content_handle_throws(): void {
+        $this->resetAfterTest();
+
+        $mockfile = $this->getMockBuilder(\stored_file::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_filename', 'get_content_file_handle'])
+            ->getMock();
+        $mockfile->method('get_filename')->willReturn('essay.docx');
+        $mockfile->method('get_content_file_handle')->willThrowException(new \Exception('file missing'));
+
+        $this->assertFalse(turnitin_submission::is_file_submittable($mockfile));
+    }
+
+    /**
      * Test is_file_submittable returns true for a normal readable file.
      * Confirms the happy path for is_file_submittable.
      */
@@ -2735,4 +2752,272 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertContains($file->get_pathnamehash(), $enriched['other']['pathnamehashes']);
     }
+
+    // Tests for update() — score-change path.
+
+    /**
+     * Test update() calls $gradeupdate and returns its result when a score changes.
+     * Exercises lines 265, 278-282 (the updaterequired=true branch).
+     */
+    public function test_update_calls_gradeupdate_when_score_changes(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $id = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => 2,
+            'statuscode'     => 'success',
+            'similarityscore' => null, // will change
+            'externalid'     => 'ext-score-change',
+        ]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 42, 'translated' => 0]);
+
+        $gradeupdatecalled = false;
+        $gradeupdate = function($cm, $tii, $userid) use (&$gradeupdatecalled) {
+            $gradeupdatecalled = true;
+            return true;
+        };
+
+        $result = turnitin_submission::update($cm, $id, $tiisubmission, $gradeupdate);
+
+        $this->assertTrue($result);
+        $this->assertTrue($gradeupdatecalled);
+        $this->assertEquals(42, $DB->get_field('plagiarism_turnitin_files', 'similarityscore', ['id' => $id]));
+    }
+
+    /**
+     * Test update() does NOT call $gradeupdate when nothing has changed.
+     * Exercises the updaterequired=false path (lines 265-282).
+     */
+    public function test_update_skips_gradeupdate_when_nothing_changes(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $id = $this->insert_submission_row([
+            'cm'              => $cm->id,
+            'userid'          => 2,
+            'statuscode'      => 'success',
+            'similarityscore' => 50, // same as tiisubmission
+            'orcapable'       => 1,
+        ]);
+
+        $tiisubmission = $this->make_tii_submission(['similarity' => 50, 'translated' => 0, 'orcapable' => 1]);
+
+        $gradeupdatecalled = false;
+        $gradeupdate = function() use (&$gradeupdatecalled) {
+            $gradeupdatecalled = true;
+            return true;
+        };
+
+        turnitin_submission::update($cm, $id, $tiisubmission, $gradeupdate);
+
+        $this->assertFalse($gradeupdatecalled);
+    }
+
+    // Tests for get_content_timemodified() — additional cases.
+
+    /**
+     * Test get_content_timemodified returns 0 for unknown module types (default case).
+     * Exercises lines 617-618 (the default: return 0 in the switch).
+     */
+    public function test_get_content_timemodified_returns_zero_for_forum_module(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $forum  = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $forum->id);
+
+        $result = turnitin_submission::get_content_timemodified($cm, 'text_content', 1, 0);
+
+        $this->assertSame(0, $result);
+    }
+
+    // Tests for resolve_submission_id() resubmission paths.
+
+    /**
+     * Test resolve_submission_id resets and reuses an existing queued row when
+     * resubmission is allowed — exercises lines 685-688 (the resubmission_allowed branch).
+     */
+    public function test_resolve_submission_id_resets_when_resubmission_allowed(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $identifier = sha1('new-content');
+        $oldidentifier = sha1('old-content');
+
+        // Existing row with a DIFFERENT identifier (same type, same user/cm).
+        $existingid = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $oldidentifier,
+            'submissiontype' => 'text_content',
+            'statuscode'     => 'queued',
+            'externalid'     => 'ext-resubmit',
+        ]);
+
+        $settings  = ['plagiarism_report_gen' => 1]; // resubmission mode
+        $moduledata = (object)['resubmission_allowed' => true];
+
+        $routing = turnitin_submission::resolve_submission_id(
+            $cm, $user->id, 'text_content', $identifier, $settings, $moduledata, 0
+        );
+
+        $this->assertFalse($routing['earlyreturn']);
+        // Row was reused (reset), not a new one.
+        $this->assertEquals($existingid, $routing['submissionid']);
+    }
+
+    /**
+     * Test resolve_submission_id creates a new row when the existing same-identifier
+     * submission was successful and resubmission is not allowed.
+     * Exercises lines 692-695 (create_new path for successful previous with changed content).
+     */
+    public function test_resolve_submission_id_creates_new_when_previous_was_success(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $identifier = sha1('submitted-content');
+
+        // Existing successful row with same identifier — timemodified in the past.
+        $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $identifier,
+            'submissiontype' => 'text_content',
+            'statuscode'     => 'success',
+            'externalid'     => 'ext-success',
+            'lastmodified'   => time() - HOURSECS, // older than the new content
+        ]);
+
+        $settings  = ['plagiarism_report_gen' => 0]; // no resubmission
+        $moduledata = (object)['resubmission_allowed' => false];
+
+        // Pass timemodified > lastmodified so the "content unchanged" early-return is skipped.
+        $routing = turnitin_submission::resolve_submission_id(
+            $cm, $user->id, 'text_content', $identifier, $settings, $moduledata, time()
+        );
+
+        $this->assertFalse($routing['earlyreturn']);
+        // A new row should have been created alongside the original.
+        $count = $DB->count_records('plagiarism_turnitin_files',
+            ['cm' => $cm->id, 'userid' => $user->id, 'identifier' => $identifier]);
+        $this->assertEquals(2, $count);
+    }
+
+    // Tests for resolve_get_links_author() group path.
+
+    /**
+     * Test resolve_get_links_author returns author from the group plagiarismfile
+     * when a group submission (non-zero groupid) is found.
+     * Exercises lines 1307-1322.
+     */
+    public function test_resolve_get_links_author_returns_group_author(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'teamsubmission' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assign->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $group = $this->getDataGenerator()->create_group(['courseid' => $course->id]);
+        groups_add_member($group, $user);
+
+        // Create a group assign_submission row.
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => 0, // group submission
+            'groupid'       => $group->id,
+            'status'        => 'submitted',
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $identifier = sha1('group-content');
+
+        // Seed a turnitin_files row with the itemid matching the group submission.
+        $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'identifier'     => $identifier,
+            'submissiontype' => 'file',
+            'itemid'         => $submissionid,
+        ]);
+
+        $linkarray  = ['userid' => 0, 'cmid' => $cm->id];
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
+
+        $result = turnitin_submission::resolve_get_links_author(
+            $linkarray, $cm, $submissionid, $identifier, $moduleobject
+        );
+
+        // The group plagiarismfile was found and the author extracted.
+        $this->assertEquals($user->id, $result->author);
+    }
+
+    // Tests for resolve_submitter_eula_accepted() paths.
+
+    /**
+     * Test resolve_submitter_eula_accepted returns true when user is not enrolled —
+     * the method returns true (accepted) to avoid blocking display when enrollment
+     * cannot be confirmed. Exercises line 1423.
+     */
+    public function test_resolve_submitter_eula_accepted_returns_true_when_not_enrolled(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        // Deliberately NOT enrolling the user.
+
+        $context      = \context_module::instance($cm->id);
+        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
+
+        // submittinguser == author (same) and istutor = true triggers the enrolled check.
+        $result = turnitin_submission::resolve_submitter_eula_accepted(
+            true,          // plagiarismfile exists
+            $user->id,     // submissionuserid
+            2,             // vieweruserid (admin, different)
+            $user->id,     // submittinguser
+            $user->id,     // author (same as submitter → triggers check)
+            true,          // istutor
+            $context,
+            $moduleobject
+        );
+
+        $this->assertTrue($result);
+    }
 }
+

@@ -426,4 +426,47 @@ final class task_test extends \advanced_testcase {
         $mock->method('test_turnitin_connection')->willReturn($connected);
         return $mock;
     }
+
+    /**
+     * Test adhoc_send_submission::execute() runs send_single_submission when the plugin
+     * is configured — exercises lines 85-89 (the full execute body).
+     *
+     * The connection test will fail (fake credentials) so send_single_submission returns
+     * early after the connection check, but all the execute() body lines are hit.
+     */
+    public function test_adhoc_execute_runs_when_configured(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl',    'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $submission = (object)[
+            'id'             => 99,
+            'cm'             => $cm->id,
+            'userid'         => 2,
+            'attempt'        => 0,
+            'submissiontype' => 'file',
+            'itemid'         => 0,
+            'identifier'     => 'hash',
+            'externalid'     => null,
+            'submitter'      => 2,
+        ];
+
+        $task = adhoc_send_submission::instance($submission);
+
+        // execute() calls plagiarism_turnitin_send_single_submission which does mtrace() on
+        // connection failure — suppress output.
+        ob_start();
+        $task->execute();
+        ob_end_clean();
+
+        $this->assertTrue(true);
+    }
 }

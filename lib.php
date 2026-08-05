@@ -1911,10 +1911,10 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
 
         $moduledata->resubmission_allowed = $moduleobject->is_resubmission_allowed(
             $cm->instance,
-            $settings["plagiarism_report_gen"],
+            $settings["plagiarism_report_gen"] ?? 0,
             $queueditem->submissiontype,
             $moduledata->maxattempts,
-            $moodlesubmission->status
+            $moodlesubmission->status ?? null
         );
     }
 

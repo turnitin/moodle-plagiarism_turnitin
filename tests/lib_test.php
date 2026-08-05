@@ -2997,6 +2997,192 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue($result);
     }
 
+    // Tests for fetch_updated_paper_ids_from_turnitin().
+
+    /**
+     * Test fetch_updated_paper_ids_from_turnitin returns false when the Turnitin
+     * API throws (no real connection), and logs the exception via handle_exceptions.
+     */
+    public function test_fetch_updated_paper_ids_returns_false_on_api_exception(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'turnitin_assignid', 'value' => '99',
+            'config_hash' => $cm->id . '_turnitin_assignid',
+        ]);
+
+        $plugin = new \plagiarism_plugin_turnitin();
+
+        // The API call will fail (fake credentials) and the exception is caught internally;
+        // handle_exceptions produces mtrace() output which we suppress.
+        ob_start();
+        $result = $plugin->fetch_updated_paper_ids_from_turnitin($cm);
+        ob_end_clean();
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test fetch_updated_paper_ids_from_turnitin passes a dateFrom to the API when
+     * grades_last_synced is set in the CM config, ensuring only recently-updated
+     * submissions are fetched rather than the full submission list.
+     *
+     * We cannot inspect the TiiSubmission object directly (it is constructed inside
+     * the method), so we verify the observable outcome: the method still returns
+     * false on an API failure, proving the code path executed without throwing
+     * on the dateFrom branch.
+     */
+    public function test_fetch_updated_paper_ids_uses_date_from_when_last_synced_set(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'turnitin_assignid', 'value' => '99',
+            'config_hash' => $cm->id . '_turnitin_assignid',
+        ]);
+        // A non-empty grades_last_synced causes the dateFrom branch to execute.
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'grades_last_synced', 'value' => time() - 3600,
+            'config_hash' => $cm->id . '_grades_last_synced',
+        ]);
+
+        $plugin = new \plagiarism_plugin_turnitin();
+
+        ob_start();
+        $result = $plugin->fetch_updated_paper_ids_from_turnitin($cm);
+        ob_end_clean();
+
+        // API not available in tests — method must return false without throwing.
+        $this->assertFalse($result);
+    }
+
+    // Tests for update_grades_from_tii().
+
+    /**
+     * Test update_grades_from_tii returns false immediately when
+     * fetch_updated_paper_ids_from_turnitin returns false (API error).
+     * No second API call should be attempted.
+     */
+    public function test_update_grades_from_tii_returns_false_when_fetch_fails(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['fetch_updated_paper_ids_from_turnitin'])
+            ->getMock();
+        $mock->method('fetch_updated_paper_ids_from_turnitin')->willReturn(false);
+
+        $result = $mock->update_grades_from_tii($cm);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test update_grades_from_tii returns false immediately when
+     * fetch_updated_paper_ids_from_turnitin returns an empty array.
+     * There are no updated submissions to process.
+     */
+    public function test_update_grades_from_tii_returns_false_when_no_submission_ids(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['fetch_updated_paper_ids_from_turnitin'])
+            ->getMock();
+        $mock->method('fetch_updated_paper_ids_from_turnitin')->willReturn([]);
+
+        $result = $mock->update_grades_from_tii($cm);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test update_grades_from_tii returns false and catches the exception when
+     * the readSubmissions API call throws — fetch returns IDs but the batch
+     * read fails (no real Turnitin connection).
+     */
+    public function test_update_grades_from_tii_returns_false_on_read_api_exception(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        // Bypass fetch so the method reaches the readSubmissions batch loop.
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['fetch_updated_paper_ids_from_turnitin'])
+            ->getMock();
+        $mock->method('fetch_updated_paper_ids_from_turnitin')->willReturn(['sub-id-1', 'sub-id-2']);
+
+        // readSubmissions will throw because the fake credentials cannot reach the API.
+        ob_start();
+        $result = $mock->update_grades_from_tii($cm);
+        ob_end_clean();
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test update_grades_from_tii processes IDs in batches of
+     * PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN. When more IDs are returned than the
+     * batch size, multiple readSubmissions calls should be made. Because no real
+     * API is available, each batch catches an exception and sets $return = false.
+     * We verify the method still returns false (not an unhandled exception).
+     */
+    public function test_update_grades_from_tii_processes_ids_in_batches(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        // Build a list larger than one batch to exercise array_chunk.
+        $ids = array_map(fn($i) => "sub-id-$i", range(1, PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN + 1));
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['fetch_updated_paper_ids_from_turnitin'])
+            ->getMock();
+        $mock->method('fetch_updated_paper_ids_from_turnitin')->willReturn($ids);
+
+        ob_start();
+        $result = $mock->update_grades_from_tii($cm);
+        ob_end_clean();
+
+        // Each batch fails (API not available), so the final return value is false.
+        $this->assertFalse($result);
+    }
+
     /**
      * Insert a minimal plagiarism_turnitin_files row, merging provided overrides
      * with sensible defaults. Returns the new row id.

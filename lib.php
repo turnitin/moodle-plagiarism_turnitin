@@ -665,7 +665,20 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         ['externalid' => $readsubmission->getSubmissionId()],
                         'id'
                     );
-                    $return = $this->update_submission($cm, $submissiondata->id, $readsubmission);
+                    $return = \plagiarism_turnitin\turnitin_submission::update(
+                        $cm,
+                        $submissiondata->id,
+                        $readsubmission,
+                        fn($cm, $tiisubmission, $userid) =>
+                            \plagiarism_turnitin\turnitin_submission::update_gradebook(
+                                $cm,
+                                $submissiondata->id,
+                                $tiisubmission,
+                                $userid,
+                                null,
+                                $this
+                            )
+                    );
                 }
             } catch (Exception $e) {
                 $turnitincomms->handle_exceptions($e, 'tiisubmissiongeterror', false);
@@ -705,40 +718,26 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 'id'
             );
 
-            $this->update_submission($cm, $submissiondata->id, $readsubmission);
+            \plagiarism_turnitin\turnitin_submission::update(
+                $cm,
+                $submissiondata->id,
+                $readsubmission,
+                fn($cm, $tiisubmission, $userid) =>
+                    \plagiarism_turnitin\turnitin_submission::update_gradebook(
+                        $cm,
+                        $submissiondata->id,
+                        $tiisubmission,
+                        $userid,
+                        null,
+                        $this
+                    )
+            );
         } catch (Exception $e) {
             $turnitincomms->handle_exceptions($e, 'tiisubmissionsgeterror', false);
             $return = false;
         }
 
         return $return;
-    }
-
-    /**
-     * Update submission data.
-     *
-     * @param object $cm The course module.
-     * @param int $submissionid The submission id.
-     * @param TiiSubmission $tiisubmission The Turnitin submission.
-     * @return bool|int
-     * @throws dml_exception
-     * @throws dml_transaction_exception
-     */
-    private function update_submission($cm, $submissionid, $tiisubmission) {
-        return \plagiarism_turnitin\turnitin_submission::update(
-            $cm,
-            $submissionid,
-            $tiisubmission,
-            fn($cm, $tiisubmission, $userid) =>
-                \plagiarism_turnitin\turnitin_submission::update_gradebook(
-                    $cm,
-                    $submissionid,
-                    $tiisubmission,
-                    $userid,
-                    null,
-                    $this
-                )
-        );
     }
 
     /**

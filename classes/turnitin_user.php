@@ -627,10 +627,13 @@ class turnitin_user {
     public static function plagiarism_turnitin_getusers() {
         global $DB;
 
-        $config = turnitin_settings::admin_config();
-        $requesturi = $_SERVER["REQUEST_URI"] ?? '';
+        // Read REQUEST_URI before any other calls that may cause Moodle to reinitialise it.
+        // Prefer QUERY_STRING when available (set by tests) to avoid framework interference.
+        $requesturi  = $_SERVER["QUERY_STRING"] ?? $_SERVER["REQUEST_URI"] ?? '';
         $querystring = parse_url($requesturi, PHP_URL_QUERY) ?? $requesturi;
         parse_str($querystring, $params);
+
+        $config = turnitin_settings::admin_config();
 
         $return = [];
 

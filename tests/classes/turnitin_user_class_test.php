@@ -60,11 +60,12 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
     }
 
     /**
-     * Restore $_SERVER['REQUEST_URI'] after tests that modify it, so the next test
+     * Restore superglobals modified by getusers tests so the next test
      * gets a clean environment regardless of Moodle version.
      */
     public function tearDown(): void {
         $_SERVER['REQUEST_URI'] = '';
+        $_SERVER['QUERY_STRING'] = '';
         parent::tearDown();
     }
 
@@ -427,7 +428,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         ]);
 
         // Simulate the query string that the AJAX handler would receive.
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
@@ -466,7 +467,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
         ]);
 
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
@@ -499,7 +500,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
         ]);
 
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
@@ -528,7 +529,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
         ]);
 
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
@@ -555,7 +556,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
             'turnitin_utp' => 0, 'user_agreement_accepted' => 1,
         ]);
 
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,
@@ -666,7 +667,7 @@ final class turnitin_user_class_test extends plagiarism_turnitin_test_lib {
         ]);
 
         // Make column 0 (userid) searchable with a non-integer term.
-        $_SERVER['REQUEST_URI'] = http_build_query([
+        $_SERVER["QUERY_STRING"] = http_build_query([
             'start'    => 0,
             'length'   => 10,
             'draw'     => 1,

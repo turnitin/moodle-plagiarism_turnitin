@@ -2222,4 +2222,276 @@ final class turnitin_submission_test extends \advanced_testcase {
 
         $this->assertSame('', $result);
     }
+
+    // Tests for check_cm_exists().
+
+    /**
+     * Test returns the cm when it exists.
+     */
+    public function test_check_cm_exists_returns_cm_when_found(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $assign  = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm      = get_coursemodule_from_instance('assign', $assign->id);
+        $queued  = (object)['id' => 1, 'cm' => $cm->id, 'userid' => 1, 'attempt' => 0];
+
+        $result = turnitin_submission::check_cm_exists($queued);
+
+        $this->assertNotFalse($result);
+        $this->assertEquals($cm->id, $result->id);
+    }
+
+    /**
+     * Test returns false and saves errorcode 12 when cm does not exist.
+     */
+    public function test_check_cm_exists_returns_false_when_not_found(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $user   = $this->getDataGenerator()->create_user();
+        $queued = (object)['id' => 1, 'cm' => 99999, 'userid' => $user->id, 'attempt' => 0];
+        $this->insert_submission_row(['cm' => 1, 'userid' => $user->id]);
+
+        // Reset: insert the actual queued item so save_errored can update it.
+        $id     = $this->insert_submission_row(['cm' => 99999, 'userid' => $user->id]);
+        $queued->id = $id;
+
+        $result = turnitin_submission::check_cm_exists($queued);
+
+        $this->assertFalse($result);
+        $this->assertEquals(
+            12,
+            $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id])
+        );
+    }
+
+    // Tests for check_userid_valid().
+
+    /**
+     * Test returns true when userid is non-zero.
+     */
+    public function test_check_userid_valid_returns_true_for_valid_userid(): void {
+        $this->resetAfterTest();
+
+        $user   = $this->getDataGenerator()->create_user();
+        $id     = $this->insert_submission_row(['userid' => $user->id]);
+        $queued = (object)['id' => $id, 'userid' => $user->id, 'attempt' => 0];
+
+        $this->assertTrue(turnitin_submission::check_userid_valid($queued));
+    }
+
+    /**
+     * Test returns false and saves errorcode 7 when userid is 0.
+     */
+    public function test_check_userid_valid_returns_false_for_zero_userid(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user   = $this->getDataGenerator()->create_user();
+        $id     = $this->insert_submission_row(['userid' => $user->id]);
+        $queued = (object)['id' => $id, 'userid' => 0, 'attempt' => 0];
+
+        $result = turnitin_submission::check_userid_valid($queued);
+
+        $this->assertFalse($result);
+        $this->assertEquals(
+            7,
+            $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id])
+        );
+    }
+
+    // Tests for check_submission_type_valid().
+
+    /**
+     * Test returns true for all valid submission types.
+     */
+    public function test_check_submission_type_valid_for_valid_types(): void {
+        $this->assertTrue(turnitin_submission::check_submission_type_valid('file'));
+        $this->assertTrue(turnitin_submission::check_submission_type_valid('text_content'));
+        $this->assertTrue(turnitin_submission::check_submission_type_valid('forum_post'));
+        $this->assertTrue(turnitin_submission::check_submission_type_valid('quiz_answer'));
+    }
+
+    /**
+     * Test returns false for unknown submission types.
+     */
+    public function test_check_submission_type_valid_returns_false_for_invalid(): void {
+        $this->assertFalse(turnitin_submission::check_submission_type_valid(''));
+        $this->assertFalse(turnitin_submission::check_submission_type_valid('unknown'));
+        $this->assertFalse(turnitin_submission::check_submission_type_valid('online_text'));
+    }
+
+    // Tests for build_submission_filestring().
+
+    /**
+     * Build a minimal user stdClass for filestring tests.
+     */
+    private function make_tii_user_obj(int $id = 1, string $firstname = 'Test', string $lastname = 'User'): \stdClass {
+        return (object)['id' => $id, 'firstname' => $firstname, 'lastname' => $lastname];
+    }
+
+    /**
+     * Test includes user details when blind marking and pseudo are both off.
+     */
+    public function test_build_submission_filestring_includes_user_when_not_blind(): void {
+        $cm       = (object)['id' => 5];
+        $user     = $this->make_tii_user_obj(42, 'Alice', 'Smith');
+        $moddata  = (object)['blindmarking' => 0];
+        $config   = (object)['plagiarism_turnitin_enablepseudo' => 0];
+
+        $result = turnitin_submission::build_submission_filestring('essay.docx', $cm, $user, $moddata, $config);
+
+        $this->assertEquals([42, 'Alice', 'Smith', 'essay', 5], $result);
+    }
+
+    /**
+     * Test omits user details when blind marking is on.
+     */
+    public function test_build_submission_filestring_omits_user_when_blind_marking(): void {
+        $cm      = (object)['id' => 5];
+        $user    = $this->make_tii_user_obj(42, 'Alice', 'Smith');
+        $moddata = (object)['blindmarking' => 1];
+        $config  = (object)['plagiarism_turnitin_enablepseudo' => 0];
+
+        $result = turnitin_submission::build_submission_filestring('essay.docx', $cm, $user, $moddata, $config);
+
+        $this->assertEquals(['essay', 5], $result);
+    }
+
+    /**
+     * Test omits user details when pseudo-anonymisation is on.
+     */
+    public function test_build_submission_filestring_omits_user_when_pseudo_enabled(): void {
+        $cm      = (object)['id' => 5];
+        $user    = $this->make_tii_user_obj(42, 'Alice', 'Smith');
+        $moddata = (object)['blindmarking' => 0];
+        $config  = (object)['plagiarism_turnitin_enablepseudo' => 1];
+
+        $result = turnitin_submission::build_submission_filestring('essay.docx', $cm, $user, $moddata, $config);
+
+        $this->assertEquals(['essay', 5], $result);
+    }
+
+    /**
+     * Test uses the first dot-segment of the title as the base name.
+     */
+    public function test_build_submission_filestring_uses_title_base(): void {
+        $cm      = (object)['id' => 3];
+        $user    = $this->make_tii_user_obj(1);
+        $moddata = (object)['blindmarking' => 1];
+        $config  = (object)['plagiarism_turnitin_enablepseudo' => 0];
+
+        $result = turnitin_submission::build_submission_filestring('my submission.docx', $cm, $user, $moddata, $config);
+
+        $this->assertEquals(['my submission', 3], $result);
+    }
+
+    /**
+     * Test handles a title with no file extension.
+     */
+    public function test_build_submission_filestring_handles_title_without_extension(): void {
+        $cm      = (object)['id' => 2];
+        $user    = $this->make_tii_user_obj(1);
+        $moddata = (object)['blindmarking' => 1];
+        $config  = (object)['plagiarism_turnitin_enablepseudo' => 0];
+
+        $result = turnitin_submission::build_submission_filestring('notitle', $cm, $user, $moddata, $config);
+
+        $this->assertEquals(['notitle', 2], $result);
+    }
+
+    // End-to-end tests for plagiarism_turnitin_send_single_submission().
+
+    /**
+     * Test send_single_submission returns early when there is no Turnitin connection.
+     */
+    public function test_send_single_submission_returns_early_when_no_connection(): void {
+        $this->resetAfterTest();
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(false);
+
+        $queued = (object)['id' => 1, 'cm' => 1, 'userid' => 1, 'attempt' => 0, 'submissiontype' => 'file'];
+
+        $this->expectOutputRegex('/connection.*Turnitin|Turnitin.*connection/i');
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+    }
+
+    /**
+     * Test send_single_submission saves errorcode 12 when the cm does not exist.
+     */
+    public function test_send_single_submission_errors_when_cm_not_found(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+
+        $user   = $this->getDataGenerator()->create_user();
+        $id     = $this->insert_submission_row(['cm' => 99999, 'userid' => $user->id]);
+        $queued = (object)['id' => $id, 'cm' => 99999, 'userid' => $user->id, 'attempt' => 0, 'submissiontype' => 'file'];
+
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+
+        $this->assertEquals(12, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
+    }
+
+    /**
+     * Test send_single_submission saves errorcode 7 when userid is 0.
+     */
+    public function test_send_single_submission_errors_when_userid_zero(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
+        // Credentials needed so turnitin_comms doesn't throw during edit_tii_course.
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'use_turnitin', 'value' => '1',
+            'config_hash' => $cm->id . '_use_turnitin',
+        ]);
+
+        // Mock the plugin so sync_tii_assignment doesn't make API calls.
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection', 'sync_tii_assignment'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+        $mock->method('sync_tii_assignment')->willReturn(['tiiassignmentid' => 1, 'errorcode' => 0, 'success' => true]);
+
+        // Seed a turnitin_courses row so get_course_data() returns early without API.
+        $DB->insert_record('plagiarism_turnitin_courses', (object)[
+            'courseid' => $course->id, 'turnitin_cid' => 99, 'turnitin_ctl' => 'Test Course',
+        ]);
+
+        $id     = $this->insert_submission_row(['cm' => $cm->id, 'userid' => $user->id]);
+        $queued = (object)[
+            'id'             => $id,
+            'cm'             => $cm->id,
+            'userid'         => 0,
+            'submitter'      => 0,
+            'attempt'        => 0,
+            'submissiontype' => 'file',
+            'itemid'         => 0,
+            'identifier'     => 'hash',
+            'externalid'     => null,
+        ];
+
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+
+        $this->assertEquals(7, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
+    }
 }

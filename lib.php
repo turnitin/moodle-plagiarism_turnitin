@@ -156,6 +156,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
     /**
      * Print the Turnitin student disclosure inside the submission page for students to see
+     * This is a hook that's part of the Moodle plagiarism API and will be called by Moodle.
      *
      * @param int $cmid The course module id
      * @return string
@@ -1924,17 +1925,8 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // Don't proceed if we can not find a cm.
-    $cm = get_coursemodule_from_id('', $queueditem->cm);
-    if (empty($cm)) {
-        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 12);
-
-        // Output a message in the cron for failed submission to Turnitin.
-        $outputvars = new stdClass();
-        $outputvars->id = $queueditem->id;
-        $outputvars->cm = $queueditem->cm;
-        $outputvars->userid = $queueditem->userid;
-
-        \plagiarism_turnitin\turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), "PP_NO_COURSE");
+    $cm = \plagiarism_turnitin\turnitin_submission::check_cm_exists($queueditem);
+    if ($cm === false) {
         return;
     }
 
@@ -2003,8 +1995,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // User Id should never be 0 but save as errored for old submissions where this may be the case.
-    if (empty($queueditem->userid)) {
-        \plagiarism_turnitin\turnitin_submission::save_errored($queueditem->id, $queueditem->attempt, 7);
+    if (!\plagiarism_turnitin\turnitin_submission::check_userid_valid($queueditem)) {
         return;
     }
 
@@ -2032,7 +2023,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // There should never not be a submission type, handle if there isn't just in case.
-    if (!in_array($queueditem->submissiontype, ['file', 'text_content', 'forum_post', 'quiz_answer'])) {
+    if (!\plagiarism_turnitin\turnitin_submission::check_submission_type_valid($queueditem->submissiontype)) {
         $errorcode = 11;
     }
 
@@ -2164,21 +2155,13 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // Read the stored file/content into a temp file for submitting.
-    $submissiontitle = explode('.', $title);
-
-    // Initialise file string array for naming the file.
-    $filestring = [$submissiontitle[0], $cm->id];
-
-    // Only include user's name and id if we're not using blind marking and student privacy.
-    if (empty($moduledata->blindmarking) && empty($config->plagiarism_turnitin_enablepseudo)) {
-        $userdetails = [
-            $user->id,
-            $user->firstname,
-            $user->lastname,
-        ];
-
-        $filestring = array_merge($userdetails, $filestring);
-    }
+    $filestring = \plagiarism_turnitin\turnitin_submission::build_submission_filestring(
+        $title,
+        $cm,
+        $user,
+        $moduledata,
+        $config
+    );
 
     // Don't proceed if we can not create a tempfile.
     try {

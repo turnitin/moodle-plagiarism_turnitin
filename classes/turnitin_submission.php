@@ -1498,4 +1498,92 @@ class turnitin_submission {
         $ctx->submittereulaccepted         = $submittereulaccepted;
         return $ctx;
     }
+
+    /**
+     * Validate that the queued item's course module exists.
+     *
+     * Saves errorcode 12 and logs if the CM cannot be found.
+     *
+     * @param \stdClass $queueditem Row from plagiarism_turnitin_files.
+     * @return \stdClass|false The cm record, or false when not found.
+     */
+    public static function check_cm_exists(\stdClass $queueditem) {
+        $cm = get_coursemodule_from_id('', $queueditem->cm);
+        if (!empty($cm)) {
+            return $cm;
+        }
+
+        self::save_errored($queueditem->id, $queueditem->attempt, 12);
+
+        $outputvars           = new \stdClass();
+        $outputvars->id       = $queueditem->id;
+        $outputvars->cm       = $queueditem->cm;
+        $outputvars->userid   = $queueditem->userid;
+        turnitin_logger::log(get_string('errorcode12', 'plagiarism_turnitin', $outputvars), 'PP_NO_COURSE');
+
+        return false;
+    }
+
+    /**
+     * Validate that the queued item has a non-zero userid.
+     *
+     * Saves errorcode 7 and returns false when userid is 0 (should never happen but
+     * guards against old corrupted records).
+     *
+     * @param \stdClass $queueditem Row from plagiarism_turnitin_files.
+     * @return bool True when userid is valid, false otherwise.
+     */
+    public static function check_userid_valid(\stdClass $queueditem): bool {
+        if (!empty($queueditem->userid)) {
+            return true;
+        }
+
+        self::save_errored($queueditem->id, $queueditem->attempt, 7);
+        return false;
+    }
+
+    /**
+     * Validate that the queued item's submission type is one Turnitin accepts.
+     *
+     * Returns false (and sets errorcode 11) when the type is unrecognised.
+     *
+     * @param string $submissiontype Value of queueditem->submissiontype.
+     * @return bool
+     */
+    public static function check_submission_type_valid(string $submissiontype): bool {
+        return in_array($submissiontype, ['file', 'text_content', 'forum_post', 'quiz_answer']);
+    }
+
+    /**
+     * Build the filename parts array used to create the Turnitin tempfile.
+     *
+     * The array is passed to plagiarism_turnitin_tempfile(). User details are
+     * omitted when blind marking or pseudo-anonymisation is active.
+     *
+     * @param string    $title      The submission title (e.g. 'essay.docx').
+     * @param \stdClass $cm         Course module record (needs ->id).
+     * @param \stdClass $user       Turnitin user object (needs ->id, ->firstname, ->lastname).
+     * @param \stdClass $moduledata Module record (needs ->blindmarking).
+     * @param \stdClass $config     Plugin admin config (needs ->plagiarism_turnitin_enablepseudo).
+     * @return array String parts to be joined with underscores.
+     */
+    public static function build_submission_filestring(
+        string $title,
+        \stdClass $cm,
+        \stdClass $user,
+        \stdClass $moduledata,
+        \stdClass $config
+    ): array {
+        $submissiontitle = explode('.', $title);
+        $filestring      = [$submissiontitle[0], $cm->id];
+
+        if (empty($moduledata->blindmarking) && empty($config->plagiarism_turnitin_enablepseudo)) {
+            $filestring = array_merge(
+                [$user->id, $user->firstname, $user->lastname],
+                $filestring
+            );
+        }
+
+        return $filestring;
+    }
 }

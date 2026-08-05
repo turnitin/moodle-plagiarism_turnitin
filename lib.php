@@ -2122,9 +2122,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $tiisubmissionid = null;
 
         // If the EULA hasn't been accepted, don't save submission and don't submit to Tii.
-        $tiiuser = $DB->get_record("plagiarism_turnitin_users", ["userid" => $author], "user_agreement_accepted");
-        // -1 indicates the user declined the eula
-        if (!isset($tiiuser) || empty($tiiuser->user_agreement_accepted) || $tiiuser->user_agreement_accepted == '-1') {
+        if (!plagiarism_turnitin_is_eula_accepted($author)) {
             $coursedata = $this->get_course_data($cm->id, $cm->course);
             $user = new \turnitin_user($author, "Learner");
             $user->join_user_to_class($coursedata->turnitin_cid);
@@ -2205,24 +2203,13 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $fs = get_file_storage();
             $file = $fs->get_file_by_hash($identifier);
             $timemodified = $file ? $file->get_timemodified() : 0;
-        } else if ($submissiontype == 'text_content') {
-            switch ($cm->modname) {
-                case 'assign':
-                    $moodlesubmission = $DB->get_record(
-                        'assign_submission',
-                        ['assignment' => $cm->instance, 'userid' => $userid, 'id' => $itemid],
-                        'timemodified'
-                    );
-                    break;
-                case 'workshop':
-                    $moodlesubmission = $DB->get_record(
-                        'workshop_submissions',
-                        ['workshopid' => $cm->instance, 'authorid' => $userid],
-                        'timemodified'
-                    );
-                    break;
-            }
-            $timemodified = isset($moodlesubmission) ? $moodlesubmission->timemodified : 0;
+        } else {
+            $timemodified = \plagiarism_turnitin\turnitin_submission::get_content_timemodified(
+                $cm,
+                $submissiontype,
+                $userid,
+                $itemid
+            );
         }
 
         $routing = \plagiarism_turnitin\turnitin_submission::resolve_submission_id(

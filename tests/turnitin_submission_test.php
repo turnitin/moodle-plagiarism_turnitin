@@ -983,6 +983,66 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id]));
     }
 
+    // Get_content_timemodified tests.
+
+    /**
+     * Test that get_content_timemodified returns the timemodified from an assign
+     * submission record.
+     */
+    public function test_get_content_timemodified_returns_assign_timemodified(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $expectedtime = time() - 300;
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'timemodified'  => $expectedtime,
+            'timecreated'   => $expectedtime,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'groupid'       => 0,
+        ]);
+
+        $result = turnitin_submission::get_content_timemodified($cm, 'text_content', $user->id, $submissionid);
+
+        $this->assertEquals($expectedtime, $result);
+    }
+
+    /**
+     * Test that get_content_timemodified returns 0 for file submissions
+     * since timemodified comes from the file object, not a DB record.
+     */
+    public function test_get_content_timemodified_returns_zero_for_file_type(): void {
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $result = turnitin_submission::get_content_timemodified($cm, 'file', 1, 0);
+
+        $this->assertEquals(0, $result);
+    }
+
+    /**
+     * Test that get_content_timemodified returns 0 when the assign submission
+     * record cannot be found (e.g. stale itemid).
+     */
+    public function test_get_content_timemodified_returns_zero_when_record_not_found(): void {
+        $this->resetAfterTest();
+
+        $cm = $this->make_cm();
+
+        $result = turnitin_submission::get_content_timemodified($cm, 'text_content', 1, 99999);
+
+        $this->assertEquals(0, $result);
+    }
+
     // Get_file_errorcode tests.
 
     /**

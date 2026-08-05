@@ -579,6 +579,49 @@ class turnitin_submission {
     }
 
     /**
+     * Return the last-modified timestamp for a text_content submission from the DB.
+     *
+     * Used to determine whether content has changed since the last submission to
+     * Turnitin — if timemodified <= lastmodified the submission is skipped.
+     * Returns 0 for file submissions (timemodified comes from the stored_file
+     * object, not a DB record) and when the record cannot be found.
+     *
+     * @param \stdClass $cm             Course module record.
+     * @param string    $submissiontype One of 'file', 'text_content', etc.
+     * @param int       $userid         Moodle user id (0 for group submissions).
+     * @param int       $itemid         assign_submission id or workshop itemid.
+     * @return int Unix timestamp, or 0 when not applicable / not found.
+     */
+    public static function get_content_timemodified(\stdClass $cm, string $submissiontype, int $userid, int $itemid): int {
+        global $DB;
+
+        if ($submissiontype !== 'text_content') {
+            return 0;
+        }
+
+        switch ($cm->modname) {
+            case 'assign':
+                $record = $DB->get_record(
+                    'assign_submission',
+                    ['assignment' => $cm->instance, 'userid' => $userid, 'id' => $itemid],
+                    'timemodified'
+                );
+                break;
+            case 'workshop':
+                $record = $DB->get_record(
+                    'workshop_submissions',
+                    ['workshopid' => $cm->instance, 'authorid' => $userid],
+                    'timemodified'
+                );
+                break;
+            default:
+                return 0;
+        }
+
+        return $record ? (int)$record->timemodified : 0;
+    }
+
+    /**
      * Determine the submission id and Turnitin external id for a queued submission.
      *
      * Encapsulates the routing logic that decides whether to create a new row,

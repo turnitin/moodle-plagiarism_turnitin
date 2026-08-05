@@ -42,6 +42,7 @@ use PHPUnit\Framework\Attributes\CoversFunction;
 #[CoversFunction('\plagiarism_turnitin_override_repository')]
 #[CoversFunction('\plagiarism_turnitin_retrieve_successful_submissions')]
 #[CoversFunction('\plagiarism_turnitin_lock_anonymous_marking')]
+#[CoversFunction('\plagiarism_turnitin_is_eula_accepted')]
 final class locallib_test extends \advanced_testcase {
     /**
      * Test that we have the correct repository depending on the config settings.
@@ -208,5 +209,73 @@ final class locallib_test extends \advanced_testcase {
 
         $count = $DB->count_records('plagiarism_turnitin_config', ['cm' => $cm->cmid, 'name' => 'submitted']);
         $this->assertEquals(1, $count);
+    }
+
+    // Plagiarism_turnitin_is_eula_accepted tests.
+
+    /**
+     * Test that plagiarism_turnitin_is_eula_accepted returns true when the user
+     * has accepted (user_agreement_accepted = 1).
+     */
+    public function test_is_eula_accepted_returns_true_when_accepted(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $DB->insert_record('plagiarism_turnitin_users', (object)[
+            'userid'                  => $user->id,
+            'turnitin_uid'            => 999,
+            'user_agreement_accepted' => 1,
+        ]);
+
+        $this->assertTrue(plagiarism_turnitin_is_eula_accepted($user->id));
+    }
+
+    /**
+     * Test that plagiarism_turnitin_is_eula_accepted returns false when not yet
+     * accepted (user_agreement_accepted = 0).
+     */
+    public function test_is_eula_accepted_returns_false_when_not_accepted(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $DB->insert_record('plagiarism_turnitin_users', (object)[
+            'userid'                  => $user->id,
+            'turnitin_uid'            => 999,
+            'user_agreement_accepted' => 0,
+        ]);
+
+        $this->assertFalse(plagiarism_turnitin_is_eula_accepted($user->id));
+    }
+
+    /**
+     * Test that plagiarism_turnitin_is_eula_accepted returns false when the user
+     * explicitly declined (user_agreement_accepted = -1).
+     */
+    public function test_is_eula_accepted_returns_false_when_declined(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $DB->insert_record('plagiarism_turnitin_users', (object)[
+            'userid'                  => $user->id,
+            'turnitin_uid'            => 999,
+            'user_agreement_accepted' => -1,
+        ]);
+
+        $this->assertFalse(plagiarism_turnitin_is_eula_accepted($user->id));
+    }
+
+    /**
+     * Test that plagiarism_turnitin_is_eula_accepted returns false when no record
+     * exists in plagiarism_turnitin_users for the given user.
+     */
+    public function test_is_eula_accepted_returns_false_when_no_record(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+
+        $this->assertFalse(plagiarism_turnitin_is_eula_accepted($user->id));
     }
 }

@@ -103,3 +103,22 @@ function plagiarism_turnitin_lock_anonymous_marking($cmid) {
         }
     }
 }
+
+/**
+ * Check whether a user has accepted the Turnitin EULA in the local database.
+ *
+ * Only queries the local plagiarism_turnitin_users table — makes no API call.
+ * Returns false when no record exists, the user hasn't yet accepted, or they
+ * explicitly declined (user_agreement_accepted = -1). The caller is responsible
+ * for making the live API call to prompt acceptance when this returns false.
+ *
+ * @param int $userid Moodle user id.
+ * @return bool True only when user_agreement_accepted = 1.
+ */
+function plagiarism_turnitin_is_eula_accepted(int $userid): bool {
+    global $DB;
+
+    $tiiuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $userid], 'user_agreement_accepted');
+
+    return $tiiuser !== false && $tiiuser->user_agreement_accepted == 1;
+}

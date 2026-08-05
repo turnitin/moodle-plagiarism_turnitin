@@ -47,8 +47,7 @@ class plagiarism_turnitin_observer {
     public static function course_reset(
         \core\event\course_reset_ended $event
     ) {
-        $plugin = new \plagiarism_plugin_turnitin();
-        $plugin->course_reset($event);
+        \plagiarism_turnitin\turnitin_course::course_reset($event);
     }
 
 

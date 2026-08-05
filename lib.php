@@ -136,71 +136,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @return boolean
      */
     public static function course_reset($eventdata) {
-        global $DB, $CFG;
-        $data = $eventdata->get_data();
-        $courseid = (int)$data['other']['reset_options']['courseid'];
-        $resetcourse = true;
-
-        $resetassign = 0;
-        $resetassignsubmissions = 0;
-        if (!empty($data['other']['reset_options']['reset_assign_submissions'])) {
-            $resetassign = $data['other']['reset_options']['reset_assign_submissions'];
-            $resetassignsubmissions = $resetassign;
-        }
-        $resetforumall = 0;
-        $resetforum = 0;
-        if (!empty($data['other']['reset_options']['reset_forum_all'])) {
-            $resetforumall = $data['other']['reset_options']['reset_forum_all'];
-            $resetforum = $resetforumall;
-        }
-
-        // Get the modules that support the Plagiarism plugin by whether they have a class file.
-        $supportedmods = [];
-        foreach (scandir($CFG->dirroot . '/plagiarism/turnitin/classes/modules/') as $filename) {
-            if (!in_array($filename, [".", ".."])) {
-                $filenamear = explode('.', $filename);
-                $classnamear = explode('_', $filenamear[0]); // Split the class name.
-                $supportedmods[] = $classnamear[1]; // Set the module name.
-            }
-        }
-
-        foreach ($supportedmods as $supportedmod) {
-            $module = $DB->get_record('modules', ['name' => $supportedmod]);
-            if ($module === false) {
-                continue;
-            }
-
-            // Get all the course modules that have Turnitin enabled.
-            $sql = "SELECT cm.id
-                    FROM {course_modules} cm
-                    RIGHT JOIN {plagiarism_turnitin_config} ptc ON cm.id = ptc.cm
-                    WHERE cm.module = :moduleid
-                    AND cm.course = :courseid
-                    AND ptc.name = 'turnitin_assignid'";
-            $params = ['courseid' => $courseid, 'moduleid' => $module->id];
-            $modules = $DB->get_records_sql($sql, $params);
-
-            if (count($modules) > 0) {
-                $reset = "reset" . $supportedmod;
-                if (!empty($$reset)) {
-                    // Remove Plagiarism plugin submissions and assignment id from DB for this module.
-                    foreach ($modules as $mod) {
-                        $DB->delete_records('plagiarism_turnitin_files', ['cm' => $mod->id]);
-                        $DB->delete_records('plagiarism_turnitin_config', ['cm' => $mod->id, 'name' => 'turnitin_assignid']);
-                    }
-                } else {
-                    $resetcourse = false;
-                }
-            }
-        }
-
-        // If all turnitin enabled modules for this course have been reset.
-        // then remove the Turnitin course id from the database.
-        if ($resetcourse) {
-            $DB->delete_records('plagiarism_turnitin_courses', ['courseid' => $courseid]);
-        }
-
-        return true;
+        return \plagiarism_turnitin\turnitin_course::course_reset($eventdata);
     }
 
     /**
@@ -282,31 +218,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $workflowcontext The context of the workflow
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        $coursedata = \plagiarism_turnitin\turnitin_assignment::get_course_data($courseid, $workflowcontext);
-
-        // Get add from querystring to work out module type.
-        $add = optional_param('add', '', PARAM_TEXT);
-
-        if (empty($coursedata->turnitin_cid)) {
-            // Course may have existed in a previous incarnation of this plugin.
-            // Get this and save it in courses table if so.
-            if ($turnitincid = $this->get_previous_course_id($cmid, $courseid)) {
-                $coursedata->turnitin_cid = $turnitincid;
-                $coursedata = $this->migrate_previous_course($coursedata, $turnitincid);
-            } else {
-                // Otherwise create new course in Turnitin if it doesn't exist.
-                if ($cmid == 0) {
-                    $tiicoursedata = $this->create_tii_course($cmid, $add, $coursedata, $workflowcontext);
-                } else {
-                    $cm = get_coursemodule_from_id('', $cmid);
-                    $tiicoursedata = $this->create_tii_course($cmid, $cm->modname, $coursedata, $workflowcontext);
-                }
-                $coursedata->turnitin_cid = (!empty($tiicoursedata->turnitin_cid)) ? $tiicoursedata->turnitin_cid : null;
-                $coursedata->turnitin_ctl = (!empty($tiicoursedata->turnitin_ctl)) ? $tiicoursedata->turnitin_ctl : "";
-            }
-        }
-
-        return $coursedata;
+        return \plagiarism_turnitin\turnitin_course::get_course_data((int)$cmid, (int)$courseid, $workflowcontext, $this);
     }
 
     /**
@@ -1775,29 +1687,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param int $courseid The course id.
      */
     public function get_previous_course_id($cmid, $courseid) {
-        global $DB;
-        $tiicourseid = 0;
-
-        if (
-            $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cmid,
-                                                    'name' => 'turnitin_assignid', ])
-        ) {
-            $tiicourseid = (new \plagiarism_turnitin\turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
-        } else {
-            $coursemods = get_course_mods($courseid);
-            foreach ($coursemods as $coursemod) {
-                if ($coursemod->modname != 'turnitintooltwo') {
-                    if (
-                        $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $coursemod->id,
-                                                                                        'name' => 'turnitin_assignid', ])
-                    ) {
-                        $tiicourseid = (new \plagiarism_turnitin\turnitin_assignment(0))->get_course_id_from_assignment_id((int)$tiiassignment->value);
-                    }
-                }
-            }
-        }
-
-        return ($tiicourseid > 0) ? $tiicourseid : false;
+        return \plagiarism_turnitin\turnitin_course::get_previous_course_id((int)$cmid, (int)$courseid);
     }
 
     /**

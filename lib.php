@@ -2150,14 +2150,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $settings = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
 
-        if (
-            (!isset($settings["plagiarism_compare_student_papers"]) || !$settings["plagiarism_compare_student_papers"]) &&
-            (!isset($settings["plagiarism_compare_internet"]) || !$settings["plagiarism_compare_internet"]) &&
-            (!isset($settings["plagiarism_compare_journals"]) || !$settings["plagiarism_compare_journals"]) &&
-            (!isset($settings["plagiarism_compare_institution"]) || !$settings["plagiarism_compare_institution"])
-        ) {
-            // If all comparison options are disabled then don't submit to Turnitin.
-            \turnitin_logger::log('No comparison options selected for assignment with cmid: ' . $cm->id . ' not sending to Turnitin', 'NO_COMPARISON_OPTIONS_SELECTED');
+        if (!\plagiarism_turnitin\turnitin_settings::has_comparison_options($settings)) {
+            // All comparison sources are disabled — no point sending to Turnitin.
+            \turnitin_logger::log(
+                'No comparison options selected for assignment with cmid: ' . $cm->id . ' not sending to Turnitin',
+                'NO_COMPARISON_OPTIONS_SELECTED'
+            );
             return true;
         }
         // Get module data.
@@ -2243,22 +2241,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $tiisubmissionid = $routing['tiisubmissionid'];
         $attempt         = $routing['attempt'];
 
-        // Check file is less than maximum allowed size.
-        // Check file is less than maximum allowed size.
+        // Validate file size and extension, producing an errorcode when checks fail.
         if ($submissiontype == 'file') {
-            if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
-                $errorcode = 2;
-            }
-        }
-
-        // If applicable, check whether file type is accepted.
-        $acceptanyfiletype = (!empty($settings["plagiarism_allow_non_or_submissions"])) ? 1 : 0;
-        if (!$acceptanyfiletype && $submissiontype == 'file') {
-            $filenameparts = explode('.', $filename);
-            $fileext = strtolower(end($filenameparts));
-            if (!in_array("." . $fileext, $turnitinacceptedfiles)) {
-                $errorcode = 4;
-            }
+            $acceptanyfiletype = !empty($settings["plagiarism_allow_non_or_submissions"]);
+            $errorcode = \plagiarism_turnitin\turnitin_submission::get_file_errorcode(
+                $file,
+                $acceptanyfiletype,
+                $turnitinacceptedfiles
+            );
         }
 
         // Save submission as queued or errored if we have an errorcode.

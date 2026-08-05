@@ -983,6 +983,64 @@ final class turnitin_submission_test extends \advanced_testcase {
         $this->assertEquals(1, $DB->count_records('plagiarism_turnitin_files', ['cm' => $cm->id]));
     }
 
+    // Get_file_errorcode tests.
+
+    /**
+     * Test that get_file_errorcode returns 0 when the file is within the size
+     * limit and has an accepted extension.
+     */
+    public function test_get_file_errorcode_returns_zero_for_valid_file(): void {
+        $this->resetAfterTest();
+
+        $file = $this->create_stored_file('essay.docx', 100);
+
+        $result = turnitin_submission::get_file_errorcode($file, false, ['.docx', '.pdf']);
+
+        $this->assertEquals(0, $result);
+    }
+
+    /**
+     * Test that get_file_errorcode returns 2 when the file exceeds the Turnitin
+     * maximum upload size.
+     */
+    public function test_get_file_errorcode_returns_2_for_oversized_file(): void {
+        $this->resetAfterTest();
+
+        $file = $this->create_stored_file('essay.docx', PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE + 1);
+
+        $result = turnitin_submission::get_file_errorcode($file, false, ['.docx', '.pdf']);
+
+        $this->assertEquals(2, $result);
+    }
+
+    /**
+     * Test that get_file_errorcode returns 4 when the file extension is not in
+     * the accepted list and acceptanyfiletype is false.
+     */
+    public function test_get_file_errorcode_returns_4_for_unsupported_extension(): void {
+        $this->resetAfterTest();
+
+        $file = $this->create_stored_file('notes.xyz', 100);
+
+        $result = turnitin_submission::get_file_errorcode($file, false, ['.docx', '.pdf']);
+
+        $this->assertEquals(4, $result);
+    }
+
+    /**
+     * Test that get_file_errorcode returns 0 for an unsupported extension when
+     * acceptanyfiletype is true — the extension check is skipped entirely.
+     */
+    public function test_get_file_errorcode_returns_zero_when_accept_any_filetype(): void {
+        $this->resetAfterTest();
+
+        $file = $this->create_stored_file('notes.xyz', 100);
+
+        $result = turnitin_submission::get_file_errorcode($file, true, ['.docx', '.pdf']);
+
+        $this->assertEquals(0, $result);
+    }
+
     // Helpers.
 
     /**
@@ -993,5 +1051,25 @@ final class turnitin_submission_test extends \advanced_testcase {
             'teamsubmission'      => $teamsubmission ? 1 : 0,
             'resubmission_allowed' => $resubmissionallowed,
         ];
+    }
+
+    /**
+     * Create a stored file in the Moodle file API with the given name and byte size.
+     *
+     * @param string $filename
+     * @param int    $size     Number of bytes of content.
+     * @return \stored_file
+     */
+    private function create_stored_file(string $filename, int $size): \stored_file {
+        $fs      = get_file_storage();
+        $content = str_repeat('x', $size);
+        return $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'plagiarism_turnitin',
+            'filearea'  => 'unittest',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => $filename,
+        ], $content);
     }
 }

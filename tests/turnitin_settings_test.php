@@ -452,4 +452,43 @@ final class turnitin_settings_test extends \advanced_testcase {
             ['cm' => $cm->cmid, 'name' => 'plagiarism_report_gen']
         ));
     }
+
+    // Has_comparison_options tests.
+
+    /**
+     * Test that has_comparison_options returns false when all four comparison
+     * options are disabled, which prevents submitting to Turnitin.
+     */
+    public function test_has_comparison_options_returns_false_when_all_disabled(): void {
+        $settings = [
+            'plagiarism_compare_student_papers' => 0,
+            'plagiarism_compare_internet'       => 0,
+            'plagiarism_compare_journals'       => 0,
+            'plagiarism_compare_institution'    => 0,
+        ];
+
+        $this->assertFalse(turnitin_settings::has_comparison_options($settings));
+    }
+
+    /**
+     * Test that has_comparison_options returns true when at least one option is on.
+     */
+    public function test_has_comparison_options_returns_true_when_one_enabled(): void {
+        $settings = [
+            'plagiarism_compare_student_papers' => 0,
+            'plagiarism_compare_internet'       => 1,
+            'plagiarism_compare_journals'       => 0,
+            'plagiarism_compare_institution'    => 0,
+        ];
+
+        $this->assertTrue(turnitin_settings::has_comparison_options($settings));
+    }
+
+    /**
+     * Test that has_comparison_options returns false when the keys are absent,
+     * treating missing settings as disabled.
+     */
+    public function test_has_comparison_options_returns_false_when_keys_absent(): void {
+        $this->assertFalse(turnitin_settings::has_comparison_options([]));
+    }
 }

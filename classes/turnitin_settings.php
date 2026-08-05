@@ -156,6 +156,23 @@ class turnitin_settings {
     }
 
     /**
+     * Check whether at least one comparison source is enabled for an assignment.
+     *
+     * When all four comparison options are disabled there is nothing for Turnitin
+     * to check against, so the submission should not be sent. Returns false in that
+     * case, including when the settings keys are absent (treated as disabled).
+     *
+     * @param array $settings Per-CM settings from turnitin_settings::for_cm().
+     * @return bool True when at least one comparison option is enabled.
+     */
+    public static function has_comparison_options(array $settings): bool {
+        return !empty($settings['plagiarism_compare_student_papers'])
+            || !empty($settings['plagiarism_compare_internet'])
+            || !empty($settings['plagiarism_compare_journals'])
+            || !empty($settings['plagiarism_compare_institution']);
+    }
+
+    /**
      * Persist the Turnitin settings submitted from an activity edit form.
      *
      * Iterates over the canonical field list and upserts each field that is

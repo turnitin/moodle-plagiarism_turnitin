@@ -720,4 +720,33 @@ class turnitin_submission {
             'attempt'         => $attempt,
         ];
     }
+
+    /**
+     * Validate a file for submission to Turnitin and return the appropriate errorcode.
+     *
+     * Returns 0 when the file passes all checks, 2 when it exceeds the maximum
+     * upload size, or 4 when the extension is not accepted (and acceptanyfiletype
+     * is false). Size is checked before extension so that errorcode 2 takes
+     * precedence over errorcode 4 for oversized files with bad extensions.
+     *
+     * @param \stored_file $file              The Moodle stored file to validate.
+     * @param bool         $acceptanyfiletype True when the assignment allows any file type.
+     * @param string[]     $acceptedfiles     List of allowed extensions, e.g. ['.pdf', '.docx'].
+     * @return int 0 = valid, 2 = too large, 4 = unsupported extension.
+     */
+    public static function get_file_errorcode(\stored_file $file, bool $acceptanyfiletype, array $acceptedfiles): int {
+        if ($file->get_filesize() > PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE) {
+            return 2;
+        }
+
+        if (!$acceptanyfiletype) {
+            $parts     = explode('.', $file->get_filename());
+            $extension = strtolower(end($parts));
+            if (!in_array('.' . $extension, $acceptedfiles)) {
+                return 4;
+            }
+        }
+
+        return 0;
+    }
 }

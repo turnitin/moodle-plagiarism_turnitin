@@ -1132,4 +1132,266 @@ final class turnitin_submission_test extends \advanced_testcase {
             'filename'  => $filename,
         ], $content);
     }
+
+    // Tests for update_gradebook().
+
+    /**
+     * Build a minimal cm stdClass for update_gradebook tests.
+     *
+     * @param string $modname  Module type name.
+     * @param int    $instance Module instance id.
+     * @param int    $course   Course id.
+     */
+    private function make_cm_obj(string $modname = 'assign', int $instance = 1, int $course = 1): \stdClass {
+        return (object)[
+            'id'       => 1,
+            'modname'  => $modname,
+            'instance' => $instance,
+            'course'   => $course,
+        ];
+    }
+
+    /**
+     * Build a minimal TiiSubmission mock with no configured return values.
+     */
+    private function make_empty_tii_submission(): object {
+        $mock = $this->getMockBuilder(\Integrations\PhpSdk\TiiSubmission::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $mock;
+    }
+
+    /**
+     * Test update_gradebook returns true when the submission row does not exist.
+     */
+    public function test_update_gradebook_returns_true_when_no_submission_row(): void {
+        $this->resetAfterTest();
+
+        $result = turnitin_submission::update_gradebook(
+            $this->make_cm_obj(),
+            9999,
+            $this->make_empty_tii_submission(),
+            1
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_gradebook returns true immediately for coursework modules.
+     */
+    public function test_update_gradebook_returns_true_for_coursework(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $id   = $this->insert_submission_row(['userid' => $user->id, 'submissiontype' => 'file']);
+
+        $result = turnitin_submission::update_gradebook(
+            $this->make_cm_obj('coursework'),
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_gradebook returns true for quiz when grade is null.
+     */
+    public function test_update_gradebook_returns_true_for_quiz_with_null_grade(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $quiz   = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('quiz', $quiz->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $id = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'submissiontype' => 'file',
+            'grade'          => null,
+        ]);
+
+        $cmobj           = $this->make_cm_obj('quiz', (int)$quiz->id, (int)$course->id);
+        $cmobj->id       = (int)$cm->id;
+
+        $result = turnitin_submission::update_gradebook(
+            $cmobj,
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_gradebook returns true for non-assign modules when grade is null.
+     */
+    public function test_update_gradebook_returns_true_when_grade_is_null(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $id   = $this->insert_submission_row([
+            'userid'         => $user->id,
+            'submissiontype' => 'file',
+            'grade'          => null,
+        ]);
+
+        $result = turnitin_submission::update_gradebook(
+            $this->make_cm_obj('forum'),
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id
+        );
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_gradebook calls the injected gradeupdater when grade is set
+     * and a grade item exists for the module.
+     *
+     * Uses forum module to avoid the assign-specific latest-submission check.
+     */
+    public function test_update_gradebook_calls_gradeupdater_when_grade_and_gradeitem_exist(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $forum  = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $forum->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $id = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'submissiontype' => 'online_text',
+            'identifier'     => 'somehash',
+            'grade'          => 85,
+        ]);
+
+        // Create a grade item so the gradebook path is taken.
+        $gradeitem = new \stdClass();
+        $gradeitem->courseid    = $course->id;
+        $gradeitem->itemtype    = 'mod';
+        $gradeitem->itemmodule  = 'forum';
+        $gradeitem->iteminstance = $forum->id;
+        $gradeitem->itemnumber  = 0;
+        $gradeitem->itemname    = 'Forum grade';
+        $gradeitem->gradetype   = 1;
+        $gradeitem->grademax    = 100;
+        $DB->insert_record('grade_items', $gradeitem);
+
+        $cmobj = (object)[
+            'id'       => (int)$cm->id,
+            'modname'  => 'forum',
+            'instance' => (int)$forum->id,
+            'course'   => (int)$course->id,
+        ];
+
+        $gradeupdatercalled = false;
+        $gradeupdater = function ($cm, $tii, $userid) use (&$gradeupdatercalled): bool {
+            $gradeupdatercalled = true;
+            return true;
+        };
+
+        turnitin_submission::update_gradebook(
+            $cmobj,
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id,
+            $gradeupdater
+        );
+
+        $this->assertTrue($gradeupdatercalled);
+    }
+
+    /**
+     * Test update_gradebook skips gradeupdater when grade item does not exist.
+     */
+    public function test_update_gradebook_skips_gradeupdater_when_no_grade_item(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $id   = $this->insert_submission_row([
+            'userid'         => $user->id,
+            'submissiontype' => 'online_text',
+            'identifier'     => 'somehash',
+            'grade'          => 85,
+        ]);
+
+        // Use forum so the assign branch is not entered (avoids false-property warnings).
+        // Module instance 99999 has no grade_items row.
+        $cmobj = $this->make_cm_obj('forum', 99999, 99999);
+
+        $gradeupdatercalled = false;
+        $gradeupdater = function () use (&$gradeupdatercalled): bool {
+            $gradeupdatercalled = true;
+            return true;
+        };
+
+        $result = turnitin_submission::update_gradebook(
+            $cmobj,
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id,
+            $gradeupdater
+        );
+
+        $this->assertFalse($gradeupdatercalled);
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_gradebook sets gbupdaterequired=false for a file submission
+     * when the stored file cannot be found in the file store.
+     */
+    public function test_update_gradebook_skips_gradebook_when_file_not_found(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $id = $this->insert_submission_row([
+            'cm'             => $cm->id,
+            'userid'         => $user->id,
+            'submissiontype' => 'file',
+            // A hash that does not exist in the Moodle file store.
+            'identifier'     => sha1('nonexistent_file_' . uniqid()),
+            'grade'          => 90,
+        ]);
+
+        $cmobj = (object)[
+            'id'       => (int)$cm->id,
+            'modname'  => 'assign',
+            'instance' => (int)$assign->id,
+            'course'   => (int)$course->id,
+        ];
+
+        $gradeupdatercalled = false;
+        $gradeupdater = function () use (&$gradeupdatercalled): bool {
+            $gradeupdatercalled = true;
+            return true;
+        };
+
+        // File not found → gbupdaterequired=false → gradeupdater not called.
+        turnitin_submission::update_gradebook(
+            $cmobj,
+            $id,
+            $this->make_empty_tii_submission(),
+            $user->id,
+            $gradeupdater
+        );
+
+        $this->assertFalse($gradeupdatercalled);
+    }
 }

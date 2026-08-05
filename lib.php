@@ -729,98 +729,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $cm,
             $submissionid,
             $tiisubmission,
-            function ($cm, $tiisubmission, $userid) use ($submissionid) {
-                global $DB;
-
-                // Determine whether the gradebook should be updated for this submission.
-                // We skip it when the submission is not the latest attempt, to avoid
-                // overwriting a more recent grade with an older one.
-                $gbupdaterequired = true;
-                $submissiondata = $DB->get_record(
-                    'plagiarism_turnitin_files',
-                    ['id' => $submissionid],
-                    'identifier, submissiontype, userid'
-                );
-
-                if ($cm->modname == "assign" && $submissiondata) {
-                    if ($submissiondata->submissiontype == "file") {
-                        $fs = get_file_storage();
-                        if ($file = $fs->get_file_by_hash($submissiondata->identifier)) {
-                            $itemid = $file->get_itemid();
-                            $assignmentdata = ["assignment" => $cm->instance];
-                            $groupid = \plagiarism_turnitin\turnitin_submission::check_group_submission($cm, $submissiondata->userid);
-                            if ($groupid) {
-                                $assignmentdata['groupid'] = $groupid;
-                            } else {
-                                $assignmentdata['userid'] = $submissiondata->userid;
-                            }
-                            $submission = $DB->get_records(
-                                'assign_submission',
-                                $assignmentdata,
-                                'id DESC',
-                                'id, attemptnumber',
-                                '0',
-                                '1'
-                            );
-                            $item = current($submission);
-                            if ($item->id != $itemid) {
-                                $gbupdaterequired = false;
-                            }
-                        } else {
-                            $gbupdaterequired = false;
-                        }
-                    } else if ($submissiondata->submissiontype == "text_content") {
-                        $moduleobject = new \plagiarism_turnitin\modules\turnitin_assign();
-                        $latesttext = $moduleobject->get_onlinetext($submissiondata->userid, $cm);
-                        if (!empty($latesttext)) {
-                            $latestidentifier = sha1(
-                                'text_content cm' . $cm->id . ' itemid' . $latesttext->itemid
-                                    . ' ' . $latesttext->onlinetext
-                            );
-                            $oldlatestidentifier = sha1($latesttext->onlinetext);
-                            if (
-                                $submissiondata->identifier != $latestidentifier
-                                    && $submissiondata->identifier != $oldlatestidentifier
-                            ) {
-                                $gbupdaterequired = false;
-                            }
-                        }
-                    }
-                }
-
-                if ($cm->modname == "coursework") {
-                    return true;
-                }
-
-                if ($cm->modname == "quiz") {
-                    $quiz = $DB->get_record('quiz', ['id' => $cm->instance]);
-                    $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], 'grade');
-                    $tq = new \plagiarism_turnitin\modules\turnitin_quiz();
-                    if (!is_null($plagiarismfile->grade)) {
-                        $tq->update_mark(
-                            $submissiondata->itemid ?? 0,
-                            $submissiondata->identifier,
-                            $userid,
-                            $plagiarismfile->grade,
-                            $quiz->grade
-                        );
-                    }
-                    return true;
-                }
-
-                $gradeitem = $DB->get_record(
-                    'grade_items',
-                    ['iteminstance' => $cm->instance, 'itemmodule' => $cm->modname,
-                     'courseid' => $cm->course, 'itemnumber' => 0]
-                );
-
-                $plagiarismfile = $DB->get_record('plagiarism_turnitin_files', ['id' => $submissionid], 'grade');
-                if (!is_null($plagiarismfile->grade) && !empty($gradeitem) && $gbupdaterequired) {
-                    return $this->update_grade($cm, $tiisubmission, $userid);
-                }
-
-                return true;
-            }
+            fn($cm, $tiisubmission, $userid) =>
+                \plagiarism_turnitin\turnitin_submission::update_gradebook(
+                    $cm,
+                    $submissionid,
+                    $tiisubmission,
+                    $userid,
+                    null,
+                    $this
+                )
         );
     }
 
@@ -832,7 +749,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param int $userid The user id.
      * @param bool $cron Whether this is a cron job.
      */
-    private function update_grade($cm, $submission, $userid, $cron = false) {
+    public function update_grade($cm, $submission, $userid, $cron = false) {
         global $DB, $USER, $CFG;
         $return = true;
 

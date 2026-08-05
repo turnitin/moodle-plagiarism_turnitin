@@ -27,7 +27,7 @@ require_once($CFG->libdir . '/tablelib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 
-$turnitinview = new \turnitin_view();
+$turnitinview = new \plagiarism_turnitin\turnitin_view();
 
 $cmd = optional_param('cmd', "", PARAM_ALPHAEXT);
 $viewcontext = optional_param('view_context', "window", PARAM_ALPHAEXT);
@@ -84,7 +84,7 @@ switch ($cmd) {
         $user = new \turnitin_user($USER->id, "Learner");
 
         $output .= $OUTPUT->box_start('tii_eula_launch');
-        $output .= \turnitin_view::output_launch_form(
+        $output .= \plagiarism_turnitin\turnitin_view::output_launch_form(
             "useragreement",
             0,
             $user->tiiuserid,

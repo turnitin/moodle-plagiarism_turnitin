@@ -180,7 +180,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             $plagiarismelements = \plagiarism_turnitin\turnitin_settings::fields();
 
-            $turnitinview = new \turnitin_view();
+            $turnitinview = new \plagiarism_turnitin\turnitin_view();
             $plagiarismvalues["plagiarism_rubric"] = ( !empty($plagiarismvalues["plagiarism_rubric"]) ) ?
                 $plagiarismvalues["plagiarism_rubric"] : 0;
 
@@ -192,7 +192,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $PAGE->pagetype != 'course-defaultcompletion'
             ) {
                 // Check for existing settings and add the form.
-                $course = \turnitin_assignment::get_course_data($COURSE->id, "site");
+                $course = \plagiarism_turnitin\turnitin_assignment::get_course_data($COURSE->id, "site");
                 $turnitinview->add_elements_to_settings_form(
                     $mform,
                     $course,
@@ -441,7 +441,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $eula = html_writer::tag('div', $eulalink, ['class' => 'pp_turnitin_eula' . $eulaignoredclass,
                                             'data-userid' => $user->id, ]);
 
-                $form = \turnitin_view::output_launch_form(
+                $form = \plagiarism_turnitin\turnitin_view::output_launch_form(
                     "useragreement",
                     0,
                     $user->tiiuserid,
@@ -536,7 +536,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $workflowcontext The context of the workflow
      */
     public function get_course_data($cmid, $courseid, $workflowcontext = 'site') {
-        $coursedata = \turnitin_assignment::get_course_data($courseid, $workflowcontext);
+        $coursedata = \plagiarism_turnitin\turnitin_assignment::get_course_data($courseid, $workflowcontext);
 
         // Get add from querystring to work out module type.
         $add = optional_param('add', '', PARAM_TEXT);
@@ -1426,7 +1426,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $moduleclass = "plagiarism_turnitin\\modules\\turnitin_" . $modname;
         $moduleobject = new $moduleclass();
 
-        $turnitinassignment = new \turnitin_assignment(0);
+        $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
         $turnitincourse = $turnitinassignment->create_tii_course($coursedata, $workflowcontext);
 
         // Join all admins and instructors to the course in Turnitin if it was created.
@@ -1708,14 +1708,14 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             )
         ) {
             $assignment->setAssignmentId($tiiassignment->value);
-            $turnitinassignment = new \turnitin_assignment(0);
+            $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
 
             $return = $turnitinassignment->edit_tii_assignment($assignment, $workflowcontext);
             $return['errorcode'] = ($return['success']) ? 0 : 6;
 
             return $return;
         } else {
-            $turnitinassignment = new \turnitin_assignment(0);
+            $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
             $turnitinassignid = $turnitinassignment->create_tii_assignment($assignment, $workflowcontext);
 
             if (!$turnitinassignid) {
@@ -2083,7 +2083,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             }
         }
 
-        $turnitinassignment = new \turnitin_assignment(0);
+        $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
         $turnitinassignment->edit_tii_course($coursedata);
 
         $coursedata->turnitin_cid = $turnitincid;
@@ -2662,7 +2662,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     }
 
     // Update course data in Turnitin.
-    $turnitinassignment = new \turnitin_assignment(0);
+    $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
     $turnitinassignment->edit_tii_course($coursedata);
 
     // Previously failed submissions may not have a value for submitter.

@@ -27,7 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
-$turnitinview = new \turnitin_view();
+$turnitinview = new \plagiarism_turnitin\turnitin_view();
 
 $cssurl = new moodle_url('/plagiarism/turnitin/amd/src/datatables.css');
 $PAGE->requires->css($cssurl);

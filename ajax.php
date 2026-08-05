@@ -64,15 +64,15 @@ switch ($action) {
     case "get_dv_html":
         $submissionid = required_param('submissionid', PARAM_INT);
         $dvtype = optional_param('dvtype', 'default', PARAM_ALPHAEXT);
-        $user = new \turnitin_user($USER->id, $userrole);
-        $coursedata = \turnitin_assignment::get_course_data($cm->course);
+        $user = new \plagiarism_turnitin\turnitin_user($USER->id, $userrole);
+        $coursedata = \plagiarism_turnitin\turnitin_assignment::get_course_data($cm->course);
 
         if ($userrole == 'Instructor') {
             $user->join_user_to_class($coursedata->turnitin_cid);
         }
 
         // Update course data in Turnitin.
-        $turnitinassignment = new \turnitin_assignment(0);
+        $turnitinassignment = new \plagiarism_turnitin\turnitin_assignment(0);
         $turnitinassignment->edit_tii_course($coursedata);
 
         // Edit assignment in Turnitin in case any changes have been made that would affect DV.
@@ -82,7 +82,7 @@ switch ($action) {
         if ($syncassignment['success']) {
             $return = html_writer::tag(
                 "div",
-                \turnitin_view::output_launch_form(
+                \plagiarism_turnitin\turnitin_view::output_launch_form(
                     $dvtype,
                     $submissionid,
                     $user->tiiuserid,
@@ -160,7 +160,7 @@ switch ($action) {
 
             echo html_writer::tag(
                 'div',
-                \turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
+                \plagiarism_turnitin\turnitin_view::output_lti_form_launch('peermark_manager', 'Instructor', $tiiassignmentid),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',
@@ -178,12 +178,12 @@ switch ($action) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', [ 'cm' => $cm->id, 'name' => 'turnitin_assignid' ]);
 
             $user = new \turnitin_user($USER->id, "Learner");
-            $coursedata = \turnitin_assignment::get_course_data($cm->course);
+            $coursedata = \plagiarism_turnitin\turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
                 'div',
-                \turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
+                \plagiarism_turnitin\turnitin_view::output_lti_form_launch('rubric_view', 'Learner', $tiiassignment->value),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',
@@ -204,13 +204,13 @@ switch ($action) {
         if ($userrole == 'Instructor' || $isstudent) {
             $tiiassignment = $DB->get_record('plagiarism_turnitin_config', ['cm' => $cm->id, 'name' => 'turnitin_assignid']);
 
-            $user = new \turnitin_user($USER->id, $userrole);
-            $coursedata = \turnitin_assignment::get_course_data($cm->course);
+            $user = new \plagiarism_turnitin\turnitin_user($USER->id, $userrole);
+            $coursedata = \plagiarism_turnitin\turnitin_assignment::get_course_data($cm->course);
             $user->join_user_to_class($coursedata->turnitin_cid);
 
             echo html_writer::tag(
                 'div',
-                \turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
+                \plagiarism_turnitin\turnitin_view::output_lti_form_launch('peermark_reviews', $userrole, $tiiassignment->value),
                 [
                     'class' => 'launch_form',
                     'style' => 'display:none;',

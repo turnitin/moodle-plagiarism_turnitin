@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -849,13 +850,17 @@ final class lib_test extends \advanced_testcase {
         }
 
         $plugin = new \plagiarism_plugin_turnitin();
+        $oblevel = ob_get_level();
         ob_start();
         try {
             $result = $plugin->sync_tii_assignment($cm, 99);
         } catch (\Exception $e) {
             $result = ['success' => false, 'errorcode' => 6];
+            unset($e);
         }
-        ob_end_clean();
+        while (ob_get_level() > $oblevel) {
+            ob_end_clean();
+        }
 
         $this->assertArrayHasKey('errorcode', $result);
     }
@@ -895,14 +900,18 @@ final class lib_test extends \advanced_testcase {
         // No turnitin_assignid → takes the create_tii_assignment path.
 
         $plugin = new \plagiarism_plugin_turnitin();
+        $oblevel = ob_get_level();
         ob_start();
         try {
             $result = $plugin->sync_tii_assignment($cm, 99);
         } catch (\Exception $e) {
             // API exception caught — create_tii_assignment returned false or threw.
             $result = ['success' => false, 'tiiassignmentid' => '', 'errorcode' => 5];
+            unset($e);
         }
-        ob_end_clean();
+        while (ob_get_level() > $oblevel) {
+            ob_end_clean();
+        }
 
         // Either errorcode=5 (create returned false) or errorcode=6 (exception in edit).
         $this->assertArrayHasKey('errorcode', $result);

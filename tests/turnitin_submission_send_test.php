@@ -32,7 +32,9 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
 
+use Integrations\PhpSdk\TiiSubmission;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -503,7 +505,7 @@ final class turnitin_submission_send_test extends \advanced_testcase {
             $coursedata
         );
 
-        $this->assertInstanceOf(\TiiSubmission::class, $result);
+        $this->assertInstanceOf(TiiSubmission::class, $result);
         $this->assertEquals('assign-456', $result->getAssignmentId());
         $this->assertEquals('My Title', $result->getTitle());
         $this->assertEquals('tii-123', $result->getAuthorUserId());

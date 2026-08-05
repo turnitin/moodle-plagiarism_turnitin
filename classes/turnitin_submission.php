@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
 
+use Integrations\PhpSdk\TiiAssignment;
 use Integrations\PhpSdk\TiiSubmission;
 
 /**
@@ -1783,7 +1784,7 @@ class turnitin_submission {
         $modulepluginsettings = turnitin_settings::for_cm($cm->id);
         $moduledata           = $DB->get_record($cm->modname, ['id' => $cm->instance]);
 
-        $assignment = new \TiiAssignment();
+        $assignment = new TiiAssignment();
         $assignment->setClassId($coursetiiid);
 
         // Truncate to 80 chars + ellipsis to stay within Turnitin's 99-char title limit
@@ -2015,8 +2016,8 @@ class turnitin_submission {
         array $syncassignment,
         object $user,
         object $coursedata
-    ): \TiiSubmission {
-        $submission = new \TiiSubmission();
+    ): TiiSubmission {
+        $submission = new TiiSubmission();
         $submission->setAssignmentId($syncassignment['tiiassignmentid']);
         if ($apimethod === 'replaceSubmission') {
             $submission->setSubmissionId($queueditem->externalid);

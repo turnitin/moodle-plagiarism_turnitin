@@ -30,7 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/vendor/autoload.php');
 
+use Integrations\PhpSdk\TiiAssignment;
+use Integrations\PhpSdk\TiiClass;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -141,7 +144,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi   = $this->getMockBuilder(\stdClass::class)->addMethods(['createClass'])->getMock();
-        $mockclass = new \TiiClass();
+        $mockclass = new TiiClass();
         $mockapi->expects($this->once())->method('createClass')->with($mockclass)->willReturn('result');
 
         $assignment = new turnitin_assignment(0);
@@ -161,7 +164,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi   = $this->getMockBuilder(\stdClass::class)->addMethods(['updateClass'])->getMock();
-        $mockclass = new \TiiClass();
+        $mockclass = new TiiClass();
         $mockapi->expects($this->once())->method('updateClass')->with($mockclass)->willReturn('updated');
 
         $assignment = new turnitin_assignment(0);
@@ -195,7 +198,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
-        $class = new \TiiClass();
+        $class = new TiiClass();
         $class->setClassId(42);
 
         $assignment = new turnitin_assignment(0);
@@ -211,7 +214,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
-        $class      = new \TiiClass();
+        $class      = new TiiClass();
         $assignment = new turnitin_assignment(0);
         $assignment->api_set_class_id($class, 99);
 
@@ -228,7 +231,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi        = $this->getMockBuilder(\stdClass::class)->addMethods(['createAssignment'])->getMock();
-        $mockassignment = new \TiiAssignment();
+        $mockassignment = new TiiAssignment();
         $mockapi->expects($this->once())->method('createAssignment')->with($mockassignment)->willReturn('created');
 
         $assignment = new turnitin_assignment(0);
@@ -245,7 +248,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
         $mockapi        = $this->getMockBuilder(\stdClass::class)->addMethods(['updateAssignment'])->getMock();
-        $mockassignment = new \TiiAssignment();
+        $mockassignment = new TiiAssignment();
         $mockapi->expects($this->once())->method('updateAssignment')->with($mockassignment)->willReturn('updated');
 
         $assignment = new turnitin_assignment(0);
@@ -277,7 +280,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
-        $tiiassignment = new \TiiAssignment();
+        $tiiassignment = new TiiAssignment();
         $tiiassignment->setAssignmentId(77);
 
         $assignment = new turnitin_assignment(0);
@@ -293,7 +296,7 @@ final class turnitin_assignment_test extends \advanced_testcase {
         set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
         set_config('plagiarism_turnitin_secretkey', 'TESTKEY', 'plagiarism_turnitin');
 
-        $tiiassignment = new \TiiAssignment();
+        $tiiassignment = new TiiAssignment();
         $tiiassignment->setTitle('My Essay');
 
         $assignment = new turnitin_assignment(0);

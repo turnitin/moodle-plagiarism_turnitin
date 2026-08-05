@@ -21,6 +21,9 @@
  * @copyright  2018 Turnitin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_turnitin\digitalreceipt;
+
 class pp_receipt_message {
     /**
      * Send digital receipt to submitter

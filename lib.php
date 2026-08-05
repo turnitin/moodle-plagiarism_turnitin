@@ -71,8 +71,6 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/locallib.php');
 
 // Classes in classes/ are autoloaded by Moodle's PSR-4 autoloader.
-// The digital receipt helper is not namespaced so still needs explicit loading.
-require_once($CFG->dirroot . '/plagiarism/turnitin/classes/digitalreceipt/pp_receipt_message.php');
 
 /**
  * Class plagiarism_plugin_turnitin
@@ -2958,7 +2956,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
         plagiarism_turnitin_lock_anonymous_marking($cm->id);
 
         // Send a message to the user's Moodle inbox with the digital receipt.
-        $receipt = new pp_receipt_message();
+        $receipt = new \plagiarism_turnitin\digitalreceipt\pp_receipt_message();
         $input = [
             'firstname' => $user->firstname,
             'lastname' => $user->lastname,

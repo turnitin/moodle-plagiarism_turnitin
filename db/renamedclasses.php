@@ -27,6 +27,7 @@
 
 // phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
 $renamedclasses = [
+    'pp_receipt_message'           => 'plagiarism_turnitin\\digitalreceipt\\pp_receipt_message',
     'turnitin_assign'              => 'plagiarism_turnitin\\modules\\turnitin_assign',
     'turnitin_assignment'          => 'plagiarism_turnitin\\turnitin_assignment',
     'turnitin_class'               => 'plagiarism_turnitin\\turnitin_class',

@@ -718,6 +718,271 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue($result);
     }
 
+    // Tests for update_grade().
+
+    /**
+     * Build a minimal TII submission stub with a grade and submission ID.
+     *
+     * @param int|null $grade The grade value to return from getGrade().
+     * @param string   $submissionid The value to return from getSubmissionId().
+     */
+    private function make_graded_tii_submission(?int $grade, string $submissionid = 'ext-1'): object {
+        // phpcs:disable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
+        return new class ($grade, $submissionid) {
+            /** @var int|null */
+            private $grade;
+            /** @var string */
+            private $submissionid;
+
+            /** @param int|null $grade @param string $submissionid */
+            public function __construct(?int $grade, string $submissionid) {
+                $this->grade        = $grade;
+                $this->submissionid = $submissionid;
+            }
+
+            /** @return int|null */
+            public function getGrade(): ?int {
+                return $this->grade;
+            }
+
+            /** @return string */
+            public function getSubmissionId(): string {
+                return $this->submissionid;
+            }
+        }; // phpcs:enable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
+    }
+
+    /**
+     * Test update_grade returns true immediately when getGrade() is null —
+     * nothing should be written to the gradebook.
+     */
+    public function test_update_grade_returns_true_when_grade_is_null(): void {
+        $this->resetAfterTest();
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(null);
+        $cm         = (object)['id' => 1, 'modname' => 'assign', 'instance' => 1, 'course' => 1];
+
+        $result = $plugin->update_grade($cm, $submission, 1);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_grade returns true immediately for forum — Turnitin does not
+     * write grades back to the forum gradebook even when a grade is present.
+     */
+    public function test_update_grade_returns_true_for_forum(): void {
+        $this->resetAfterTest();
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(75);
+        $cm         = (object)['id' => 1, 'modname' => 'forum', 'instance' => 1, 'course' => 1];
+
+        $result = $plugin->update_grade($cm, $submission, 1);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test update_grade returns false when blind marking is on and identities
+     * have not yet been revealed — grades must not be passed to the gradebook
+     * before students are de-anonymised.
+     */
+    public function test_update_grade_returns_false_when_blind_marking_active(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'           => $course->id,
+            'blindmarking'     => 1,
+            'revealidentities' => 0,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assign->id);
+        $user = $this->getDataGenerator()->create_user();
+
+        // A turnitin_files row with a known externalid so update_grade can look it up.
+        // No real file hash → falls to the else branch (fetches all records for userid/cm).
+        $this->insert_submission_row([
+            'cm'         => $cm->id,
+            'userid'     => $user->id,
+            'externalid' => 'ext-blind',
+            'identifier' => 'fakehash-blind',
+            'grade'      => 80,
+        ]);
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(80, 'ext-blind');
+
+        $result = $plugin->update_grade($cm, $submission, $user->id);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test update_grade inserts a new assign_grades row when no grade record
+     * exists yet for this user and assignment.
+     */
+    public function test_update_grade_inserts_new_grade_for_assign(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $this->insert_submission_row([
+            'cm'         => $cm->id,
+            'userid'     => $user->id,
+            'externalid' => 'ext-newgrade',
+            'identifier' => 'fakehash-newgrade',
+            'grade'      => 72,
+        ]);
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(72, 'ext-newgrade');
+
+        $result = $plugin->update_grade($cm, $submission, $user->id);
+
+        $this->assertTrue($result);
+        $grade = $DB->get_record('assign_grades', ['assignment' => $assign->id, 'userid' => $user->id]);
+        $this->assertNotFalse($grade);
+        $this->assertEquals(72, (int) $grade->grade);
+    }
+
+    /**
+     * Test update_grade updates an existing assign_grades row when one already
+     * exists — the grade value should be overwritten.
+     */
+    public function test_update_grade_updates_existing_grade_for_assign(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Pre-seed an existing grade row.
+        $DB->insert_record('assign_grades', (object)[
+            'assignment'    => $assign->id,
+            'userid'        => $user->id,
+            'attemptnumber' => 0,
+            'grade'         => 50,
+            'grader'        => 2,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $this->insert_submission_row([
+            'cm'         => $cm->id,
+            'userid'     => $user->id,
+            'externalid' => 'ext-update',
+            'identifier' => 'fakehash-update',
+            'grade'      => 88,
+        ]);
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(88, 'ext-update');
+
+        $result = $plugin->update_grade($cm, $submission, $user->id);
+
+        $this->assertTrue($result);
+        $grade = $DB->get_record('assign_grades', ['assignment' => $assign->id, 'userid' => $user->id]);
+        $this->assertEquals(88, (int) $grade->grade);
+    }
+
+    /**
+     * Test update_grade uses grade from the submission object when the identifier
+     * does not match a real Moodle file (no file hash hit) — the else branch
+     * calls current() on the DB records and falls through to $submission->getGrade().
+     */
+    public function test_update_grade_uses_submission_grade_when_no_file_hash_match(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Two rows exist but no real Moodle file — else branch uses current() (single object),
+        // so grade comes from $submission->getGrade(), not an average.
+        $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => $user->id,
+            'externalid' => 'ext-nfh1', 'identifier' => 'fakehash-nfh1', 'grade' => 60,
+        ]);
+        $this->insert_submission_row([
+            'cm' => $cm->id, 'userid' => $user->id,
+            'externalid' => 'ext-nfh2', 'identifier' => 'fakehash-nfh2', 'grade' => 80,
+        ]);
+
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(55, 'ext-nfh1');
+
+        $result = $plugin->update_grade($cm, $submission, $user->id);
+
+        $this->assertTrue($result);
+        $grade = $DB->get_record('assign_grades', ['assignment' => $assign->id, 'userid' => $user->id]);
+        // The else-branch falls into the scalar path → grade == $submission->getGrade().
+        $this->assertEquals(55, (int) $grade->grade);
+    }
+
+    /**
+     * Test update_grade nulls the rawgrade passed to the gradebook when
+     * marking workflow is enabled and the grade has not yet been released,
+     * but still writes the grade to assign_grades.
+     */
+    public function test_update_grade_suppresses_gradebook_when_workflow_unreleased(): void {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'         => $course->id,
+            'markingworkflow' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assign->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $this->insert_submission_row([
+            'cm'         => $cm->id,
+            'userid'     => $user->id,
+            'externalid' => 'ext-wf',
+            'identifier' => 'fakehash-wf',
+            'grade'      => 65,
+        ]);
+
+        // No assign_user_flags row with workflowstate='released' → grade suppressed from gradebook.
+        $plugin     = new \plagiarism_plugin_turnitin();
+        $submission = $this->make_graded_tii_submission(65, 'ext-wf');
+
+        $result = $plugin->update_grade($cm, $submission, $user->id);
+
+        // Grade is written to assign_grades...
+        $grade = $DB->get_record('assign_grades', ['assignment' => $assign->id, 'userid' => $user->id]);
+        $this->assertNotFalse($grade);
+        $this->assertEquals(65, (int) $grade->grade);
+        // ...and update_grade still returns true (gradebook update with null grade succeeds).
+        $this->assertTrue($result);
+    }
+
     /**
      * Insert a minimal plagiarism_turnitin_files row, merging provided overrides
      * with sensible defaults. Returns the new row id.

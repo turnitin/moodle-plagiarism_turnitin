@@ -308,42 +308,19 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         if ((!empty($linkarray["file"]) || !empty($linkarray["content"])) && !empty($linkarray["cmid"])) {
             $this->load_page_components();
 
-            $identifier = '';
-            $oldidentifier = '';
-            $itemid = 0;
-
-            // Get File or Content information.
             $submittinguser = $linkarray['userid'];
-            if (!empty($linkarray["file"])) {
-                $identifier = $file->get_pathnamehash();
-                $itemid = $file->get_itemid();
-                $submissiontype = 'file';
-            } else if (!empty($linkarray["content"])) {
-                // Get turnitin text content details.
-                $submissiontype = 'text_content';
-                if ($cm->modname == 'forum') {
-                    $submissiontype = 'forum_post';
-                } else if ($cm->modname == 'quiz') {
-                    $submissiontype = 'quiz_answer';
-                }
-                $content = empty($linkarray['content']) ? $moduleobject->set_content($linkarray, $cm) : $linkarray['content'];
-                if ($submissiontype === 'quiz_answer') {
-                    $attempt = \mod_quiz\quiz_attempt::create_from_usage_id($linkarray["area"]);
 
-                    $identifier = sha1('quiz_attempt user' . $attempt->get_userid() . ' cm' . $cm->id .
-                                     ' slot' . $linkarray["itemid"] . ' attempt' . $attempt->get_attempt_number());
-                    $oldidentifier = sha1($content . $linkarray["itemid"]);
-                } else if ($submissiontype === 'forum_post') {
-                    $identifier = sha1('forum_post user' . $linkarray['userid'] . ' cm' . $cm->id . ' ' . $content);
-                    $oldidentifier = sha1($content);
-                } else if ($cm->modname == 'assign') {
-                    $itemid = $moduleobject->get_onlinetext($linkarray['userid'], $cm)->itemid;
-                    $identifier = sha1('text_content cm' . $cm->id . ' itemid' . $itemid . ' ' . $content);
-                    $oldidentifier = sha1($content);
-                } else {
-                    $identifier = sha1($content);
-                }
-            }
+            // Resolve identifier, old identifier, itemid, and submission type.
+            $contentinfo    = \plagiarism_turnitin\turnitin_submission::resolve_content_identifier(
+                $linkarray,
+                $cm,
+                $linkarray['file'] ?? null,
+                $moduleobject
+            );
+            $identifier     = $contentinfo->identifier;
+            $oldidentifier  = $contentinfo->oldidentifier;
+            $itemid         = $contentinfo->itemid;
+            $submissiontype = $contentinfo->submissiontype;
 
             // Group submissions where all students have to submit sets userid to 0.
             if ($linkarray['userid'] == 0 && !$istutor) {

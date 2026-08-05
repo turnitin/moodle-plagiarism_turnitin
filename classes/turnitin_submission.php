@@ -1103,4 +1103,68 @@ class turnitin_submission {
 
         return true;
     }
+
+    /**
+     * Resolve the content identifier, old identifier, item id, and submission type
+     * for a submission being displayed in get_links().
+     *
+     * Returns a stdClass with four properties:
+     *   - identifier    string  Primary SHA-1 hash used to look up the submission.
+     *   - oldidentifier string  Legacy hash for backwards-compatible lookup (may equal identifier).
+     *   - itemid        int     Moodle assign_submission id (0 for non-file/non-assign).
+     *   - submissiontype string 'file' | 'text_content' | 'forum_post' | 'quiz_answer'
+     *
+     * @param array  $linkarray   The linkarray passed to get_links().
+     * @param \stdClass $cm       Course module record (needs ->modname, ->id).
+     * @param \stdClass $file     The stored_file object when linkarray['file'] is set, or null.
+     * @param object $moduleobject Module-specific object (e.g. turnitin_assign) for get_onlinetext().
+     * @return \stdClass
+     */
+    public static function resolve_content_identifier(
+        array $linkarray,
+        \stdClass $cm,
+        ?object $file,
+        object $moduleobject
+    ): \stdClass {
+        $result              = new \stdClass();
+        $result->identifier  = '';
+        $result->oldidentifier = '';
+        $result->itemid      = 0;
+        $result->submissiontype = '';
+
+        if (!empty($linkarray['file']) && $file !== null) {
+            $result->identifier     = $file->get_pathnamehash();
+            $result->itemid         = $file->get_itemid();
+            $result->submissiontype = 'file';
+        } else if (!empty($linkarray['content'])) {
+            $result->submissiontype = 'text_content';
+            if ($cm->modname === 'forum') {
+                $result->submissiontype = 'forum_post';
+            } else if ($cm->modname === 'quiz') {
+                $result->submissiontype = 'quiz_answer';
+            }
+
+            $content = $linkarray['content'];
+
+            if ($result->submissiontype === 'quiz_answer') {
+                $attempt = \mod_quiz\quiz_attempt::create_from_usage_id($linkarray['area']);
+                $result->identifier    = sha1(
+                    'quiz_attempt user' . $attempt->get_userid() . ' cm' . $cm->id .
+                    ' slot' . $linkarray['itemid'] . ' attempt' . $attempt->get_attempt_number()
+                );
+                $result->oldidentifier = sha1($content . $linkarray['itemid']);
+            } else if ($result->submissiontype === 'forum_post') {
+                $result->identifier    = sha1('forum_post user' . $linkarray['userid'] . ' cm' . $cm->id . ' ' . $content);
+                $result->oldidentifier = sha1($content);
+            } else if ($cm->modname === 'assign') {
+                $result->itemid        = $moduleobject->get_onlinetext($linkarray['userid'], $cm)->itemid;
+                $result->identifier    = sha1('text_content cm' . $cm->id . ' itemid' . $result->itemid . ' ' . $content);
+                $result->oldidentifier = sha1($content);
+            } else {
+                $result->identifier = sha1($content);
+            }
+        }
+
+        return $result;
+    }
 }

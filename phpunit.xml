@@ -28,8 +28,11 @@
   <source>
     <include>
       <directory suffix=".php">classes</directory>
+      <file>ajax.php</file>
+      <file>extras.php</file>
       <file>lib.php</file>
       <file>locallib.php</file>
+      <file>settings.php</file>
     </include>
     <exclude>
       <directory>vendor</directory>

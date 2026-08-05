@@ -436,4 +436,308 @@ final class lib_test extends \advanced_testcase {
             }
         };
     }
+
+    // End-to-end tests for get_links() early-return paths.
+
+    /**
+     * Test get_links returns empty string for feedback_files filearea.
+     *
+     * This exercises the should_skip_non_submitting_filearea guard in get_links
+     * without needing a full Turnitin-connected course setup.
+     */
+    public function test_get_links_returns_empty_for_feedback_files_filearea(): void {
+        $this->resetAfterTest();
+
+        $fs   = get_file_storage();
+        $file = $fs->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'assignfeedback_file',
+            'filearea'  => 'feedback_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'feedback.txt',
+        ], 'feedback content');
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links(['file' => $file, 'cmid' => 1, 'userid' => 1]);
+
+        $this->assertSame('', $result);
+        $fs->delete_area_files(\context_system::instance()->id, 'assignfeedback_file', 'feedback_files');
+    }
+
+    /**
+     * Test get_links returns empty string when quiz module is disabled in Turnitin.
+     */
+    public function test_get_links_returns_empty_when_quiz_disabled(): void {
+        $this->resetAfterTest();
+
+        set_config('plagiarism_turnitin_mod_quiz', 0, 'plagiarism_turnitin');
+
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links(['component' => 'qtype_essay', 'cmid' => 1, 'userid' => 1]);
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Test get_links returns empty string when use_turnitin is disabled for the module.
+     */
+    public function test_get_links_returns_empty_when_turnitin_disabled_for_cm(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+
+        // No plagiarism_turnitin_config row → use_turnitin is absent → early return.
+        $plugin = new \plagiarism_plugin_turnitin();
+        $result = $plugin->get_links([
+            'cmid'    => $cm->id,
+            'userid'  => 1,
+            'content' => 'some text',
+        ]);
+
+        $this->assertSame('', $result);
+    }
+
+    // End-to-end tests for plagiarism_turnitin_send_single_submission().
+
+    /**
+     * Test send_single_submission returns early when there is no Turnitin connection.
+     */
+    public function test_send_single_submission_returns_early_when_no_connection(): void {
+        $this->resetAfterTest();
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(false);
+
+        $queued = (object)['id' => 1, 'cm' => 1, 'userid' => 1, 'attempt' => 0, 'submissiontype' => 'file'];
+
+        $this->expectOutputRegex('/connection.*Turnitin|Turnitin.*connection/i');
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+    }
+
+    /**
+     * Test send_single_submission saves errorcode 12 when the cm does not exist.
+     */
+    public function test_send_single_submission_errors_when_cm_not_found(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+
+        $user   = $this->getDataGenerator()->create_user();
+        $id     = $this->insert_submission_row(['cm' => 99999, 'userid' => $user->id]);
+        $queued = (object)['id' => $id, 'cm' => 99999, 'userid' => $user->id, 'attempt' => 0, 'submissiontype' => 'file'];
+
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+
+        $this->assertEquals(12, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
+    }
+
+    /**
+     * Test send_single_submission saves errorcode 7 when userid is 0.
+     */
+    public function test_send_single_submission_errors_when_userid_zero(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+        $user   = $this->getDataGenerator()->create_user();
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_repositoryoption', 0, 'plagiarism_turnitin');
+        // Credentials needed so turnitin_comms doesn't throw during edit_tii_course.
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm' => $cm->id, 'name' => 'use_turnitin', 'value' => '1',
+            'config_hash' => $cm->id . '_use_turnitin',
+        ]);
+
+        // Mock the plugin so sync_tii_assignment doesn't make API calls.
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection', 'sync_tii_assignment'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn(true);
+        $mock->method('sync_tii_assignment')->willReturn(['tiiassignmentid' => 1, 'errorcode' => 0, 'success' => true]);
+
+        // Seed a turnitin_courses row so get_course_data() returns early without API.
+        $DB->insert_record('plagiarism_turnitin_courses', (object)[
+            'courseid' => $course->id, 'turnitin_cid' => 99, 'turnitin_ctl' => 'Test Course',
+        ]);
+
+        $id     = $this->insert_submission_row(['cm' => $cm->id, 'userid' => $user->id]);
+        $queued = (object)[
+            'id'             => $id,
+            'cm'             => $cm->id,
+            'userid'         => 0,
+            'submitter'      => 0,
+            'attempt'        => 0,
+            'submissiontype' => 'file',
+            'itemid'         => 0,
+            'identifier'     => 'hash',
+            'externalid'     => null,
+        ];
+
+        plagiarism_turnitin_send_single_submission($mock, $queued);
+
+        $this->assertEquals(7, $DB->get_field('plagiarism_turnitin_files', 'errorcode', ['id' => $id]));
+    }
+
+    // End-to-end tests for event_handler().
+
+    /**
+     * Test event_handler returns true when the cm does not exist (stale event).
+     */
+    public function test_event_handler_returns_true_when_cm_missing(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => 99999,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => 1,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when Turnitin is not enabled for the module.
+     */
+    public function test_event_handler_returns_true_when_module_disabled(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 0, 'plagiarism_turnitin');
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when use_turnitin is not set for the CM.
+     */
+    public function test_event_handler_returns_true_when_use_turnitin_disabled(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        // No plagiarism_turnitin_config row → use_turnitin absent → should_process_event returns false.
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Test event_handler returns true when draft submit is on and event is not final.
+     */
+    public function test_event_handler_returns_true_when_draft_skipped(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'           => $course->id,
+            'submissiondrafts' => 1,
+        ]);
+        $cm = get_coursemodule_from_instance('assign', $assign->id);
+
+        set_config('plagiarism_turnitin_mod_assign', 1, 'plagiarism_turnitin');
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'use_turnitin',
+            'value'       => '1',
+            'config_hash' => $cm->id . '_use_turnitin',
+        ]);
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'plagiarism_draft_submit',
+            'value'       => '1',
+            'config_hash' => $cm->id . '_plagiarism_draft_submit',
+        ]);
+
+        $plugin    = new \plagiarism_plugin_turnitin();
+        $eventdata = [
+            'other'             => ['modulename' => 'assign'],
+            'contextinstanceid' => $cm->id,
+            'userid'            => 1,
+            'eventtype'         => 'file_uploaded',
+            'objectid'          => $assign->id,
+        ];
+
+        $result = $plugin->event_handler($eventdata);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Insert a minimal plagiarism_turnitin_files row, merging provided overrides
+     * with sensible defaults. Returns the new row id.
+     */
+    private function insert_submission_row(array $overrides = []): int {
+        global $DB;
+
+        $row = array_merge([
+            'cm'             => 1,
+            'userid'         => 1,
+            'identifier'     => 'testhash',
+            'statuscode'     => 'queued',
+            'attempt'        => 0,
+            'submissiontype' => 'file',
+            'itemid'         => 0,
+            'submitter'      => 1,
+            'lastmodified'   => time(),
+            'transmatch'     => 0,
+        ], $overrides);
+
+        return $DB->insert_record('plagiarism_turnitin_files', (object) $row);
+    }
 }

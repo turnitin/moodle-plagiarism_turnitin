@@ -44,13 +44,14 @@ class sync_grades extends \core\task\scheduled_task {
     /**
      * Execute the task.
      *
+     * @param \plagiarism_plugin_turnitin|null $pluginturnitin Plugin instance; creates a real one if null.
      * @return void
      */
-    public function execute() {
+    public function execute(?\plagiarism_plugin_turnitin $pluginturnitin = null) {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
-        $pluginturnitin = new \plagiarism_plugin_turnitin();
+        $pluginturnitin = $pluginturnitin ?? new \plagiarism_plugin_turnitin();
         if (!turnitin_settings::is_plugin_configured()) {
             return;
         }

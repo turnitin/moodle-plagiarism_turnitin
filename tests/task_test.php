@@ -259,4 +259,171 @@ final class task_test extends \advanced_testcase {
             ['cm' => $cm->id, 'name' => 'grades_last_synced']
         ));
     }
+
+    // Send_submissions coverage tests.
+
+    /**
+     * Test that send_submissions in adhoc mode mtraces a "no queued items" message
+     * and returns without queueing any tasks when the queue is empty.
+     * Uses a partial mock to bypass the live Turnitin connection check.
+     */
+    public function test_send_submissions_adhoc_no_queued_items_logs_message(): void {
+        $this->resetAfterTest();
+        $this->set_credentials();
+        set_config('plagiarism_turnitin_enableadhocsubmissions', 1, 'plagiarism_turnitin');
+
+        $mockplugin = $this->make_mock_plugin_with_connection(true);
+
+        $this->expectOutputRegex('/No queued items found\./');
+        (new send_submissions())->execute($mockplugin);
+    }
+
+    /**
+     * Test that in adhoc mode with queued items, each item gets an ad-hoc task
+     * scheduled. Uses a partial mock to bypass the live connection check.
+     */
+    public function test_send_submissions_adhoc_queues_adhoc_tasks_for_each_item(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->set_credentials();
+        set_config('plagiarism_turnitin_enableadhocsubmissions', 1, 'plagiarism_turnitin');
+
+        for ($i = 0; $i < 2; $i++) {
+            $DB->insert_record('plagiarism_turnitin_files', (object)[
+                'cm' => 1, 'userid' => 1, 'identifier' => "hash$i",
+                'statuscode' => 'queued', 'attempt' => 0, 'submissiontype' => 'file',
+                'itemid' => 0, 'submitter' => 1, 'lastmodified' => time(), 'transmatch' => 0,
+            ]);
+        }
+
+        $before     = count(\core\task\manager::get_adhoc_tasks(adhoc_send_submission::class));
+        $mockplugin = $this->make_mock_plugin_with_connection(true);
+
+        $this->expectOutputRegex('/Found 2 queued submissions/');
+        (new send_submissions())->execute($mockplugin);
+
+        $after = count(\core\task\manager::get_adhoc_tasks(adhoc_send_submission::class));
+        $this->assertEquals($before + 2, $after);
+    }
+
+    /**
+     * Test that in non-adhoc mode, send_submissions queries for queued items and does
+     * not queue any ad-hoc tasks (submissions are processed inline).
+     */
+    public function test_send_submissions_non_adhoc_mode_does_not_queue_adhoc_tasks(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->set_credentials();
+        set_config('plagiarism_turnitin_enableadhocsubmissions', 0, 'plagiarism_turnitin');
+
+        $DB->insert_record('plagiarism_turnitin_files', (object)[
+            'cm' => 1, 'userid' => 1, 'identifier' => 'hash1',
+            'statuscode' => 'queued', 'attempt' => 0, 'submissiontype' => 'file',
+            'itemid' => 0, 'submitter' => 1, 'lastmodified' => time(), 'transmatch' => 0,
+        ]);
+
+        $before     = count(\core\task\manager::get_adhoc_tasks(adhoc_send_submission::class));
+        $mockplugin = $this->make_mock_plugin_with_connection(true);
+
+        $this->expectOutputRegex('/Sending submissions using scheduled task/');
+        (new send_submissions())->execute($mockplugin);
+
+        $after = count(\core\task\manager::get_adhoc_tasks(adhoc_send_submission::class));
+        $this->assertEquals($before, $after);
+    }
+
+    // Sync_grades coverage tests.
+
+    /**
+     * Test that sync_grades processes an assignment within the sync window.
+     * update_grades_from_tii throws since there's no real Turnitin — caught gracefully.
+     */
+    public function test_sync_grades_processes_assignment_within_window(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->set_credentials();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'  => $course->id,
+            'duedate' => time() + (24 * 60 * 60),
+        ]);
+        $cm = get_coursemodule_from_instance('assign', $assign->id);
+
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'turnitin_assignid',
+            'value'       => 99,
+            'config_hash' => $cm->id . '_turnitin_assignid',
+        ]);
+
+        $mockplugin = $this->make_mock_plugin_with_connection(true);
+
+        $this->expectOutputRegex('/Failed to update grade from tii|No new grades|Successfully synced/');
+        (new sync_grades())->execute($mockplugin);
+    }
+
+    /**
+     * Test that sync_grades writes grades_last_synced after successfully processing
+     * an assignment (update_grades_from_tii mocked to return true).
+     */
+    public function test_sync_grades_writes_last_synced_after_processing(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->set_credentials();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'  => $course->id,
+            'duedate' => time() + (24 * 60 * 60),
+        ]);
+        $cm = get_coursemodule_from_instance('assign', $assign->id);
+
+        $DB->insert_record('plagiarism_turnitin_config', (object)[
+            'cm'          => $cm->id,
+            'name'        => 'turnitin_assignid',
+            'value'       => 99,
+            'config_hash' => $cm->id . '_turnitin_assignid',
+        ]);
+
+        $mockplugin = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection', 'update_grades_from_tii'])
+            ->getMock();
+        $mockplugin->method('test_turnitin_connection')->willReturn(true);
+        $mockplugin->method('update_grades_from_tii')->willReturn(true);
+
+        $this->expectOutputRegex('/Successfully synced grades for cmid ' . $cm->id . '/');
+        (new sync_grades())->execute($mockplugin);
+
+        $this->assertTrue($DB->record_exists(
+            'plagiarism_turnitin_config',
+            ['cm' => $cm->id, 'name' => 'grades_last_synced']
+        ));
+    }
+
+    // Helpers.
+
+    /**
+     * Set the three required Turnitin credentials in config so is_plugin_configured() returns true.
+     */
+    private function set_credentials(): void {
+        set_config('plagiarism_turnitin_accountid', '1001', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_apiurl', 'https://api.turnitin.com', 'plagiarism_turnitin');
+        set_config('plagiarism_turnitin_secretkey', 'ABCDEFGH', 'plagiarism_turnitin');
+    }
+
+    /**
+     * Build a partial mock of plagiarism_plugin_turnitin where test_turnitin_connection()
+     * returns the given value without making a real API call.
+     *
+     * @param bool $connected Value to return from test_turnitin_connection().
+     * @return \plagiarism_plugin_turnitin
+     */
+    private function make_mock_plugin_with_connection(bool $connected): \plagiarism_plugin_turnitin {
+        $mock = $this->getMockBuilder(\plagiarism_plugin_turnitin::class)
+            ->onlyMethods(['test_turnitin_connection'])
+            ->getMock();
+        $mock->method('test_turnitin_connection')->willReturn($connected);
+        return $mock;
+    }
 }

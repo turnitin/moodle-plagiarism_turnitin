@@ -303,7 +303,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      * @param string $workflowcontext The context of the workflow
      */
     public function test_turnitin_connection($workflowcontext = 'site') {
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $tiiapi = $turnitincomms->initialise_api();
 
         $class = new TiiClass();
@@ -461,7 +461,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             if (!empty($eula)) {
                 $output .= $eula . $noscripteula;
 
-                $turnitincomms = new \turnitin_comms();
+                $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 $customdata = ["disable_form_change_checker" => true,
@@ -792,7 +792,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                         if (!empty($eula)) {
                             $output .= $eula;
 
-                            $turnitincomms = new \turnitin_comms();
+                            $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
                             $turnitincall = $turnitincomms->initialise_api();
 
                             $customdata = ["disable_form_change_checker" => true,
@@ -980,7 +980,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismvalues = \plagiarism_turnitin\turnitin_settings::for_cm($cm->id);
 
         // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Get the submission ids from Turnitin that have been updated.
@@ -1019,7 +1019,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         // Refresh updated submissions.
         $return = true;
         // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Process submissions in batches, depending on the max. number of submissions the Turnitin API returns.
@@ -1062,7 +1062,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $return = true;
 
         // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         try {
@@ -1468,7 +1468,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         }
 
         // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $assignment = new TiiAssignment();
@@ -1743,7 +1743,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     public function update_rubric_from_tii($cm) {
         global $DB;
 
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $assignment = new TiiAssignment();
 
@@ -1915,7 +1915,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             $submissionbatches = array_chunk($validatedsubmissions['trimmedSubmissions'], PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN);
             foreach ($submissionbatches as $submissionsbatch) {
                 // Initialise Comms Object.
-                $turnitincomms = new \turnitin_comms();
+                $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
                 $turnitincall = $turnitincomms->initialise_api();
 
                 try {
@@ -1998,7 +1998,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
      */
     private function check_local_submission_state($assignmentids, $submissionids) {
         // Initialise Comms Object.
-        $turnitincomms = new \turnitin_comms();
+        $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $tiisubmissionids = [];
 
@@ -2386,7 +2386,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             // Fetch canonical content from DB — event data may contain stale/rewritten URLs.
             $eventdata['other']['content'] = \plagiarism_turnitin\turnitin_submission::get_normalised_content(
-                $cm, $eventdata['objectid'], $eventdata['other']['content']
+                $cm,
+                $eventdata['objectid'],
+                $eventdata['other']['content']
             );
 
             $identifier = \plagiarism_turnitin\turnitin_submission::calculate_content_identifier(
@@ -2424,7 +2426,8 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 if (!\plagiarism_turnitin\turnitin_submission::is_file_submittable($file)) {
                     if ($file->get_filename() !== '.') {
                         \plagiarism_turnitin\turnitin_logger::log(
-                            'File content not found: ' . $pathnamehash, 'PP_NO_FILE'
+                            'File content not found: ' . $pathnamehash,
+                            'PP_NO_FILE'
                         );
                     }
                     $result = true;
@@ -2883,7 +2886,7 @@ function plagiarism_turnitin_send_single_submission($pluginturnitin, $queueditem
     $submission->setSubmissionDataPath($tempfile);
 
     // Initialise Comms Object.
-    $turnitincomms = new \turnitin_comms();
+    $turnitincomms = new \plagiarism_turnitin\turnitin_comms();
     $turnitincall = $turnitincomms->initialise_api();
 
     try {

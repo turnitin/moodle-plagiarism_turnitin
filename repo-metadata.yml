@@ -1,0 +1,7 @@
+schema_version: 1.0.0
+info:
+  domain: Integrity
+  component: Integrations - strategic
+  security_class: 'Class A: Production'
+ownership:
+  team: Integrations

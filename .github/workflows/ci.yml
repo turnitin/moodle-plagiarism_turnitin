@@ -90,21 +90,10 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        # --no-init skips Behat initialisation, which requires dev dependencies we don't install.
-        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: pgsql
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-
-      - name: Initialise PHPUnit
-        # --no-init skipped PHPUnit setup. Run init.php directly.
-        # Moodle 5.x places files under moodle/public/; earlier versions use moodle/ directly.
-        run: |
-          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
-            php moodle/public/admin/tool/phpunit/cli/init.php
-          else
-            php moodle/admin/tool/phpunit/cli/init.php
-          fi
 
       - name: PHP Lint
         if: ${{ !cancelled() }}
@@ -121,6 +110,10 @@ jobs:
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
+
+      - name: Behat tests
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci behat
 
       - name: Mark cancelled jobs as failed
         if: ${{ cancelled() }}

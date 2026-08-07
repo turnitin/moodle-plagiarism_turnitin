@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Primary PHPUnit configuration (Moodle 5.x / PHPUnit 10+).
-
-  Uses <source> which is the standard element from PHPUnit 10 onwards.
-  For Moodle 4.x / PHPUnit 9 compatibility, use phpunit10.xml instead,
-  which uses the legacy <coverage> element.
--->
 <phpunit
   bootstrap="../../lib/phpunit/bootstrap.php"
   processIsolation="false"
@@ -32,7 +25,9 @@
     </testsuite>
   </testsuites>
 
-  <source>
+  <!-- PHPUnit 9 (Moodle 4.x) declares source paths under <coverage>.
+       PHPUnit 10+ replaced this element with <source>; see phpunit.xml. -->
+  <coverage>
     <include>
       <directory suffix=".php">classes</directory>
       <file>lib.php</file>
@@ -44,6 +39,6 @@
       <directory>tests</directory>
       <directory>db</directory>
     </exclude>
-  </source>
+  </coverage>
 
 </phpunit>

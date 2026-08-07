@@ -26,26 +26,34 @@ jobs:
       matrix:
         include:
           # Moodle 4.5 LTS — minimum supported version per version.php requires = 2024100700.
-          # Supports PHP 8.1–8.3.
+          # Supports PHP 8.1–8.3. Uses phpunit10.xml (PHPUnit 9 / <coverage> syntax).
           - php: '8.1'
             moodle-branch: 'MOODLE_405_STABLE'
+            phpunit-config: 'phpunit10.xml'
           - php: '8.3'
             moodle-branch: 'MOODLE_405_STABLE'
+            phpunit-config: 'phpunit10.xml'
           # Moodle 5.0 — supports PHP 8.2–8.4.
           - php: '8.2'
             moodle-branch: 'MOODLE_500_STABLE'
+            phpunit-config: 'phpunit.xml'
           - php: '8.4'
             moodle-branch: 'MOODLE_500_STABLE'
+            phpunit-config: 'phpunit.xml'
           # Moodle 5.1 — supports PHP 8.2–8.4.
           - php: '8.2'
             moodle-branch: 'MOODLE_501_STABLE'
+            phpunit-config: 'phpunit.xml'
           - php: '8.4'
             moodle-branch: 'MOODLE_501_STABLE'
+            phpunit-config: 'phpunit.xml'
           # Moodle 5.2 — supports PHP 8.3–8.4. Matches the local Docker environment.
           - php: '8.3'
             moodle-branch: 'MOODLE_502_STABLE'
+            phpunit-config: 'phpunit.xml'
           - php: '8.4'
             moodle-branch: 'MOODLE_502_STABLE'
+            phpunit-config: 'phpunit.xml'
 
     steps:
       - name: Check out repository code
@@ -109,7 +117,7 @@ jobs:
 
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpunit --fail-on-warning
+        run: moodle-plugin-ci phpunit --fail-on-warning --configuration ${{ matrix.phpunit-config }}
 
       - name: Behat tests
         if: ${{ !cancelled() }}

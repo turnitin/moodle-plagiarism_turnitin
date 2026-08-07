@@ -525,7 +525,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                     $_SESSION["peermark_assignments"][$cm->id] ?? [],
                     $submittereulaccepted,
                     $CFG->wwwroot,
-                    !empty($linkarray["file"]) ? $file->get_filesize() : 0
+                    !empty($linkarray["file"]) ? $linkarray["file"]->get_filesize() : 0
                 );
                 $ctx->vieweruserid = $USER->id;
 

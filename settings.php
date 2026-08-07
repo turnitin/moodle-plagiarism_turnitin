@@ -52,7 +52,7 @@ if (isset($_SESSION["notice"])) {
 }
 
 $plagiarismpluginturnitin = new plagiarism_plugin_turnitin();
-$plugindefaults = \plagiarism_turnitin\turnitin_settings::for_cm();
+$plugindefaults = \plagiarism_turnitin\turnitin_settings::for_cm(null);
 
 // Save Settings.
 if (!empty($action)) {

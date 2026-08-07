@@ -25,7 +25,9 @@
     </testsuite>
   </testsuites>
 
-  <source>
+  <!-- PHPUnit 9 (Moodle 4.x) declares source paths under <coverage>.
+       PHPUnit 10 replaced this element with <source>. -->
+  <coverage>
     <include>
       <directory suffix=".php">classes</directory>
       <file>lib.php</file>
@@ -37,6 +39,6 @@
       <directory>tests</directory>
       <directory>db</directory>
     </exclude>
-  </source>
+  </coverage>
 
 </phpunit>

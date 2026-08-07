@@ -70,6 +70,10 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 // Get helper methods.
 require_once($CFG->dirroot . '/plagiarism/turnitin/locallib.php');
 
+// Form classes live in classes/forms/ but declare namespace plagiarism_turnitin,
+// so Moodle's autoloader cannot find them from the namespace alone.
+require_once($CFG->dirroot . '/plagiarism/turnitin/classes/forms/turnitin_activitysettingsform.php');
+
 // Classes in classes/ are autoloaded by Moodle's PSR-4 autoloader.
 
 /**

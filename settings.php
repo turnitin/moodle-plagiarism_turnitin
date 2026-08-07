@@ -27,6 +27,13 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
+// Moodle's autoloader resolves class paths from the namespace, so classes in a
+// subdirectory of classes/ must be required explicitly when the namespace does
+// not reflect the subdirectory structure.
+require_once($CFG->dirroot . '/plagiarism/turnitin/classes/forms/turnitin_setupform.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/classes/forms/turnitin_defaultsettingsform.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/classes/forms/turnitin_form.php');
+
 $turnitinview = new \plagiarism_turnitin\turnitin_view();
 
 $cssurl = new moodle_url('/plagiarism/turnitin/amd/src/datatables.css');

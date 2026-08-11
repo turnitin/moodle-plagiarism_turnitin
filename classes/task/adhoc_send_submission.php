@@ -25,12 +25,13 @@
 
 namespace plagiarism_turnitin\task;
 
+use plagiarism_turnitin\turnitin_settings;
+
 /**
  * Ad-hoc task which sends one individual submission to Turnitin.
  * Can be run in parallel in order to speed up processing of submissions.
  */
 class adhoc_send_submission extends \core\task\adhoc_task {
-
     /**
      * Get the name of the task.
      *
@@ -41,6 +42,12 @@ class adhoc_send_submission extends \core\task\adhoc_task {
         return get_string('adhoc_sendqueuedsubmission', 'plagiarism_turnitin');
     }
 
+    /**
+     * Create a queued instance of this task for a single submission.
+     *
+     * @param stdClass $submission Row from plagiarism_turnitin_files
+     * @return self
+     */
     public static function instance($submission): self {
         $task = new self();
         $task->set_custom_data((object) [
@@ -69,9 +76,9 @@ class adhoc_send_submission extends \core\task\adhoc_task {
     public function execute() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $plugin = new \plagiarism_plugin_turnitin();
-        if (!$plugin->is_plugin_configured()) {
+        if (!turnitin_settings::is_plugin_configured()) {
             return;
         }
 

@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 /**
  * Class plagiarism_turnitin_observer
@@ -31,7 +31,8 @@ class plagiarism_turnitin_observer {
      * @param \core\event\course_module_deleted $event
      */
     public static function course_module_deleted(
-        \core\event\course_module_deleted $event) {
+        \core\event\course_module_deleted $event
+    ) {
         global $DB;
         $eventdata = $event->get_data();
 
@@ -44,124 +45,146 @@ class plagiarism_turnitin_observer {
      * @param \core\event\course_reset_ended $event
      */
     public static function course_reset(
-        \core\event\course_reset_ended $event) {
-        $eventdata = $event->get_data();
-
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->course_reset($eventdata);
+        \core\event\course_reset_ended $event
+    ) {
+        \plagiarism_turnitin\turnitin_course::course_reset($event);
     }
 
 
     /**
      * Handle the assignment assessable_uploaded event.
      * @param \assignsubmission_file\event\assessable_uploaded $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function assignsubmission_file_uploaded(
-        \assignsubmission_file\event\assessable_uploaded $event) {
+        \assignsubmission_file\event\assessable_uploaded $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'file_uploaded';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the forum assessable_uploaded event.
      * @param \mod_forum\event\assessable_uploaded $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function forum_file_uploaded(
-        \mod_forum\event\assessable_uploaded $event) {
+        \mod_forum\event\assessable_uploaded $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'forum';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the workshop assessable_uploaded event.
      * @param \mod_workshop\event\assessable_uploaded $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function workshop_file_uploaded(
-        \mod_workshop\event\assessable_uploaded $event) {
+        \mod_workshop\event\assessable_uploaded $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'workshop';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the assignment assessable_uploaded event.
      * @param \assignsubmission_onlinetext\event\assessable_uploaded $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function assignsubmission_onlinetext_uploaded(
-        \assignsubmission_onlinetext\event\assessable_uploaded $event) {
+        \assignsubmission_onlinetext\event\assessable_uploaded $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'content_uploaded';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the coursework assessable_uploaded event.
      *
      * @param \mod_coursework\event\assessable_uploaded $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function coursework_submitted(
-        \mod_coursework\event\assessable_uploaded $event) {
+        \mod_coursework\event\assessable_uploaded $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'coursework';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the assignment assessable_submitted event.
      * @param \mod_assign\event\assessable_submitted $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function assignsubmission_submitted(
-        \mod_assign\event\assessable_submitted $event) {
+        \mod_assign\event\assessable_submitted $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'assessable_submitted';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Handle the assignment submission_removed event.
      * @param \mod_assign\event\submission_removed $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function assignsubmission_removed(
-        \mod_assign\event\submission_removed $event) {
+        \mod_assign\event\submission_removed $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'submission_removed';
         $eventdata['other']['modulename'] = 'assign';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 
     /**
      * Observer function to handle the quiz_submitted event in mod_quiz.
      * @param \mod_quiz\event\attempt_submitted $event
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
     public static function quiz_submitted(
-        \mod_quiz\event\attempt_submitted $event) {
+        \mod_quiz\event\attempt_submitted $event,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ) {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['other']['modulename'] = 'quiz';
 
-        $plugin = new plagiarism_plugin_turnitin();
-        $plugin->event_handler($eventdata);
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
+        $pluginturnitin->event_handler($eventdata);
     }
 }

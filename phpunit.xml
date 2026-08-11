@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Primary PHPUnit configuration (Moodle 5.x / PHPUnit 10+).
+
+  Uses <source> which is the standard element from PHPUnit 10 onwards.
+  For Moodle 4.x / PHPUnit 9 compatibility, use phpunit10.xml instead,
+  which uses the legacy <coverage> element.
+-->
+<phpunit
+  bootstrap="../../lib/phpunit/bootstrap.php"
+  processIsolation="false"
+  backupGlobals="false"
+  cacheResult="false"
+  failOnWarning="true"
+  stopOnError="false"
+  stopOnFailure="false"
+  stopOnIncomplete="false"
+  stopOnSkipped="false"
+  beStrictAboutTestsThatDoNotTestAnything="false"
+  beStrictAboutOutputDuringTests="true"
+>
+
+  <php>
+    <!--<const name="PHPUNIT_LONGTEST" value="1"/> uncomment to execute also slow or otherwise expensive tests-->
+    <const name="PHPUNIT_SEQUENCE_START" value="119000"/>
+  </php>
+
+  <testsuites>
+    <testsuite name="plagiarism_turnitin_tests_testsuite">
+      <directory suffix="_test.php">tests</directory>
+      <exclude>tests/fixtures</exclude>
+    </testsuite>
+  </testsuites>
+
+  <source>
+    <include>
+      <directory suffix=".php">classes</directory>
+      <file>lib.php</file>
+      <file>locallib.php</file>
+    </include>
+    <exclude>
+      <directory>vendor</directory>
+      <directory>lang</directory>
+      <directory>tests</directory>
+      <directory>db</directory>
+    </exclude>
+  </source>
+
+</phpunit>

@@ -15,26 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Hook callbacks for the Turnitin plagiarism plugin.
+ *
  * @package   plagiarism_turnitin
  * @copyright 2025 Turnitin
  * @author    Jack Milgate
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_turnitin;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core\hook\output\before_footer_html_generation;
 
+/**
+ * Hook callback handlers for plagiarism_turnitin.
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2025 Turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class hook_callbacks {
-
     /**
      * This is a workaround to allow the EULA to be displayed on the quiz page.
      * This function fires on every page, but only does anything if the user is on the quiz page.
      *
      * @param before_footer_html_generation $hook
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; injected in tests to avoid API calls.
      */
-    public static function before_footer_html_generation(before_footer_html_generation $hook): void {
+    public static function before_footer_html_generation(
+        before_footer_html_generation $hook,
+        ?\plagiarism_plugin_turnitin $plugin = null
+    ): void {
         global $CFG, $PAGE;
 
         // Check whether the user is on the quiz page. If not, we don't need to do anything.
@@ -43,24 +54,24 @@ class hook_callbacks {
         }
 
         // Include lib.php so we can access the Turnitin plagiarism plugin class.
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-        $pluginturnitin = new \plagiarism_plugin_turnitin();
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+        $pluginturnitin = $plugin ?? new \plagiarism_plugin_turnitin();
 
-        $moduletiienabled = $pluginturnitin->get_config_settings('mod_'.$PAGE->cm->modname);
+        $moduletiienabled = turnitin_settings::module_enabled('mod_' . $PAGE->cm->modname);
         // Exit if Turnitin is not being used for this activity type.
         if (empty($moduletiienabled)) {
             return;
         }
 
         // Check that turnitin is enabled for this quiz.
-        $plagiarismsettings = $pluginturnitin->get_settings($PAGE->cm->id);
+        $plagiarismsettings = turnitin_settings::for_cm($PAGE->cm->id);
         if (empty($plagiarismsettings['use_turnitin']) || $plagiarismsettings['use_turnitin'] != '1') {
             return;
         }
 
         // This function checks whether the user has accepted the EULA.
         // If they haven't, it will return the EULA form. If they have, it will return an empty string.
-        $eulaform = $pluginturnitin->render_eula_form($PAGE->cm);
+        $eulaform = turnitin_eula_form::render($PAGE->cm, $pluginturnitin);
         if ($eulaform == '') {
             return;
         }

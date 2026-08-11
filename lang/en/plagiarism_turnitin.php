@@ -185,6 +185,8 @@ $string['messageprovider:submission'] = 'Turnitin Plagiarism Plugin Digital Rece
 $string['digitalreceipt'] = 'Digital Receipt';
 $string['digital_receipt_subject'] = 'This is your Turnitin Digital Receipt';
 $string['pp_digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from the print/download button in the Document Viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
+$string['receipt_instructor_copy_subject'] = 'Turnitin Digital Receipt - Instructor Copy';
+$string['receipt_instructor_copy'] = 'A submission has been made to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. The submission title is <strong>{$a->submission_title}</strong> and the submission id is <strong>{$a->submission_id}</strong>.';
 
 // Paper statuses.
 $string['turnitinid'] = 'Turnitin ID';

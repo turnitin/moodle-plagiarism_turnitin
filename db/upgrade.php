@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
 /**
  * Upgrade the plagiarism_turnitin plugin
@@ -89,8 +89,8 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                     $configfield = new stdClass();
                     $configfield->value = 1;
                     $configfield->plugin = 'plagiarism_turnitin';
-                    $configfield->name = 'turnitin_use_mod_'.$mod;
-                    if (!$DB->get_record('config_plugins', ['name' => 'turnitin_use_mod_'.$mod])) {
+                    $configfield->name = 'turnitin_use_mod_' . $mod;
+                    if (!$DB->get_record('config_plugins', ['name' => 'turnitin_use_mod_' . $mod])) {
                         $DB->insert_record('config_plugins', $configfield);
                     }
                 }
@@ -211,7 +211,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         $dbman->change_field_notnull($table, $field);
 
         // Update 0 to null for defaults.
-        $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET cm = NULL WHERE cm = 0");
+        $DB->execute("UPDATE " . $CFG->prefix . "plagiarism_turnitin_config SET cm = NULL WHERE cm = 0");
 
         // Re-add foreign key for cm field.
         $dbman->add_key($table, $key);
@@ -284,7 +284,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
         }
 
         // Retrospectively update the new column to be id for previous configs.
-        $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_config SET config_hash = id WHERE config_hash IS NULL");
+        $DB->execute("UPDATE " . $CFG->prefix . "plagiarism_turnitin_config SET config_hash = id WHERE config_hash IS NULL");
 
         // Add hash as key after update.
         $key = new xmldb_key('config_hash', XMLDB_KEY_UNIQUE, ['config_hash']);
@@ -295,7 +295,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     if ($oldversion < 2019031301) {
         // Reset all error code 13s so that we are on a clean slate with the new implementation.
-        $DB->execute("UPDATE ".$CFG->prefix.
+        $DB->execute("UPDATE " . $CFG->prefix .
             "plagiarism_turnitin_files SET statuscode = 'success', errorcode = NULL WHERE errorcode = 13");
 
         upgrade_plugin_savepoint(true, 2019031301, 'plagiarism', 'turnitin');
@@ -312,7 +312,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
                 "pseudolastname", "lastnamegen", "pseudosalt", "pseudoemaildomain", "useanon", ];
 
             foreach ($properties as $property) {
-                plagiarism_plugin_turnitin::plagiarism_set_config($data, $property);
+                \plagiarism_turnitin\turnitin_settings::set_config($data, $property);
             }
         }
 
@@ -337,13 +337,19 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // If V2 is installed, copy the courses across from V2.
         if ($DB->get_record('config_plugins', ['plugin' => 'mod_turnitintooltwo'])) {
-            $ppcourses = $DB->get_records('turnitintooltwo_courses', ['course_type' => 'PP'], 'id ASC',
-                'courseid, ownerid, turnitin_ctl, turnitin_cid');
+            $ppcourses = $DB->get_records(
+                'turnitintooltwo_courses',
+                ['course_type' => 'PP'],
+                'id ASC',
+                'courseid, ownerid, turnitin_ctl, turnitin_cid'
+            );
             try {
                 $DB->insert_records('plagiarism_turnitin_courses', $ppcourses);
             } catch (Exception $e) {
-                plagiarism_turnitin_activitylog('Unable to copy course tables during version upgrade because they already exist.',
-                    'PP_UPGRADE');
+                \plagiarism_turnitin\turnitin_logger::log(
+                    'Unable to copy course tables during version upgrade because they already exist.',
+                    'PP_UPGRADE'
+                );
             }
 
             // Clean up old data, but only if the number of courses inserted matches the number of courses we wanted to insert.
@@ -397,13 +403,19 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
         // If V2 is installed, copy the users across from V2.
         if ($DB->get_record('config_plugins', ['plugin' => 'mod_turnitintooltwo'])) {
-            $ppusers = $DB->get_records('turnitintooltwo_users', null, 'id ASC',
-                'userid, turnitin_uid, turnitin_utp, instructor_rubrics, user_agreement_accepted');
+            $ppusers = $DB->get_records(
+                'turnitintooltwo_users',
+                null,
+                'id ASC',
+                'userid, turnitin_uid, turnitin_utp, instructor_rubrics, user_agreement_accepted'
+            );
             try {
                 $DB->insert_records('plagiarism_turnitin_users', $ppusers);
             } catch (Exception $e) {
-                plagiarism_turnitin_activitylog('Unable to copy users table during version upgrade because they already exist.',
-                    'PP_UPGRADE');
+                \plagiarism_turnitin\turnitin_logger::log(
+                    'Unable to copy users table during version upgrade because they already exist.',
+                    'PP_UPGRADE'
+                );
             }
         }
         upgrade_plugin_savepoint(true, 2019050201, 'plagiarism', 'turnitin');
@@ -455,7 +467,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
 
     // This block is to solve a number of inconsistencies between the install and upgrade scripts.
     if ($oldversion < 2020091401) {
-
         // Set itemid to default to null.
         $table = new xmldb_table('plagiarism_turnitin_files');
         $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, false, null, 'externalid');
@@ -499,7 +510,6 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021081301) {
-
         $table = new xmldb_table('plagiarism_turnitin_courses');
         $field = new xmldb_field('ownerid');
         if ($dbman->field_exists($table, $field)) {
@@ -561,7 +571,7 @@ function xmldb_plagiarism_turnitin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2025103101) {
-				// Add unique constraint on external ID of each submission
+                // Add unique constraint on external ID of each submission.
         $table = new xmldb_table('plagiarism_turnitin_files');
         $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
 
@@ -595,14 +605,14 @@ function upgrade_dm_successful_uploads() {
     global $DB, $CFG;
 
     // Update successful submissions from Dan Marsden's plugin with incorrect statuscode.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'success',
-        lastmodified = ".time()." WHERE statuscode = '51'");
+    $DB->execute("UPDATE " . $CFG->prefix . "plagiarism_turnitin_files SET statuscode = 'success',
+        lastmodified = " . time() . " WHERE statuscode = '51'");
 
     // Update the lastmodified timestamp from all successful submissions from Dan Marsden's plugin.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET lastmodified = ".time()."
+    $DB->execute("UPDATE " . $CFG->prefix . "plagiarism_turnitin_files SET lastmodified = " . time() . "
         WHERE statuscode = 'success' AND lastmodified = 0");
 
     // Update error codes with submissions from Dan Marsden's plugin.
-    $DB->execute("UPDATE ".$CFG->prefix."plagiarism_turnitin_files SET statuscode = 'error'
+    $DB->execute("UPDATE " . $CFG->prefix . "plagiarism_turnitin_files SET statuscode = 'error'
         WHERE statuscode != 'success' AND statuscode != 'pending'");
 }

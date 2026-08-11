@@ -29,16 +29,16 @@
  * @return $submitpapersto int - The repository to submit to.
  */
 function plagiarism_turnitin_override_repository($submitpapersto) {
-    $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+    $config = \plagiarism_turnitin\turnitin_settings::admin_config();
 
     switch ($config->plagiarism_turnitin_repositoryoption) {
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_STANDARD: // Force Standard Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_STANDARD_REPOSITORY;
             break;
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO; // Force No Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_NO: // Force No Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_NO_REPOSITORY;
             break;
-        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL; // Force Individual Repository.
+        case PLAGIARISM_TURNITIN_ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL: // Force Individual Repository.
             $submitpapersto = PLAGIARISM_TURNITIN_SUBMIT_TO_INSTITUTIONAL_REPOSITORY;
             break;
     }
@@ -59,12 +59,12 @@ function plagiarism_turnitin_retrieve_successful_submissions($author, $cmid, $id
     global $CFG, $DB;
 
     // Check if the same answer has been submitted previously. Remove if so.
-    list($insql, $inparams) = $DB->get_in_or_equal(['success', 'queued'], SQL_PARAMS_QM, 'param', false);
+    [$insql, $inparams] = $DB->get_in_or_equal(['success', 'queued'], SQL_PARAMS_QM, 'param', false);
     $typefield = ($CFG->dbtype == "oci") ? " to_char(statuscode) " : " statuscode ";
 
     $plagiarismfiles = $DB->get_records_select(
         "plagiarism_turnitin_files",
-        " userid = ? AND cm = ? AND identifier = ? AND ".$typefield. " " .$insql,
+        " userid = ? AND cm = ? AND identifier = ? AND " . $typefield . " " . $insql,
         array_merge([$author, $cmid, $identifier], $inparams)
     );
 
@@ -84,12 +84,143 @@ function plagiarism_turnitin_lock_anonymous_marking($cmid) {
     $configfield->value = 1;
     $configfield->config_hash = $configfield->cm . "_" . $configfield->name;
 
-    if (!$DB->get_field('plagiarism_turnitin_config', 'id',
-        (['cm' => $cmid, 'name' => 'submitted']))) {
+    if (
+        !$DB->get_field(
+            'plagiarism_turnitin_config',
+            'id',
+            (['cm' => $cmid, 'name' => 'submitted'])
+        )
+    ) {
         if (!$DB->insert_record('plagiarism_turnitin_config', $configfield)) {
             plagiarism_turnitin_print_error(
                 'defaultupdateerror',
-                'plagiarism_turnitin', null, null, __FILE__, __LINE__);
+                'plagiarism_turnitin',
+                null,
+                null,
+                __FILE__,
+                __LINE__
+            );
         }
     }
+}
+
+/**
+ * Check whether a user has accepted the Turnitin EULA in the local database.
+ *
+ * Only queries the local plagiarism_turnitin_users table — makes no API call.
+ * Returns false when no record exists, the user hasn't yet accepted, or they
+ * explicitly declined (user_agreement_accepted = -1). The caller is responsible
+ * for making the live API call to prompt acceptance when this returns false.
+ *
+ * @param int $userid Moodle user id.
+ * @return bool True only when user_agreement_accepted = 1.
+ */
+function plagiarism_turnitin_is_eula_accepted(int $userid): bool {
+    global $DB;
+
+    $tiiuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $userid], 'user_agreement_accepted');
+
+    return $tiiuser !== false && $tiiuser->user_agreement_accepted == 1;
+}
+
+/**
+ * Abstracted error handler that logs the error and throws a moodle_exception.
+ *
+ * Constructs a redirect URL from the current page context when $link is not
+ * supplied, falling back to $CFG->wwwroot when no recognised module page is detected.
+ *
+ * @param string $input  Language string key, or raw message when $module is null.
+ * @param string $module Plugin/component name for get_string(); pass null to use $input as-is.
+ * @param string $link   URL to redirect to on error; auto-detected from PHP_SELF if null.
+ * @param mixed  $param  Optional $a object/array passed to get_string().
+ * @param string $file   File where the error occurred (for non-lib.php callers).
+ * @param int    $line   Line number where the error occurred.
+ */
+function plagiarism_turnitin_print_error(
+    $input,
+    $module = 'plagiarism_turnitin',
+    $link = null,
+    $param = null,
+    $file = __FILE__,
+    $line = __LINE__
+) {
+    global $CFG;
+
+    \plagiarism_turnitin\turnitin_logger::log($input, 'PRINT_ERROR');
+
+    $message = is_null($module) ? $input : get_string($input, $module, $param);
+    $linkid  = optional_param('id', 0, PARAM_INT);
+
+    if (is_null($link)) {
+        $mod = '';
+        if (substr_count($_SERVER['PHP_SELF'], 'assign/view.php') > 0) {
+            $mod = 'assign';
+        } else if (substr_count($_SERVER['PHP_SELF'], 'forum/view.php') > 0) {
+            $mod = 'forum';
+        } else if (substr_count($_SERVER['PHP_SELF'], 'workshop/view.php') > 0) {
+            $mod = 'workshop';
+        }
+        $link = (!empty($linkid) && !empty($mod))
+            ? $CFG->wwwroot . '/' . $mod . '/view.php?id=' . $linkid
+            : $CFG->wwwroot;
+    }
+
+    if (basename($file) !== 'lib.php') {
+        $message .= ' (' . basename($file) . ' | ' . $line . ')';
+    }
+
+    throw new \moodle_exception($input, 'plagiarism_turnitin', $link, $message);
+}
+
+/**
+ * Creates a temp file for submission to Turnitin.
+ *
+ * Builds a sanitised, length-capped filename from an array of name parts and a
+ * file extension suffix, creates the file in Moodle's plagiarism_turnitin temp
+ * directory, and returns the full path.
+ *
+ * @param array  $filename Parts joined with underscores to form the base filename.
+ * @param string $suffix   The original filename; used only to extract the file extension.
+ * @return string Full path of the created temp file.
+ * @throws \invalid_dataroot_permissions When the file cannot be created after 10 attempts.
+ */
+function plagiarism_turnitin_tempfile(array $filename, string $suffix): string {
+    $filename = implode('_', $filename);
+    $filename = str_replace(' ', '_', $filename);
+    $filename = clean_param(strip_tags($filename), PARAM_FILE);
+
+    $tempdir = make_temp_directory('plagiarism_turnitin');
+
+    // Get the file extension (if there is one).
+    $pathparts = explode('.', $suffix);
+    $ext = '';
+    if (count($pathparts) > 1) {
+        $ext = '.' . array_pop($pathparts);
+    }
+
+    $permittedstrlength = PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH - mb_strlen($tempdir . DIRECTORY_SEPARATOR, 'UTF-8');
+    $extlength = mb_strlen('_' . mt_getrandmax() . $ext, 'UTF-8');
+    if ($extlength > $permittedstrlength) {
+        // Someone has likely used a long filename or the tempdir path is huge, so preserve the extension if possible.
+        $extlength = $permittedstrlength;
+    }
+
+    // Shorten the filename as needed, taking the extension into consideration.
+    $permittedstrlength -= $extlength;
+    $filename = mb_substr($filename, 0, $permittedstrlength, 'UTF-8');
+
+    // Ensure the filename doesn't have any characters that are invalid for the fs.
+    $filename = clean_param($filename . mb_substr('_' . mt_rand() . $ext, 0, $extlength, 'UTF-8'), PARAM_FILE);
+
+    $tries = 0;
+    do {
+        if ($tries == 10) {
+            throw new \invalid_dataroot_permissions("Turnitin plagiarism plugin temporary file cannot be created.");
+        }
+        $tries++;
+
+        $file = $tempdir . DIRECTORY_SEPARATOR . $filename;
+    } while (!touch($file));
+
+    return $file;
 }

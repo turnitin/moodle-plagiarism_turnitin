@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 use Integrations\PhpSdk\TiiClass;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.php');
 
 /**
  * Class turnitin_class
@@ -28,7 +26,6 @@ require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_comms.class.ph
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitin_class {
-
     /**
      * @var int
      */
@@ -49,6 +46,13 @@ class turnitin_class {
      * @var string
      */
     public $sharedrubrics;
+
+    /**
+     * Turnitin API communications object. Injected in tests to avoid real API calls.
+     *
+     * @var turnitin_comms|null
+     */
+    public $comms;
 
     /**
      * turnitin_class constructor.
@@ -73,8 +77,7 @@ class turnitin_class {
      * @return void
      */
     public function read_class_from_tii() {
-        // Initialise Comms Object.
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $tiiclass = new TiiClass();
@@ -91,8 +94,7 @@ class turnitin_class {
             }
 
             $this->sharedrubrics = $rubricarray;
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $turnitincomms->handle_exceptions($e, 'coursegeterror', false);
         }
     }

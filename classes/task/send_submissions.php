@@ -25,11 +25,12 @@
 
 namespace plagiarism_turnitin\task;
 
+use plagiarism_turnitin\turnitin_settings;
+
 /**
  * Send queued submissions to Turnitin.
  */
 class send_submissions extends \core\task\scheduled_task {
-
     /**
      * Get the name of the task.
      *
@@ -43,14 +44,15 @@ class send_submissions extends \core\task\scheduled_task {
     /**
      * Execute the task.
      *
+     * @param \plagiarism_plugin_turnitin|null $plugin Plugin instance; creates a real one if null.
      * @return void
      */
-    public function execute() {
+    public function execute(?\plagiarism_plugin_turnitin $plugin = null) {
         global $CFG, $DB;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-        $plugin = new \plagiarism_plugin_turnitin();
-        if (!$plugin->is_plugin_configured()) {
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
+        $plugin = $plugin ?? new \plagiarism_plugin_turnitin();
+        if (!turnitin_settings::is_plugin_configured()) {
             return;
         }
 
@@ -61,13 +63,16 @@ class send_submissions extends \core\task\scheduled_task {
                 mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
                 return;
             }
-          
+
             mtrace('Checking for queued submissions...');
 
             // Grab all queued or pending submissions.
-            $queueditems = $DB->get_records_select("plagiarism_turnitin_files",
-                "statuscode = 'queued' OR statuscode = 'pending'", null,
-                'lastmodified');
+            $queueditems = $DB->get_records_select(
+                "plagiarism_turnitin_files",
+                "statuscode = 'queued' OR statuscode = 'pending'",
+                null,
+                'lastmodified'
+            );
 
             if (empty($queueditems)) {
                 mtrace('No queued items found.');
@@ -77,14 +82,34 @@ class send_submissions extends \core\task\scheduled_task {
             mtrace('Found ' . count($queueditems) . ' queued submissions.');
             mtrace('Queueing ad-hoc tasks...');
             foreach ($queueditems as $item) {
-              $adhoctask = adhoc_send_submission::instance($item);
-              \core\task\manager::queue_adhoc_task($adhoctask, true);
-              mtrace('  Queued submission for upload: ' . json_encode($item));
+                $adhoctask = adhoc_send_submission::instance($item);
+                \core\task\manager::queue_adhoc_task($adhoctask, true);
+                mtrace('  Queued submission for upload: ' . json_encode($item));
             }
             mtrace('Done.');
         } else {
             mtrace('Sending submissions using scheduled task...');
-            plagiarism_turnitin_send_queued_submissions();
+
+            // Don't attempt to call Turnitin if a connection to Turnitin could not be established.
+            if (!$plugin->test_turnitin_connection()) {
+                mtrace(get_string('ppeventsfailedconnection', 'plagiarism_turnitin'));
+                return;
+            }
+
+            $queueditems = $DB->get_records_select(
+                "plagiarism_turnitin_files",
+                "statuscode = 'queued' OR statuscode = 'pending'",
+                null,
+                'lastmodified',
+                '*',
+                0,
+                PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT
+            );
+
+            foreach ($queueditems as $queueditem) {
+                \plagiarism_turnitin_send_single_submission($plugin, $queueditem);
+            }
+
             mtrace('Done.');
         }
     }

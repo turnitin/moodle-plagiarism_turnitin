@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_forum.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_forum.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -26,19 +26,21 @@ namespace plagiarism_turnitin;
 
 defined('MOODLE_INTERNAL') || die();
 
+// phpcs:disable moodle.PHPUnit.TestCaseCovers
+
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
+use plagiarism_turnitin\modules\turnitin_forum;
 
 /**
  * Tests for API comms class
  *
  * @package turnitin
  */
-#[CoversFunction('\turnitin_forum::set_content')]
+#[CoversClass(turnitin_forum::class)]
 final class turnitin_forum_test extends \advanced_testcase {
-
     /** @var stdClass created in setUp. */
     protected $forum;
 
@@ -106,7 +108,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new \turnitin_forum();
+        $moduleobject = new turnitin_forum();
 
         $params = [
             'content' => $this->post->message,
@@ -125,7 +127,7 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->resetAfterTest(true);
 
         // Create module object.
-        $moduleobject = new \turnitin_forum();
+        $moduleobject = new turnitin_forum();
 
         $params = [
             'content' => 'content should not come back',
@@ -136,4 +138,240 @@ final class turnitin_forum_test extends \advanced_testcase {
         $this->assertEquals($content, $this->post->message);
     }
 
+    /**
+     * Test that get_submission_content returns the post text, title, filename and createSubmission
+     * api method for a first-time submission (no externalid yet).
+     */
+    public function test_get_submission_content_returns_content_for_new_submission(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $expectedtitle = 'forumpost_' . $this->post->userid . '_' . $cm->id . '_' . $cm->instance
+            . '_' . $this->post->id . '.txt';
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+        $this->assertEquals(html_to_text($this->post->message), $result['textcontent']);
+        $this->assertEquals($expectedtitle, $result['title']);
+        $this->assertEquals($result['title'], $result['filename']);
+    }
+
+    /**
+     * Test that HTML entities in the forum post message are decoded to plain text before
+     * submission to Turnitin. Moodle's editor stores "&" as "&amp;" — Turnitin should receive
+     * the literal character, not the entity.
+     */
+    public function test_get_submission_content_decodes_html_entities(): void {
+        $this->resetAfterTest();
+
+        global $DB;
+        $DB->set_field('forum_posts', 'message', '<p>Cats &amp; dogs. 2 &lt; 3.</p>', ['id' => $this->post->id]);
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertStringContainsString('&', $result['textcontent']);
+        $this->assertStringNotContainsString('&amp;', $result['textcontent']);
+        $this->assertStringContainsString('<', $result['textcontent']);
+        $this->assertStringNotContainsString('&lt;', $result['textcontent']);
+    }
+
+    /**
+     * Test that get_submission_content uses replaceSubmission when the post has already been
+     * submitted to Turnitin (externalid present) and report generation is set to re-check on
+     * resubmission (report_gen > 0).
+     */
+    public function test_get_submission_content_uses_replace_when_resubmitting_with_report_gen(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('replaceSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that get_submission_content falls back to createSubmission when report_gen is 0,
+     * even if an externalid exists. Turnitin requires a fresh submission in this mode.
+     */
+    public function test_get_submission_content_uses_create_when_report_gen_is_zero(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, $this->post->id, 'tii-abc-123');
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 0);
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that get_submission_content returns errorcode 9 when the forum post cannot be found,
+     * so the submission can be safely marked as errored without crashing the queue.
+     */
+    public function test_get_submission_content_returns_error_when_post_not_found(): void {
+        $this->resetAfterTest();
+
+        $queueditem = $this->make_queued_item($this->post->userid, 999999, null);
+        $cm = get_coursemodule_from_instance('forum', $this->forum->id);
+
+        $result = (new turnitin_forum())->get_submission_content($queueditem, $cm, 1);
+
+        $this->assertEquals(9, $result['errorcode']);
+        $this->assertNull($result['textcontent']);
+        $this->assertNull($result['title']);
+        $this->assertNull($result['filename']);
+    }
+
+    /**
+     * Build a minimal queued item stdClass as would be read from plagiarism_turnitin_files.
+     *
+     * @param int $userid
+     * @param int $itemid
+     * @param string|null $externalid
+     */
+    private function make_queued_item(int $userid, int $itemid, ?string $externalid): \stdClass {
+        $item = new \stdClass();
+        $item->userid = $userid;
+        $item->itemid = $itemid;
+        $item->externalid = $externalid;
+        $item->identifier = '';
+        return $item;
+    }
+
+    // Tests for methods not yet covered.
+
+    /**
+     * Test that get_tutor_capability returns the correct capability string.
+     */
+    public function test_get_tutor_capability(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertEquals('plagiarism/turnitin:viewfullreport', $forum->get_tutor_capability());
+    }
+
+    /**
+     * Test that is_tutor returns true for a user with the viewfullreport capability.
+     */
+    public function test_is_tutor_returns_true_for_capable_user(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $this->setAdminUser();
+
+        $forum = new turnitin_forum();
+        $this->assertTrue($forum->is_tutor($context));
+    }
+
+    /**
+     * Test that is_tutor returns false for a student.
+     */
+    public function test_is_tutor_returns_false_for_student(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $context = \context_course::instance($course->id);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->setUser($student);
+
+        $forum = new turnitin_forum();
+        $this->assertFalse($forum->is_tutor($context));
+    }
+
+    /**
+     * Test that user_enrolled_on_course returns true for an enrolled user with replypost.
+     */
+    public function test_user_enrolled_on_course_returns_true_for_enrolled_student(): void {
+        $this->resetAfterTest();
+
+        $course  = $this->getDataGenerator()->create_course();
+        $forum   = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm      = get_coursemodule_from_instance('forum', $forum->id);
+        $context = \context_module::instance($cm->id);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $tiimodule = new turnitin_forum();
+        $this->assertTrue($tiimodule->user_enrolled_on_course($context, $student->id));
+    }
+
+    /**
+     * Test that get_author returns null (the method is a stub).
+     */
+    public function test_get_author_returns_null(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertNull($forum->get_author(1));
+    }
+
+    /**
+     * Test that get_current_gradequery returns false when no matching grade exists.
+     */
+    public function test_get_current_gradequery_returns_false_when_no_record(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertFalse($forum->get_current_gradequery(9999, 9999));
+    }
+
+    /**
+     * Test that initialise_post_date always returns 0.
+     */
+    public function test_initialise_post_date_returns_zero(): void {
+        $this->resetAfterTest();
+        $forum = new turnitin_forum();
+        $this->assertEquals(0, $forum->initialise_post_date(new \stdClass()));
+    }
+
+    /**
+     * Test that create_file_event returns a mod_forum assessable_uploaded event.
+     */
+    public function test_create_file_event_returns_forum_event(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $mod    = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $cm     = get_coursemodule_from_instance('forum', $mod->id);
+
+        $params = [
+            'context'  => \context_module::instance($cm->id),
+            'objectid' => 1,
+            'other'    => [
+                'pathnamehashes' => [],
+                'content'        => '',
+                'discussionid'   => 1,
+                'triggeredfrom'  => 'test',
+            ],
+        ];
+
+        $forum = new turnitin_forum();
+        $event = $forum->create_file_event($params);
+
+        $this->assertInstanceOf(\mod_forum\event\assessable_uploaded::class, $event);
+    }
+
+    /**
+     * Test get_discussionid extracts the discussion id from a forumdata string with a direct id.
+     */
+    public function test_get_discussionid_returns_discussion_id_when_present(): void {
+        $this->resetAfterTest();
+
+        // Format: querystrid_discussionid_reply_edit_delete.
+        $forumdata = '0_42_0_0_0';
+        $forum = new turnitin_forum();
+        $result = $forum->get_discussionid($forumdata);
+
+        $this->assertEquals('42', $result);
+    }
 }

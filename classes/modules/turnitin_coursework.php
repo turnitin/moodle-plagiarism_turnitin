@@ -24,8 +24,17 @@
  * @copyright 2012 iParadigms LLC *
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class turnitin_coursework {
 
+namespace plagiarism_turnitin\modules;
+
+/**
+ * Class turnitin_coursework
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2012 iParadigms LLC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class turnitin_coursework {
     /**
      * @var string
      */
@@ -44,8 +53,8 @@ class turnitin_coursework {
      */
     public function __construct() {
         $this->modname = 'coursework';
-        $this->gradestable = $this->modname.'_feedbacks';
-        $this->filecomponent = 'mod_'.$this->modname;
+        $this->gradestable = $this->modname . '_feedbacks';
+        $this->filecomponent = 'mod_' . $this->modname;
     }
 
     /**
@@ -66,7 +75,7 @@ class turnitin_coursework {
      * @return string
      */
     public function get_tutor_capability() {
-        return 'mod/'.$this->modname.':addinitialgrade';
+        return 'mod/' . $this->modname . ':addinitialgrade';
     }
 
     /**
@@ -78,7 +87,7 @@ class turnitin_coursework {
      * @throws coding_exception
      */
     public function user_enrolled_on_course($context, $userid) {
-        return has_capability('mod/'.$this->modname.':submit', $context, $userid);
+        return has_capability('mod/' . $this->modname . ':submit', $context, $userid);
     }
 
     /**

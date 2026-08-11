@@ -23,11 +23,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_turnitin;
+
 /**
  * Define the form for the Turnitin plugin settings.
  */
-class turnitin_defaultsettingsform extends moodleform {
-
+class turnitin_defaultsettingsform extends \moodleform {
     /**
      * Define the form.
      *
@@ -37,8 +38,6 @@ class turnitin_defaultsettingsform extends moodleform {
         global $CFG;
 
         $mform = $this->_form;
-
-        require_once($CFG->dirroot.'/plagiarism/turnitin/classes/turnitin_view.class.php');
 
         $turnitinview = new turnitin_view();
         $turnitinview->add_elements_to_settings_form($mform, [], "defaults");

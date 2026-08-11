@@ -21,8 +21,17 @@
  * @copyright  2018 Turnitin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class pp_receipt_message {
 
+namespace plagiarism_turnitin\digitalreceipt;
+
+/**
+ * Sends digital receipt messages to submitters and instructors.
+ *
+ * @package   plagiarism_turnitin
+ * @copyright 2018 Turnitin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class pp_receipt_message {
     /**
      * Send digital receipt to submitter
      *
@@ -59,12 +68,12 @@ class pp_receipt_message {
      * @return string
      */
     public function build_message($input) {
-        $message = new stdClass();
+        $message = new \stdClass();
         $message->firstname = $input['firstname'];
         $message->lastname = $input['lastname'];
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
-        if ( isset($input['assignment_part']) ) {
+        if (isset($input['assignment_part'])) {
             $message->assignment_part = ": " . $input['assignment_part'];
         } else {
             $message->assignment_part = "";
@@ -84,10 +93,10 @@ class pp_receipt_message {
      * @return string
      */
     public function build_instructor_message($input) {
-        $message = new stdClass();
+        $message = new \stdClass();
         $message->submission_title = $input['submission_title'];
         $message->assignment_name = $input['assignment_name'];
-        if ( isset($input['assignment_part']) ) {
+        if (isset($input['assignment_part'])) {
             $message->assignment_part = ": " . $input['assignment_part'];
         } else {
             $message->assignment_part = "";

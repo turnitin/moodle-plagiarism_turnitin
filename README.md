@@ -50,3 +50,123 @@ If you would like them yourself along with the other Moodle tests, please includ
 TII_ACCOUNT: [your Turnitin account ID]
 TII_SECRET: [your 8-character secret]
 TII_APIBASEURL: "https://api.turnitin.com"
+
+Unit Tests
+=====================================
+
+PHPUnit tests run automatically on every push and pull request via GitHub Actions
+(see `.github/workflows/ci.yml`). The workflow uses
+[moodle-plugin-ci](https://github.com/moodlehq/moodle-plugin-ci) to spin up a full
+Moodle environment against PostgreSQL and runs the test suite across the supported
+PHP and Moodle version matrix.
+
+Tests require a running Moodle instance. The local Docker setup provides this via the
+`moodle502-moodle-1` container.
+
+Before running tests for the first time (or after rebuilding the container), initialise
+the PHPUnit environment:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  php admin/tool/phpunit/cli/init.php
+"
+```
+
+If init fails with "Can not use database for testing, try different prefix", drop and
+reinitialise:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  php admin/tool/phpunit/cli/init.php --drop &&
+  php admin/tool/phpunit/cli/init.php
+"
+```
+
+### Run all unit tests
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/phpunit.xml
+"
+```
+
+### Run a specific test class or method
+
+```bash
+# All tests in a class
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/phpunit.xml \
+    --filter turnitin_forum_test
+"
+
+# A single test method
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/phpunit.xml \
+    --filter test_get_submission_content_returns_content_for_new_submission
+"
+```
+
+### Generate a code coverage report
+
+PCOV is pre-installed in the Docker image. Run the suite with `--coverage-html` to produce
+an HTML report, then copy it out of the container to view in a browser:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  cd /usr/share/nginx/html/public &&
+  php \
+    -d pcov.enabled=1 \
+    -d pcov.directory=/usr/share/nginx/html/public/plagiarism/turnitin \
+    /usr/share/nginx/html/vendor/bin/phpunit \
+    --configuration plagiarism/turnitin/phpunit.xml \
+    --coverage-html /tmp/turnitin-coverage
+" && \
+rm -rf /tmp/turnitin-coverage && \
+docker cp moodle502-moodle-1:/tmp/turnitin-coverage /tmp/turnitin-coverage && \
+open /tmp/turnitin-coverage/index.html
+```
+
+The report is scoped to `classes/`, `lib.php`, and `locallib.php` via the `<source>` block
+in `phpunit.xml`. `pcov.directory` ensures Moodle core is not instrumented.
+
+Code Style
+=====================================
+
+The plugin follows the [Moodle coding standard](https://moodledev.io/general/development/policies/codingstyle).
+Style is checked automatically in CI via `moodle-plugin-ci phpcs`. `phpcs` and its
+auto-fixer `phpcbf` are pre-installed in the Docker image.
+
+### Check for style violations
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  phpcs --standard=/opt/moodle-plugin-ci/vendor/moodlehq/moodle-cs/moodle \
+        --extensions=php \
+        --ignore=vendor,vendorjs \
+        /usr/share/nginx/html/public/plagiarism/turnitin
+"
+```
+
+### Auto-fix violations
+
+The vast majority of violations can be fixed automatically:
+
+```bash
+docker exec moodle502-moodle-1 bash -c "
+  phpcbf --standard=/opt/moodle-plugin-ci/vendor/moodlehq/moodle-cs/moodle \
+         --extensions=php \
+         --ignore=vendor,vendorjs \
+         /usr/share/nginx/html/public/plagiarism/turnitin
+"
+```
+
+Any remaining violations after running `phpcbf` require manual attention — typically
+missing docblocks, variable naming, or comments that need punctuation.

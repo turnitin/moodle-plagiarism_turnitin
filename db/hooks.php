@@ -15,9 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Hook callback definitions for the Turnitin plagiarism plugin.
+ *
  * @package   plagiarism_turnitin
  * @copyright 2025 Turnitin
  * @author    Jack Milgate
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>vendor</location>
+        <name>Vendor Libraries</name>
+        <license>Various</license>
+        <version></version>
+    </library>
+    <library>
+        <location>vendorjs</location>
+        <name>Vendor JavaScript Libraries</name>
+        <license>Various</license>
+        <version></version>
+    </library>
+</libraries>

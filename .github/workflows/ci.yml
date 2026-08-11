@@ -1,0 +1,213 @@
+name: Moodle Plugin CI
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Moodle 4.5 LTS — minimum supported version per version.php requires = 2024100700.
+          # Supports PHP 8.1–8.3. Uses phpunit10.xml (PHPUnit 9 / <coverage> syntax).
+          - php: '8.1'
+            moodle-branch: 'MOODLE_405_STABLE'
+            phpunit-config: 'phpunit10.xml'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_405_STABLE'
+            phpunit-config: 'phpunit10.xml'
+          # Moodle 5.0 — supports PHP 8.2–8.4.
+          - php: '8.2'
+            moodle-branch: 'MOODLE_500_STABLE'
+            phpunit-config: 'phpunit.xml'
+          - php: '8.4'
+            moodle-branch: 'MOODLE_500_STABLE'
+            phpunit-config: 'phpunit.xml'
+          # Moodle 5.1 — supports PHP 8.2–8.4.
+          - php: '8.2'
+            moodle-branch: 'MOODLE_501_STABLE'
+            phpunit-config: 'phpunit.xml'
+          - php: '8.4'
+            moodle-branch: 'MOODLE_501_STABLE'
+            phpunit-config: 'phpunit.xml'
+          # Moodle 5.2 — supports PHP 8.3–8.4. Matches the local Docker environment.
+          - php: '8.3'
+            moodle-branch: 'MOODLE_502_STABLE'
+            phpunit-config: 'phpunit.xml'
+          - php: '8.4'
+            moodle-branch: 'MOODLE_502_STABLE'
+            phpunit-config: 'phpunit.xml'
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4.4.0
+        with:
+          path: plugin
+
+      - name: Setup PHP ${{ matrix.php }}
+        run: |
+          # The Sury PPA is the same source shivammathur/setup-php uses internally.
+          # We install directly to stay within the enterprise action allowlist.
+          sudo apt-get install -y ca-certificates apt-transport-https software-properties-common
+          sudo curl -sSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
+          echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+            | sudo tee /etc/apt/sources.list.d/sury-php.list
+          sudo apt-get update -q
+
+          sudo apt-get install -y \
+            php${{ matrix.php }} \
+            php${{ matrix.php }}-cli \
+            php${{ matrix.php }}-curl \
+            php${{ matrix.php }}-gd \
+            php${{ matrix.php }}-intl \
+            php${{ matrix.php }}-mbstring \
+            php${{ matrix.php }}-pgsql \
+            php${{ matrix.php }}-soap \
+            php${{ matrix.php }}-xml \
+            php${{ matrix.php }}-xmlrpc \
+            php${{ matrix.php }}-zip
+
+          sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
+          echo "max_input_vars=5000" | sudo tee /etc/php/${{ matrix.php }}/cli/conf.d/99-moodle.ini
+
+          php --version
+
+      - name: Initialise moodle-plugin-ci
+        run: |
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
+          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+
+      - name: Install moodle-plugin-ci
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        env:
+          DB: pgsql
+          MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+
+      - name: PHP Lint
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phplint
+
+      - name: Moodle Code Checker
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpcs --max-warnings 0
+
+      - name: Validating
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci validate
+
+      - name: PHPUnit tests
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpunit --fail-on-warning --configuration ${{ matrix.phpunit-config }}
+
+      - name: Behat tests
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci behat
+
+      - name: Mark cancelled jobs as failed
+        if: ${{ cancelled() }}
+        run: exit 1
+
+  coverage:
+    name: Coverage gate (PHP 8.4 / Moodle 5.2)
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4.4.0
+        with:
+          path: plugin
+
+      - name: Setup PHP 8.4 with PCOV
+        run: |
+          sudo apt-get install -y ca-certificates apt-transport-https software-properties-common
+          sudo curl -sSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
+          echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+            | sudo tee /etc/apt/sources.list.d/sury-php.list
+          sudo apt-get update -q
+
+          sudo apt-get install -y \
+            php8.4 php8.4-cli php8.4-curl php8.4-gd php8.4-intl php8.4-mbstring \
+            php8.4-pgsql php8.4-soap php8.4-xml php8.4-xmlrpc php8.4-zip \
+            php8.4-pcov
+
+          sudo update-alternatives --set php /usr/bin/php8.4
+          echo "max_input_vars=5000" | sudo tee /etc/php/8.4/cli/conf.d/99-moodle.ini
+          php --version
+
+      - name: Initialise moodle-plugin-ci
+        run: |
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
+          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+
+      - name: Install moodle-plugin-ci
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
+        env:
+          DB: pgsql
+          MOODLE_BRANCH: MOODLE_502_STABLE
+
+      - name: Initialise PHPUnit
+        run: |
+          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
+            php moodle/public/admin/tool/phpunit/cli/init.php
+          else
+            php moodle/admin/tool/phpunit/cli/init.php
+          fi
+
+      - name: Run tests with coverage
+        run: |
+          if [ -f moodle/public/admin/tool/phpunit/cli/init.php ]; then
+            MOODLE_ROOT=moodle/public
+          else
+            MOODLE_ROOT=moodle
+          fi
+
+          PLUGIN_DIR=$MOODLE_ROOT/plagiarism/turnitin
+
+          php \
+            -d pcov.enabled=1 \
+            -d pcov.directory=$PLUGIN_DIR \
+            moodle/vendor/bin/phpunit \
+            --configuration $PLUGIN_DIR/phpunit.xml \
+            --coverage-clover /tmp/coverage.xml
+
+      - name: Check coverage threshold
+        # Threshold is intentionally low (20%) to act as a regression floor on the
+        # current state — raise it as more of the legacy code gets test coverage.
+        run: php plugin/.github/scripts/check_coverage.php /tmp/coverage.xml 80

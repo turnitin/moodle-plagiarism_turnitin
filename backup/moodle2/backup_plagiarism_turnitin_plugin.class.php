@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
-
     /**
      * Turnitin plugin structure for module level.
      *
@@ -46,9 +45,18 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
         // Add file elements if required.
         if ($this->get_setting_value('userinfo')) {
             $turnitinfiles = new backup_nested_element('turnitin_files');
-            $turnitinfile = new backup_nested_element('turnitin_file', ['id'],
-                                ['userid', 'identifier', 'externalid', 'externalstatus',
-                                    'statuscode', 'similarityscore', 'transmatch', 'lastmodified', 'grade', 'submissiontype', ]);
+            $turnitinfile = new backup_nested_element(
+                'turnitin_file',
+                ['id'],
+                ['userid', 'identifier', 'externalid', 'externalstatus',
+                'statuscode',
+                'similarityscore',
+                'transmatch',
+                'lastmodified',
+                'grade',
+                'submissiontype',
+                ]
+            );
             $pluginelement->add_child($turnitinfiles);
             $turnitinfiles->add_child($turnitinfile);
 
@@ -71,8 +79,11 @@ class backup_plagiarism_turnitin_plugin extends backup_plagiarism_plugin {
 
         // Add courses from plagiarism_turnitin table.
         $turnitincourses = new backup_nested_element('turnitin_courses');
-        $turnitincourse = new backup_nested_element('turnitin_course', ['id'],
-            ['courseid', 'turnitin_ctl', 'turnitin_cid']);
+        $turnitincourse = new backup_nested_element(
+            'turnitin_course',
+            ['id'],
+            ['courseid', 'turnitin_ctl', 'turnitin_cid']
+        );
         $pluginelement->add_child($turnitincourses);
         $turnitincourses->add_child($turnitincourse);
 

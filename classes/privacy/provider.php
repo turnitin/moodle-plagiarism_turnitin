@@ -37,10 +37,9 @@ use core_privacy\local\request\writer;
  */
 class provider implements
     // This plugin does store personal user data.
+    \core_plagiarism\privacy\plagiarism_provider,
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\core_userlist_provider,
-    \core_plagiarism\privacy\plagiarism_provider {
-
+    \core_privacy\local\request\core_userlist_provider {
     // This trait must be included to provide the relevant polyfill for the metadata provider.
     use \core_privacy\local\legacy_polyfill;
 
@@ -175,8 +174,11 @@ class provider implements
      * @param \context_module $context the module context.
      * @param \stdClass $user the user record
      */
-    protected static function _export_plagiarism_turnitin_data_for_user(array $submissiondata, \context_module $context,
-        \stdClass $user) {
+    protected static function _export_plagiarism_turnitin_data_for_user(
+        array $submissiondata,
+        \context_module $context,
+        \stdClass $user
+    ) {
         // Fetch the generic module data.
         $contextdata = helper::get_context_data($context, $user);
 
@@ -207,7 +209,6 @@ class provider implements
 
         // Delete all submissions.
         $DB->delete_records('plagiarism_turnitin_files', ['cm' => $context->instanceid]);
-
     }
 
     // phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
@@ -271,26 +272,17 @@ class provider implements
 
         $userids = $userlist->get_userids();
 
-        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
-        $sql1 = "SELECT pts.id
-                   FROM {plagiarism_turnitin_files} ptf
-                   JOIN {course_modules} c
-                     ON ptf.cm = c.id
-                   JOIN {modules} m
-                     ON m.id = c.module AND m.name = :modname
-                  WHERE pts.userid $insql
-                    AND c.id = :cmid";
+        $params = array_merge(['cmid' => $context->instanceid], $inparams);
 
-        $params = [
-            'modname' => 'plagiarism_turnitin',
-            'cmid' => $context->instanceid,
-        ];
+        $attempt = $DB->get_fieldset_select(
+            'plagiarism_turnitin_files',
+            'id',
+            "cm = :cmid AND userid $insql",
+            $params
+        );
 
-        $params = array_merge($params, $inparams);
-
-        $attempt = $DB->get_fieldset_sql($sql1, $params);
-
-        $DB->delete_records_list('plagiarism_turnitin', 'id', array_values($attempt));
+        $DB->delete_records_list('plagiarism_turnitin_files', 'id', array_values($attempt));
     }
 }

@@ -25,11 +25,12 @@
 
 namespace plagiarism_turnitin\task;
 
+use plagiarism_turnitin\turnitin_settings;
+
 /**
  * Update report Scores from Turnitin.
  */
 class update_reports extends \core\task\scheduled_task {
-
     /**
      * Get the name of the task.
      *
@@ -48,11 +49,11 @@ class update_reports extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
         $plagiarismturnitin = new \plagiarism_plugin_turnitin();
-        if (!$plagiarismturnitin->is_plugin_configured()) {
+        if (!turnitin_settings::is_plugin_configured()) {
             return;
         }
-        plagiarism_turnitin_update_reports();
+        $plagiarismturnitin->cron_update_scores();
     }
 }

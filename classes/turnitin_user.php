@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_turnitin;
+
 use Integrations\PhpSdk\TiiUser;
 use Integrations\PhpSdk\TiiClass;
 use Integrations\PhpSdk\TiiPseudoUser;
@@ -28,7 +30,6 @@ use Integrations\PhpSdk\TurnitinApiException;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitin_user {
-
     /**
      * @var int
      */
@@ -83,6 +84,14 @@ class turnitin_user {
     private $usermessages;
 
     /**
+     * Turnitin API communications object. Injected in tests to avoid real API calls;
+     * each API method falls back to constructing a fresh instance when this is null.
+     *
+     * @var turnitin_comms|null
+     */
+    public $comms;
+
+    /**
      * Constructor for the Turnitin User class
      *
      * @param int $id The id
@@ -90,18 +99,28 @@ class turnitin_user {
      * @param bool $enrol Whether to enrol the user
      * @param string $workflowcontext The workflow context
      * @param bool $finduser Whether to find the user
+     * @param turnitin_comms|null $comms Optional comms instance for testing.
      */
-    public function __construct($id, $role = "Learner", $enrol = true, $workflowcontext = "site", $finduser = true) {
+    public function __construct(
+        $id,
+        $role = "Learner",
+        $enrol = true,
+        $workflowcontext = "site",
+        $finduser = true,
+        ?turnitin_comms $comms = null
+    ) {
         $this->id = $id;
         $this->set_user_role($role);
         $this->enrol = $enrol;
         $this->workflowcontext = $workflowcontext;
+        $this->comms = $comms;
 
         $this->firstname = "";
         $this->lastname = "";
         $this->fullname = "";
         $this->email = "";
         $this->username = "";
+        $this->instructorrubrics = [];
 
         if ($id != 0) {
             $this->get_moodle_user($this->id);
@@ -136,7 +155,7 @@ class turnitin_user {
         $firstname = trim($this->firstname);
         $this->firstname = (empty($firstname)) ? "Moodle" : $firstname;
         $lastname = trim($this->lastname);
-        $this->lastname = (empty($lastname)) ? "User ".$this->id : $lastname;
+        $this->lastname = (empty($lastname)) ? "User " . $this->id : $lastname;
 
         $this->email = trim(html_entity_decode($user->email));
         $this->username = $user->username;
@@ -157,7 +176,7 @@ class turnitin_user {
      * @return string The pseudo domain
      */
     public static function get_pseudo_domain() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $domain = empty($config->plagiarism_turnitin_pseudoemaildomain) ?
             PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_DOMAIN : $config->plagiarism_turnitin_pseudoemaildomain;
 
@@ -170,9 +189,9 @@ class turnitin_user {
      * @return string A pseudo firstname address
      */
     public function get_pseudo_firstname() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
-        return !empty( $config->plagiarism_turnitin_pseudofirstname ) ?
+        return !empty($config->plagiarism_turnitin_pseudofirstname) ?
             $config->plagiarism_turnitin_pseudofirstname : PLAGIARISM_TURNITIN_DEFAULT_PSEUDO_FIRSTNAME;
     }
 
@@ -183,14 +202,16 @@ class turnitin_user {
      */
     public function get_pseudo_lastname() {
         global $DB;
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $userinfo = $DB->get_record('user_info_data', ['userid' => $this->id,
             'fieldid' => $config->plagiarism_turnitin_pseudolastname]);
 
-        if ((!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 &&
-            $config->plagiarism_turnitin_lastnamegen == 1) {
+        if (
+            (!isset($userinfo->data) || empty($userinfo->data)) && $config->plagiarism_turnitin_pseudolastname != 0 &&
+            $config->plagiarism_turnitin_lastnamegen == 1
+        ) {
             $uniqueid = strtoupper(strrev(uniqid()));
-            $userinfoob = new stdClass();
+            $userinfoob = new \stdClass();
             $userinfoob->userid = $this->id;
             $userinfoob->fieldid = $config->plagiarism_turnitin_pseudolastname;
             $userinfoob->data = $uniqueid;
@@ -247,10 +268,10 @@ class turnitin_user {
      * @throws TurnitinApiException
      */
     private function find_tii_user_id() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         if (!empty($config->plagiarism_turnitin_enablepseudo) && $this->role == "Learner") {
@@ -273,7 +294,7 @@ class turnitin_user {
         } catch (TurnitinApiException $e) {
             // In case of a Turnitin exception we rethrow as get_tii_user_id will catch this exception.
             throw $e;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
             $turnitincomms->handle_exceptions($e, 'userfinderror', $toscreen);
         }
@@ -286,10 +307,10 @@ class turnitin_user {
      * @return var Turnitin user id
      */
     private function create_tii_user() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
         $tiiuserid = null;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Convert the email, firstname and lastname to pseudos for students if the option is set in config
@@ -314,11 +335,10 @@ class turnitin_user {
             $newuser = $response->getUser();
             $tiiuserid = $newuser->getUserId();
 
-            plagiarism_turnitin_activitylog("Turnitin User created: ".$this->id." (".$tiiuserid.")", "REQUEST");
+            turnitin_logger::log("Turnitin User created: " . $this->id . " (" . $tiiuserid . ")", "REQUEST");
 
             return $tiiuserid;
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $toscreen = ($this->workflowcontext == "cron") ? false : true;
             $turnitincomms->handle_exceptions($e, 'usercreationerror', $toscreen);
         }
@@ -331,9 +351,9 @@ class turnitin_user {
      * @return boolean
      */
     public function edit_tii_user() {
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+        $config = turnitin_settings::admin_config();
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         // Only update if pseudo is not enabled.
@@ -347,7 +367,7 @@ class turnitin_user {
 
             try {
                 $turnitincall->updateUser($user);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $toscreen = ($this->workflowcontext == "cron") ? false : true;
                 $turnitincomms->handle_exceptions($e, 'userupdateerror', $toscreen);
                 return false;
@@ -365,7 +385,7 @@ class turnitin_user {
      */
     public function unlink_user($tiidbid) {
         global $DB;
-        $tiiuser = new stdClass();
+        $tiiuser = new \stdClass();
         $tiiuser->id = $tiidbid;
         $tiiuser->turnitin_uid = 0;
 
@@ -376,7 +396,7 @@ class turnitin_user {
             $DB->update_record('plagiarism_turnitin_users', $tiiuser);
         }
 
-        plagiarism_turnitin_activitylog("User unlinked: ".$this->id." (".$tiidbid.") ", "REQUEST");
+        turnitin_logger::log("User unlinked: " . $this->id . " (" . $tiidbid . ") ", "REQUEST");
     }
 
 
@@ -387,7 +407,7 @@ class turnitin_user {
      */
     private function save_tii_user() {
         global $DB;
-        $user = new stdClass();
+        $user = new \stdClass();
         $user->userid = $this->id;
         $user->turnitin_uid = $this->tiiuserid;
         $user->turnitin_utp = 1;
@@ -420,11 +440,11 @@ class turnitin_user {
      * @return boolean
      */
     public function join_user_to_class($tiicourseid) {
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
 
         // We only want an API log entry for this if diagnostic mode is set to Debugging.
         if (empty($config)) {
-            $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
+            $config = turnitin_settings::admin_config();
         }
         if (isset($config->plagiarism_turnitin_enablediagnostic) && $config->plagiarism_turnitin_enablediagnostic != 2) {
             $turnitincomms->set_diagnostic(0);
@@ -439,11 +459,11 @@ class turnitin_user {
         try {
             $turnitincall->createMembership($membership);
 
-            plagiarism_turnitin_activitylog("User ".$this->id." (".$this->tiiuserid.") joined to class (".
-                $tiicourseid.")", "REQUEST");
+            turnitin_logger::log("User " . $this->id . " (" . $this->tiiuserid . ") joined to class (" .
+                $tiicourseid . ")", "REQUEST");
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Ignore exception as we don't need it, this saves time as the alternative
             // is checking all class memberships to see if user is already enrolled.
             $faultcode = $e->getFaultCode();
@@ -463,7 +483,7 @@ class turnitin_user {
     public function get_accepted_user_agreement() {
         global $DB;
 
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new TiiUser();
@@ -476,7 +496,7 @@ class turnitin_user {
             if ($readuser->getAcceptedUserAgreement()) {
                 $turnitinuser = $DB->get_record('plagiarism_turnitin_users', ['userid' => $this->id]);
 
-                $tiiuserinfo = new stdClass();
+                $tiiuserinfo = new \stdClass();
                 $tiiuserinfo->id = $turnitinuser->id;
                 $tiiuserinfo->user_agreement_accepted = 1;
 
@@ -485,7 +505,7 @@ class turnitin_user {
             } else {
                 return false;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Avoid API calls when running unit tests.
             if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
                 return true;
@@ -500,7 +520,7 @@ class turnitin_user {
      * Set the number of user messages and any instructor rubrics from Turnitin
      */
     public function set_user_values_from_tii() {
-        $turnitincomms = new turnitin_comms();
+        $turnitincomms = $this->comms ?? new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $user = new TiiUser();
@@ -521,8 +541,7 @@ class turnitin_user {
             ];
 
             return $tiiuser;
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             try {
                 // We need to join the user to the account, we can only do that by adding the user to a class
                 // make one and add them, then delete it. Awful workaround but should be rare.
@@ -545,8 +564,7 @@ class turnitin_user {
 
                 $this->usermessages = $readuser->getUserMessages();
                 $this->save_instructor_rubrics($readuser->getInstructorRubrics());
-
-            } catch ( Exception $e ) {
+            } catch (Exception $e) {
                 $turnitincomms->handle_exceptions($e, 'tiiusergeterror');
             }
         }
@@ -609,8 +627,13 @@ class turnitin_user {
     public static function plagiarism_turnitin_getusers() {
         global $DB;
 
-        $config = plagiarism_plugin_turnitin::plagiarism_turnitin_admin_config();
-        parse_str($_SERVER["REQUEST_URI"], $params);
+        // Read REQUEST_URI before any other calls that may cause Moodle to reinitialise it.
+        // Prefer QUERY_STRING when available (set by tests) to avoid framework interference.
+        $requesturi  = $_SERVER["QUERY_STRING"] ?? $_SERVER["REQUEST_URI"] ?? '';
+        $querystring = parse_url($requesturi, PHP_URL_QUERY) ?? $requesturi;
+        parse_str($querystring, $params);
+
+        $config = turnitin_settings::admin_config();
 
         $return = [];
 
@@ -626,14 +649,13 @@ class turnitin_user {
 
         // Add sort to query.
         if (!empty($params["order"][0]["column"])) {
-          $sortcolumn = clean_param($params["order"][0]["column"], PARAM_INT);
-          $sortdirection = strtolower(clean_param($params["order"][0]["dir"], PARAM_TEXT));
-          if ($sortdirection === 'asc' || $sortdirection === 'desc') {
-              $queryorder = " ORDER BY ".$sortcolumn." ".$sortdirection;
-          }
-        }
-        else {
-          $queryorder = "";
+            $sortcolumn = clean_param($params["order"][0]["column"], PARAM_INT);
+            $sortdirection = strtolower(clean_param($params["order"][0]["dir"], PARAM_TEXT));
+            if ($sortdirection === 'asc' || $sortdirection === 'desc') {
+                $queryorder = " ORDER BY " . $sortcolumn . " " . $sortdirection;
+            }
+        } else {
+            $queryorder = "";
         }
 
         // Add search to query.
@@ -649,29 +671,29 @@ class turnitin_user {
                 }
 
                 if ($include) {
-                    $querywhere .= $DB->sql_like($displaycolumns[$i], ':search_term_'.$i, false)." OR ";
-                    $queryparams['search_term_'.$i] = '%'.$ssearch.'%';
+                    $querywhere .= $DB->sql_like($displaycolumns[$i], ':search_term_' . $i, false) . " OR ";
+                    $queryparams['search_term_' . $i] = '%' . $ssearch . '%';
                 }
             }
         }
-        if ( $querywhere == ' WHERE ( ' ) {
+        if ($querywhere == ' WHERE ( ') {
             $querywhere = "";
         } else {
-            $querywhere = substr_replace( $querywhere, "", -3 );
+            $querywhere = substr_replace($querywhere, "", -3);
             $querywhere .= " )";
         }
 
-        $query = "SELECT tu.id AS id, tu.userid AS userid, tu.turnitin_uid AS turnitin_uid, tu.turnitin_utp AS turnitin_utp, ".
-            "mu.firstname AS firstname, mu.lastname AS lastname, mu.email AS email ".
-            "FROM {plagiarism_turnitin_users} tu ".
-            "LEFT JOIN {user} mu ON tu.userid = mu.id ".$querywhere." ".$queryorder;
+        $query = "SELECT tu.id AS id, tu.userid AS userid, tu.turnitin_uid AS turnitin_uid, tu.turnitin_utp AS turnitin_utp, " .
+            "mu.firstname AS firstname, mu.lastname AS lastname, mu.email AS email " .
+            "FROM {plagiarism_turnitin_users} tu " .
+            "LEFT JOIN {user} mu ON tu.userid = mu.id " . $querywhere . " " . $queryorder;
 
         $users = $DB->get_records_sql($query, $queryparams, $idisplaystart, $idisplaylength);
         $totalusers = count($DB->get_records_sql($query, $queryparams));
 
         $return["aaData"] = [];
         foreach ($users as $user) {
-            $checkbox = html_writer::checkbox('userids[]', $user->id, false, '', ["class" => "browser_checkbox"]);
+            $checkbox = \html_writer::checkbox('userids[]', $user->id, false, '', ["class" => "browser_checkbox"]);
 
             $pseudoemail = "";
             if (!empty($config->plagiarism_turnitin_enablepseudo)) {

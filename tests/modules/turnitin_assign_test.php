@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_assign.class.php.
+ * Unit tests for (some of) plagiarism/turnitin/classes/modules/turnitin_assign.php.
  *
  * @package    plagiarism_turnitin
  * @copyright  2017 Turnitin
@@ -26,43 +26,55 @@ namespace plagiarism_turnitin;
 
 defined('MOODLE_INTERNAL') || die();
 
+// phpcs:disable moodle.PHPUnit.TestCaseCovers
+
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitin/lib.php');
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 
-use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\CoversClass;
+use plagiarism_turnitin\modules\turnitin_assign;
 
 /**
  * Tests for assign
  *
  * @package turnitin
  */
-#[CoversFunction('\turnitin_assign::is_resubmission_allowed')]
+#[CoversClass(turnitin_assign::class)]
 final class turnitin_assign_test extends \advanced_testcase {
-
     /** @var stdClass created in setUp. */
     protected $course;
 
     /** @var stdClass created in setUp. */
     protected $assign;
 
+    /** @var stdClass created in setUp. */
+    protected $student;
+
     /**
-     * Create a course and assignment module instance
+     * Create a course, assignment and enrolled student.
      */
     public function setUp(): void {
         parent::setUp();
 
         $this->course = $this->getDataGenerator()->create_course();
-        $params = [
-            'course' => $this->course->id,
-            'name' => 'assignment',
-            'assignsubmission_file_enabled' => 1,
-            'assignsubmission_file_maxfiles' => 1,
-            'assignsubmission_file_maxsizebytes' => 10,
-        ];
 
-        $this->assign = $this->getDataGenerator()->create_module('assign', $params);
+        $this->student = $this->getDataGenerator()->create_user();
+        $studentrole = get_archetype_roles('student');
+        $studentrole = reset($studentrole);
+        $this->getDataGenerator()->enrol_user($this->student->id, $this->course->id, $studentrole->id);
+
+        $this->assign = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $this->course->id,
+            'name'                                => 'assignment',
+            'assignsubmission_file_enabled'       => 1,
+            'assignsubmission_file_maxfiles'      => 1,
+            'assignsubmission_file_maxsizebytes'  => 1024 * 1024,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
     }
+
+    // Existing is_resubmission_allowed tests.
 
     /**
      * Test to check whether resubmissions are allowed.
@@ -70,34 +82,15 @@ final class turnitin_assign_test extends \advanced_testcase {
     public function test_check_is_resubmission_allowed(): void {
         $this->resetAfterTest(true);
 
-        // Create module object.
-        $moduleobject = new \turnitin_assign();
+        $moduleobject = new turnitin_assign();
 
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file',
-            1);
-        $this->assertTrue($resubmissionallowed);
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content',
-            1);
-        $this->assertTrue($resubmissionallowed);
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content',
-            5);
-        $this->assertFalse($resubmissionallowed);
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 0, 'file',
-            1);
-        $this->assertFalse($resubmissionallowed);
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 0, 'text_content',
-            1);
-        $this->assertFalse($resubmissionallowed);
-
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file',
-            5);
-        $this->assertFalse($resubmissionallowed);
+        $this->assertTrue($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file', 1));
+        $this->assertTrue($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content', 1));
+        $this->assertFalse($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'text_content', 5));
+        $this->assertFalse($moduleobject->is_resubmission_allowed($this->assign->id, 0, 'file', 1));
+        $this->assertFalse($moduleobject->is_resubmission_allowed($this->assign->id, 0, 'text_content', 1));
+        $this->assertFalse($moduleobject->is_resubmission_allowed($this->assign->id, 1, 'file', 5));
     }
-
 
     /**
      * Test that resubmissions are not allowed for files if the maximum files in a submission is more than 1.
@@ -105,23 +98,518 @@ final class turnitin_assign_test extends \advanced_testcase {
     public function test_check_is_resubmission_allowed_maxfiles_above_threshold(): void {
         $this->resetAfterTest(true);
 
-        $params = [
-            'course' => $this->course->id,
-            'name' => 'assignment',
-            'assignsubmission_file_enabled' => 1,
-            'assignsubmission_file_maxfiles' => 2,
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course'                             => $this->course->id,
+            'name'                               => 'assignment',
+            'assignsubmission_file_enabled'      => 1,
+            'assignsubmission_file_maxfiles'     => 2,
             'assignsubmission_file_maxsizebytes' => 10,
+        ]);
+
+        $moduleobject = new turnitin_assign();
+        $this->assertFalse($moduleobject->is_resubmission_allowed($assign->id, 1, 'file', 1));
+        $this->assertTrue($moduleobject->is_resubmission_allowed($assign->id, 1, 'text_content', 1));
+    }
+
+    // Get_submission_content: file submissions.
+
+    /**
+     * Test that a valid file submission returns its content, the original filename as
+     * title, and createSubmission for a first-time submission.
+     */
+    public function test_get_submission_content_returns_file_content_for_new_submission(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_file_submission('essay.docx', 'Hello world');
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+        $this->assertEquals('Hello world', $result['textcontent']);
+        $this->assertEquals('essay.docx', $result['title']);
+        $this->assertEquals('essay.docx', $result['filename']);
+    }
+
+    /**
+     * Test that a file resubmission uses replaceSubmission when resubmission is allowed.
+     */
+    public function test_get_submission_content_file_uses_replace_when_resubmission_allowed(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_file_submission('essay.docx', 'Hello world');
+        $queueditem->externalid = 'tii-existing-id';
+        $moduledata->resubmission_allowed = true;
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('replaceSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that a file resubmission uses createSubmission when resubmission is not allowed,
+     * even if an externalid exists. The old submission will be replaced by a new one.
+     */
+    public function test_get_submission_content_file_uses_create_when_resubmission_not_allowed(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_file_submission('essay.docx', 'Hello world');
+        $queueditem->externalid = 'tii-existing-id';
+        $moduledata->resubmission_allowed = false;
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+    }
+
+    /**
+     * Test that a file with an unsupported extension returns errorcode 16 when the
+     * assignment does not allow any file type.
+     */
+    public function test_get_submission_content_file_returns_error_for_unsupported_extension(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx', '.pdf']
+        );
+
+        $this->assertEquals(16, $result['errorcode']);
+    }
+
+    /**
+     * Test that a file with an unsupported extension is accepted when the assignment
+     * is configured to allow any file type (acceptanyfiletype = true).
+     */
+    public function test_get_submission_content_file_accepts_any_extension_when_configured(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_file_submission('notes.xyz', 'content');
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            true,
+            ['.docx', '.pdf']
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+    }
+
+    /**
+     * Test that a missing file returns errorcode 9.
+     */
+    public function test_get_submission_content_file_returns_error_when_file_not_found(): void {
+        $this->resetAfterTest();
+
+        $cm = get_coursemodule_from_instance('assign', $this->assign->id);
+        $queueditem = $this->make_queued_item($this->student->id, 0, 'file', 'nonexistenthash');
+        $moduledata = $this->make_moduledata(false, false);
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            ['.docx']
+        );
+
+        $this->assertEquals(9, $result['errorcode']);
+    }
+
+    // Get_submission_content: text_content submissions.
+
+    /**
+     * Test that an online text submission returns the plain text content and correct
+     * title format for a first-time submission.
+     */
+    public function test_get_submission_content_returns_text_content_for_new_submission(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_text_submission('<p>My essay &amp; thoughts</p>');
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertEquals('createSubmission', $result['apimethod']);
+        // The html_to_text() call should decode entities and strip tags.
+        $this->assertStringContainsString('My essay & thoughts', $result['textcontent']);
+        $this->assertStringNotContainsString('&amp;', $result['textcontent']);
+        $this->assertStringStartsWith('onlinetext_', $result['title']);
+        $this->assertEquals($result['title'], $result['filename']);
+    }
+
+    /**
+     * Test that the title for a text_content submission contains the user id, cm id
+     * and instance id so submissions from different users and assignments don't collide.
+     */
+    public function test_get_submission_content_text_title_contains_identifying_components(): void {
+        $this->resetAfterTest();
+
+        [$cm, $queueditem, $moduledata] = $this->create_text_submission('Some content');
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
+        );
+
+        $expectedtitle = 'onlinetext_' . $this->student->id . '_' . $cm->id . '_' . $cm->instance . '.txt';
+        $this->assertEquals($expectedtitle, $result['title']);
+    }
+
+    /**
+     * Test that a team submission uses userid 0 when looking up the online text, since
+     * group submissions are stored against userid = 0 in assign_submission.
+     */
+    public function test_get_submission_content_text_uses_userid_zero_for_team_submission(): void {
+        $this->resetAfterTest();
+
+        $teamassign = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $this->course->id,
+            'name'                                => 'team assignment',
+            'assignsubmission_onlinetext_enabled' => 1,
+            'teamsubmission'                      => 1,
+        ]);
+
+        [$cm, $queueditem, $moduledata] = $this->create_text_submission(
+            '<p>Team effort</p>',
+            $teamassign,
+            $this->student->id,
+            true
+        );
+
+        $result = (new turnitin_assign())->get_submission_content(
+            $queueditem,
+            $cm,
+            $moduledata,
+            false,
+            []
+        );
+
+        $this->assertEquals(0, $result['errorcode']);
+        $this->assertStringContainsString('Team effort', $result['textcontent']);
+    }
+
+    // Helpers.
+
+    /**
+     * Store a file in the Moodle file API and return the cm, queued item and module data
+     * needed to test get_submission_content() for a file submission.
+     *
+     * @return array [cm, queueditem, moduledata]
+     */
+    private function create_file_submission(string $filename, string $content): array {
+        $cm = get_coursemodule_from_instance('assign', $this->assign->id);
+
+        $fs = get_file_storage();
+        $filerecord = [
+            'contextid' => \context_module::instance($cm->id)->id,
+            'component' => 'assignsubmission_file',
+            'filearea'  => 'submission_files',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => $filename,
         ];
+        $file = $fs->create_file_from_string($filerecord, $content);
 
-        $assign = $this->getDataGenerator()->create_module('assign', $params);
+        $queueditem = $this->make_queued_item($this->student->id, 1, 'file', $file->get_pathnamehash());
+        $moduledata = $this->make_moduledata(false, false);
 
-        // Create module object.
-        $moduleobject = new \turnitin_assign();
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'file', 1);
-        $this->assertFalse($resubmissionallowed);
+        return [$cm, $queueditem, $moduledata];
+    }
 
-        $resubmissionallowed = $moduleobject->is_resubmission_allowed($assign->id, 1, 'text_content',
-            1);
-        $this->assertTrue($resubmissionallowed);
+    /**
+     * Create an online text submission and return the cm, queued item and module data
+     * needed to test get_submission_content() for a text_content submission.
+     *
+     * @return array [cm, queueditem, moduledata]
+     */
+    private function create_text_submission(
+        string $text,
+        ?\stdClass $assign = null,
+        ?int $userid = null,
+        bool $teamsubmission = false
+    ): array {
+        global $DB;
+
+        $assign  = $assign ?? $this->assign;
+        $userid  = $userid ?? $this->student->id;
+        $cm      = get_coursemodule_from_instance('assign', $assign->id);
+
+        // The submission userid is 0 for team submissions.
+        $submissionuserid = $teamsubmission ? 0 : $userid;
+
+        $submission = new \stdClass();
+        $submission->assignment  = $assign->id;
+        $submission->userid      = $submissionuserid;
+        $submission->status      = 'submitted';
+        $submission->timemodified = time();
+        $submission->timecreated  = time();
+        $submission->attemptnumber = 0;
+        $submission->latest       = 1;
+        $submission->groupid      = 0;
+        $submission->id = $DB->insert_record('assign_submission', $submission);
+
+        $onlinetext = new \stdClass();
+        $onlinetext->submission  = $submission->id;
+        $onlinetext->assignment  = $assign->id;
+        $onlinetext->onlinetext  = $text;
+        $onlinetext->onlineformat = FORMAT_HTML;
+        $DB->insert_record('assignsubmission_onlinetext', $onlinetext);
+
+        $queueditem = $this->make_queued_item($userid, $submission->id, 'text_content', sha1($text));
+        $moduledata = $this->make_moduledata($teamsubmission, false);
+
+        return [$cm, $queueditem, $moduledata];
+    }
+
+    /**
+     * Build a minimal queued item as would be read from plagiarism_turnitin_files.
+     */
+    private function make_queued_item(
+        int $userid,
+        int $itemid,
+        string $submissiontype,
+        string $identifier,
+        ?string $externalid = null
+    ): \stdClass {
+        $item = new \stdClass();
+        $item->userid         = $userid;
+        $item->itemid         = $itemid;
+        $item->submissiontype = $submissiontype;
+        $item->identifier     = $identifier;
+        $item->externalid     = $externalid;
+        return $item;
+    }
+
+    /**
+     * Build a minimal module data object as would be read from the assign DB table.
+     */
+    private function make_moduledata(bool $teamsubmission, bool $resubmissionallowed): \stdClass {
+        $data = new \stdClass();
+        $data->teamsubmission      = $teamsubmission ? 1 : 0;
+        $data->resubmission_allowed = $resubmissionallowed;
+        return $data;
+    }
+
+    // Tests for uncovered methods.
+
+    /**
+     * Test get_tutor_capability returns the correct capability string for assign.
+     * Exercises line 77.
+     */
+    public function test_get_tutor_capability_returns_assign_grade(): void {
+        $this->resetAfterTest();
+        $assign = new turnitin_assign();
+        $this->assertEquals('mod/assign:grade', $assign->get_tutor_capability());
+    }
+
+    /**
+     * Test get_author returns the userid from assign_submission when the row exists.
+     * Exercises lines 90-91.
+     */
+    public function test_get_author_returns_userid_when_submission_exists(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user   = $this->getDataGenerator()->create_user();
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $assign = new turnitin_assign();
+        $this->assertEquals($user->id, $assign->get_author($submissionid));
+    }
+
+    /**
+     * Test get_author returns 0 when no assign_submission row exists for the itemid.
+     * Exercises lines 92-93.
+     */
+    public function test_get_author_returns_zero_when_no_submission(): void {
+        $this->resetAfterTest();
+
+        $assign = new turnitin_assign();
+        $this->assertEquals(0, $assign->get_author(99999));
+    }
+
+    /**
+     * Test get_onlinetext returns a stdClass with itemid and onlinetext when
+     * an online text submission exists. Exercises lines 178-204.
+     */
+    public function test_get_onlinetext_returns_data_when_submission_exists(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                               => $course->id,
+            'assignsubmission_onlinetext_enabled'  => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment' => $assignmod->id,
+            'submission' => $submissionid,
+            'onlinetext' => 'Hello world',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_onlinetext($user->id, $cm);
+
+        $this->assertNotEmpty($result);
+        $this->assertEquals($submissionid, $result->itemid);
+        $this->assertEquals('Hello world', $result->onlinetext);
+    }
+
+    /**
+     * Test get_current_gradequery returns the latest assign_grades row for a user.
+     * Exercises lines 241-246.
+     */
+    public function test_get_current_gradequery_returns_latest_grade(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $user      = $this->getDataGenerator()->create_user();
+
+        $DB->insert_record('assign_grades', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'attemptnumber' => 0,
+            'grade'         => 70.0,
+            'grader'        => 2,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_current_gradequery($user->id, $assignmod->id);
+
+        $this->assertNotFalse($result);
+        $this->assertEquals(70.0, (float) $result->grade);
+    }
+
+    /**
+     * Test get_current_gradequery returns false when no grade exists for the user.
+     */
+    public function test_get_current_gradequery_returns_false_when_no_grade(): void {
+        $this->resetAfterTest();
+
+        $assign = new turnitin_assign();
+        $result = $assign->get_current_gradequery(99999, 99999);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test initialise_post_date always returns 0. Exercises line 256.
+     */
+    public function test_initialise_post_date_returns_zero(): void {
+        $this->resetAfterTest();
+        $assign = new turnitin_assign();
+        $this->assertSame(0, $assign->initialise_post_date(new \stdClass()));
+    }
+
+    /**
+     * Test set_content returns the online text when a submission exists.
+     * Exercises line 117-119.
+     */
+    public function test_set_content_returns_online_text(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $assignmod = $this->getDataGenerator()->create_module('assign', [
+            'course'                              => $course->id,
+            'assignsubmission_onlinetext_enabled' => 1,
+        ]);
+        $cm   = get_coursemodule_from_instance('assign', $assignmod->id);
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $submissionid = $DB->insert_record('assign_submission', (object)[
+            'assignment'    => $assignmod->id,
+            'userid'        => $user->id,
+            'status'        => 'submitted',
+            'groupid'       => 0,
+            'attemptnumber' => 0,
+            'latest'        => 1,
+            'timecreated'   => time(),
+            'timemodified'  => time(),
+        ]);
+        $DB->insert_record('assignsubmission_onlinetext', (object)[
+            'assignment'   => $assignmod->id,
+            'submission'   => $submissionid,
+            'onlinetext'   => 'Test submission text',
+            'onlineformat' => FORMAT_HTML,
+        ]);
+
+        $assign = new turnitin_assign();
+        $result = $assign->set_content(['userid' => $user->id], $cm);
+
+        $this->assertEquals('Test submission text', $result);
     }
 }

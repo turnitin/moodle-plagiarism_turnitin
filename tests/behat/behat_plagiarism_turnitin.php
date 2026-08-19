@@ -242,6 +242,7 @@ class behat_plagiarism_turnitin extends behat_base {
             $this->execute('behat_general::i_click_on', [".pp_turnitin_eula_link", "css_element"]);
             $this->execute('behat_general::wait_until_exists', [".iframe-ltilaunch-eula", "css_element"]);
             $this->i_switch_to_iframe_with_locator(".iframe-ltilaunch-eula");
+            $this->i_switch_to_iframe_with_locator("#lti-frame");
             $this->execute('behat_general::i_click_on', [".agree-button", "css_element"]);
         } catch (Exception $e) {
             // EULA not found - so skip it.

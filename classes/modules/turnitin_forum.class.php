@@ -176,4 +176,8 @@ class turnitin_forum {
 
         return $discussionid;
     }
+
+    public function get_submission_users($cm, $moduledata, $userid): array {
+        return [$userid];
+    }
 }

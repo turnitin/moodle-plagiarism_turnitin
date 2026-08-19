@@ -921,30 +921,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
             // Check whether submission is a group submission - only applicable to assignment and coursework module.
             // If it's a group submission then other users in the group should be able to see the originality score
             // They can not open the DV though.
-            $submissionusers = [$linkarray["userid"]];
-            switch ($cm->modname) {
-                case "assign":
-                    if ($moduledata->teamsubmission) {
-                        $assignment = new assign($context, $cm, null);
-                        if ($group = $assignment->get_submission_group($linkarray["userid"])) {
-                            $users = groups_get_members($group->id);
-                            $submissionusers = array_keys($users);
-                        }
-                    }
-                    break;
-
-                case "coursework":
-                    if ($moduledata->use_groups) {
-                        $coursework = new \mod_coursework\models\coursework($moduledata->id);
-
-                        $user = $DB->get_record('user', ['id' => $linkarray["userid"]]);
-                        $user = mod_coursework\models\user::find($user);
-                        if ($group = $coursework->get_student_group($user)) {
-                            $users = groups_get_members($group->id);
-                            $submissionusers = array_keys($users);
-                        }
-                    }
-            }
+            $submissionusers = $moduleobject->get_submission_users($cm, $moduledata, $linkarray["userid"]);
 
             // Proceed to displaying links for submissions.
             if ($istutor || in_array($USER->id, $submissionusers)) {

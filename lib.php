@@ -2175,17 +2175,31 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
     }
 
     /**
-     * Updates the database field duedate_report_refresh for any given submission ID.
-     * @param int $id - the ID of the submission to update.
+     * Updates the database field duedate_report_refresh for any given submission ID or array of IDs.
+     *
+     * @param int|int[] $id - the ID or array of IDs of the submission(s) to update.
      * @param int $newvalue - the value to which the field should be set.
      */
     public function set_duedate_report_refresh($id, $newvalue) {
         global $DB;
 
-        $updatedata = new stdClass();
-        $updatedata->id = $id;
-        $updatedata->duedate_report_refresh = $newvalue;
-        $DB->update_record('plagiarism_turnitin_files', $updatedata);
+        if (is_int($id)) {
+            $id = [$id];
+        }
+
+        // Chunk per 1000, conservative cross-DB limit for query parameter cap.
+        foreach (array_chunk($id, 1000) as $ids) {
+            [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+            $sql = "UPDATE {plagiarism_turnitin_files}
+                       SET duedate_report_refresh = :newvalue1
+                     WHERE duedate_report_refresh != :newvalue2
+                       AND id $insql";
+
+            $params = ['newvalue1' => $newvalue, 'newvalue2' => $newvalue];
+            $params = array_merge($params, $inparams);
+
+            $DB->execute($sql, $params);
+        }
     }
 
     /**
@@ -2237,13 +2251,6 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Add submission ids to the request.
         foreach ($submissions as $tiisubmission) {
-            // Updates the db field 'duedate_report_refresh' if the due date has passed within the last twenty four hours.
-            $now = strtotime('now');
-            $dtdue = (!empty($moduledata[$tiisubmission->modname]->duedate)) ? $moduledata[$tiisubmission->modname]->duedate : 0;
-            if ($tiisubmission->duedate_report_refresh != 1 && $now >= $dtdue && $now < strtotime('+1 day', $dtdue)) {
-                $this->set_duedate_report_refresh($tiisubmission->id, 1);
-            }
-
             if (!isset($reportsexpected[$tiisubmission->cm])) {
 
                 $reportsexpected[$tiisubmission->cm] = 1;
@@ -2362,9 +2369,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         // Sets the duedate_report_refresh flag for each processed submission to 2 to prevent them being processed again in the
         // next cron run.
-        foreach ($submissions as $tiisubmission) {
-            $this->set_duedate_report_refresh($tiisubmission->id, 2);
-        }
+        $submissionids = array_map(function($s) {
+            return $s->id;
+        }, $submissions);
+        $this->set_duedate_report_refresh($submissionids, 2);
 
         return true;
     }

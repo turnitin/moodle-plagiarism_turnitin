@@ -105,7 +105,8 @@ class turnitin_view {
         $configwarning = '';
         $rubrics = [];
 
-        if ($location == "activity" && $modulename != 'mod_forum') {
+        // Only fetch rubric data when the GradeMark rubric selector will be shown.
+        if ($location == "activity" && $modulename != 'mod_forum' && $config->plagiarism_turnitin_usegrademark) {
             $instructor = new turnitin_user($USER->id, 'Instructor');
 
             $instructor->join_user_to_class($course->turnitin_cid);

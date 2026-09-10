@@ -59,7 +59,16 @@ $plugindefaults = $plagiarismpluginturnitin->get_settings();
 if (!empty($action)) {
     switch ($action) {
         case "defaults":
-            $fields = $plagiarismpluginturnitin->get_settings_fields();
+            require_sesskey();
+            $modulename = required_param('modulename', PARAM_ALPHANUMEXT);
+            $enabledmods = $plagiarismpluginturnitin->get_enabled_supported_modules();
+
+            // Validate modulename against enabled modules.
+            if (!in_array($modulename, $enabledmods)) {
+                plagiarism_turnitin_print_error('invalidmodtype');
+            }
+
+            $fields = $plagiarismpluginturnitin->get_settings_fields($modulename);
 
             $settingsfields = [];
             foreach ($fields as $field) {
@@ -69,18 +78,21 @@ if (!empty($action)) {
             array_push($settingsfields, 'plagiarism_locked_message');
 
             foreach ($settingsfields as $field) {
+                // Store using {$modulename}_{fieldname} convention.
+                $storedname = $modulename . '_' . $field;
+
                 $defaultfield = new stdClass();
                 $defaultfield->cm = null;
-                $defaultfield->name = $field;
+                $defaultfield->name = $storedname;
                 if ($field == 'plagiarism_locked_message') {
                     $defaultfield->value = optional_param($field, '', PARAM_TEXT);
                 } else {
                     $defaultfield->value = optional_param($field, '', PARAM_ALPHANUMEXT);
                 }
 
-                if (isset($plugindefaults[$field])) {
+                if (isset($plugindefaults[$storedname])) {
                     $defaultfield->id = $DB->get_field('plagiarism_turnitin_config', 'id',
-                                                (['cm' => null, 'name' => $field]));
+                                                (['cm' => null, 'name' => $storedname]));
                     if (!$DB->update_record('plagiarism_turnitin_config', $defaultfield)) {
                         plagiarism_turnitin_print_error('defaultupdateerror', 'plagiarism_turnitin', null,
                             null, __FILE__, __LINE__);
@@ -95,11 +107,18 @@ if (!empty($action)) {
             }
 
             $_SESSION['notice']['message'] = get_string('defaultupdated', 'plagiarism_turnitin');
-            redirect(new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'defaults']));
+            redirect(new moodle_url(
+                '/plagiarism/turnitin/settings.php',
+                [
+                    'do' => 'defaults',
+                    'modulename' => $modulename,
+                ]
+            ));
             exit;
             break;
 
         case "deletefile":
+            require_sesskey();
             $id = optional_param('id', 0, PARAM_INT);
             $DB->update_record('plagiarism_turnitin_files', ['id' => $id, 'statuscode' => "deleted"]);
             redirect(new moodle_url('/plagiarism/turnitin/settings.php', ['do' => 'errors']));
@@ -156,12 +175,37 @@ switch ($do) {
         break;
 
     case "defaults":
+        $modulename = optional_param('modulename', '', PARAM_ALPHANUMEXT);
+        $enabledmods = $plagiarismpluginturnitin->get_enabled_supported_modules();
+
         $turnitinview->draw_settings_tab_menu('turnitindefaults', $notice);
+
+        if (empty($enabledmods)) {
+            // No modules enabled — show a prompt to enable one on the config page.
+            echo $OUTPUT->notification(get_string('noenabledmodules', 'plagiarism_turnitin'), 'info');
+            break;
+        }
+
+        // Validate / default the active module tab.
+        if (empty($modulename) || !in_array($modulename, $enabledmods)) {
+            $modulename = $enabledmods[0];
+        }
+
+        // Draw subtab for each module, and show the current selected module.
+        $turnitinview->draw_defaults_subtab_menu($modulename);
 
         require_once($CFG->dirroot.'/plagiarism/turnitin/classes/forms/turnitin_defaultsettingsform.class.php');
 
-        $mform = new turnitin_defaultsettingsform($CFG->wwwroot.'/plagiarism/turnitin/settings.php?do=defaults');
-        $mform->set_data($plugindefaults);
+        $mform = new turnitin_defaultsettingsform(
+            $CFG->wwwroot . '/plagiarism/turnitin/settings.php?do=defaults&modulename=' . $modulename,
+            ['modulename' => $modulename]
+        );
+
+        // Load the per-module defaults from the DB, stripping the module name prefix
+        // so field names match the form element names.
+        $moddefaults = $plagiarismpluginturnitin->get_module_defaults($modulename);
+
+        $mform->set_data($moddefaults);
         $mform->display();
         break;
 

@@ -30,7 +30,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
-require_once($CFG->dirroot.'/plagiarism/turnitin/vendor/autoload.php');
+
+// Note: We deliberately do NOT require the bundled Composer vendor/autoload.php here.
+// That bootstrap registers its ClassLoader with prepend=true, which pushes this plugin's
+// vendor dir to the front of Composer's shared registered-loaders registry and makes
+// \Composer\InstalledVersions::getRootPackage() report this plugin as the root package.
+// That breaks any core code trusting getRootPackage() (e.g. phpunit.xml generation in
+// composed installs, and core\setuplib_test::test_format_backtrace). See MDL-88682.
+// Instead register a self-contained loader for only the two namespaces this plugin needs,
+// appended (prepend=false) so it never touches Composer's global state.
+require_once($CFG->dirroot.'/plagiarism/turnitin/scoped_autoload.php');
 
 use Integrations\PhpSdk\TurnitinAPI;
 

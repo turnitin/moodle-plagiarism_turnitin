@@ -21,6 +21,7 @@ define(['jquery',
                         type: ModalQuickmarkLaunch.TYPE,
                         templateContext: {
                             cmid: $('input[name="coursemodule"]').val(),
+                            courseid: $(this).data('courseid'),
                             wwwroot: M.cfg.wwwroot
                         },
                         large: true

@@ -54,7 +54,8 @@ $PAGE->requires->jquery_plugin('ui');
 switch ($cmd) {
     case "rubricmanager":
         $PAGE->set_pagelayout('embedded');
-        $courseid = optional_param('courseid', 0, PARAM_INT);
+        $courseid = required_param('courseid', PARAM_INT);
+        require_capability('plagiarism/turnitin:enable', context_course::instance($courseid));
         $tiicourse = $DB->get_record('plagiarism_turnitin_courses', ["courseid" => $courseid]);
         $tiicourseid = (!empty($tiicourse->turnitin_cid)) ? $tiicourse->turnitin_cid : 0;
 
@@ -67,6 +68,8 @@ switch ($cmd) {
 
     case "quickmarkmanager":
         $PAGE->set_pagelayout('embedded');
+        $courseid = required_param('courseid', PARAM_INT);
+        require_capability('plagiarism/turnitin:enable', context_course::instance($courseid));
 
         echo html_writer::tag("div", $turnitinview->output_lti_form_launch('quickmark_manager', 'Instructor'),
             ["class" => "launch_form"]);

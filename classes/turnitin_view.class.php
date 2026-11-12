@@ -191,6 +191,7 @@ class turnitin_view {
                         'class' => 'plagiarism_turnitin_quickmark_manager_launch',
                         'id' => 'quickmark_manager_form',
                         'tabindex' => 0,
+                        'data-courseid' => $course->id,
                     ]
                 );
 

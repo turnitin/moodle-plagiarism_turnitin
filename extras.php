@@ -22,6 +22,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// The EULA return page (handled below) is loaded without the session cookie, so don't start a
+// session for it; the new guest session's cookie could otherwise overwrite the user's real one.
+if (($_GET['cmd'] ?? '') === 'eula_return') {
+    define('NO_MOODLE_COOKIES', true);
+}
+
 require_once(__DIR__.'/../../config.php');
 require_once($CFG->libdir.'/tablelib.php');
 require_once($CFG->dirroot.'/plagiarism/turnitin/lib.php');
@@ -46,6 +52,17 @@ if ($cmid) {
 }
 
 $PAGE->set_context(context_system::instance());
+
+// Turnitin redirects the EULA modal's iframe here when the user declines the EULA. That navigation is
+// cross-site, so the browser withholds Moodle's SameSite=Lax session cookie and require_login() would
+// show the login page inside the modal. This page therefore runs without a session and only notifies
+// the parent window; the parent records the outcome through ajax.php, where the session is available.
+if ($cmd == "eula_return") {
+    $accepted = optional_param('accept_agreement', 0, PARAM_INT) === 1;
+    echo turnitin_view::output_eula_return_script($accepted);
+    exit;
+}
+
 require_login();
 
 $PAGE->requires->jquery();
@@ -88,7 +105,9 @@ switch ($cmd) {
             0,
             $user->tiiuserid,
             "Learner",
-            ''
+            '',
+            false,
+            (new moodle_url('/plagiarism/turnitin/extras.php', ['cmd' => 'eula_return']))->out(false)
         );
         $output .= $OUTPUT->box_end(true);
         echo $output;

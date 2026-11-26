@@ -576,10 +576,12 @@ class turnitin_view {
      * @param string $userrole the role the user has on Turnitin in the course/class
      * @param string $buttonstring string for the submit button
      * @param bool $ltireturn return the LTI form as a string
+     * @param string|null $returnurl absolute URL sent as launch_presentation_return_url, which Turnitin
+     *                               redirects to when the user declines the EULA
      * @return string form
      */
     public static function output_launch_form($type, $submissionid, $userid, $userrole,
-                                              $buttonstring = "Submit", $ltireturn = false) {
+                                              $buttonstring = "Submit", $ltireturn = false, $returnurl = null) {
         // Initialise Comms Object.
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
@@ -593,6 +595,9 @@ class turnitin_view {
         $lti->setRole($userrole);
         $lti->setButtonText($buttonstring);
         $lti->setFormTarget('');
+        if (!is_null($returnurl)) {
+            $lti->setReturnUrl($returnurl);
+        }
 
         switch ($type) {
             case "useragreement":
@@ -628,6 +633,20 @@ class turnitin_view {
             $lti->setAsJson(true);
             return $turnitincall->$ltifunction($lti, $ltireturn);
         }
+    }
+
+    /**
+     * Script for the EULA return page, which loads inside the EULA modal's iframe after Turnitin redirects
+     * to launch_presentation_return_url. Turnitin's agreement page no longer posts the EULA outcome to the
+     * parent window, so we post it from here instead. eula_event_listener.js then records the outcome and
+     * closes the modal.
+     *
+     * @param bool $accepted whether Turnitin reports that the user accepted the EULA
+     * @return string script tag
+     */
+    public static function output_eula_return_script($accepted) {
+        $message = json_encode($accepted ? 'turnitin_eula_accepted' : 'turnitin_eula_declined');
+        return html_writer::script("window.parent.postMessage({$message}, window.location.origin);");
     }
 
     /**

@@ -35,6 +35,9 @@ defined('MOODLE_INTERNAL') || die();
 define('PLAGIARISM_TURNITIN_MAX_FILE_UPLOAD_SIZE', 104857600);
 define('PLAGIARISM_TURNITIN_NUM_RECORDS_RETURN', 500);
 define('PLAGIARISM_TURNITIN_CRON_SUBMISSIONS_LIMIT', 100);
+// A paper can be in the Turnitin inbox before readResultIdsForLineItem lists it.
+// Keep polling during this window instead of recording a permanent error 13.
+define('PLAGIARISM_TURNITIN_MISSING_SUBMISSION_GRACE', 86400);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('PLAGIARISM_TURNITIN_REPORT_GEN_SPEED_NUM_HOURS', 24);
 define('PLAGIARISM_TURNITIN_MAX_FILENAME_LENGTH', 180);
@@ -2197,6 +2200,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $DB;
 
         $submissionids = array();
+        $submissionmeta = array();
         $reportsexpected = array();
         $assignmentids = array();
 
@@ -2270,6 +2274,11 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                 $moduleturnitinconfig = $DB->get_record('plagiarism_turnitin_config',
                     [ 'cm' => $tiisubmission->cm, 'name' => 'turnitin_assignid' ]);
 
+                $submissionmeta[$tiisubmission->externalid] = [
+                    'assignmentid' => $moduleturnitinconfig->value,
+                    'lastmodified' => $tiisubmission->lastmodified,
+                ];
+
                 if (!isset(array_flip($assignmentids)[$moduleturnitinconfig->value])) {
                     $assignmentids[] = $moduleturnitinconfig->value;
                 }
@@ -2278,9 +2287,17 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
         $validatedsubmissions = $this->check_local_submission_state($assignmentids, $submissionids);
 
-        // At this point update missingTiiSubmissions state to error.
+        // A submission missing from the assignment listing is only an error when that
+        // listing succeeded and the paper has been missing for longer than the grace period.
+        // A new paper, or a failed listing, stays eligible for the next report refresh.
         if (count($validatedsubmissions['missingTiiSubmissions']) > 0) {
             foreach ($validatedsubmissions['missingTiiSubmissions'] as $missingsubmission) {
+                $meta = isset($submissionmeta[$missingsubmission]) ? $submissionmeta[$missingsubmission]
+                    : ['assignmentid' => null, 'lastmodified' => 0];
+                if (!$this->should_invalidate_missing_submission($missingsubmission, $meta['assignmentid'],
+                        $meta['lastmodified'], $validatedsubmissions['failedAssignmentIds'])) {
+                    continue;
+                }
                 try {
                     $this->invalidate_missing_submission($missingsubmission);
                 } catch (Exception $e) {
@@ -2327,7 +2344,12 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
                                     $readsubmission->getOverallSimilarity() : null;
                                 $plagiarismfile->grade = (is_numeric($readsubmission->getGrade())) ? $readsubmission->getGrade()
                                     : null;
-                                $plagiarismfile->orcapable = ($readsubmission->getOriginalityReportCapable() == 1) ? 1 : 0;
+                                // An empty flag means the result is not ready. Leave orcapable unset so
+                                // this submission is included in the next report refresh.
+                                $orcapable = $this->resolve_orcapable($readsubmission->getOriginalityReportCapable());
+                                if ($orcapable !== null) {
+                                    $plagiarismfile->orcapable = $orcapable;
+                                }
                                 $plagiarismfile->transmatch = 0;
                                 if (is_int($readsubmission->getTranslatedOverallSimilarity()) &&
                                     $readsubmission->getTranslatedOverallSimilarity() > $readsubmission->getOverallSimilarity()) {
@@ -2381,6 +2403,7 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $turnitincomms = new turnitin_comms();
         $turnitincall = $turnitincomms->initialise_api();
         $tiisubmissionids = [];
+        $failedassignmentids = [];
 
         foreach ($assignmentids as $assignmentid) {
             $submission = new TiiSubmission();
@@ -2388,8 +2411,15 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
 
             try {
                 $response = $turnitincall->findSubmissions($submission);
-                $tiisubmissionids = array_merge($tiisubmissionids, $response->getSubmission()->getSubmissionIds());
+                $foundsubmission = $response->getSubmission();
+                $foundids = ($foundsubmission) ? $foundsubmission->getSubmissionIds() : null;
+                if (!is_array($foundids)) {
+                    throw new Exception('findSubmissions returned no submission id list');
+                }
+                $tiisubmissionids = array_merge($tiisubmissionids, $foundids);
             } catch (Exception $e) {
+                // A failed listing must not be treated as an empty assignment.
+                $failedassignmentids[] = $assignmentid;
                 mtrace("An exception was thrown while attempting to find submissions for Turnitin assignment: $assignmentid. "
                     . $e->getMessage() . '(' . $e->getFile() . ':' . $e->getLine() . ')');
             }
@@ -2398,7 +2428,53 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         return [
             'trimmedSubmissions' => array_intersect($submissionids, $tiisubmissionids),
             'missingTiiSubmissions' => array_diff($submissionids, $tiisubmissionids),
+            'failedAssignmentIds' => $failedassignmentids,
         ];
+    }
+
+    /**
+     * Decide whether a submission missing from a Turnitin assignment listing should be marked error 13.
+     *
+     * Listings can omit a paper that was just created, and a failed listing returns no ids at all.
+     * In both cases the local row still has a Turnitin submission id and the next refresh should try again.
+     *
+     * @param int|string $externalid The Turnitin submission id.
+     * @param int|string|null $assignmentid The Turnitin assignment id stored for the activity.
+     * @param int|string|null $lastmodified When the local submission was last saved.
+     * @param array $failedassignmentids Assignment ids whose listing call failed.
+     * @return bool
+     */
+    private function should_invalidate_missing_submission($externalid, $assignmentid, $lastmodified, array $failedassignmentids) {
+        $failedassignmentids = array_map('strval', $failedassignmentids);
+        if ($assignmentid !== null && $assignmentid !== '' && in_array((string)$assignmentid, $failedassignmentids, true)) {
+            mtrace("Not setting error 13 for submission {$externalid}: Turnitin assignment {$assignmentid} could not be listed.");
+            return false;
+        }
+
+        $lastmodified = (int)$lastmodified;
+        if ($lastmodified > 0 && $lastmodified > time() - PLAGIARISM_TURNITIN_MISSING_SUBMISSION_GRACE) {
+            mtrace("Submission {$externalid} was not listed by Turnitin. It will be checked again on the next report refresh.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Translate the Turnitin originality-report flag.
+     *
+     * An empty value means the result record does not say yet. Callers leave the local
+     * column unchanged so the submission stays in the report refresh. An explicit false
+     * value means Turnitin cannot produce a report for this file.
+     *
+     * @param mixed $orcapablevalue The value returned by the Turnitin submission.
+     * @return int|null
+     */
+    private function resolve_orcapable($orcapablevalue) {
+        if ($orcapablevalue === null || $orcapablevalue === '') {
+            return null;
+        }
+        return ($orcapablevalue == 1) ? 1 : 0;
     }
 
     /**
@@ -2422,9 +2498,9 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         $plagiarismfile->errorcode = 13;
 
         if (!$DB->update_record('plagiarism_turnitin_files', $plagiarismfile)) {
-            mtrace("File failed to update: ".$plagiarismfile->id);
+            mtrace("Failed to set error 13 on file ".$plagiarismfile->id." for submission ".$missingsubmission.".");
         } else {
-            mtrace("File updated: ".$plagiarismfile->id);
+            mtrace("Submission ".$missingsubmission." was not found in Turnitin. Set error 13 on file ".$plagiarismfile->id.".");
         }
     }
 

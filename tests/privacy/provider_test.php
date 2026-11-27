@@ -221,7 +221,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $plagiarismfile->identifier = "abcd";
         $plagiarismfile->statuscode = "success";
         $plagiarismfile->similarityscore = 50;
-        $plagiarismfile->externalid = 123456789;
         $plagiarismfile->attempt = 1;
         $plagiarismfile->transmatch = 0;
         $plagiarismfile->lastmodified = time();
@@ -230,6 +229,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $plagiarismfile->submitter = $student->id;
 
         for ($i = 0; $i < $numsubmissions; $i++) {
+            $plagiarismfile->externalid = ($cm->id * 1000) + $i;
             $DB->insert_record('plagiarism_turnitin_files', $plagiarismfile);
         }
 

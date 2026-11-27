@@ -40,7 +40,7 @@ $cmid = optional_param('cmid', 0, PARAM_INT);
 $itemid = optional_param('itemid', 0, PARAM_INT);
 if ( !empty( $cmid ) ) {
     $cm = get_coursemodule_from_id('', $cmid);
-    $context = context_course::instance($cm->course);
+    $context = context_module::instance($cm->id);
 
     // Work out user role.
     $userrole = '';

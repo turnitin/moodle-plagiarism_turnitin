@@ -189,4 +189,7 @@ class turnitin_quiz {
         $transaction->allow_commit();
     }
 
+    public function get_submission_users($cm, $moduledata, $userid): array {
+        return [$userid];
+    }
 }
